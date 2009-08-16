@@ -1,0 +1,3 @@
+executor = javaw
+mainClass = net.milanaleksic.mcs.Startup
+showSplash = true 

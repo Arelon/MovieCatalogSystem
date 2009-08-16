@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<!-- IBM DB2 SERVER KONEKCIJA -->
+		<property name="hibernate.dialect">org.hibernate.dialect.DB2Dialect</property>
+		<property name="hibernate.connection.driver_class">com.ibm.db2.jcc.DB2Driver</property>
+		<property name="hibernate.connection.url">jdbc:db2://localhost:50000/KATALOG</property>
+		<property name="hibernate.connection.username">DB2ADMIN</property>
+		<property name="hibernate.connection.password">db2admin</property>
+		  
+		 
+		<!-- APACHE DERBY EMBEDDED KONEKCIJA  
+		<property name="hibernate.dialect">org.hibernate.dialect.DerbyDialect</property>
+		<property name="hibernate.connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
+		<property name="hibernate.connection.url">jdbc:derby:katalogDB</property>
+		<property name="hibernate.connection.username">DB2ADMIN</property>
+		<property name="hibernate.connection.password">db2admin</property>
+		-->
+		
+		<!-- APACHE DERBY EMBEDDED READ-ONLY JAR KONEKCIJA 
+		<property name="hibernate.dialect">org.hibernate.dialect.DerbyDialect</property>
+		<property name="hibernate.connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
+		<property name="hibernate.connection.url">jdbc:derby:jar:(katalogDB.jar)katalogDB</property>
+		<property name="hibernate.connection.username">DB2ADMIN</property>
+		<property name="hibernate.connection.password">db2admin</property>
+		 --> 
+		 
+		<!-- HSQL KONEKCIJA
+		<property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+		<property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+		<property name="hibernate.connection.url">jdbc:hsqldb:hsql://localhost</property>
+		<property name="hibernate.connection.username">sa</property>
+		!-->
+		
+		<property name="hibernate.c3p0.min_size">2</property>
+		<property name="hibernate.c3p0.max_size">8</property>
+		<property name="hibernate.c3p0.timeout">5</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
+		<property name="hibernate.c3p0.max_statements">50</property>
+		
+		<!--
+			MILAN: naredne linije dekomentiraj samo ako bas hoces 
+			da vidis oblik generisanog SQL-a, jer prosto ZDERE LOG!!-->
+		<property name="show_sql">true</property>
+		<property name="format_sql">true</property>
+		
+		
+		<mapping resource="net/milanaleksic/mcs/db/hibernate.mapping.xml"/>
+		
+	</session-factory>
+</hibernate-configuration>
