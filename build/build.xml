@@ -8,7 +8,7 @@
 	<property name="src.dir" value="../src" />
 	<property name="bin.dir" value="../bin" />
 	<property name="lib.dir" value="../lib" />
-	<property name="db.dir" value="../katalogDB" />
+	<property name="db.dir" value="distDB" />
 	<property name="export.dir" value="../startup/export" />
 	<property name="restore.dir" value="../startup/restore" />
 	<property name="startup.dir" value="../startup" />

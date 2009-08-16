@@ -3,3 +3,4 @@ relre:build/.*.zip
 relre:build/katalogDB
 relre:katalogDB
 relre:startup/restore
+relre:.*~
