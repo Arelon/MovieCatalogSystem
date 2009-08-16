@@ -4,3 +4,4 @@ relre:build/katalogDB
 relre:katalogDB
 relre:startup/restore
 relre:.*~
+glob:lib/mcs.jar
