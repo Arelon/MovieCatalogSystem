@@ -1,21 +1,12 @@
 package net.milanaleksic.mcs.export;
 
 import java.awt.Desktop;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Calendar;
 
 import net.milanaleksic.mcs.util.Kernel;
 
 import org.apache.log4j.Logger;
-
-
-import com.sun.org.apache.xerces.internal.impl.io.UTF8Reader;
 
 public class HTMLExporter implements Exporter {
 	
@@ -110,7 +101,7 @@ public class HTMLExporter implements Exporter {
 		StringBuffer rez = new StringBuffer();
 		File css = new File("export/stilovi.css");
 		try {
-			BufferedReader reader = new BufferedReader(new UTF8Reader(new FileInputStream(css)));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(css), "UTF-8"));
 			String tmp = null;
 			while ((tmp = reader.readLine()) != null)
 				rez.append(tmp).append('\r').append('\n');
@@ -126,7 +117,7 @@ public class HTMLExporter implements Exporter {
 		StringBuffer rez = new StringBuffer();
 		File js = new File("export/prog.js");
 		try {
-			BufferedReader reader = new BufferedReader(new UTF8Reader(new FileInputStream(js)));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(js), "UTF-8"));
 			String tmp = null;
 			while ((tmp = reader.readLine()) != null) {
 				tmp = tmp.replace('\t', ' ');

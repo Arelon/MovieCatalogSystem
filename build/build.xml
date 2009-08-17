@@ -28,20 +28,20 @@
 		<tstamp />
 	</target>
 
-	<target name="copyCompiled" description="Copying compiled MCS files" depends="init">
+	<target name="compile" description="Copying compiled MCS files" depends="init">
 		<mkdir dir="${compile.dir}" />
-
+		
+		<javac srcdir="${src.dir}"  classpathref="classpath"  target="1.6" destdir="${compile.dir}" encoding="UTF-8">
+		</javac>
+		
 		<copy todir="${compile.dir}" overwrite="true">
 			<fileset dir="${bin.dir}">
-				<include name="**/*.class" />
-				<include name="**/*.png" />
-				<include name="**/*.xml" />
-				<include name="**/.launcher" />
+				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="jar" description="JARs the MovieCatalogSystem" depends="copyCompiled">
+	<target name="jar" description="JARs the MovieCatalogSystem" depends="compile">
 		<mkdir dir="${distro.dir}" />
 			
 		<jar destfile="${distro.dir}/mcs.jar">
@@ -82,7 +82,6 @@
 			<zipfileset dir="${root.dir}" prefix="" includes="*.exe" />
 			<zipfileset dir="${db.dir}" prefix="katalogDB" />
 			<zipfileset dir="${export.dir}" prefix="bin/export" />
-			<zipfileset dir="${restore.dir}" prefix="bin\restore" includes="KATALOG_CREATE.sql, KATALOG_RESTORE.sql" />
 		</zip>
 
 		<delete dir="${compile.dir}" failonerror="false" />
