@@ -1,12 +1,7 @@
 package net.milanaleksic.mcs;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.SplashScreen;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.nio.channels.FileLock;
 
 import net.milanaleksic.mcs.restore.RestorePointCreator;
@@ -16,7 +11,6 @@ import net.milanaleksic.mcs.util.MCSProperties;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.swt.widgets.Display;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 
@@ -50,8 +44,9 @@ public class Startup {
 		SplashScreen splashScreen = refreshSplashScreen();
 
 		// SPRING
-		ApplicationContext context = new FileSystemXmlApplicationContext("spring-beans.xml");
+		FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("spring-beans.xml");
 		setKernel ((Kernel) context.getBean("kernel"));
+		context.registerShutdownHook();
 
 		// SWT
 		Display.setAppName("Movie Catalog System - v"+Kernel.getVersion());

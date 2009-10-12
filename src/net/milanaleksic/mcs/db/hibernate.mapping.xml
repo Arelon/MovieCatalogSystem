@@ -3,6 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class name="net.milanaleksic.mcs.db.Loger" table="LOGER" schema="DB2ADMIN">
+        <cache usage="nonstrict-read-write" />
         <id name="idloger" type="int">
             <column name="IDLOGER" />
             <generator class="identity" />
@@ -19,6 +20,7 @@
     </class>
     
     <class name="net.milanaleksic.mcs.db.LogerAkcija" table="LOGERAKCIJA" schema="DB2ADMIN" mutable="false">
+        <cache usage="nonstrict-read-write" />
         <id name="idlogerakcija" type="int">
             <column name="IDLOGERAKCIJA" />
             <generator class="identity" />
@@ -35,6 +37,7 @@
     </class>
     
     <class name="net.milanaleksic.mcs.db.Film" table="FILM" schema="DB2ADMIN">
+        <cache usage="nonstrict-read-write" />
         <id name="idfilm" type="int">
             <column name="IDFILM" />
             <generator class="identity" />
@@ -68,6 +71,7 @@
     </class>
     
     <class name="net.milanaleksic.mcs.db.Medij" table="MEDIJ" schema="DB2ADMIN">
+        <cache usage="nonstrict-read-write" />
         <id name="idmedij" type="int">
             <column name="IDMEDIJ" />
             <generator class="identity" />
@@ -92,6 +96,7 @@
     </class>
     
     <class name="net.milanaleksic.mcs.db.Pozicija" table="POZICIJA" schema="DB2ADMIN">
+        <cache usage="nonstrict-read-write" />
         <id name="idpozicija" type="int">
             <column name="IDPOZICIJA" />
             <generator class="identity" />
@@ -108,6 +113,7 @@
     </class>
     
     <class name="net.milanaleksic.mcs.db.TipMedija" table="TIPMEDIJA" schema="DB2ADMIN">
+        <cache usage="nonstrict-read-write" />
         <id name="idtip" type="int">
             <column name="IDTIP" />
             <generator class="identity" />
@@ -124,6 +130,7 @@
     </class>
     
     <class name="net.milanaleksic.mcs.db.Zanr" table="ZANR" schema="DB2ADMIN" mutable="false">
+        <cache usage="nonstrict-read-write" />
         <id name="idzanr" type="int">
             <column name="IDZANR" />
             <generator class="identity" />
