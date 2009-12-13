@@ -6,7 +6,6 @@
 
 	<property name="root.dir" value=".." />
 	<property name="src.dir" value="../src" />
-	<property name="bin.dir" value="../bin" />
 	<property name="lib.dir" value="../lib" />
 	<property name="db.dir" value="distDB" />
 	<property name="export.dir" value="../startup/export" />
@@ -35,7 +34,7 @@
 		</javac>
 		
 		<copy todir="${compile.dir}" overwrite="true">
-			<fileset dir="${bin.dir}">
+			<fileset dir="${src.dir}">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
