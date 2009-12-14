@@ -2,7 +2,7 @@
 <project name="MCS" basedir="." default="zip">
 
 	<property name="src.version" value="0.41" />
-	<property name="build.version" value="201" />
+	<property name="build.version" value="202" />
 
 	<property name="root.dir" value=".." />
 	<property name="src.dir" value="../src" />
@@ -73,6 +73,8 @@
 				<include name="*.jpg" />
 			</fileset>
 		</copy>
+		
+		<delete file="${ant.project.name}-${src.version}.${build.version}-*.zip" failonerror="false" />
 
 		<zip destfile="${ant.project.name}-${src.version}.${build.version}-${DSTAMP}${TSTAMP}.zip">
 			<zipfileset dir="${lib.dir}" prefix="lib" excludes="*db2*.jar,mcs.jar" />
