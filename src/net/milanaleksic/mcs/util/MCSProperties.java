@@ -186,6 +186,8 @@ public class MCSProperties {
 			return "org.hibernate.dialect.DerbyDialect";
 		else if (getDatabaseType().equals("HSQL"))
 			return "org.hibernate.dialect.HSQLDialect";
+		else if (getDatabaseType().equals("H2"))
+			return "org.hibernate.dialect.H2Dialect";
 		else
 			return "org.hibernate.dialect.DB2Dialect";
 	}
@@ -195,6 +197,8 @@ public class MCSProperties {
 			return "org.apache.derby.jdbc.EmbeddedDriver";
 		else if (getDatabaseType().equals("HSQL"))
 			return "org.hsqldb.jdbcDriver";
+		else if (getDatabaseType().equals("H2"))
+			return "org.h2.Driver";
 		else
 			return "com.ibm.db2.jcc.DB2Driver";
 	}
@@ -206,6 +210,8 @@ public class MCSProperties {
 			return "jdbc:derby:jar:(katalogDB.jar)katalogDB";
 		else if (getDatabaseType().equals("HSQL"))
 			return "jdbc:hsqldb:hsql://localhost";
+		else if (getDatabaseType().equals("H2"))
+			return "jdbc:h2:db/katalog;TRACE_LEVEL_FILE=0";
 		else
 			return "jdbc:db2://localhost:50000/KATALOG";
 	}
@@ -213,8 +219,10 @@ public class MCSProperties {
 	public static String getDBUsername() {
 		if (getDatabaseType().equals("DERBY") || getDatabaseType().equals("DERBY-JAR"))
 			return "DB2ADMIN";
+		else if (getDatabaseType().equals("H2"))
+			return "katalog";
 		else if (getDatabaseType().equals("HSQL"))
-			return "sa";
+			return "db";
 		else
 			return "DB2ADMIN";
 	}
@@ -224,11 +232,13 @@ public class MCSProperties {
 			return "db2admin";
 		else if (getDatabaseType().equals("HSQL"))
 			return "";
+		else if (getDatabaseType().equals("H2"))
+			return "katalog";
 		else
 			return "db2admin";
 	}
 	
-		public static boolean getConvertSQLUnicodeCharacters() {
+	public static boolean getConvertSQLUnicodeCharacters() {
 		return getDatabaseType().equals("DB2");
 	}
 	

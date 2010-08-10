@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="MCS" basedir="." default="zip">
 
-	<property name="src.version" value="0.41" />
-	<property name="build.version" value="202" />
+	<property name="src.version" value="0.42" />
+	<property name="build.version" value="203" />
 
 	<property name="root.dir" value=".." />
 	<property name="src.dir" value="../src" />
 	<property name="lib.dir" value="../lib" />
 	<property name="db.dir" value="distDB" />
+	<property name="restore.dir" value="restore" />
 	<property name="export.dir" value="../startup/export" />
 	<property name="restore.dir" value="../startup/restore" />
 	<property name="startup.dir" value="../startup" />
@@ -81,8 +82,9 @@
 			<zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar" />
 			<zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar" />
 			<zipfileset dir="${root.dir}" prefix="" includes="*.exe" />
-			<zipfileset dir="${db.dir}" prefix="katalogDB" />
+			<zipfileset dir="${db.dir}" prefix="bin/db" />
 			<zipfileset dir="${export.dir}" prefix="bin/export" />
+			<zipfileset dir="${restore.dir}" prefix="bin/restore" />
 		</zip>
 
 		<delete dir="${compile.dir}" failonerror="false" />
