@@ -2,25 +2,15 @@ package net.milanaleksic.mcs;
 
 import java.sql.SQLException;
 
-import net.milanaleksic.mcs.db.Medij;
-import net.milanaleksic.mcs.db.Pozicija;
-import net.milanaleksic.mcs.db.TipMedija;
+import net.milanaleksic.mcs.db.*;
 
 import org.apache.log4j.Logger;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
+import org.hibernate.*;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 

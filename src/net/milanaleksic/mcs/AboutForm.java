@@ -6,17 +6,10 @@ import java.net.URI;
 import net.milanaleksic.mcs.util.Kernel;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.*;
 
 
 public class AboutForm {
@@ -24,8 +17,8 @@ public class AboutForm {
 	private static final String dodatniTekst = 
 		"Верзија програма: " + Kernel.getVersion() + "\n\n" +
 		"У развоју су коришћене следеће бесплатне технологије:\n"+
-		"Јава Мустанг, Eclipse SWT, Spring 2, Hibernate 3, \n"+
-		"IBM DB2 Express 9.5, C3P0 итд.\n\n"+
+		"Јава, Eclipse SWT, Spring 2, Hibernate 3, H2\n"+
+		"EhCache, C3P0 итд.\n\n"+
 		"Иконе су део \"Crystal Project\"-а, аутор је Евералдо Келхо.\n\n"+
 		"Програм је још увек у развоју, све грешке молим пријавите аутору програма"
 		;  //  @jve:decl-index=0:
@@ -87,7 +80,7 @@ public class AboutForm {
 			}
 		});
 		textArea = new Text(sShell, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY | SWT.CENTER | SWT.BORDER);
-		textArea.setText("Copyright(C)2007 by Milan Aleksic");
+		textArea.setText("Copyright(C)2007-2010 by Milan Aleksic");
 		textArea.setLayoutData(gridData1);
 	}
 
@@ -145,7 +138,7 @@ public class AboutForm {
 		composite1.setLayoutData(gridData2);
 		labSite = new Label(composite1, SWT.NONE);
 		labSite.setForeground(new Color(Display.getCurrent(), 0, 0, 0));
-		labSite.setText("http://galeb.etf.bg.ac.yu/~aleksicm/  ");
+		labSite.setText("www.milanaleksic.net  ");
 		btnSite = new Button(composite1, SWT.NONE);
 		btnSite.setText("иди");
 		btnSite.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
@@ -157,7 +150,7 @@ public class AboutForm {
 							Desktop desktop = Desktop.getDesktop();
 							if (desktop.isSupported(Desktop.Action.BROWSE)) {
 								try {
-									desktop.browse(URI.create("http://galeb.etf.bg.ac.yu/~aleksicm"));
+									desktop.browse(URI.create("http://www.milanaleksic.net"));
 								}
 								catch (Exception exc) {
 									exc.printStackTrace();
@@ -202,11 +195,11 @@ public class AboutForm {
 		label.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
 		label.setLayoutData(gridData);
 		label1 = new Label(composite2, SWT.NONE);
-		label1.setText("апсолвент Електротехничког Факултета у Београду");
+		label1.setText("дипл инг етх");
 		label1.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
 		label1.setLayoutData(gridData4);
 		label2 = new Label(composite2, SWT.NONE);
-		label2.setText("новембар 2007 - јануар 2008");
+		label2.setText("новембар 2007 - август 2010");
 		label2.setLayoutData(gridData6);
 	}
 

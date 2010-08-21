@@ -3,17 +3,13 @@ package net.milanaleksic.mcs;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
 
 public class ClosingForm {
 
