@@ -4,12 +4,12 @@
 		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- IBM DB2 SERVER KONEKCIJA -->
+		<!-- H2 SERVER KONEKCIJA -->
 		<property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
 		<property name="hibernate.connection.driver_class">org.h2.Driver</property>
-		<property name="hibernate.connection.url">jdbc:h2:db/katalog</property>
-		<property name="hibernate.connection.username">sa</property>
-		<property name="hibernate.connection.password"></property>
+		<property name="hibernate.connection.url">jdbc:h2:m:/SourceCode/workspaces/GanymedeWorkspace/MovieCatalogSystem/startup/db/katalog;FILE_LOCK=NO</property>
+		<property name="hibernate.connection.username">katalog</property>
+		<property name="hibernate.connection.password">katalog</property>
 		
 		
 		<!-- IBM DB2 SERVER KONEKCIJA 
@@ -48,6 +48,11 @@
 		<property name="hibernate.c3p0.timeout">5</property>
 		<property name="hibernate.c3p0.idle_test_period">3000</property>
 		<property name="hibernate.c3p0.max_statements">50</property>
+		
+		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
+		<property name="hibernate.cache.provider_configuration_file_resource_path">/ehcache.xml</property>
+		<property name="hibernate.cache.use_second_level_cache">true</property>
+		<property name="hibernate.cache.use_query_cache">true</property>
 		
 		<!--
 			MILAN: naredne linije dekomentiraj samo ako bas hoces 
