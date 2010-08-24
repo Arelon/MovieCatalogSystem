@@ -192,6 +192,10 @@ public class RestorePointCreator {
 			// ************ 
 			// CREATE
 			// ************
+
+			File restoreDir = new File("restore");
+			if (!restoreDir.exists())
+				restoreDir.mkdir();
 						
 			log.info("Kreiram nov CREATE skript...");
 			File createFile = new File("restore" + File.separatorChar + "KATALOG_CREATE.sql");
