@@ -3,4 +3,6 @@ relre:build/.*.zip
 relre:startup/restore
 relre:.*~
 glob:lib/mcs.jar
-relre:startup/.*.log
+relre:.*.log
+relre:build/compile/.*
+relre:build/distro/.*
