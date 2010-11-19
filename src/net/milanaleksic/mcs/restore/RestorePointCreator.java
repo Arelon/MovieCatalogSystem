@@ -170,6 +170,21 @@ public class RestorePointCreator {
 		"ON DELETE CASCADE\r\n"+
 		";";
 	
+	public static String INDEX_CREATION = "DROP INDEX DB2ADMIN.IDX_FILM_NAZIVFILMA;\r\n"+
+		"CREATE INDEX IDX_FILM_NAZIVFILMA on DB2ADMIN.FILM(\"NAZIVFILMA\");\r\n\r\n"+
+		"DROP INDEX DB2ADMIN.IDX_FILM_PREVODNAZIVAFILMA;\r\n"+
+		"CREATE INDEX IDX_FILM_PREVODNAZIVAFILMA on DB2ADMIN.FILM(\"PREVODNAZIVAFILMA\");\r\n\r\n"+
+		"DROP INDEX DB2ADMIN.IDX_FILM_IDZANR;\r\n"+
+		"CREATE INDEX IDX_FILM_IDZANR on DB2ADMIN.FILM(\"IDZANR\");\r\n\r\n"+
+		"DROP INDEX DB2ADMIN.IDX_MEDIJ_INDEKS;\r\n"+
+		"CREATE INDEX IDX_MEDIJ_INDEKS on DB2ADMIN.MEDIJ(\"INDEKS\");\r\n\r\n"+
+		"DROP INDEX DB2ADMIN.IDX_MEDIJ_IDPOZICIJA;\r\n"+
+		"CREATE INDEX IDX_MEDIJ_IDPOZICIJA on DB2ADMIN.MEDIJ(\"IDPOZICIJA\");\r\n\r\n"+
+		"DROP INDEX DB2ADMIN.IDX_ZAUZIMA_IDMEDIJ;\r\n"+
+		"CREATE INDEX IDX_ZAUZIMA_IDMEDIJ on DB2ADMIN.ZAUZIMA(\"IDMEDIJ\");\r\n\r\n"+
+		"DROP INDEX DB2ADMIN.IDX_ZAUZIMA_IDFILM;\r\n"+
+		"CREATE INDEX IDX_ZAUZIMA_IDFILM on DB2ADMIN.ZAUZIMA(\"IDFILM\");";
+	
 	public void createRestorePoint() {
 		Connection conn = null;
 		ResultSet rs = null;
@@ -276,9 +291,9 @@ public class RestorePointCreator {
 			close(rs);
 			
 			pos1.print(CREATE_SCRIPT_ENDING);
+			
+			pos1.print(INDEX_CREATION);
 			close(pos1);
-			close(st);
-			close(rs);
 			
 			// ************ 
 			// RESTORE
