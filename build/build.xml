@@ -84,7 +84,6 @@
 			<zipfileset dir="${root.dir}" prefix="" includes="*.exe" />
 			<zipfileset dir="${db.dir}" prefix="bin/db" />
 			<zipfileset dir="${export.dir}" prefix="bin/export" />
-			<zipfileset dir="${restore.dir}" prefix="bin/restore" />
 		</zip>
 
 		<delete dir="${compile.dir}" failonerror="false" />

@@ -3,8 +3,7 @@ package net.milanaleksic.mcs.db;
 // Generated 07.11.2007. 23.32.08 by Hibernate Tools 3.2.0.b9
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 /**
