@@ -123,15 +123,13 @@ public class Startup {
     }
 
     private static FileLock getSingletonApplicationFileLock() {
-        File locker = new File(".lock");
-        FileOutputStream lockerStream;
+        final String lockFileName = ".launcher";
+        File locker = new File(lockFileName);
         FileLock lock = null;
         try {
             if (!locker.exists())
-                if (!locker.createNewFile())
-                    throw new IllegalStateException("Nisam mogao da kreirak lock fajl!");
-            lockerStream = new FileOutputStream(locker);
-            lock = lockerStream.getChannel().tryLock(0, 1, false);
+                throw new IllegalStateException("Nisam mogao da pristupim lock fajlu!");
+            lock = new RandomAccessFile(lockFileName, "rw").getChannel().tryLock();
             if (lock == null) {
                 log.error("Program je vec pokrenut, ne mozete pokrenuti novu instancu");
                 return null;

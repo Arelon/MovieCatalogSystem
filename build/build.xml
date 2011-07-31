@@ -69,7 +69,6 @@
 			<fileset dir="${startup.dir}" excludes="*reveng*,*dev*">
 				<include name="*.properties" />
 				<include name=".launcher" />
-				<include name=".lock" />
 				<include name="*.xml" />
 				<include name="*.jpg" />
 			</fileset>
