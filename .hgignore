@@ -1,8 +1,0 @@
-relre:bin
-relre:build/.*.zip
-relre:startup/restore
-relre:.*~
-glob:lib/mcs.jar
-relre:.*.log
-relre:build/compile/.*
-relre:build/distro/.*
