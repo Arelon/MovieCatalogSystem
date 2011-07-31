@@ -10,8 +10,9 @@ public class Kernel {
 	private HibernateTemplate hibernateTemplate;
 	
 	private static String version = "0.41";
+    private ProgramArgs programArgs;
 
-	public HibernateTemplate getHibernateTemplate() {
+    public HibernateTemplate getHibernateTemplate() {
 		return hibernateTemplate;
 	}
 
@@ -26,5 +27,12 @@ public class Kernel {
 	public static void setVersion(String version) {
 		Kernel.version = version;
 	}
-	
+
+    public void setProgramArgs(ProgramArgs programArgs) {
+        this.programArgs = programArgs;
+    }
+
+    public ProgramArgs getProgramArgs() {
+        return programArgs;
+    }
 }

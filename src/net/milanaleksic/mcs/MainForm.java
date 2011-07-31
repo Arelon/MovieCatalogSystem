@@ -8,8 +8,7 @@ import java.util.List;
 
 import net.milanaleksic.mcs.db.*;
 import net.milanaleksic.mcs.export.*;
-import net.milanaleksic.mcs.util.FilmInfo;
-import net.milanaleksic.mcs.util.MCSProperties;
+import net.milanaleksic.mcs.util.*;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -21,16 +20,17 @@ import org.eclipse.swt.widgets.*;
 import org.hibernate.*;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.hibernate.transform.ResultTransformer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class MainForm extends Observable {
-	
+
 	private static final int MAX_ITEMS_AT_ONE_POINT = 40;
 	
 	private static Logger log = Logger.getLogger(MainForm.class);  //  @jve:decl-index=0:
-	
-	private final String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
+
+	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 
 	public Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="11,7"
 	private Combo comboZanr = null;
@@ -177,7 +177,8 @@ public class MainForm extends Observable {
 			
 		@Override public void shellActivated(ShellEvent e) {
 			sShell.removeShellListener(this);
-			doFillMainTable();
+			if (!Startup.getKernel().getProgramArgs().isGuiOnly())
+                doFillMainTable();
 		}
 			
 	}
@@ -439,9 +440,9 @@ public class MainForm extends Observable {
 		sShell.setMaximized(false);
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		sShell.setBounds(20, 20, 860, size.height-80);
-		createToolTicker();
-		createPanCombos();
-		createToolBar();
+		//createToolTicker();
+		//createPanCombos();
+		//createToolBar();
 		sShell.setLayout(new GridLayout(3, false));
 		mainTable = new Table(sShell, SWT.FULL_SELECTION);
 		mainTable.setHeaderVisible(true);
@@ -646,7 +647,7 @@ public class MainForm extends Observable {
 		indeksi.clear();
 		int i=0;
 		
-		Object[] nizFilmova = (Object[]) sviFilmovi.toArray();
+		Object[] nizFilmova = sviFilmovi.toArray();
 		Arrays.sort(nizFilmova);		
 		
 		if (nizFilmova.length < mainTable.getTopIndex())
@@ -656,7 +657,7 @@ public class MainForm extends Observable {
 			FilmInfo film = (FilmInfo) filmObj;
 			if (lastFilm !=null && film.getNazivFilma().equals(lastFilm.getNazivFilma()))
 				continue;
-			TableItem item = new TableItem(mainTable, SWT.NONE);
+			TableItem item;
 			if (i < mainTable.getItemCount())
 				item = mainTable.getItem(i);
 			else
