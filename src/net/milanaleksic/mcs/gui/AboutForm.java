@@ -17,8 +17,8 @@ public class AboutForm {
 	private static final String dodatniTekst = 
 		"Верзија програма: " + Kernel.getVersion() + "\n\n" +
 		"У развоју су коришћене следеће бесплатне технологије:\n"+
-		"Јава, Eclipse SWT, Spring 2, Hibernate 3, H2\n"+
-		"EhCache, C3P0 итд.\n\n"+
+		"Јава 6, Eclipse SWT 3.4.1, Spring 2.5, Hibernate 3.6, H2 1.3\n"+
+		"Args4J, DOM4J, Log4J, EhCache, C3P0 итд.\n\n"+
 		"Иконе су део \"Crystal Project\"-а, аутор је Евералдо Келхо.\n\n"+
 		"Програм је још увек у развоју, све грешке молим пријавите аутору програма"
 		;  //  @jve:decl-index=0:
@@ -185,7 +185,7 @@ public class AboutForm {
 		label1.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
 		label1.setLayoutData(gridData4);
         Label label2 = new Label(composite2, SWT.NONE);
-		label2.setText("новембар 2007 - август 2010");
+		label2.setText("новембар 2007 - август 2011");
 		label2.setLayoutData(gridData6);
 	}
 
