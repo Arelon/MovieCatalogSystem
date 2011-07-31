@@ -209,6 +209,9 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
+            HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
+            @SuppressWarnings("unchecked")
+            final List<FilmInfo> allFilms = (List<FilmInfo>) template.execute(new ListMoviesHibernateCallback());
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -216,18 +219,30 @@ public class MainForm extends Observable {
 				}
 
 				@Override public int getItemCount() {
-					return mainTable.getItemCount();
+					return allFilms.size();
 				}
 				
 				@Override public int getColumnCount() {
-					return mainTable.getColumnCount();
+					return 5;
 				}
 
 				@Override public String getData(int row, int column) {
-					if (row == -1)
+                    if (row == -1)
 						return mainTable.getColumn(column).getText();
-					else
-						return mainTable.getItem(row).getText(column);
+                    switch(column) {
+                        case 0:
+                            return allFilms.get(row).getMedij();
+                        case 1:
+                            return allFilms.get(row).getNazivFilma();
+                        case 2:
+                            return allFilms.get(row).getPrevodFilma();
+                        case 3:
+                            return allFilms.get(row).getZanr();
+                        case 4:
+                            return allFilms.get(row).getPozicija();
+                        default:
+                            return "";
+                    }
 				}
 				
 			});
@@ -312,7 +327,17 @@ public class MainForm extends Observable {
 	
 	private class ListMoviesHibernateCallback implements HibernateCallback {
 
-		@Override
+        private int maxItems;
+
+        public ListMoviesHibernateCallback() {
+            this.maxItems = 0;
+        }
+
+        public ListMoviesHibernateCallback(int maxItems) {
+            this.maxItems = maxItems;
+        }
+
+        @Override
 		@SuppressWarnings("unchecked")
 		public Object doInHibernate(Session session) throws HibernateException, SQLException {
 			final String ukljZanr = "f.zanr.zanr=:zanr";
@@ -320,6 +345,7 @@ public class MainForm extends Observable {
 			final String ukljPozicija = "m.pozicija.pozicija=:pozicija";
 			final String ukljFilter = "(lower(f.nazivfilma) like :filter or lower(f.prevodnazivafilma) like :filter or lower(f.komentar) like :filter)";
 			final String filterText = currentViewState.getFilterText();
+
 			StringBuilder buff = new StringBuilder("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
 
             StringBuilder countBuff = new StringBuilder("select count(*) from Film f, Medij m where f.idfilm in elements(m.films)");
@@ -364,10 +390,12 @@ public class MainForm extends Observable {
 				query.setString("filter", "%"+filterText.toLowerCase()+"%");
 				countQuery.setString("filter", "%"+filterText.toLowerCase()+"%");
 			}
-			
-			query.setFirstResult(currentViewState.getActivePage().intValue()*MAX_ITEMS_AT_ONE_POINT);
-			query.setMaxResults(MAX_ITEMS_AT_ONE_POINT);
-			
+
+            if (maxItems >0) {
+                query.setFirstResult(currentViewState.getActivePage().intValue()*MAX_ITEMS_AT_ONE_POINT);
+                query.setMaxResults(MAX_ITEMS_AT_ONE_POINT);
+            }
+
 			List<Film> sviFilmovi = query.list();
 			currentViewState.setShowableCount(((List<Long>) countQuery.list()).get(0));
 			long end = new Date().getTime();
@@ -637,7 +665,7 @@ public class MainForm extends Observable {
 		}
 		HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
 		@SuppressWarnings("unchecked")
-		List<FilmInfo> sviFilmovi = (List<FilmInfo>) template.execute(new ListMoviesHibernateCallback());
+		List<FilmInfo> sviFilmovi = (List<FilmInfo>) template.execute(new ListMoviesHibernateCallback(MAX_ITEMS_AT_ONE_POINT));
 		long start = new Date().getTime();
 		indeksi.clear();
 		int i=0;
