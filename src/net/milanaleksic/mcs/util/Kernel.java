@@ -9,7 +9,7 @@ public class Kernel {
 	
 	private HibernateTemplate hibernateTemplate;
 	
-	private static String version = "0.41";
+	private static String version = "0.42";
     private ProgramArgs programArgs;
 
     public HibernateTemplate getHibernateTemplate() {
