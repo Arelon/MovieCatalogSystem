@@ -34,6 +34,10 @@ public class Startup {
     }
 
     public static void main(String[] args) {
+        // LOADING LOG4J OVERRIDE FROM STARTUP DIR IF IT EXISTS
+        if (new File("log4j.properties").exists())
+            PropertyConfigurator.configure("log4j.properties");
+
         // SINGLETON APPLICATION
         FileLock lock = getSingletonApplicationFileLock();
         if (lock == null)
