@@ -113,16 +113,16 @@ public class MainForm extends Observable {
 					}
 					return;
 				case SWT.BS:
-					if (filterText != null && filterText.length() > 0)
-						filterText = filterText.substring(0,
-								filterText.length() - 1);
-					doFillMainTable();
+					if (filterText != null && filterText.length() > 0) {
+						currentViewState.setFilterText(filterText.substring(0, filterText.length() - 1));
+					    doFillMainTable();
+                    }
 					return;
 			}
 			
 			if (!Character.isLetterOrDigit(e.character))
 				return;
-			if (filterText == "")
+			if (filterText.length() == 0)
 				currentViewState.setFilterText("" + e.character);
 			else
 				currentViewState.setFilterText(filterText + e.character);
@@ -159,7 +159,7 @@ public class MainForm extends Observable {
 			log.debug(mainTable.getSelection()[0].getText(6));
 			if (mainTable.getSelectionIndex() != -1)
 				new NewOrEditMovieForm(sShell, 
-						Integer.valueOf(indeksi.get(mainTable.getSelectionIndex())), 
+						indeksi.get(mainTable.getSelectionIndex()),
 								new Runnable() {
 
 									@Override public void run() {
@@ -186,7 +186,7 @@ public class MainForm extends Observable {
 			Combo combo = (Combo)e.widget;
 			if (combo.getSelectionIndex()==1)
 				combo.select(0);
-			currentViewState.setActivePage(Long.valueOf(0));
+			currentViewState.setActivePage(0L);
 			doFillMainTable();
 			mainTable.setFocus();
 		}
@@ -203,8 +203,6 @@ public class MainForm extends Observable {
 			if (targetFileForExport == null)
 				return;
 			String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.')+1);
-			if (targetFileForExport == null)
-				return;
 			log.debug("Odabrano eksportovanje u fajl \""+targetFileForExport+"\"");
 			Exporter exporter = ExporterFactory.getInstance().getExporter(ext);
 			if (exporter == null) {
@@ -242,7 +240,7 @@ public class MainForm extends Observable {
 		@Override public void widgetSelected(SelectionEvent e) {
 			if (mainTable.getSelectionIndex() == -1)
 				return;
-			new DeleteMovieForm(sShell, Integer.valueOf(indeksi.get(mainTable.getSelectionIndex())), 
+			new DeleteMovieForm(sShell, indeksi.get(mainTable.getSelectionIndex()),
 					new Runnable() {
 
 						@Override public void run() {
@@ -322,9 +320,9 @@ public class MainForm extends Observable {
 			final String ukljPozicija = "m.pozicija.pozicija=:pozicija";
 			final String ukljFilter = "(lower(f.nazivfilma) like :filter or lower(f.prevodnazivafilma) like :filter or lower(f.komentar) like :filter)";
 			final String filterText = currentViewState.getFilterText();
-			StringBuffer buff = new StringBuffer("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
-			
-			StringBuffer countBuff = new StringBuffer("select count(*) from Film f, Medij m where f.idfilm in elements(m.films)");
+			StringBuilder buff = new StringBuilder("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
+
+            StringBuilder countBuff = new StringBuilder("select count(*) from Film f, Medij m where f.idfilm in elements(m.films)");
  
 			if (comboZanr.getSelectionIndex()>1) {
 				buff.append(" and ").append(ukljZanr);
@@ -378,7 +376,7 @@ public class MainForm extends Observable {
 			start = new Date().getTime();
 			List<FilmInfo> rezLista = new LinkedList<FilmInfo> ();				
 			for (Film film : sviFilmovi) {
-				StringBuffer medijInfo = new StringBuffer();
+                StringBuilder medijInfo = new StringBuilder();
 				Object[] mediji = film.getMedijs().toArray();
 				Arrays.sort(mediji);
 				
@@ -387,7 +385,7 @@ public class MainForm extends Observable {
 				String prisutan = film.getFilmLocation();
 				
 				rezLista.add(new FilmInfo(
-							new Integer(film.getIdfilm()),
+							film.getIdfilm(),
 							medijInfo.toString().trim(),
 							film.getNazivfilma(),
 							film.getPrevodnazivafilma(),
