@@ -18,9 +18,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.hibernate.*;
-import org.hibernate.transform.DistinctRootEntityResultTransformer;
-import org.hibernate.transform.ResultTransformer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -177,7 +174,7 @@ public class MainForm extends Observable {
 			
 		@Override public void shellActivated(ShellEvent e) {
 			sShell.removeShellListener(this);
-			if (!Startup.getKernel().getProgramArgs().isGuiOnly())
+			if (!Startup.getKernel().getProgramArgs().isNoInitialMovieListLoading())
                 doFillMainTable();
 		}
 			
@@ -440,9 +437,9 @@ public class MainForm extends Observable {
 		sShell.setMaximized(false);
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		sShell.setBounds(20, 20, 860, size.height-80);
-		//createToolTicker();
-		//createPanCombos();
-		//createToolBar();
+		createToolTicker();
+		createPanCombos();
+		createToolBar();
 		sShell.setLayout(new GridLayout(3, false));
 		mainTable = new Table(sShell, SWT.FULL_SELECTION);
 		mainTable.setHeaderVisible(true);
@@ -547,7 +544,7 @@ public class MainForm extends Observable {
 	private void createToolBar() {
 		ToolBar toolBar = new ToolBar(sShell, SWT.FLAT);
 		toolBar.setBounds(new Rectangle(11, 50, 4, 50));
-		toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
+		toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
 		toolNew.setText("Нов филм ...");
 		toolNew.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/res/media.png")));

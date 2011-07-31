@@ -55,7 +55,7 @@ public class Startup {
         try {
             parser.parseArgument(args);
             kernel.setProgramArgs(programArgs);
-            System.out.println("guiOnly="+programArgs.isGuiOnly());
+            System.out.println("Program arguments: "+programArgs);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println("java -jar myprogram.jar [options...] arguments...");

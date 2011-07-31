@@ -1,10 +1,6 @@
 package net.milanaleksic.mcs.util;
 
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: Milan Aleksic
@@ -13,15 +9,21 @@ import java.util.List;
  */
 public class ProgramArgs {
 
-    private boolean guiOnly;
+    private boolean noInitialMovieListLoading;
 
-    @Option(name="-g", usage="start GUI only (no application logic)")
-    public void setGuiOnly(boolean guiOnly) {
-        this.guiOnly = guiOnly;
+    @Option(name="-n", aliases = "--noInitialMovieListLoading", usage="do not load movie list immediatelly on startup")
+    public void setNoInitialMovieListLoading(boolean noInitialMovieListLoading) {
+        this.noInitialMovieListLoading = noInitialMovieListLoading;
     }
 
-    public boolean isGuiOnly() {
-        return guiOnly;
+    public boolean isNoInitialMovieListLoading() {
+        return noInitialMovieListLoading;
     }
 
+    @Override
+    public String toString() {
+        return "ProgramArgs{" +
+                "noInitialMovieListLoading=" + noInitialMovieListLoading +
+                '}';
+    }
 }
