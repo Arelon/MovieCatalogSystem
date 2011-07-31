@@ -54,9 +54,10 @@ public class MainForm extends Observable {
 
 		private volatile Long activePage = 0L;
 		private volatile Long showableCount = 0L;
-		private volatile String filterText = ""; 
-		
-		public String getFilterText() {
+		private volatile String filterText = "";
+        private volatile int maxItemsPerPage;
+
+        public String getFilterText() {
 			return filterText;
 		}
 
@@ -80,7 +81,15 @@ public class MainForm extends Observable {
 		public void setShowableCount(Long showableCount) {
 			this.showableCount = showableCount;
 		}
-	}
+
+        public void setMaxItemsPerPage(int maxItemsPerPage) {
+            this.maxItemsPerPage = maxItemsPerPage;
+        }
+
+        public int getMaxItemsPerPage() {
+            return maxItemsPerPage;
+        }
+    }
 	
 	private class MainTableKeyAdapter extends KeyAdapter {
 		
@@ -135,8 +144,9 @@ public class MainForm extends Observable {
 	private class NextPageSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
-			if (MAX_ITEMS_AT_ONE_POINT * (currentViewState.getActivePage()+1) > currentViewState.getShowableCount())
-				return;
+            if (currentViewState.getMaxItemsPerPage()>0)
+			    if (currentViewState.getMaxItemsPerPage() * (currentViewState.getActivePage()+1) > currentViewState.getShowableCount())
+				    return;
 			currentViewState.setActivePage(currentViewState.getActivePage()+1);
 			doFillMainTable();
 		}
@@ -400,6 +410,7 @@ public class MainForm extends Observable {
 
 			List<Film> sviFilmovi = query.list();
 			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
+            currentViewState.setMaxItemsPerPage(maxItems);
 			long end = new Date().getTime();
 			log.info("Osnovni upiti su zavrseni, izvuceno je "+sviFilmovi.size()+" redova za "+(end-start)+"ms");
 			
@@ -444,7 +455,17 @@ public class MainForm extends Observable {
 
 			@Override public void update(Observable obs, Object arg) {
 				log.info("Osvezavam prikaz stanja!");
-				labelCurrent.setText(currentViewState.getShowableCount().toString());
+                if (currentViewState.getMaxItemsPerPage()>0) {
+                    long lowerBound = currentViewState.getActivePage()*currentViewState.getMaxItemsPerPage()+1;
+                    if (currentViewState.getShowableCount()==0)
+                        lowerBound = 0;
+                    long upperBound = (currentViewState.getActivePage()+1)*currentViewState.getMaxItemsPerPage();
+                    if (upperBound>currentViewState.getShowableCount())
+                        upperBound = currentViewState.getShowableCount();
+                    labelCurrent.setText(lowerBound + "-" + upperBound + " (" + currentViewState.getShowableCount().toString() + ")");
+                }
+                else
+                    labelCurrent.setText(currentViewState.getShowableCount().toString());
 				labelFilter.setText(currentViewState.getFilterText());
 				wrapperDataInfo.pack();
 			}
