@@ -392,12 +392,12 @@ public class MainForm extends Observable {
 			}
 
             if (maxItems >0) {
-                query.setFirstResult(currentViewState.getActivePage().intValue()*MAX_ITEMS_AT_ONE_POINT);
-                query.setMaxResults(MAX_ITEMS_AT_ONE_POINT);
+                query.setFirstResult(currentViewState.getActivePage().intValue()*maxItems);
+                query.setMaxResults(maxItems);
             }
 
 			List<Film> sviFilmovi = query.list();
-			currentViewState.setShowableCount(((List<Long>) countQuery.list()).get(0));
+			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
 			long end = new Date().getTime();
 			log.info("Osnovni upiti su zavrseni, izvuceno je "+sviFilmovi.size()+" redova za "+(end-start)+"ms");
 			

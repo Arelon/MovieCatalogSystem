@@ -27,42 +27,24 @@ public class NewOrEditMovieForm {
 
 	private Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="29,0"
 	private Composite composite = null;
-	private Composite composite1 = null;
-	private Button btnPrihvati = null;
-	private Button btnOdustani = null;
-	private Label labNazivFilma = null;
-	private Text textNaziv = null;
-	private Label labPrevod = null;
-	private Text textPrevod = null;
-	private Label labZanr = null;
-	private Combo comboLokacija = null;
-	private Label labLokacija = null;
-	private Combo comboZanr = null;
-	private Label labIMDB = null;
-	private Text textIMDBOcena = null;
-	private Label label = null;
-	private Composite composite2 = null;
+    private Text textNaziv = null;
+    private Text textPrevod = null;
+    private Combo comboLokacija = null;
+    private Combo comboZanr = null;
+    private Text textIMDBOcena = null;
+    private Composite composite2 = null;
 	private List listDiskovi = null;
-	private Button btnOduzmi = null;
-	private Button btnDodajDisk = null;
-	private Combo comboDisk = null;
+    private Combo comboDisk = null;
 	
 	private HashMap<String, Integer> sviZanrovi;  //  @jve:decl-index=0:
 	private HashMap<String, Integer> sveLokacije;  //  @jve:decl-index=0:
 	private HashMap<String, Integer> sviDiskovi;  //  @jve:decl-index=0:
 	
 	private Text textGodina = null;
-	private Label labGodina = null;
-	private Button btnNovMedij = null;
-	private Shell parent;
+    private Shell parent;
 	private Runnable parentRunner = null;
-	private Label labKomentar = null;
-	private Composite composite3 = null;
-	private Text textKomentar = null;
-	private Button btnNeodgledano = null;
-	private Button btnLos = null;
-	private Label label1 = null;
-	private Integer filmId = null;
+    private Text textKomentar = null;
+    private Integer filmId = null;
 	
 	public NewOrEditMovieForm(Shell parent, Integer filmId, Runnable runnable) {
 		this.parent = parent;
@@ -105,7 +87,7 @@ public class NewOrEditMovieForm {
 				// preuzimanje podataka za film koji se azurira
 				if (filmId != null) {
 					Query query = session.createQuery("from Film f where f.idfilm = :id");
-					query.setInteger("id", filmId.intValue());
+					query.setInteger("id", filmId);
 					@SuppressWarnings("unchecked")
 					java.util.List list = query.list();
 					if (list.size() != 1) {
@@ -137,8 +119,8 @@ public class NewOrEditMovieForm {
 				}
 				
 				return null;
-			};
-			
+			}
+
 		});
 	}
 	
@@ -162,19 +144,19 @@ public class NewOrEditMovieForm {
 		java.util.List<Zanr> zanrovi = (java.util.List <Zanr>) query.list();
 		for (Zanr zanr : zanrovi) {
 			comboZanr.add(zanr.getZanr());
-			sviZanrovi.put(zanr.getZanr(), new Integer(zanr.getIdzanr()));
+			sviZanrovi.put(zanr.getZanr(), zanr.getIdzanr());
 		}
 		query = session.createQuery("from Pozicija p order by lower(p.pozicija)");
 		java.util.List<Pozicija> pozicije = (java.util.List <Pozicija>) query.list();
 		for (Pozicija pozicija : pozicije) {
 			comboLokacija.add(pozicija.getPozicija());
-			sveLokacije.put(pozicija.getPozicija(), new Integer(pozicija.getIdpozicija()));
+			sveLokacije.put(pozicija.getPozicija(), pozicija.getIdpozicija());
 		}
-		query = session.createQuery("from Medij m order by m.tipMedija, m.indeks");
+		query = session.createQuery("from Medij m order by tipMedija.naziv, indeks");
 		java.util.List<Medij> diskovi = (java.util.List <Medij>) query.list();
 		for (Medij medij : diskovi) {
 			comboDisk.add(medij.toString());
-			sviDiskovi.put(medij.toString(), new Integer(medij.getIdmedij()));
+			sviDiskovi.put(medij.toString(), medij.getIdmedij());
 		}
 		if (previousZanr != null && previousZanr.length()>0 && comboZanr.indexOf(previousZanr)!=-1)
 			comboZanr.select(comboZanr.indexOf(previousZanr));
@@ -197,14 +179,14 @@ public class NewOrEditMovieForm {
 				novFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
 				novFilm.setKomentar(textKomentar.getText());
 				
-				Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())).intValue());
+				Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())));
 				zanr.addFilm(novFilm);	
 				
 				if (listDiskovi.getItemCount() != 0) {
 					for (String item : listDiskovi.getItems()) {
-						Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item).intValue());
+						Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item));
 						novFilm.addMedij(medij);
-						Pozicija pozicija = (Pozicija) session.get(Pozicija.class, sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())).intValue());
+						Pozicija pozicija = (Pozicija) session.get(Pozicija.class, sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())));
 						pozicija.addMedij(medij);
 					}
 				}
@@ -213,7 +195,7 @@ public class NewOrEditMovieForm {
 				transaction.commit();
 				reReadData();
 				return null;
-			};					
+			}
 		});
 	}
 	
@@ -223,9 +205,8 @@ public class NewOrEditMovieForm {
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
 				Transaction transaction = session.beginTransaction();
 				
-				Film film = null;
 				Query query = session.createQuery("from Film f where f.idfilm = :id");
-				query.setInteger("id", filmId.intValue());
+				query.setInteger("id", filmId);
 				@SuppressWarnings("unchecked")
 				java.util.List<Film> list = (java.util.List<Film>) query.list();
 				if (list.size() != 1) {
@@ -233,7 +214,7 @@ public class NewOrEditMovieForm {
 							"na upit sam dobio " + list.size() + " odgovora");
 					return null;
 				}
-				film = (Film) list.get(0);
+				Film film = list.get(0);
 				
 				// za sledece nema problema - u pitanju je postavljanje nerefencijucih podataka
 				film.setNazivfilma(textNaziv.getText().trim());
@@ -243,9 +224,9 @@ public class NewOrEditMovieForm {
 				film.setKomentar(textKomentar.getText());
 				
 				// promena zanra po potrebi !
-				if (sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())).intValue() != film.getZanr().getIdzanr()) {
+				if (sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())) != film.getZanr().getIdzanr()) {
 					film.getZanr().getFilms().remove(film);
-					Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())).intValue());
+					Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())));
 					zanr.addFilm(film);					
 				}
 
@@ -258,13 +239,13 @@ public class NewOrEditMovieForm {
 				if (listDiskovi.getItemCount() != 0) {
 					for (String item : listDiskovi.getItems()) {
 						//dohvatanje medija i pozicije
-						Medij medij = (Medij) session.get(Medij.class, new Integer(sviDiskovi.get(item).intValue()));
+						Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item));
 						Pozicija pozicija = (Pozicija) session.get(Pozicija.class, 
-								sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())).intValue());
+								sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())));
 						if (raniji.contains(medij.toString())) {
 							if (medij.getPozicija().getIdpozicija() != 
-									sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())).intValue()) {
-								Pozicija staraPozicija = (Pozicija) session.get(Pozicija.class, new Integer(medij.getPozicija().getIdpozicija()));
+									sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()))) {
+								Pozicija staraPozicija = (Pozicija) session.get(Pozicija.class, medij.getPozicija().getIdpozicija());
 								staraPozicija.getMedijs().remove(medij);
 								pozicija.addMedij(medij);
 							}
@@ -281,7 +262,7 @@ public class NewOrEditMovieForm {
 				// iz nekog cudnog razloga ovde mora da se ponovo ucita disk ili obrada nece raditi
 				for (String medijOpis : raniji) {
 					logger.info("Brisem: "+medijOpis);
-					Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(medijOpis).intValue());
+					Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(medijOpis));
 					medij.getFilms().remove(film);
 					film.getMedijs().remove(medij);
 				}
@@ -289,7 +270,7 @@ public class NewOrEditMovieForm {
 				transaction.commit();
 				reReadData();
 				return null;
-			};					
+			}
 		});
 	}
 	
@@ -359,12 +340,12 @@ public class NewOrEditMovieForm {
 		composite = new Composite(sShell, SWT.NONE);
 		composite.setLayoutData(gridData1);
 		composite.setLayout(gridLayout1);
-		labNazivFilma = new Label(composite, SWT.RIGHT);
+        Label labNazivFilma = new Label(composite, SWT.RIGHT);
 		labNazivFilma.setText("Назив филма:");
 		labNazivFilma.setLayoutData(gridData5);
 		textNaziv = new Text(composite, SWT.BORDER);
 		textNaziv.setLayoutData(gridData2);
-		labPrevod = new Label(composite, SWT.NONE);
+        Label labPrevod = new Label(composite, SWT.NONE);
 		labPrevod.setText("Превод назива филма:");
 		labPrevod.setLayoutData(gridData4);
 		textPrevod = new Text(composite, SWT.BORDER);
@@ -381,29 +362,29 @@ public class NewOrEditMovieForm {
 			}
 		
 		});
-		labZanr = new Label(composite, SWT.NONE);
+        Label labZanr = new Label(composite, SWT.NONE);
 		labZanr.setText("Жанр:");
 		labZanr.setLayoutData(gridData6);
 		createComboZanr();
-		labGodina = new Label(composite, SWT.NONE);
+        Label labGodina = new Label(composite, SWT.NONE);
 		labGodina.setText("Година производње:");
 		labGodina.setLayoutData(gridData19);
 		textGodina = new Text(composite, SWT.BORDER);
 		textGodina.setLayoutData(gridData18);
-		labLokacija = new Label(composite, SWT.NONE);
+        Label labLokacija = new Label(composite, SWT.NONE);
 		labLokacija.setText("Локација:");
 		labLokacija.setLayoutData(gridData7);
 		createComboLokacija();
-		labIMDB = new Label(composite, SWT.NONE);
+        Label labIMDB = new Label(composite, SWT.NONE);
 		labIMDB.setText("IMDB оцена:");
 		labIMDB.setLayoutData(gridData10);
 		textIMDBOcena = new Text(composite, SWT.BORDER);
 		textIMDBOcena.setLayoutData(gridData11);
-		label = new Label(composite, SWT.NONE);
+        Label label = new Label(composite, SWT.NONE);
 		label.setText("Дискови:");
 		label.setLayoutData(gridData13);
 		createComposite2();
-		labKomentar = new Label(composite, SWT.NONE);
+        Label labKomentar = new Label(composite, SWT.NONE);
 		labKomentar.setText("Коментар:");
 		labKomentar.setLayoutData(gridData20);
 		createComposite3();
@@ -424,61 +405,58 @@ public class NewOrEditMovieForm {
 		gridData.widthHint = -1;
 		gridData.horizontalIndent = 0;
 		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-		composite1 = new Composite(sShell, SWT.NONE);
+        Composite composite1 = new Composite(sShell, SWT.NONE);
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(gridLayout2);
-		btnPrihvati = new Button(composite1, SWT.NONE);
+        Button btnPrihvati = new Button(composite1, SWT.NONE);
 		btnPrihvati.setText("Сними");
 		btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				StringBuffer razlogOtkaza = new StringBuffer();
-				if (listDiskovi.getItemCount()==0)
-					razlogOtkaza.append("\r\nМорате доделити барем један медијум");
-				if (textNaziv.getText().trim().equals(""))
-					razlogOtkaza.append("\r\nМорате унети назив филма");
-				if (textNaziv.getText().trim().equals(""))
-					razlogOtkaza.append("\r\nМорате унети превод назива филма");
-				if (comboZanr.getSelectionIndex() == -1)
-					razlogOtkaza.append("\r\nМорате изабрати неки жанр за филм");
-				try {
-					Integer.parseInt(textGodina.getText());
-				}
-				catch(Throwable t) {
-					razlogOtkaza.append("\r\nФормат уноса (целобројна вредност) за годину производње није исправан");
-				}
-				if (comboLokacija.getSelectionIndex() == -1)
-					razlogOtkaza.append("\r\nМорате изабрати неку локацију за диск");
-				if (textIMDBOcena.getText().trim().equals(""))
-					razlogOtkaza.append("\r\nМорате унети неку вредност за оцену филма на IMDB-у");
-				try {
-					Double.parseDouble(textIMDBOcena.getText());
-				}
-				catch(Throwable t) {
-					razlogOtkaza.append("\r\nФормат уноса (реални број) за оцену филма на IMDB-у није исправан");
-				}
-				if (razlogOtkaza.length() != 0) {
-					MessageBox messageBox = new MessageBox(sShell, SWT.OK | SWT.ICON_WARNING);
-					messageBox.setText("Додавање није могуће");
-					messageBox.setMessage("Разлог отказа:\r\n----------"+razlogOtkaza.toString());
-					messageBox.open();
-				}
-				else {
-					if (filmId != null)
-						izmeniFilm();
-					else
-						dodajNoviFilm();
-					parentRunner.run();
-					sShell.close();
-				}
-			}
-		});
-		btnOdustani = new Button(composite1, SWT.NONE);
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                StringBuilder razlogOtkaza = new StringBuilder();
+                if (listDiskovi.getItemCount() == 0)
+                    razlogOtkaza.append("\r\nМорате доделити барем један медијум");
+                if (textNaziv.getText().trim().equals(""))
+                    razlogOtkaza.append("\r\nМорате унети назив филма");
+                if (textNaziv.getText().trim().equals(""))
+                    razlogOtkaza.append("\r\nМорате унети превод назива филма");
+                if (comboZanr.getSelectionIndex() == -1)
+                    razlogOtkaza.append("\r\nМорате изабрати неки жанр за филм");
+                try {
+                    Integer.parseInt(textGodina.getText());
+                } catch (Throwable t) {
+                    razlogOtkaza.append("\r\nФормат уноса (целобројна вредност) за годину производње није исправан");
+                }
+                if (comboLokacija.getSelectionIndex() == -1)
+                    razlogOtkaza.append("\r\nМорате изабрати неку локацију за диск");
+                if (textIMDBOcena.getText().trim().equals(""))
+                    razlogOtkaza.append("\r\nМорате унети неку вредност за оцену филма на IMDB-у");
+                try {
+                    Double.parseDouble(textIMDBOcena.getText());
+                } catch (Throwable t) {
+                    razlogOtkaza.append("\r\nФормат уноса (реални број) за оцену филма на IMDB-у није исправан");
+                }
+                if (razlogOtkaza.length() != 0) {
+                    MessageBox messageBox = new MessageBox(sShell, SWT.OK | SWT.ICON_WARNING);
+                    messageBox.setText("Додавање није могуће");
+                    messageBox.setMessage("Разлог отказа:\r\n----------" + razlogOtkaza.toString());
+                    messageBox.open();
+                } else {
+                    if (filmId != null)
+                        izmeniFilm();
+                    else
+                        dodajNoviFilm();
+                    parentRunner.run();
+                    sShell.close();
+                }
+            }
+        });
+        Button btnOdustani = new Button(composite1, SWT.NONE);
 		btnOdustani.setText("Одустани");
 		btnOdustani.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				sShell.close();
-			}
-		});
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                sShell.close();
+            }
+        });
 	}
 
 	/**
@@ -527,56 +505,58 @@ public class NewOrEditMovieForm {
 		composite2.setLayoutData(gridData12);
 		composite2.setLayout(gridLayout3);
 		createComboDiskovi();
-		btnDodajDisk = new Button(composite2, SWT.NONE);
+        Button btnDodajDisk = new Button(composite2, SWT.NONE);
 		btnDodajDisk.setText("Додај диск");
 		btnDodajDisk.setLayoutData(gridData15);
 		btnDodajDisk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				int index = comboDisk.getSelectionIndex();
-				if (index != -1) {
-					if (listDiskovi.indexOf(comboDisk.getItem(index)) == -1) {
-						listDiskovi.add(comboDisk.getItem(index));
-					}
-				}
-			}
-		});
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                int index = comboDisk.getSelectionIndex();
+                if (index != -1) {
+                    if (listDiskovi.indexOf(comboDisk.getItem(index)) == -1) {
+                        listDiskovi.add(comboDisk.getItem(index));
+                    }
+                }
+            }
+        });
 		listDiskovi = new List(composite2, SWT.NONE);
 		listDiskovi.setLayoutData(gridData17);
-		btnOduzmi = new Button(composite2, SWT.NONE);
+        Button btnOduzmi = new Button(composite2, SWT.NONE);
 		btnOduzmi.setText("Одузми диск");
 		btnOduzmi.setLayoutData(gridData16);
 		btnOduzmi.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				if (listDiskovi.getSelectionIndex() != -1)
-					listDiskovi.remove(listDiskovi.getSelectionIndex());
-			}
-		});
-		label1 = new Label(composite2, SWT.NONE);
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                if (listDiskovi.getSelectionIndex() != -1)
+                    listDiskovi.remove(listDiskovi.getSelectionIndex());
+            }
+        });
+        Label label1 = new Label(composite2, SWT.NONE);
 		label1.setText("Додавање:");
 		label1.setLayoutData(gridData22);
-		btnNovMedij = new Button(composite2, SWT.NONE);
+        Button btnNovMedij = new Button(composite2, SWT.NONE);
 		btnNovMedij.setText("Нов диск ...");
 		btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				new NewMediumForm(sShell, new Runnable() {
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                new NewMediumForm(sShell, new Runnable() {
 
-					@Override
-					public void run() {
-						final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-						template.execute(new HibernateCallback() {
-							
-							public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
-								// preuzimanje svih podataka od interesa i upis u kombo boksove
-								refillCombos(session);
-								return null;
-							};
-							
-						});
-					}
-					
-				});
-			}
-		});
+                    @Override
+                    public void run() {
+                        final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
+                        template.execute(new HibernateCallback() {
+
+                            public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
+                                // preuzimanje svih podataka od interesa i upis u kombo boksove
+                                refillCombos(session);
+                                if (comboDisk.getItemCount() > 0)
+                                    comboDisk.select(comboDisk.getItemCount() - 1);
+                                return null;
+                            }
+
+                        });
+                    }
+
+                });
+            }
+        });
 	}
 
 	/**
@@ -602,24 +582,24 @@ public class NewOrEditMovieForm {
 		gridData21.heightHint = 50;
 		GridLayout gridLayout4 = new GridLayout();
 		gridLayout4.numColumns = 2;
-		composite3 = new Composite(composite, SWT.NONE);
+        Composite composite3 = new Composite(composite, SWT.NONE);
 		composite3.setLayout(gridLayout4);
 		textKomentar = new Text(composite3, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		textKomentar.setLayoutData(gridData21);
-		btnNeodgledano = new Button(composite3, SWT.NONE);
+        Button btnNeodgledano = new Button(composite3, SWT.NONE);
 		btnNeodgledano.setText("Нисам гледао");
 		btnNeodgledano.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + "нисам гледао");
-			}
-		});
-		btnLos = new Button(composite3, SWT.NONE);
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + "нисам гледао");
+            }
+        });
+        Button btnLos = new Button(composite3, SWT.NONE);
 		btnLos.setText("Лош (снимак)");
 		btnLos.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + "лош");
-			}
-		});
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + "лош");
+            }
+        });
 	}
 
 }
