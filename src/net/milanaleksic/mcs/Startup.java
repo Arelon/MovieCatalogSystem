@@ -4,6 +4,8 @@ import java.awt.*;
 import java.io.*;
 import java.nio.channels.FileLock;
 
+import net.milanaleksic.mcs.gui.ClosingForm;
+import net.milanaleksic.mcs.gui.MainForm;
 import net.milanaleksic.mcs.restore.RestorePointCreator;
 import net.milanaleksic.mcs.util.*;
 
@@ -20,7 +22,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  */
 public class Startup {
 
-    private static Logger log = Logger.getLogger(Startup.class);  //  @jve:decl-index=0:
+    private static final Logger log = Logger.getLogger(Startup.class);  //  @jve:decl-index=0:
 
     private static Kernel kernel;
 
@@ -28,7 +30,7 @@ public class Startup {
         return kernel;
     }
 
-    public static void setKernel(Kernel dedicatedKernel) {
+    private static void setKernel(Kernel dedicatedKernel) {
         kernel = dedicatedKernel;
     }
 
@@ -113,11 +115,12 @@ public class Startup {
 
     private static FileLock getSingletonApplicationFileLock() {
         File locker = new File(".lock");
-        FileOutputStream lockerStream = null;
+        FileOutputStream lockerStream;
         FileLock lock = null;
         try {
             if (!locker.exists())
-                locker.createNewFile();
+                if (!locker.createNewFile())
+                    throw new IllegalStateException("Nisam mogao da kreirak lock fajl!");
             lockerStream = new FileOutputStream(locker);
             lock = lockerStream.getChannel().tryLock(0, 1, false);
             if (lock == null) {

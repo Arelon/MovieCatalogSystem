@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class MCSProperties {
 
-	private static Log log = LogFactory.getLog(MCSProperties.class);
+	private static final Log log = LogFactory.getLog(MCSProperties.class);
 	private static Properties props;
 	private static boolean logMode = false;
 	private static final String MCS_PROPERTIES_FILE = "mcs.properties";
@@ -25,7 +25,7 @@ public class MCSProperties {
 		Class<?> clSett = sett.getClass();
 		Method[] metodi = clSett.getMethods();
 		// sortiranje
-		Method tmp = null;
+		Method tmp;
 		for (int i = 0; i < metodi.length - 1; i++)
 			for (int j = i + 1; j < metodi.length; j++)
 				if (metodi[i].getName().compareToIgnoreCase(metodi[j].getName()) > 0) {
@@ -34,61 +34,60 @@ public class MCSProperties {
 					metodi[j] = tmp;
 				}
 		//obrada
-		for (int i = 0; i < metodi.length; i++) {
-			if ((metodi[i].getName().indexOf("get") == 0) && !metodi[i].getName().equals("getClass")) {
-				if (metodi[i].getName().equals("wait") || metodi[i].getName().equals("equals") || metodi[i].getName().equals("main"))
-					continue;
-				Class<?>[] tipoviParametra = metodi[i].getParameterTypes();
-				if (tipoviParametra.length > 0) {
-					String opisParametara = "";
-					for (int j = 0; j < tipoviParametra.length; j++) {
-						opisParametara = opisParametara + tipoviParametra[j].getName() + (j < tipoviParametra.length-1 ? ", " : "");
-					}
-					// u slucaju da funkcija ima samo jedan int parametar obradjujemo
-					// tako sto krecemo od 1 pa sve dok ne dobijemo gresku - inace odbijamo obradu
-					if (opisParametara.equals("int")) {
-						try {
-							int j = 1;
-							while (true) {
-								StringBuffer useCase = new StringBuffer();
-								useCase.append("[" + metodi[i].getName() + ", intParam=" + j + "] ");
-								Object result = metodi[i].invoke(sett, new Object[] { new Integer(j) });
-								useCase.append(lastUsedName);
-								useCase.append("=");
-								useCase.append(lastUsedValue);
-								if (lastUsedValue == null || result == null || (!lastUsedValue.toString().equals(result.toString())))
-									useCase.append(" (").append(result).append(")");
-								
-								if (lastUsedValue==null)
-									break;
-								
-								log.info(useCase);
-								
-								j++;
-							}
-						} catch (Throwable t) {
-							log.error("Greska prilikom obrade metode", t);
-						}
-					}
-					else
-						log.info(">>>>>>>>>>>>PAZNJA, NISAM USPEO DA OBRADIM METOD [" + metodi[i].getName() + "] jer ima naredne parametre: " + opisParametara);
-				} else {
-					try {
-						StringBuffer useCase = new StringBuffer();
-						useCase.append("[" + metodi[i].getName() + "] ");
-						Object result = metodi[i].invoke(sett, (Object[]) null);
-						useCase.append(lastUsedName);
-						useCase.append("=");
-						useCase.append(lastUsedValue);
-						if (lastUsedValue == null || result == null || (!lastUsedValue.toString().equals(result.toString())))
-							useCase.append(" (").append(result).append(")");
-						log.info(useCase);
-					} catch (Throwable t) {
-						log.error("Greska prilikom obrade metode", t);
-					}
-				}
-			}
-		}
+        for (Method aMetodi : metodi) {
+            if ((aMetodi.getName().indexOf("get") == 0) && !aMetodi.getName().equals("getClass")) {
+                if (aMetodi.getName().equals("wait") || aMetodi.getName().equals("equals") || aMetodi.getName().equals("main"))
+                    continue;
+                Class<?>[] tipoviParametra = aMetodi.getParameterTypes();
+                if (tipoviParametra.length > 0) {
+                    String opisParametara = "";
+                    for (int j = 0; j < tipoviParametra.length; j++) {
+                        opisParametara = opisParametara + tipoviParametra[j].getName() + (j < tipoviParametra.length - 1 ? ", " : "");
+                    }
+                    // u slucaju da funkcija ima samo jedan int parametar obradjujemo
+                    // tako sto krecemo od 1 pa sve dok ne dobijemo gresku - inace odbijamo obradu
+                    if (opisParametara.equals("int")) {
+                        try {
+                            int j = 1;
+                            while (true) {
+                                StringBuilder useCase = new StringBuilder();
+                                useCase.append("[").append(aMetodi.getName()).append(", intParam=").append(j).append("] ");
+                                Object result = aMetodi.invoke(sett, j);
+                                useCase.append(lastUsedName);
+                                useCase.append("=");
+                                useCase.append(lastUsedValue);
+                                if (lastUsedValue == null || result == null || (!lastUsedValue.equals(result.toString())))
+                                    useCase.append(" (").append(result).append(")");
+
+                                if (lastUsedValue == null)
+                                    break;
+
+                                log.info(useCase);
+
+                                j++;
+                            }
+                        } catch (Throwable t) {
+                            log.error("Greska prilikom obrade metode", t);
+                        }
+                    } else
+                        log.info(">>>>>>>>>>>>PAZNJA, NISAM USPEO DA OBRADIM METOD [" + aMetodi.getName() + "] jer ima naredne parametre: " + opisParametara);
+                } else {
+                    try {
+                        StringBuffer useCase = new StringBuffer();
+                        useCase.append("[").append(aMetodi.getName()).append("] ");
+                        Object result = aMetodi.invoke(sett, (Object[]) null);
+                        useCase.append(lastUsedName);
+                        useCase.append("=");
+                        useCase.append(lastUsedValue);
+                        if (lastUsedValue == null || result == null || (!lastUsedValue.equals(result.toString())))
+                            useCase.append(" (").append(result).append(")");
+                        log.info(useCase);
+                    } catch (Throwable t) {
+                        log.error("Greska prilikom obrade metode", t);
+                    }
+                }
+            }
+        }
 	}
 
 	private static String lastUsedName, lastUsedValue;
@@ -131,27 +130,25 @@ public class MCSProperties {
 			System.exit(0);
 		}
 		props = new Properties();
-		if (is != null) {
-			try {
-				props.load(is);
-				int propertiesSize = props.size();
-				if (propertiesSize == 0)
-					throw new IllegalStateException("Properties file empty, propertiesSize: " + propertiesSize + ", filePath: " + MCS_PROPERTIES_FILE);
-					
-			} catch (IOException e) {
-				log.error(e);
-			} finally {
-				try {
-					is.close();
-				} catch (IOException e) {
-				}
-			}
-		}
-	}
+        try {
+            props.load(is);
+            int propertiesSize = props.size();
+            if (propertiesSize == 0)
+                throw new IllegalStateException("Properties file empty, propertiesSize: " + propertiesSize + ", filePath: " + MCS_PROPERTIES_FILE);
+
+        } catch (IOException e) {
+            log.error(e);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
+        }
+    }
 
 	// OSNOVNA PODESAVANJA MCS-a
 
-	/**
+	/*
 	 * Database type used for keeping track of the movies
 	 */
 	public static String getDatabaseType() {

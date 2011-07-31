@@ -121,23 +121,23 @@ public class Film implements java.io.Serializable {
 		// priprema informacija za narednu obradu (polje "prisutan")
 		int brojNeprisutnih = 0;
 		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().equals("присутан"))
+			if (!medij.getPozicija().getPozicija().equals("присутан"))
 				brojNeprisutnih++;
 		}
 		
 		// obrada polja "prisutan"
-		String prisutan = null;
+		String prisutan;
 		if (brojNeprisutnih==0)
 			prisutan = "присутан";
 		else {
-			StringBuffer buffer = new StringBuffer();
+            StringBuilder builder = new StringBuilder();
 			for (Medij medij : getMedijs()) {
-				buffer.append(medij.toString()+"-"+medij.getPozicija().toString()+"; ");
+                builder.append(medij.toString()).append("-").append(medij.getPozicija().toString()).append("; ");
 			}
-			prisutan = buffer.substring(0,buffer.length()-2);
+			prisutan = builder.substring(0, builder.length()-2);
 		}						
 		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().equals("присутан"))
+			if (!medij.getPozicija().getPozicija().equals("присутан"))
 				prisutan = medij.getPozicija().toString();
 		}
 		return prisutan;

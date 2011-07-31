@@ -25,7 +25,7 @@ import org.intellij.lang.annotations.Language;
  */
 public class RestorePointCreator {
 
-    private static Log log = LogFactory.getLog(RestorePointCreator.class);
+    private static final Log log = LogFactory.getLog(RestorePointCreator.class);
 
     private static final String STATEMENT_DELIMITER = ";";
 
@@ -181,7 +181,7 @@ public class RestorePointCreator {
                     ";";
 
     @Language("SQL")
-    public static final String INDEX_CREATION = "DROP INDEX DB2ADMIN.IDX_FILM_NAZIVFILMA;\r\n" +
+    private static final String INDEX_CREATION = "DROP INDEX DB2ADMIN.IDX_FILM_NAZIVFILMA;\r\n" +
             "CREATE INDEX IDX_FILM_NAZIVFILMA on DB2ADMIN.FILM(\"NAZIVFILMA\");\r\n\r\n" +
             "DROP INDEX DB2ADMIN.IDX_FILM_PREVODNAZIVAFILMA;\r\n" +
             "CREATE INDEX IDX_FILM_PREVODNAZIVAFILMA on DB2ADMIN.FILM(\"PREVODNAZIVAFILMA\");\r\n\r\n" +
@@ -206,21 +206,6 @@ public class RestorePointCreator {
                 return rs.getInt(1);
             } else
                 throw new IllegalStateException("I could not fetch next ID for table " + tableName);
-        } finally {
-            close(st);
-            close(rs);
-        }
-    }
-
-    private void appendInsertStatements(Connection conn, PrintStream output) throws SQLException {
-        ResultSet rs = null;
-        PreparedStatement st = null;
-        try {
-            log.info("Obradjujem TIPMEDIJA (1/8)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.TIPMEDIJA");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(output, "INSERT INTO TIPMEDIJA VALUES(" + rs.getInt("IDTIP") + ", " + getSQLString(rs.getString("NAZIV")) + ")");
         } finally {
             close(st);
             close(rs);
@@ -371,9 +356,11 @@ public class RestorePointCreator {
             log.info("Brisem trenutni bekap jer je identican prethodnom");
             File redundantZipFile = new File(renamedOldRestoreFile.getAbsolutePath() + ".zip");
             if (redundantZipFile.exists())
-                redundantZipFile.delete();
+                if (!redundantZipFile.delete())
+                    throw new IllegalStateException("Nisam uspeo da obrisem prethodni backup");
         }
-        renamedOldRestoreFile.delete();
+        if (!renamedOldRestoreFile.delete())
+            throw new IllegalStateException("Nisam uspeo da obrisem prethodni backup");
     }
 
     private File renameAndCompressOldRestoreFiles(File restoreFile) {
@@ -463,7 +450,8 @@ public class RestorePointCreator {
     private void createRestoreDir() {
         File restoreDir = new File("restore");
         if (!restoreDir.exists())
-            restoreDir.mkdir();
+            if (!restoreDir.mkdir())
+                throw new IllegalStateException("Nisam uspeo da napravim restore direktorijum");
     }
 
     private Connection prepareProcess() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
@@ -506,7 +494,7 @@ public class RestorePointCreator {
     private String getSQLString(String input) {
         if (MCSProperties.getConvertSQLUnicodeCharacters()) {
             //log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
-            return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'', false);
+            return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
         } else
             return '\'' + input.replaceAll("'", "''") + '\'';
     }
