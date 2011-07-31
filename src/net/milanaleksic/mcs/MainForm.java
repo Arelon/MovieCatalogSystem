@@ -348,7 +348,7 @@ public class MainForm extends Observable {
 
 			StringBuilder buff = new StringBuilder("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
 
-            StringBuilder countBuff = new StringBuilder("select count(*) from Film f, Medij m where f.idfilm in elements(m.films)");
+            StringBuilder countBuff = new StringBuilder("select count(distinct idfilm) from Film f, Medij m where f.idfilm in elements(m.films)");
  
 			if (comboZanr.getSelectionIndex()>1) {
 				buff.append(" and ").append(ukljZanr);
