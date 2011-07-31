@@ -23,7 +23,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class MainForm extends Observable {
 
-	private static final int MAX_ITEMS_AT_ONE_POINT = 40;
+	private static final int MAX_ITEMS_AT_ONE_POINT = 30;
 	
 	private static Logger log = Logger.getLogger(MainForm.class);  //  @jve:decl-index=0:
 
@@ -322,7 +322,7 @@ public class MainForm extends Observable {
 			final String ukljPozicija = "m.pozicija.pozicija=:pozicija";
 			final String ukljFilter = "(lower(f.nazivfilma) like :filter or lower(f.prevodnazivafilma) like :filter or lower(f.komentar) like :filter)";
 			final String filterText = currentViewState.getFilterText();
-			StringBuffer buff = new StringBuffer("select f from Film f, Medij m where f.idfilm in elements(m.films)");
+			StringBuffer buff = new StringBuffer("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
 			
 			StringBuffer countBuff = new StringBuffer("select count(*) from Film f, Medij m where f.idfilm in elements(m.films)");
  
@@ -342,7 +342,7 @@ public class MainForm extends Observable {
 				buff.append(" and ").append(ukljFilter);
 				countBuff.append(" and ").append(ukljFilter);
 			}
-			buff.append(" order by m.tipMedija.naziv, m.indeks, f.nazivfilma");
+			buff.append(" order by m.tipMedija.naziv, m.indeks, f.nazivfilma)");
 			
 			String hsql = buff.toString();
 			log.info("Generisan upit: "+hsql);
