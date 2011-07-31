@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
+import net.milanaleksic.mcs.Startup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -122,13 +123,7 @@ public class MCSProperties {
 
 	private static void loadSettings() {
 		File file = new File(MCS_PROPERTIES_FILE);
-		InputStream is=null;
-		try {
-			is = new FileInputStream(file);
-		} catch (FileNotFoundException e1) {
-			log.error(e1);
-			System.exit(0);
-		}
+		InputStream is = Startup.class.getResourceAsStream("/"+MCS_PROPERTIES_FILE);
 		props = new Properties();
         try {
             props.load(is);
@@ -137,7 +132,7 @@ public class MCSProperties {
                 throw new IllegalStateException("Properties file empty, propertiesSize: " + propertiesSize + ", filePath: " + MCS_PROPERTIES_FILE);
 
         } catch (IOException e) {
-            log.error(e);
+            log.error("Properties file not found", e);
         } finally {
             try {
                 is.close();

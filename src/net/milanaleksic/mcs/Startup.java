@@ -1,20 +1,19 @@
 package net.milanaleksic.mcs;
 
-import java.awt.*;
-import java.io.*;
-import java.nio.channels.FileLock;
-
 import net.milanaleksic.mcs.gui.ClosingForm;
 import net.milanaleksic.mcs.gui.MainForm;
 import net.milanaleksic.mcs.restore.RestorePointCreator;
 import net.milanaleksic.mcs.util.*;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.swt.widgets.Display;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.awt.*;
+import java.io.*;
+import java.nio.channels.FileLock;
 
 
 /**
@@ -35,9 +34,6 @@ public class Startup {
     }
 
     public static void main(String[] args) {
-        // LOG4J
-        PropertyConfigurator.configure("log4j.properties");
-
         // SINGLETON APPLICATION
         FileLock lock = getSingletonApplicationFileLock();
         if (lock == null)
@@ -47,7 +43,7 @@ public class Startup {
         SplashScreen splashScreen = refreshSplashScreen();
 
         // SPRING
-        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("spring-beans.xml");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
         setKernel((Kernel) context.getBean("kernel"));
         context.registerShutdownHook();
 
