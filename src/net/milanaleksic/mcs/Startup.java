@@ -65,6 +65,10 @@ public class Startup {
             return;
         }
 
+        // START STATISTICS MONITORING
+        if (programArgs.isCollectStatistics())
+            getKernel().getHibernateTemplate().getSessionFactory().getStatistics().setStatisticsEnabled(true);
+
         // SWT
         Display.setAppName("Movie Catalog System - v" + Kernel.getVersion());
         Display display = Display.getDefault();
@@ -89,6 +93,11 @@ public class Startup {
 
         // TERMINATE DISPLAY
         display.dispose();
+
+        // SHOW STATISTICS
+        if (programArgs.isCollectStatistics()) {
+            log.info("Statistics information: "+getKernel().getHibernateTemplate().getSessionFactory().getStatistics());
+        }
 
         // CLOSE LOCK
         try {
