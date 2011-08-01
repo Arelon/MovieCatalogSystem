@@ -15,13 +15,9 @@ import java.awt.*;
 import java.io.*;
 import java.nio.channels.FileLock;
 
-
-/**
- * @author Milan 22 Sep 2007
- */
 public class Startup {
 
-    private static final Logger log = Logger.getLogger(Startup.class);  //  @jve:decl-index=0:
+    private static final Logger log = Logger.getLogger(Startup.class);
 
     private static Kernel kernel;
 
@@ -34,24 +30,66 @@ public class Startup {
     }
 
     public static void main(String[] args) {
-        // LOADING LOG4J OVERRIDE FROM STARTUP DIR IF IT EXISTS
-        if (new File("log4j.properties").exists())
-            PropertyConfigurator.configure("log4j.properties");
-
-        // SINGLETON APPLICATION
+        loadLog4JOverride();
         FileLock lock = getSingletonApplicationFileLock();
-        if (lock == null)
-            return;
+        applicationLogic(args);
+        closeSingletonApplicationLock(lock);
+    }
 
-        // SPLASH SCREEN
+    private static void applicationLogic(String[] args) {
         SplashScreen splashScreen = refreshSplashScreen();
+        loadSpring();
+        ProgramArgs programArgs = getApplicationArgs(args);
+        startStatisticsMonitoringIfRequired(programArgs);
+        mainGuiLoop(splashScreen);
+        showStatisticsInformationIfAvailable(programArgs);
+    }
 
-        // SPRING
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
-        setKernel((Kernel) context.getBean("kernel"));
-        context.registerShutdownHook();
+    private static void closeSingletonApplicationLock(FileLock lock) {
+        try {
+            lock.channel().close();
+        } catch (IOException e) {
+            log.error(e);
+        }
+    }
 
-        // ARGS4J
+    private static void showStatisticsInformationIfAvailable(ProgramArgs programArgs) {
+        if (programArgs.isCollectStatistics()) {
+            log.info("Statistics information: "+getKernel().getHibernateTemplate().getSessionFactory().getStatistics());
+        }
+    }
+
+    private static void mainGuiLoop(SplashScreen splashScreen) {
+        Display.setAppName("Movie Catalog System - v" + Kernel.getVersion());
+        Display display = Display.getDefault();
+        MainForm form = new MainForm();
+        if (splashScreen != null)
+            splashScreen.close();
+
+        while (!form.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+
+        leavingProgram();
+
+        display.dispose();
+    }
+
+    private static void leavingProgram() {
+        log.info("Napustam program!");
+        if (MCSProperties.getDatabaseCreateRestore()) {
+            new ClosingForm();
+            new RestorePointCreator().createRestorePoint();
+        }
+    }
+
+    private static void startStatisticsMonitoringIfRequired(ProgramArgs programArgs) {
+        if (programArgs.isCollectStatistics())
+            getKernel().getHibernateTemplate().getSessionFactory().getStatistics().setStatisticsEnabled(true);
+    }
+
+    private static ProgramArgs getApplicationArgs(String[] args) {
         ProgramArgs programArgs = new ProgramArgs();
         CmdLineParser parser = new CmdLineParser(programArgs);
         try {
@@ -62,49 +100,20 @@ public class Startup {
             System.err.println(e.getMessage());
             System.err.println("java -jar myprogram.jar [options...] arguments...");
             parser.printUsage(System.err);
-            return;
+            return null;
         }
+        return programArgs;
+    }
 
-        // START STATISTICS MONITORING
-        if (programArgs.isCollectStatistics())
-            getKernel().getHibernateTemplate().getSessionFactory().getStatistics().setStatisticsEnabled(true);
+    private static void loadSpring() {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
+        setKernel((Kernel) context.getBean("kernel"));
+        context.registerShutdownHook();
+    }
 
-        // SWT
-        Display.setAppName("Movie Catalog System - v" + Kernel.getVersion());
-        Display display = Display.getDefault();
-        MainForm form = new MainForm();
-
-        // CLOSE SPLASH SCREEN
-        if (splashScreen != null)
-            splashScreen.close();
-
-        // SHOWALL!!!!
-        while (!form.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-
-        // GENERATE RESTORE SQL
-        log.info("Napustam program!");
-        if (MCSProperties.getDatabaseCreateRestore()) {
-            new ClosingForm();
-            new RestorePointCreator().createRestorePoint();
-        }
-
-        // TERMINATE DISPLAY
-        display.dispose();
-
-        // SHOW STATISTICS
-        if (programArgs.isCollectStatistics()) {
-            log.info("Statistics information: "+getKernel().getHibernateTemplate().getSessionFactory().getStatistics());
-        }
-
-        // CLOSE LOCK
-        try {
-            lock.channel().close();
-        } catch (IOException e) {
-            log.error(e);
-        }
+    private static void loadLog4JOverride() {
+        if (new File("log4j.properties").exists())
+            PropertyConfigurator.configure("log4j.properties");
     }
 
     private static SplashScreen refreshSplashScreen() {
@@ -125,17 +134,16 @@ public class Startup {
     private static FileLock getSingletonApplicationFileLock() {
         final String lockFileName = ".launcher";
         File locker = new File(lockFileName);
-        FileLock lock = null;
+        FileLock lock;
         try {
             if (!locker.exists())
                 throw new IllegalStateException("Nisam mogao da pristupim lock fajlu!");
             lock = new RandomAccessFile(lockFileName, "rw").getChannel().tryLock();
             if (lock == null) {
-                log.error("Program je vec pokrenut, ne mozete pokrenuti novu instancu");
-                return null;
+                throw new IllegalStateException("Program je vec pokrenut, ne mozete pokrenuti novu instancu");
             }
         } catch (IOException e) {
-            log.error(e);
+            throw new IllegalStateException("IO exception while trying to acquire lock");
         }
         return lock;
     }

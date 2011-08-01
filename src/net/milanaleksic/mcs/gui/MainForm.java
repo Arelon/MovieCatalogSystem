@@ -472,6 +472,7 @@ public class MainForm extends Observable {
 			
 		});
 		createSShell();
+        sShell.setImage(new Image(sShell.getDisplay(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/res/database-64.png")));
 		sShell.open();
 		mainTable.setFocus();
 	}
