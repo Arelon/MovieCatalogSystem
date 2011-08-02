@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.util;
 
+import net.milanaleksic.mcs.config.Configuration;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
@@ -8,9 +9,13 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 public class Kernel {
 	
 	private HibernateTemplate hibernateTemplate;
-	
-	private static String version = "0.42";
+	private static final String version = "0.42";
     private ProgramArgs programArgs;
+    private Configuration configuration;
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 
     public HibernateTemplate getHibernateTemplate() {
 		return hibernateTemplate;
@@ -24,15 +29,15 @@ public class Kernel {
 		return version;
 	}
 
-	public static void setVersion(String version) {
-		Kernel.version = version;
-	}
-
     public void setProgramArgs(ProgramArgs programArgs) {
         this.programArgs = programArgs;
     }
 
     public ProgramArgs getProgramArgs() {
         return programArgs;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

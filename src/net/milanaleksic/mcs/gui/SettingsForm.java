@@ -1,10 +1,12 @@
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.Startup;
+import net.milanaleksic.mcs.config.Configuration;
 import net.milanaleksic.mcs.db.Pozicija;
 import net.milanaleksic.mcs.db.Zanr;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -14,27 +16,28 @@ import org.hibernate.Transaction;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-
 public class SettingsForm {
 	
-	private Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="22,11"
+	private Shell sShell = null;
 	private Shell parent = null;
 	private Runnable parentRunner = null;
     private TabFolder tabFolder = null;
 	private Composite composite1 = null;
 	private Composite composite2 = null;
+    private Composite composite3 = null;
 	private List listLokacije = null;
     private Text textNovaLokacija = null;
     private List listZanrovi = null;
     private Text textNovZanr = null;
+    private Text textElementsPerPage = null;
 
     private boolean changed=false;
 
 	public SettingsForm(Shell parent, Runnable runnable) {
 		this.parent = parent;
 		createSShell();
-		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
-				+ Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
+		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
+                parent.getLocation().y + Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
 		reReadData();
 		sShell.open();
 		parentRunner = runnable;
@@ -46,7 +49,6 @@ public class SettingsForm {
 			
 			@SuppressWarnings("unchecked")
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
-				
 				// preuzimanje svih pozicija
 				Query query = session.createQuery("from Pozicija p order by lower(p.pozicija)");
 				java.util.List<Pozicija> svePozicije = (java.util.List<Pozicija>) query.list();
@@ -67,11 +69,10 @@ public class SettingsForm {
 			}
 			
 		});
+        Configuration configuration = Startup.getKernel().getConfiguration();
+        textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
 	}
 
-	/**
-	 * This method initializes sShell
-	 */
 	private void createSShell() {
 		GridLayout gridLayout3 = new GridLayout();
 		gridLayout3.numColumns = 1;
@@ -83,7 +84,7 @@ public class SettingsForm {
 		createTabFolder();
 		sShell.setLayout(gridLayout3);
 		createComposite();
-		sShell.setSize(new Point(377, 312));
+		sShell.setSize(new Point(500, 350));
 		sShell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
 			public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
 				sShell.dispose();
@@ -91,10 +92,6 @@ public class SettingsForm {
 		});
 	}
 
-	/**
-	 * This method initializes composite	
-	 *
-	 */
 	private void createComposite() {
 		GridData gridData = new GridData();
 		gridData.grabExcessHorizontalSpace = true;
@@ -121,32 +118,71 @@ public class SettingsForm {
         });
 	}
 
-	/**
-	 * This method initializes tabFolder	
-	 *
-	 */
 	private void createTabFolder() {
 		GridData gridData1 = new GridData();
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData1.grabExcessVerticalSpace = true;
 		gridData1.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		tabFolder = new TabFolder(sShell, SWT.NONE);
-		createComposite1();
-		tabFolder.setLayoutData(gridData1);
-		createComposite2();
+        tabFolder.setLayoutData(gridData1);
+        createSettingsTabContents();
+        createLocationTabContents();
+        createGenresTabContents();
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-		tabItem.setText("Локације");
-		tabItem.setControl(composite1);
-		TabItem tabItem1 = new TabItem(tabFolder, SWT.NONE);
-		tabItem1.setText("Жанрови");
-		tabItem1.setControl(composite2);
+        TabItem tabItem2 = new TabItem(tabFolder, SWT.NONE);
+        tabItem2.setText("Основна подешавања");
+        tabItem2.setControl(composite3);
+        tabItem.setText("Локације");
+        tabItem.setControl(composite1);
+        TabItem tabItem1 = new TabItem(tabFolder, SWT.NONE);
+        tabItem1.setText("Жанрови");
+        tabItem1.setControl(composite2);
 	}
 
-	/**
-	 * This method initializes composite1	
-	 *
-	 */
-	private void createComposite1() {
+    private void createSettingsTabContents() {
+        GridData gridData = new GridData();
+		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		GridData gridData1 = new GridData();
+		gridData1.verticalSpan = 3;
+		gridData1.grabExcessHorizontalSpace = true;
+		gridData1.grabExcessVerticalSpace = true;
+		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 2;
+        composite3 = new Composite(tabFolder, SWT.BORDER);
+		composite3.setLayout(gridLayout);
+		composite3.setLayoutData(gridData1);
+        Label label = new Label(composite3, SWT.NONE);
+        label.setText("Број елемената по страници\n (0 за приказ свих филмова одједном)");
+		textElementsPerPage = new Text(composite3, SWT.BORDER);
+		textElementsPerPage.setLayoutData(gridData);
+		textElementsPerPage.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent modifyEvent) {
+                Configuration configuration = Startup.getKernel().getConfiguration();
+                String data = textElementsPerPage.getText();
+                if (data == null || data.length()==0) {
+                    textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+                    return;
+                }
+                int elementsPerPage;
+                try {
+                    elementsPerPage = Integer.parseInt(data);
+                } catch (NumberFormatException e) {
+                    textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+                    return;
+                }
+                if (elementsPerPage<0) {
+                    textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+                    return;
+                }
+                configuration.setElementsPerPage(elementsPerPage);
+                changed = true;
+            }
+        });
+    }
+
+    private void createLocationTabContents() {
 		GridData gridData5 = new GridData();
 		gridData5.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
 		GridData gridData2 = new GridData();
@@ -160,7 +196,7 @@ public class SettingsForm {
 		composite1.setLayout(gridLayout1);
         Label label = new Label(composite1, SWT.NONE);
 		label.setText("Тренутне локације:");
-		createComposite3();
+		createAddLocationPanel();
 		listLokacije = new List(composite1, SWT.BORDER | SWT.V_SCROLL);
 		listLokacije.setLayoutData(gridData2);
         Button btnIzbrisiLokaciju = new Button(composite1, SWT.NONE);
@@ -172,7 +208,6 @@ public class SettingsForm {
                 template.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-
                         // preuzimanje podataka za film koji se azurira
                         Transaction transaction = session.beginTransaction();
                         Query query = session.createQuery("from Pozicija p where p.pozicija = :param");
@@ -199,11 +234,7 @@ public class SettingsForm {
         });
 	}
 
-	/**
-	 * This method initializes composite2	
-	 *
-	 */
-	private void createComposite2() {
+	private void createGenresTabContents() {
 		GridData gridData8 = new GridData();
 		gridData8.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
 		GridData gridData7 = new GridData();
@@ -217,7 +248,7 @@ public class SettingsForm {
 		composite2.setLayout(gridLayout2);
         Label label1 = new Label(composite2, SWT.NONE);
 		label1.setText("Тренутни жанрови:");
-		createComposite4();
+		createAddGenrePanel();
 		listZanrovi = new List(composite2, SWT.BORDER | SWT.V_SCROLL);
 		listZanrovi.setLayoutData(gridData7);
         Button btnIzbrisiZanr = new Button(composite2, SWT.NONE);
@@ -229,7 +260,6 @@ public class SettingsForm {
                 template.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-
                         // preuzimanje podataka za film koji se azurira
                         Transaction transaction = session.beginTransaction();
                         Query query = session.createQuery("from Zanr z where z.zanr = :param");
@@ -256,11 +286,7 @@ public class SettingsForm {
         });
 	}
 
-	/**
-	 * This method initializes composite3	
-	 *
-	 */
-	private void createComposite3() {
+	private void createAddLocationPanel() {
 		GridData gridData4 = new GridData();
 		gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridData gridData3 = new GridData();
@@ -281,7 +307,6 @@ public class SettingsForm {
                 template.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-
                         // preuzimanje podataka za film koji se azurira
                         Transaction transaction = session.beginTransaction();
                         Pozicija pozicija = new Pozicija();
@@ -299,11 +324,7 @@ public class SettingsForm {
         });
 	}
 
-	/**
-	 * This method initializes composite4	
-	 *
-	 */
-	private void createComposite4() {
+	private void createAddGenrePanel() {
 		GridData gridData10 = new GridData();
 		gridData10.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridData gridData9 = new GridData();
@@ -329,7 +350,6 @@ public class SettingsForm {
                 template.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-
                         // preuzimanje podataka za film koji se azurira
                         Transaction transaction = session.beginTransaction();
                         Zanr zanr = new Zanr();

@@ -24,8 +24,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class MainForm extends Observable {
 
-	private static final int MAX_ITEMS_AT_ONE_POINT = 30;
-	
 	private static final Logger log = Logger.getLogger(MainForm.class);  //  @jve:decl-index=0:
 
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
@@ -689,7 +687,8 @@ public class MainForm extends Observable {
 		}
 		HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
 		@SuppressWarnings("unchecked")
-		List<FilmInfo> sviFilmovi = (List<FilmInfo>) template.execute(new ListMoviesHibernateCallback(MAX_ITEMS_AT_ONE_POINT));
+		List<FilmInfo> sviFilmovi = (List<FilmInfo>) template.execute(
+                new ListMoviesHibernateCallback(Startup.getKernel().getConfiguration().getElementsPerPage()));
 		long start = new Date().getTime();
 		indeksi.clear();
 		int i=0;

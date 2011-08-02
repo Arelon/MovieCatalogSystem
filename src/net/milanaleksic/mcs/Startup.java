@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs;
 
+import net.milanaleksic.mcs.config.Configuration;
 import net.milanaleksic.mcs.gui.ClosingForm;
 import net.milanaleksic.mcs.gui.MainForm;
 import net.milanaleksic.mcs.restore.RestorePointCreator;
@@ -11,6 +12,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.xml.bind.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.channels.FileLock;
@@ -20,6 +22,7 @@ public class Startup {
     private static final Logger log = Logger.getLogger(Startup.class);
 
     private static Kernel kernel;
+    private static final String CONFIGURATION_FILE = "configuration.xml";
 
     public static Kernel getKernel() {
         return kernel;
@@ -39,10 +42,41 @@ public class Startup {
     private static void applicationLogic(String[] args) {
         SplashScreen splashScreen = refreshSplashScreen();
         loadSpring();
+        loadUserSettings();
         ProgramArgs programArgs = getApplicationArgs(args);
         startStatisticsMonitoringIfRequired(programArgs);
+
         mainGuiLoop(splashScreen);
+
         showStatisticsInformationIfAvailable(programArgs);
+        saveUserSettings();
+    }
+
+    private static void saveUserSettings() {
+        try {
+            JAXBContext jc = JAXBContext.newInstance(Configuration.class);
+            Marshaller m = jc.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            m.marshal(kernel.getConfiguration(), new File(CONFIGURATION_FILE));
+        } catch (Throwable t) {
+            log.error("Settings could not have been saved!", t);
+        }
+    }
+
+    private static void loadUserSettings() {
+        Configuration configuration = new Configuration();
+        File configurationFile = new File(CONFIGURATION_FILE);
+        if (configurationFile.exists()) {
+            try {
+                JAXBContext jc = JAXBContext.newInstance(Configuration.class);
+                Unmarshaller u = jc.createUnmarshaller();
+                configuration = (Configuration) u.unmarshal(configurationFile);
+                log.info("Configuration read: "+configuration);
+            } catch (Throwable t) {
+                log.error("Configuration could not have been read. Using default settings", t);
+            }
+        }
+        kernel.setConfiguration(configuration);
     }
 
     private static void closeSingletonApplicationLock(FileLock lock) {
@@ -95,10 +129,9 @@ public class Startup {
         try {
             parser.parseArgument(args);
             kernel.setProgramArgs(programArgs);
-            System.out.println("Program arguments: "+programArgs);
+            log.info("Program arguments: "+programArgs);
         } catch (CmdLineException e) {
-            System.err.println(e.getMessage());
-            System.err.println("java -jar myprogram.jar [options...] arguments...");
+            log.error("Command line arguments could not have been read", e);
             parser.printUsage(System.err);
             return null;
         }
