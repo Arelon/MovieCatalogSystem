@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.gui;
 import java.awt.Desktop;
 import java.net.URI;
 
-import net.milanaleksic.mcs.util.Kernel;
+import net.milanaleksic.mcs.ApplicationManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.*;
 public class AboutForm {
 	
 	private static final String dodatniTekst = 
-		"Верзија програма: " + Kernel.getVersion() + "\n\n" +
+		"Верзија програма: " + ApplicationManager.getVersion() + "\n\n" +
 		"У развоју су коришћене следеће бесплатне технологије:\n"+
 		"Јава 6, Eclipse SWT 3.4.1, Spring 2.5, Hibernate 3.6, H2 1.3\n"+
 		"Args4J, DOM4J, Log4J, EhCache, C3P0 итд.\n\n"+

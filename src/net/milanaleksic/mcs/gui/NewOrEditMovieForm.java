@@ -46,9 +46,11 @@ public class NewOrEditMovieForm {
 	private Runnable parentRunner = null;
     private Text textKomentar = null;
     private Integer filmId = null;
-	
-	public NewOrEditMovieForm(Shell parent, Integer filmId, Runnable runnable) {
+    private final HibernateTemplate hibernateTemplate;
+
+    public NewOrEditMovieForm(Shell parent, Integer filmId, Runnable runnable, HibernateTemplate hibernateTemplate) {
 		this.parent = parent;
+        this.hibernateTemplate = hibernateTemplate;
 		createSShell();
 		logger.info("NewOrEditMovieForm: FILMID="+filmId);
 		sShell.setLocation(
@@ -77,8 +79,7 @@ public class NewOrEditMovieForm {
 	 * Procitaj podatke iz baze podataka!
 	 */
 	protected void reReadData() {
-		final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-		template.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback() {
 			
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
 				
@@ -168,8 +169,7 @@ public class NewOrEditMovieForm {
 	}
 
 	protected void dodajNoviFilm() {
-		final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-		template.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback() {
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
 				//refillCombos(session);
 				Transaction transaction = session.beginTransaction();
@@ -201,8 +201,7 @@ public class NewOrEditMovieForm {
 	}
 	
 	private void izmeniFilm() {
-		final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-		template.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback() {
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
 				Transaction transaction = session.beginTransaction();
 				
@@ -541,8 +540,7 @@ public class NewOrEditMovieForm {
 
                     @Override
                     public void run() {
-                        final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-                        template.execute(new HibernateCallback() {
+                        hibernateTemplate.execute(new HibernateCallback() {
 
                             public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
                                 // preuzimanje svih podataka od interesa i upis u kombo boksove
@@ -555,7 +553,7 @@ public class NewOrEditMovieForm {
                         });
                     }
 
-                });
+                }, hibernateTemplate);
             }
         });
 	}

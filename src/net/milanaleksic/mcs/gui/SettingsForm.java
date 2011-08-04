@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.Startup;
-import net.milanaleksic.mcs.config.Configuration;
+import net.milanaleksic.mcs.config.UserConfiguration;
 import net.milanaleksic.mcs.db.Pozicija;
 import net.milanaleksic.mcs.db.Zanr;
 
@@ -32,9 +32,13 @@ public class SettingsForm {
     private Text textElementsPerPage = null;
 
     private boolean changed=false;
+    private final HibernateTemplate hibernateTemplate;
+    private final UserConfiguration userConfiguration;
 
-	public SettingsForm(Shell parent, Runnable runnable) {
+    public SettingsForm(Shell parent, Runnable runnable, HibernateTemplate hibernateTemplate, UserConfiguration userConfiguration) {
 		this.parent = parent;
+        this.hibernateTemplate = hibernateTemplate;
+        this.userConfiguration = userConfiguration;
 		createSShell();
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
                 parent.getLocation().y + Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
@@ -44,8 +48,7 @@ public class SettingsForm {
 	}
 
 	private void reReadData() {
-		final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-		template.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback() {
 			
 			@SuppressWarnings("unchecked")
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
@@ -69,8 +72,7 @@ public class SettingsForm {
 			}
 			
 		});
-        Configuration configuration = Startup.getKernel().getConfiguration();
-        textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+        textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
 	}
 
 	private void createSShell() {
@@ -159,24 +161,23 @@ public class SettingsForm {
 		textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
-                Configuration configuration = Startup.getKernel().getConfiguration();
                 String data = textElementsPerPage.getText();
                 if (data == null || data.length()==0) {
-                    textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+                    textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
                     return;
                 }
                 int elementsPerPage;
                 try {
                     elementsPerPage = Integer.parseInt(data);
                 } catch (NumberFormatException e) {
-                    textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+                    textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
                     return;
                 }
                 if (elementsPerPage<0) {
-                    textElementsPerPage.setText(Integer.toString(configuration.getElementsPerPage()));
+                    textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
                     return;
                 }
-                configuration.setElementsPerPage(elementsPerPage);
+                userConfiguration.setElementsPerPage(elementsPerPage);
                 changed = true;
             }
         });
@@ -204,8 +205,7 @@ public class SettingsForm {
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
 		btnIzbrisiLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-                template.execute(new HibernateCallback() {
+                hibernateTemplate.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
                         // preuzimanje podataka za film koji se azurira
@@ -256,8 +256,7 @@ public class SettingsForm {
 		btnIzbrisiZanr.setLayoutData(gridData8);
 		btnIzbrisiZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-                template.execute(new HibernateCallback() {
+                hibernateTemplate.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
                         // preuzimanje podataka za film koji se azurira
@@ -303,8 +302,7 @@ public class SettingsForm {
 		btnDodajLokaciju.setText("Додај ову локацију");
 		btnDodajLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-                template.execute(new HibernateCallback() {
+                hibernateTemplate.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
                         // preuzimanje podataka za film koji se azurira
@@ -346,8 +344,7 @@ public class SettingsForm {
 		btnDodajZanr.setLayoutData(gridData9);
 		btnDodajZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-                template.execute(new HibernateCallback() {
+                hibernateTemplate.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
                         // preuzimanje podataka za film koji se azurira

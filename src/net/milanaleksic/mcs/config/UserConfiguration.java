@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 11:50 PM
  */
 @XmlRootElement
-public class Configuration {
+public class UserConfiguration {
 
     private int elementsPerPage;
 
     @SuppressWarnings("unused")
-    public Configuration() {
+    public UserConfiguration() {
         elementsPerPage = 30;
     }
 
@@ -27,7 +27,7 @@ public class Configuration {
 
     @Override
     public String toString() {
-        return "Configuration{" +
+        return "UserConfiguration{" +
                 "elementsPerPage=" + elementsPerPage +
                 '}';
     }

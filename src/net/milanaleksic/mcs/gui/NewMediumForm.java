@@ -15,7 +15,6 @@ import org.hibernate.*;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-
 public class NewMediumForm {
 
 	private static final Logger log = Logger.getLogger(NewMediumForm.class); // @jve:decl-index=0:
@@ -28,7 +27,7 @@ public class NewMediumForm {
 
 	private HibernateTemplate template = null;
 
-	public NewMediumForm(Shell parent, Runnable runnable) {
+	public NewMediumForm(Shell parent, Runnable runnable, HibernateTemplate hibernateTemplate) {
 		this.parent = parent;
 		createSShell();
 		sShell.setLocation(
@@ -36,7 +35,7 @@ public class NewMediumForm {
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
 						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
 		sShell.open();
-		template = Startup.getKernel().getHibernateTemplate();
+		template = hibernateTemplate;
 		obradaIzbora();
 		parentRunner = runnable;
 	}

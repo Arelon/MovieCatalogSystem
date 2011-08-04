@@ -1,26 +1,30 @@
 package net.milanaleksic.mcs.gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.List;
-
-import net.milanaleksic.mcs.Startup;
+import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.db.*;
 import net.milanaleksic.mcs.export.*;
-import net.milanaleksic.mcs.util.*;
-
+import net.milanaleksic.mcs.util.FilmInfo;
+import net.milanaleksic.mcs.util.MCSProperties;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.hibernate.*;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+
+import java.awt.*;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.List;
 
 public class MainForm extends Observable {
 
@@ -34,19 +38,18 @@ public class MainForm extends Observable {
 	private Table mainTable = null;
 	private Combo comboPozicija = null;
 	private Composite panCombos = null;
-	private final ArrayList<Integer> indeksi = new ArrayList<Integer>();  //  @jve:decl-index=0:
-	
 	private Label labelFilter = null;
-	private Label labelCurrent = null;
+    private Label labelCurrent = null;
+    private ToolBar toolTicker = null;
+    private Composite wrapperDataInfo = null;
 
-	private ToolBar toolTicker = null;
-	
-	private CurrentViewState currentViewState = new CurrentViewState();
-	
-	private Composite wrapperDataInfo = null;
-	
-	
-	// private classes
+    private final ArrayList<Integer> indeksi = new ArrayList<Integer>();  //  @jve:decl-index=0:
+
+    private CurrentViewState currentViewState = new CurrentViewState();
+    private final ApplicationManager applicationManager;
+    private final HibernateTemplate hibernateTemplate;
+
+    // private classes
 	
 	private static class CurrentViewState {
 
@@ -175,7 +178,7 @@ public class MainForm extends Observable {
 										doFillMainTable();
 									}
 									
-								});
+								}, hibernateTemplate);
 		}			
 	}
 	
@@ -183,7 +186,7 @@ public class MainForm extends Observable {
 			
 		@Override public void shellActivated(ShellEvent e) {
 			sShell.removeShellListener(this);
-			if (Startup.getKernel().getProgramArgs().isNoInitialMovieListLoading())
+			if (applicationManager.getProgramArgs().isNoInitialMovieListLoading())
                 return;
             doFillMainTable();
 		}
@@ -219,9 +222,8 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
             @SuppressWarnings("unchecked")
-            final List<FilmInfo> allFilms = (List<FilmInfo>) template.execute(new ListMoviesHibernateCallback());
+            final List<FilmInfo> allFilms = (List<FilmInfo>) hibernateTemplate.execute(new ListMoviesHibernateCallback());
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -272,13 +274,13 @@ public class MainForm extends Observable {
 							doFillMainTable();
 						}
 						
-					});
+					}, hibernateTemplate);
 		}
 		
 	}
 	
 	private class ToolSettingsSelectionAdapter extends SelectionAdapter {
-		
+
 		@Override public void widgetSelected(SelectionEvent e) {
 			new SettingsForm(sShell, new Runnable() {
 
@@ -288,13 +290,13 @@ public class MainForm extends Observable {
 					doFillMainTable();
 				}
 				
-			});
+			}, hibernateTemplate, applicationManager.getUserConfiguration());
 		}
 		
 		private void resetZanrova() {
 			comboZanr.setItems(new String [] {});
 			@SuppressWarnings("unchecked")
-			List<Zanr> zanrovi = (List<Zanr>) Startup.getKernel().getHibernateTemplate().find("from Zanr z order by LOWER(z.zanr) asc");
+			List<Zanr> zanrovi = (List<Zanr>) hibernateTemplate.find("from Zanr z order by LOWER(z.zanr) asc");
 			comboZanr.add("Сви жанрови");
 			comboZanr.add("-----------");
 			for(Zanr zanr : zanrovi)
@@ -330,7 +332,7 @@ public class MainForm extends Observable {
 					doFillMainTable();
 				}
 				
-			});
+			}, hibernateTemplate);
 		}
 
 	}
@@ -447,9 +449,11 @@ public class MainForm extends Observable {
 	
 	// DESIGN
 	
-	public MainForm() {
-		currentViewState = new CurrentViewState();
-		this.addObserver(new Observer() {
+	public MainForm(ApplicationManager applicationManager) {
+		this.currentViewState = new CurrentViewState();
+        this.hibernateTemplate = applicationManager.getHibernateTemplate();
+        this.applicationManager = applicationManager;
+        this.addObserver(new Observer() {
 
 			@Override public void update(Observable obs, Object arg) {
 				log.info("Osvezavam prikaz stanja!");
@@ -529,7 +533,7 @@ public class MainForm extends Observable {
 		comboZanr.setVisibleItemCount(16);
 		comboZanr.addSelectionListener(new ComboRefreshAdapter());
 		@SuppressWarnings("unchecked")
-		List<Zanr> zanrovi = (List<Zanr>) Startup.getKernel().getHibernateTemplate().find("from Zanr z order by LOWER(z.zanr) asc");
+		List<Zanr> zanrovi = (List<Zanr>) hibernateTemplate.find("from Zanr z order by LOWER(z.zanr) asc");
 		comboZanr.add("Сви жанрови");
 		comboZanr.add("-----------");
 		for(Zanr zanr : zanrovi)
@@ -546,7 +550,7 @@ public class MainForm extends Observable {
 		comboTipMedija.setVisibleItemCount(8);
 		comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
 		@SuppressWarnings("unchecked")
-		List<TipMedija> tipovi = (List<TipMedija>) Startup.getKernel().getHibernateTemplate().find("from TipMedija m order by LOWER(m.naziv) asc");
+		List<TipMedija> tipovi = (List<TipMedija>) hibernateTemplate.find("from TipMedija m order by LOWER(m.naziv) asc");
 		comboTipMedija.add("Сви медији");
 		comboTipMedija.add("-----------");
 		for(TipMedija tip : tipovi)
@@ -568,7 +572,7 @@ public class MainForm extends Observable {
 	private void resetPozicije() {
 		comboPozicija.setItems(new String [] {});
 		@SuppressWarnings("unchecked") 
-		List<Pozicija> pozicije = (List<Pozicija>) Startup.getKernel().getHibernateTemplate().find("from Pozicija p order by LOWER(p.pozicija) asc");
+		List<Pozicija> pozicije = (List<Pozicija>) hibernateTemplate.find("from Pozicija p order by LOWER(p.pozicija) asc");
 		comboPozicija.add("Било где");
 		comboPozicija.add("-----------");
 		for(Pozicija pozicija : pozicije)
@@ -685,10 +689,9 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(true);
 			toolTicker.update();
 		}
-		HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
 		@SuppressWarnings("unchecked")
-		List<FilmInfo> sviFilmovi = (List<FilmInfo>) template.execute(
-                new ListMoviesHibernateCallback(Startup.getKernel().getConfiguration().getElementsPerPage()));
+		List<FilmInfo> sviFilmovi = (List<FilmInfo>) hibernateTemplate.execute(
+                new ListMoviesHibernateCallback(applicationManager.getUserConfiguration().getElementsPerPage()));
 		long start = new Date().getTime();
 		indeksi.clear();
 		int i=0;

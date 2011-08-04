@@ -4,7 +4,7 @@ import java.awt.Desktop;
 import java.io.*;
 import java.util.Calendar;
 
-import net.milanaleksic.mcs.util.Kernel;
+import net.milanaleksic.mcs.ApplicationManager;
 
 import org.apache.log4j.Logger;
 
@@ -21,7 +21,7 @@ public class HTMLExporter implements Exporter {
             writeHtmlHead(writer);
 
 			writer.println("<body onload=\"javascript:init()\">");
-            writer.println("<h3>Списак филмова у MCS v"+Kernel.getVersion()+" бази</h3>");
+            writer.println("<h3>Списак филмова у MCS v"+ ApplicationManager.getVersion()+" бази</h3>");
             writer.println("<small style=\"text-align:right\"><em>timestamp:</em> "+Calendar.getInstance().getTime().toString()+"</small>");
 
             writeTableHeader(source, writer);
@@ -86,9 +86,9 @@ public class HTMLExporter implements Exporter {
         writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
         writer.println("\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         writer.println("<html xmlns=\"http://www.w3.org/1999/xhtml\"><!--");
-        writer.println("\r\n\tОва страница је аутоматски генерисана од стране MCS v"+ Kernel.getVersion()+" (MovieCatalogSystem) софтвера");
+        writer.println("\r\n\tОва страница је аутоматски генерисана од стране MCS v"+ ApplicationManager.getVersion()+" (MovieCatalogSystem) софтвера");
         writer.println("\t(C) 2007-2008 by milan.aleksic@gmail.com\r\n");
-        writer.println("--><head><title>Каталог филмова (креирано у MCS v"+Kernel.getVersion()+")</title>");
+        writer.println("--><head><title>Каталог филмова (креирано у MCS v"+ ApplicationManager.getVersion()+")</title>");
         writer.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
         writer.println("<meta name=\"author\" content=\"Milan Aleksić\" />");
         writer.println("<style>");

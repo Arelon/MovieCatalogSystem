@@ -31,9 +31,11 @@ public class DeleteMovieForm {
 	private Integer filmId = null;
 	private Runnable parentRunner = null;
     private Label labFilmNaziv = null;
+    private final HibernateTemplate hibernateTemplate;
 
-    public DeleteMovieForm(Shell parent, Integer filmId, Runnable runnable) {
+    public DeleteMovieForm(Shell parent, Integer filmId, Runnable runnable, HibernateTemplate hibernateTemplate) {
 		this.parent = parent;
+        this.hibernateTemplate = hibernateTemplate;
 		createSShell();
 		logger.info("DeleteMovieForm: FILMID=" + filmId);
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
@@ -46,8 +48,7 @@ public class DeleteMovieForm {
 	}
 
 	protected void reReadData() {
-		final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-		template.execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback() {
 
 			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
 
@@ -136,8 +137,7 @@ public class DeleteMovieForm {
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                final HibernateTemplate template = Startup.getKernel().getHibernateTemplate();
-                template.execute(new HibernateCallback() {
+                hibernateTemplate.execute(new HibernateCallback() {
 
                     public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
 

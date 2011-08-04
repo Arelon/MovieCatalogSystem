@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="kernel" class="net.milanaleksic.mcs.util.Kernel">
+    <context:annotation-config/>
+
+	<bean id="applicationManager" class="net.milanaleksic.mcs.ApplicationManager">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
+        <property name="lifecycleListeners">
+            <set>
+                <ref bean="splashScreenManager" />
+                <bean class="net.milanaleksic.mcs.config.ConfigurationManager" />
+                <bean class="net.milanaleksic.mcs.util.StatisticsManager" />
+                <bean class="net.milanaleksic.mcs.restore.RestoreManager" />
+            </set>
+        </property>
 	</bean>
 
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="configurationClass"
-			value="net.milanaleksic.mcs.util.MCSHibernateConfigurationClass" />
+    <bean id="splashScreenManager" class="net.milanaleksic.mcs.gui.SplashScreenManager" />
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="configurationClass" value="net.milanaleksic.mcs.util.MCSHibernateConfigurationClass" />
 		<property name="configLocation" value="hibernate.cfg.xml" />
 	</bean>
 	
-	<bean id="hibernateTemplate"
-		class="org.springframework.orm.hibernate3.HibernateTemplate">
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
