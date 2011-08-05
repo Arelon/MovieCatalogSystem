@@ -2,9 +2,9 @@ package net.milanaleksic.mcs;
 
 import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
-import net.milanaleksic.mcs.util.*;
+import net.milanaleksic.mcs.util.ProgramArgs;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -34,7 +34,7 @@ public class Startup {
 
         } finally {
             if (lock != null)
-               closeSingletonApplicationLock(lock);
+                closeSingletonApplicationLock(lock);
         }
     }
 
@@ -43,7 +43,7 @@ public class Startup {
         CmdLineParser parser = new CmdLineParser(programArgs);
         try {
             parser.parseArgument(args);
-            log.info("Program arguments: "+programArgs);
+            log.info("Program arguments: " + programArgs);
         } catch (CmdLineException e) {
             log.error("Command line arguments could not have been read", e);
             parser.printUsage(System.err);
@@ -60,8 +60,8 @@ public class Startup {
     }
 
     private static void loadLog4JOverride() {
-        if (new File("log4j.properties").exists())
-            PropertyConfigurator.configure("log4j.properties");
+        if (new File("log4j.xml").exists())
+            DOMConfigurator.configure("log4j.xml");
     }
 
     private static FileLock getSingletonApplicationFileLock() {

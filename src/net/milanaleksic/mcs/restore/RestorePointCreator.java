@@ -1,5 +1,11 @@
 package net.milanaleksic.mcs.restore;
 
+import net.milanaleksic.mcs.ApplicationManager;
+import net.milanaleksic.mcs.config.ApplicationConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.xml.DOMConfigurator;
+
 import java.io.*;
 import java.security.*;
 import java.sql.*;
@@ -8,12 +14,6 @@ import java.util.*;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import net.milanaleksic.mcs.ApplicationManager;
-import net.milanaleksic.mcs.config.ApplicationConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.PropertyConfigurator;
 
 /**
  * Posebna klasa za kreaciju kompletnog SQL skripta za ocuvanje
@@ -536,7 +536,8 @@ public class RestorePointCreator {
     }
 
     public static void main(String[] args) {
-        PropertyConfigurator.configure("log4j.properties");
+        if (new File("log4j.xml").exists())
+            DOMConfigurator.configure("log4j.xml");
         new RestorePointCreator().createRestorePoint();
     }
 
