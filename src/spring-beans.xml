@@ -11,7 +11,7 @@
         <property name="lifecycleListeners">
             <set>
                 <ref bean="splashScreenManager" />
-                <bean class="net.milanaleksic.mcs.config.ConfigurationManager" />
+                <bean class="net.milanaleksic.mcs.config.UserConfigurationManager" />
                 <bean class="net.milanaleksic.mcs.util.StatisticsManager" />
                 <bean class="net.milanaleksic.mcs.restore.RestoreManager" />
             </set>

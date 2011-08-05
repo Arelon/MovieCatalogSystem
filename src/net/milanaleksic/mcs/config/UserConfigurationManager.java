@@ -13,11 +13,11 @@ import java.io.File;
  * Date: 8/4/11
  * Time: 9:52 PM
  */
-public class ConfigurationManager implements LifecycleListener {
+public class UserConfigurationManager implements LifecycleListener {
 
     private static final String CONFIGURATION_FILE = "configuration.xml";
 
-    private static final Logger log = Logger.getLogger(ConfigurationManager.class);
+    private static final Logger log = Logger.getLogger(UserConfigurationManager.class);
 
     @Autowired private ApplicationManager applicationManager;
 

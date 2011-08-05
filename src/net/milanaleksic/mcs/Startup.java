@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs;
 
+import net.milanaleksic.mcs.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
 import net.milanaleksic.mcs.util.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -19,11 +21,17 @@ public class Startup {
         FileLock lock = null;
         try {
             lock = getSingletonApplicationFileLock();
-            ProgramArgs programArgs = getApplicationArgs(args);
+
+            ApplicationConfiguration applicationConfiguration = ApplicationConfigurationManager.loadApplicationConfiguration();
+            ApplicationManager.setApplicationConfiguration(applicationConfiguration);
+
             ApplicationManager applicationManager = bootSpringForManager();
+
+            ProgramArgs programArgs = getApplicationArgs(args);
             applicationManager.setProgramArgs(programArgs);
 
             applicationManager.entryPoint();
+
         } finally {
             if (lock != null)
                closeSingletonApplicationLock(lock);

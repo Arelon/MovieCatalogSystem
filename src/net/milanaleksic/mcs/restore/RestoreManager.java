@@ -1,8 +1,9 @@
 package net.milanaleksic.mcs.restore;
 
+import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.event.LifecycleListener;
 import net.milanaleksic.mcs.gui.ClosingForm;
-import net.milanaleksic.mcs.util.MCSProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * User: Milan Aleksic
@@ -11,11 +12,13 @@ import net.milanaleksic.mcs.util.MCSProperties;
  */
 public class RestoreManager implements LifecycleListener{
 
+    @Autowired private ApplicationManager applicationManager;
+
     @Override public void applicationStarted() {
     }
 
     @Override public void applicationShutdown() {
-        if (MCSProperties.getDatabaseCreateRestore()) {
+        if (ApplicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
             new ClosingForm();
             new RestorePointCreator().createRestorePoint();
         }

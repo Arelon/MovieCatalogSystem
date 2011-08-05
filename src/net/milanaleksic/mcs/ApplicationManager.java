@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs;
 
+import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.config.UserConfiguration;
 import net.milanaleksic.mcs.event.LifecycleListener;
 import net.milanaleksic.mcs.gui.MainForm;
@@ -19,6 +20,16 @@ public class ApplicationManager {
     @Autowired private SplashScreenManager splashScreenManager;
 
     private Set<LifecycleListener> lifecycleListeners;
+
+    private static ApplicationConfiguration applicationConfiguration;
+
+    public static void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
+        ApplicationManager.applicationConfiguration = applicationConfiguration;
+    }
+
+    public static ApplicationConfiguration getApplicationConfiguration() {
+        return applicationConfiguration;
+    }
 
     public void setLifecycleListeners(Set<LifecycleListener> lifecycleListeners) {
         this.lifecycleListeners = lifecycleListeners;

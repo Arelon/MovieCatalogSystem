@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import net.milanaleksic.mcs.util.MCSProperties;
-
+import net.milanaleksic.mcs.ApplicationManager;
+import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
@@ -182,6 +182,12 @@ public class RestorePointCreator {
             "DROP INDEX DB2ADMIN.IDX_ZAUZIMA_IDFILM;\r\n" +
             "CREATE INDEX IDX_ZAUZIMA_IDFILM on DB2ADMIN.ZAUZIMA(\"IDFILM\");";
 
+    private ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
+
+    public RestorePointCreator() {
+        databaseConfiguration = ApplicationManager.getApplicationConfiguration().getDatabaseConfiguration();
+    }
+
     private int getNextIdForTable(String tableName, String idName, Connection conn) throws SQLException {
         ResultSet rs = null;
         PreparedStatement st = null;
@@ -218,7 +224,7 @@ public class RestorePointCreator {
             log.info("Otvaram fajl za restore SQL skript...");
             pos2 = new PrintStream(new FileOutputStream(restoreFile), true, "UTF-8");
 
-            if (MCSProperties.getDatabaseType().equals("DB2")) {
+            if (databaseConfiguration.getDatabaseType().equals(ApplicationConfiguration.DatabaseType.DB2)) {
                 pos2.print(RESTORE_SCRIPT_DB2_ONLY_HEADER);
             }
 
@@ -402,7 +408,7 @@ public class RestorePointCreator {
         File createFile = new File("restore" + File.separatorChar + "KATALOG_CREATE.sql");
         createScriptStream = new PrintStream(new FileOutputStream(createFile), true, "UTF-8");
 
-        if (MCSProperties.getDatabaseType().equals("DB2")) {
+        if (databaseConfiguration.getDatabaseType().equals(ApplicationConfiguration.DatabaseType.DB2)) {
             createScriptStream.print(CREATE_SCRIPT_DB2_ONLY_HEADER);
         }
 
@@ -442,10 +448,11 @@ public class RestorePointCreator {
 
     private Connection prepareProcess() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
         log.info("Registrujem drajver...");
-        Class.forName(MCSProperties.getDBDialect()).newInstance();
+        Class.forName(databaseConfiguration.getDBDialect()).newInstance();
 
         log.info("Dohvatam konekciju...");
-        return DriverManager.getConnection(MCSProperties.getDBUrl(), MCSProperties.getDBUsername(), MCSProperties.getDBPassword());
+        return DriverManager.getConnection(databaseConfiguration.getDBUrl(),
+                databaseConfiguration.getDBUsername(), databaseConfiguration.getDBPassword());
     }
 
     private String returnMD5ForFile(File input) {
@@ -478,7 +485,7 @@ public class RestorePointCreator {
     }
 
     private String getSQLString(String input) {
-        if (MCSProperties.getConvertSQLUnicodeCharacters()) {
+        if (databaseConfiguration.getConvertSQLUnicodeCharacters()) {
             //log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
             return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
         } else

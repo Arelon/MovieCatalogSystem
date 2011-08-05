@@ -1,10 +1,10 @@
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.ApplicationManager;
+import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.db.*;
 import net.milanaleksic.mcs.export.*;
 import net.milanaleksic.mcs.util.FilmInfo;
-import net.milanaleksic.mcs.util.MCSProperties;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -48,6 +48,7 @@ public class MainForm extends Observable {
     private CurrentViewState currentViewState = new CurrentViewState();
     private final ApplicationManager applicationManager;
     private final HibernateTemplate hibernateTemplate;
+    private ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration;
 
     // private classes
 	
@@ -453,6 +454,7 @@ public class MainForm extends Observable {
 		this.currentViewState = new CurrentViewState();
         this.hibernateTemplate = applicationManager.getHibernateTemplate();
         this.applicationManager = applicationManager;
+        this.interfaceConfiguration = ApplicationManager.getApplicationConfiguration().getInterfaceConfiguration();
         this.addObserver(new Observer() {
 
 			@Override public void update(Observable obs, Object arg) {
@@ -495,7 +497,7 @@ public class MainForm extends Observable {
 		sShell.setLayout(new GridLayout(3, false));
 		mainTable = new Table(sShell, SWT.FULL_SELECTION);
 		mainTable.setHeaderVisible(true);
-		mainTable.setFont(new Font(Display.getDefault(), MCSProperties.getTableFont(), 12, SWT.NORMAL));
+		mainTable.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 12, SWT.NORMAL));
 		mainTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 3, 1));
 		mainTable.setLinesVisible(true);
 		TableColumn tableColumn1 = new TableColumn(mainTable, SWT.RIGHT);
@@ -650,12 +652,12 @@ public class MainForm extends Observable {
 		labelCurrentDesc.setText("Филтер извукао: ");
 		labelCurrent = new Label(wrapperDataInfo, SWT.NONE);
 		labelCurrent.setText("0");
-		labelCurrent.setFont(new Font(Display.getDefault(), MCSProperties.getTableFont(), 10, SWT.BOLD));
+		labelCurrent.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 10, SWT.BOLD));
 		Label labelFilterDesc = new Label(wrapperDataInfo, SWT.NONE);
 		labelFilterDesc.setText("Активан филтер: ");
 		labelFilter = new Label(wrapperDataInfo, SWT.NONE);
 		labelFilter.setText("");
-		labelFilter.setFont(new Font(Display.getDefault(), MCSProperties.getTableFont(), 10, SWT.BOLD));
+		labelFilter.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 10, SWT.BOLD));
 	}
 
 	private void createToolTicker() {
