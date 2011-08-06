@@ -19,6 +19,8 @@ public class ApplicationManager {
 
     @Autowired private SplashScreenManager splashScreenManager;
 
+    @Autowired private MainForm mainForm;
+
     private Set<LifecycleListener> lifecycleListeners;
 
     private static ApplicationConfiguration applicationConfiguration;
@@ -36,7 +38,7 @@ public class ApplicationManager {
     }
 
     private HibernateTemplate hibernateTemplate;
-	private static final String version = "0.42";
+	private static final String version = "0.5";
     private ProgramArgs programArgs;
     private UserConfiguration userConfiguration;
 
@@ -92,15 +94,18 @@ public class ApplicationManager {
     private void mainGuiLoop() {
         Display.setAppName("Movie Catalog System - v" + ApplicationManager.getVersion());
         Display display = Display.getDefault();
-        MainForm form = new MainForm(this);
+
+        mainForm.showForm();
+
         splashScreenManager.closeSplashScreen();
 
-        while (!form.isDisposed()) {
+        while (!mainForm.isDisposed()) {
             if (!display.readAndDispatch())
                 display.sleep();
         }
 
         display.dispose();
     }
+
 
 }

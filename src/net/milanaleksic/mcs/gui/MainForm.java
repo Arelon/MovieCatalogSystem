@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.hibernate.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -46,12 +47,13 @@ public class MainForm extends Observable {
     private final ArrayList<Integer> indeksi = new ArrayList<Integer>();  //  @jve:decl-index=0:
 
     private CurrentViewState currentViewState = new CurrentViewState();
-    private final ApplicationManager applicationManager;
-    private final HibernateTemplate hibernateTemplate;
     private ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration;
 
+    @Autowired private ApplicationManager applicationManager;
+    @Autowired private HibernateTemplate hibernateTemplate;
+
     // private classes
-	
+
 	private static class CurrentViewState {
 
 		private volatile Long activePage = 0L;
@@ -449,11 +451,9 @@ public class MainForm extends Observable {
 	
 	
 	// DESIGN
-	
-	public MainForm(ApplicationManager applicationManager) {
-		this.currentViewState = new CurrentViewState();
-        this.hibernateTemplate = applicationManager.getHibernateTemplate();
-        this.applicationManager = applicationManager;
+
+    public MainForm() {
+        this.currentViewState = new CurrentViewState();
         this.interfaceConfiguration = ApplicationManager.getApplicationConfiguration().getInterfaceConfiguration();
         this.addObserver(new Observer() {
 
@@ -473,14 +473,23 @@ public class MainForm extends Observable {
 				labelFilter.setText(currentViewState.getFilterText());
 				wrapperDataInfo.pack();
 			}
-			
+
 		});
-		createSShell();
-        sShell.setImage(new Image(sShell.getDisplay(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/res/database-64.png")));
+    }
+
+    public void showForm() {
+        checkCreated();
 		sShell.open();
 		mainTable.setFocus();
-	}
-	
+    }
+
+    private void checkCreated() {
+        if (sShell != null)
+            return;
+        createSShell();
+        sShell.setImage(new Image(sShell.getDisplay(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/res/database-64.png")));
+    }
+
 	public boolean isDisposed() {
 		return sShell.isDisposed();
 	}

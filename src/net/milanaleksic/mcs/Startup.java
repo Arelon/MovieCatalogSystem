@@ -2,11 +2,9 @@ package net.milanaleksic.mcs;
 
 import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
-import net.milanaleksic.mcs.util.ProgramArgs;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.*;
@@ -16,7 +14,14 @@ public class Startup {
 
     private static final Logger log = Logger.getLogger(Startup.class);
 
+    private static String[] programArgs;
+
+    public static String[] getProgramArgs() {
+        return programArgs;
+    }
+
     public static void main(String[] args) {
+        programArgs = args;
         loadLog4JOverride();
         FileLock lock = null;
         try {
@@ -25,11 +30,8 @@ public class Startup {
             ApplicationConfiguration applicationConfiguration = ApplicationConfigurationManager.loadApplicationConfiguration();
             ApplicationManager.setApplicationConfiguration(applicationConfiguration);
 
-            ApplicationManager applicationManager = bootSpringForManager();
-
-            ProgramArgs programArgs = getApplicationArgs(args);
-            applicationManager.setProgramArgs(programArgs);
-
+            ApplicationContext applicationContext = bootSpringContext();
+            ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager"));
             applicationManager.entryPoint();
 
         } finally {
@@ -38,25 +40,10 @@ public class Startup {
         }
     }
 
-    private static ProgramArgs getApplicationArgs(String[] args) {
-        ProgramArgs programArgs = new ProgramArgs();
-        CmdLineParser parser = new CmdLineParser(programArgs);
-        try {
-            parser.parseArgument(args);
-            log.info("Program arguments: " + programArgs);
-        } catch (CmdLineException e) {
-            log.error("Command line arguments could not have been read", e);
-            parser.printUsage(System.err);
-            return null;
-        }
-        return programArgs;
-    }
-
-    private static ApplicationManager bootSpringForManager() {
+    private static ApplicationContext bootSpringContext() {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
-        ApplicationManager applicationManager = ((ApplicationManager) context.getBean("applicationManager"));
         context.registerShutdownHook();
-        return applicationManager;
+        return context;
     }
 
     private static void loadLog4JOverride() {

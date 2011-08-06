@@ -6,6 +6,10 @@
 
     <context:annotation-config/>
 
+    <bean id="programArgsManager" class="net.milanaleksic.mcs.util.ProgramArgsService" />
+
+    <bean id="mainForm" class="net.milanaleksic.mcs.gui.MainForm" />
+
 	<bean id="applicationManager" class="net.milanaleksic.mcs.ApplicationManager">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
         <property name="lifecycleListeners">
