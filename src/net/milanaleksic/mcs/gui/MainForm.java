@@ -43,8 +43,6 @@ public class MainForm extends Observable {
     private ToolBar toolTicker = null;
     private Composite wrapperDataInfo = null;
 
-    private final ArrayList<Integer> indeksi = new ArrayList<Integer>();  //  @jve:decl-index=0:
-
     private CurrentViewState currentViewState = new CurrentViewState();
     private ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration;
 
@@ -170,10 +168,9 @@ public class MainForm extends Observable {
 	private class MainTableMouseListener extends MouseAdapter {
 		
 		@Override public void mouseDoubleClick(MouseEvent mouseevent) {
-			log.debug(mainTable.getSelection()[0].getText(6));
 			if (mainTable.getSelectionIndex() != -1)
 				new NewOrEditMovieForm(sShell, 
-						indeksi.get(mainTable.getSelectionIndex()),
+						(Integer)mainTable.getSelection()[0].getData(),
 								new Runnable() {
 
 									@Override public void run() {
@@ -269,7 +266,7 @@ public class MainForm extends Observable {
 		@Override public void widgetSelected(SelectionEvent e) {
 			if (mainTable.getSelectionIndex() == -1)
 				return;
-			new DeleteMovieForm(sShell, indeksi.get(mainTable.getSelectionIndex()),
+			new DeleteMovieForm(sShell, (Integer) mainTable.getSelection()[0].getData(),
 					new Runnable() {
 
 						@Override public void run() {
@@ -684,7 +681,6 @@ public class MainForm extends Observable {
 		List<Film> sviFilmovi = (List<Film>) hibernateTemplate.execute(
                 new ListMoviesHibernateCallback(applicationManager.getUserConfiguration().getElementsPerPage()));
 		long start = new Date().getTime();
-		indeksi.clear();
 		int i=0;
 		
         Object[] nizFilmova = sviFilmovi.toArray();
@@ -692,11 +688,8 @@ public class MainForm extends Observable {
 		
 		if (nizFilmova.length < mainTable.getTopIndex())
 			mainTable.setTopIndex(0);
-		Film lastFilm = null;
 		for (Object filmObj : nizFilmova) {
 			Film film = (Film) filmObj;
-			if (lastFilm !=null && film.getNazivfilma().equals(lastFilm.getNazivfilma()))
-				continue;
 			TableItem item;
 			if (i < mainTable.getItemCount())
 				item = mainTable.getItem(i);
@@ -711,8 +704,7 @@ public class MainForm extends Observable {
 					film.getFilmLocation(),
 					film.getKomentar()
 			});
-			indeksi.add(film.getIdfilm());
-			lastFilm = film;
+            item.setData(film.getIdfilm());
 		}
 		// brisemo preostale (visak) elemente od poslednjeg u tabeli
 		// pa sve do poslednjeg unetog 
