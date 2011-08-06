@@ -410,11 +410,16 @@ public class MainForm extends Observable {
                 query.setMaxResults(maxItems);
             }
 
-			List<Film> sviFilmovi = query.list();
-			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
             currentViewState.setMaxItemsPerPage(maxItems);
-			long end = new Date().getTime();
-			log.info("Osnovni upiti su zavrseni, izvuceno je "+sviFilmovi.size()+" redova za "+(end-start)+"ms");
+
+			List<Film> sviFilmovi = query.list();
+            long end = new Date().getTime();
+            log.info("Upit dohvatanja jedne stranice filmova je izvukao "+sviFilmovi.size()+" redova za "+(end-start)+"ms");
+
+            start = System.currentTimeMillis();
+			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
+			end = new Date().getTime();
+			log.info("Upit dohvatanja ukupnog broja filmova koji ispunjavaju kriterijum za "+(end-start)+"ms");
 			
 			return sviFilmovi;
 		}
@@ -682,7 +687,7 @@ public class MainForm extends Observable {
 		indeksi.clear();
 		int i=0;
 		
-		Object[] nizFilmova = sviFilmovi.toArray();
+        Object[] nizFilmova = sviFilmovi.toArray();
 		Arrays.sort(nizFilmova);		
 		
 		if (nizFilmova.length < mainTable.getTopIndex())
