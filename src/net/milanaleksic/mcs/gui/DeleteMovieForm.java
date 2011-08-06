@@ -3,8 +3,7 @@
  */
 package net.milanaleksic.mcs.gui;
 
-import net.milanaleksic.mcs.Startup;
-import net.milanaleksic.mcs.db.Film;
+import net.milanaleksic.mcs.domain.Film;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;

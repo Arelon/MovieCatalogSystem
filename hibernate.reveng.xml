@@ -22,7 +22,7 @@
 	<table-filter match-schema="XP" match-name="TIPMEDIJA" />
 	<table-filter match-schema="XP" match-name="ZANR" />
 	<table-filter match-schema="XP" match-name="ZAUZIMA" />
-	<table schema="XP" name="FILM" class="net.milanaleksic.mcs.db.Film">
+	<table schema="XP" name="FILM" class="net.milanaleksic.mcs.domain.Film">
 		<column name="NAZIVFILMA" jdbc-type=''></column>
 		<column name="PREVODNAZIVAFILMA" jdbc-type=''></column>
 		<column name="GODINA" jdbc-type=''></column>
@@ -30,30 +30,30 @@
 		<column name="KOMENTAR" jdbc-type=''></column>
 		<column name="IMDBREJTING" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="ZAUZIMA" class="net.milanaleksic.mcs.db.Zauzima">
+	<table schema="XP" name="ZAUZIMA" class="net.milanaleksic.mcs.domain.Zauzima">
 		<column name="IDMEDIJ" jdbc-type=''></column>
 		<column name="IDFILM" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="POZICIJA" class="net.milanaleksic.mcs.db.Pozicija">
+	<table schema="XP" name="POZICIJA" class="net.milanaleksic.mcs.domain.Pozicija">
 		<column name="POZICIJA" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="MEDIJ" class="net.milanaleksic.mcs.db.Medij">
+	<table schema="XP" name="MEDIJ" class="net.milanaleksic.mcs.domain.Medij">
 		<column name="INDEKS" jdbc-type=''></column>
 		<column name="IDTIP" jdbc-type=''></column>
 		<column name="IDPOZICIJA" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="LOGER" class="net.milanaleksic.mcs.db.Loger">
+	<table schema="XP" name="LOGER" class="net.milanaleksic.mcs.domain.Loger">
 		<column name="IDLOGERAKCIJA" jdbc-type=''></column>
 		<column name="KONTEKST" jdbc-type=''></column>
 		<column name="VREME" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="ZANR" class="net.milanaleksic.mcs.db.Zanr">
+	<table schema="XP" name="ZANR" class="net.milanaleksic.mcs.domain.Zanr">
 		<column name="ZANR" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="TIPMEDIJA" class="net.milanaleksic.mcs.db.TipMedija">
+	<table schema="XP" name="TIPMEDIJA" class="net.milanaleksic.mcs.domain.TipMedija">
 		<column name="NAZIV" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="LOGERAKCIJA" class="net.milanaleksic.mcs.db.LogerAkcija">
+	<table schema="XP" name="LOGERAKCIJA" class="net.milanaleksic.mcs.domain.LogerAkcija">
 		<column name="NAZIV" jdbc-type=''></column>
 	</table>
 </hibernate-reverse-engineering>

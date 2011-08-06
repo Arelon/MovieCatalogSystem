@@ -1,9 +1,8 @@
 package net.milanaleksic.mcs.gui;
 
-import net.milanaleksic.mcs.Startup;
 import net.milanaleksic.mcs.config.UserConfiguration;
-import net.milanaleksic.mcs.db.Pozicija;
-import net.milanaleksic.mcs.db.Zanr;
+import net.milanaleksic.mcs.domain.Pozicija;
+import net.milanaleksic.mcs.domain.Zanr;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;

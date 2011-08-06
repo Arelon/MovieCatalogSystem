@@ -2,7 +2,7 @@ package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.db.*;
+import net.milanaleksic.mcs.domain.*;
 import net.milanaleksic.mcs.export.*;
 import net.milanaleksic.mcs.util.FilmInfo;
 import org.apache.log4j.Logger;

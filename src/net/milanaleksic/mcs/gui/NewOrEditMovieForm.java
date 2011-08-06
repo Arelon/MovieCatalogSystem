@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.milanaleksic.mcs.Startup;
-import net.milanaleksic.mcs.db.*;
+import net.milanaleksic.mcs.domain.*;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;

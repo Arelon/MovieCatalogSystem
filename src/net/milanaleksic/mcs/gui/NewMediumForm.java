@@ -2,8 +2,7 @@ package net.milanaleksic.mcs.gui;
 
 import java.sql.SQLException;
 
-import net.milanaleksic.mcs.Startup;
-import net.milanaleksic.mcs.db.*;
+import net.milanaleksic.mcs.domain.*;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;

@@ -61,7 +61,7 @@
 		<property name="format_sql">true</property>-->
 		
 		
-		<mapping resource="net/milanaleksic/mcs/db/hibernate.mapping.xml"/>
+		<mapping resource="net/milanaleksic/mcs/domain/hibernate.mapping.xml"/>
 		
 	</session-factory>
 </hibernate-configuration>
