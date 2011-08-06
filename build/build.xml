@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="MCS" basedir="." default="zip">
 
-	<property name="src.version" value="0.42" />
+	<property name="src.version" value="0.5" />
 	<property name="build.version" value="203" />
 
 	<property name="root.dir" value=".." />
