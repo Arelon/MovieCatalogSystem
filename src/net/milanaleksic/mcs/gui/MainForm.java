@@ -4,7 +4,6 @@ import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.domain.*;
 import net.milanaleksic.mcs.export.*;
-import net.milanaleksic.mcs.util.FilmInfo;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -226,7 +225,7 @@ public class MainForm extends Observable {
 				return;
 			}
             @SuppressWarnings("unchecked")
-            final List<FilmInfo> allFilms = (List<FilmInfo>) hibernateTemplate.execute(new ListMoviesHibernateCallback());
+            final List<Film> allFilms = (List<Film>) hibernateTemplate.execute(new ListMoviesHibernateCallback());
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -246,15 +245,15 @@ public class MainForm extends Observable {
 						return mainTable.getColumn(column).getText();
                     switch(column) {
                         case 0:
-                            return allFilms.get(row).getMedij();
+                            return allFilms.get(row).getMedijListAsString();
                         case 1:
-                            return allFilms.get(row).getNazivFilma();
+                            return allFilms.get(row).getNazivfilma();
                         case 2:
-                            return allFilms.get(row).getPrevodFilma();
+                            return allFilms.get(row).getPrevodnazivafilma();
                         case 3:
-                            return allFilms.get(row).getZanr();
+                            return allFilms.get(row).getZanr().getZanr();
                         case 4:
-                            return allFilms.get(row).getPozicija();
+                            return allFilms.get(row).getFilmLocation();
                         default:
                             return "";
                     }
@@ -417,31 +416,7 @@ public class MainForm extends Observable {
 			long end = new Date().getTime();
 			log.info("Osnovni upiti su zavrseni, izvuceno je "+sviFilmovi.size()+" redova za "+(end-start)+"ms");
 			
-			start = new Date().getTime();
-			List<FilmInfo> rezLista = new LinkedList<FilmInfo> ();				
-			for (Film film : sviFilmovi) {
-                StringBuilder medijInfo = new StringBuilder();
-				Object[] mediji = film.getMedijs().toArray();
-				Arrays.sort(mediji);
-				
-				for (Object medij : mediji)
-					medijInfo.append(medij.toString()).append(' ');
-				String prisutan = film.getFilmLocation();
-				
-				rezLista.add(new FilmInfo(
-							film.getIdfilm(),
-							medijInfo.toString().trim(),
-							film.getNazivfilma(),
-							film.getPrevodnazivafilma(),
-							film.getZanr().getZanr(),
-							prisutan,
-							film.getKomentar()
-						));
-			}
-			end = new Date().getTime();
-			log.info("Dohvatanje vezanih informacija i priprema liste zavrseno za "+(end-start)+"ms");
-			
-			return rezLista;
+			return sviFilmovi;
 		}
 		
 	}
@@ -701,7 +676,7 @@ public class MainForm extends Observable {
 			toolTicker.update();
 		}
 		@SuppressWarnings("unchecked")
-		List<FilmInfo> sviFilmovi = (List<FilmInfo>) hibernateTemplate.execute(
+		List<Film> sviFilmovi = (List<Film>) hibernateTemplate.execute(
                 new ListMoviesHibernateCallback(applicationManager.getUserConfiguration().getElementsPerPage()));
 		long start = new Date().getTime();
 		indeksi.clear();
@@ -712,10 +687,10 @@ public class MainForm extends Observable {
 		
 		if (nizFilmova.length < mainTable.getTopIndex())
 			mainTable.setTopIndex(0);
-		FilmInfo lastFilm = null;
+		Film lastFilm = null;
 		for (Object filmObj : nizFilmova) {
-			FilmInfo film = (FilmInfo) filmObj;
-			if (lastFilm !=null && film.getNazivFilma().equals(lastFilm.getNazivFilma()))
+			Film film = (Film) filmObj;
+			if (lastFilm !=null && film.getNazivfilma().equals(lastFilm.getNazivfilma()))
 				continue;
 			TableItem item;
 			if (i < mainTable.getItemCount())
@@ -724,14 +699,14 @@ public class MainForm extends Observable {
 				item = new TableItem(mainTable, SWT.NONE);
 			i++;
 			item.setText(new String[] {
-					film.getMedij(), 
-					film.getNazivFilma(),
-					film.getPrevodFilma(),
-					film.getZanr(),
-					film.getPozicija(),
+					film.getMedijListAsString(),
+					film.getNazivfilma(),
+					film.getPrevodnazivafilma(),
+					film.getZanr().getZanr(),
+					film.getFilmLocation(),
 					film.getKomentar()
 			});
-			indeksi.add(film.getId());
+			indeksi.add(film.getIdfilm());
 			lastFilm = film;
 		}
 		// brisemo preostale (visak) elemente od poslednjeg u tabeli

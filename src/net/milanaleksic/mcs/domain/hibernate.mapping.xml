@@ -42,7 +42,7 @@
             <column name="IDFILM" />
             <generator class="identity" />
         </id>
-        <many-to-one name="zanr" class="net.milanaleksic.mcs.domain.Zanr" fetch="select">
+        <many-to-one name="zanr" class="net.milanaleksic.mcs.domain.Zanr" fetch="select" lazy="false">
             <column name="IDZANR" not-null="true" />
         </many-to-one>
         <property name="nazivfilma" type="string">
@@ -60,11 +60,11 @@
         <property name="imdbrejting" type="big_decimal">
             <column name="IMDBREJTING" precision="3" scale="1" not-null="true" />
         </property>
-        <set name="medijs" inverse="true" table="ZAUZIMA" schema="DB2ADMIN">
+        <set name="medijs" inverse="true" table="ZAUZIMA" schema="DB2ADMIN" lazy="false">
             <key>
                 <column name="IDFILM" not-null="true" />
             </key>
-            <many-to-many entity-name="net.milanaleksic.mcs.domain.Medij">
+            <many-to-many entity-name="net.milanaleksic.mcs.domain.Medij" lazy="false">
                 <column name="IDMEDIJ" not-null="true" />
             </many-to-many>
         </set>
@@ -76,10 +76,10 @@
             <column name="IDMEDIJ" />
             <generator class="identity" />
         </id>
-        <many-to-one name="tipMedija" class="net.milanaleksic.mcs.domain.TipMedija" fetch="select">
+        <many-to-one name="tipMedija" class="net.milanaleksic.mcs.domain.TipMedija" fetch="select" lazy="false">
             <column name="IDTIP" not-null="true" />
         </many-to-one>
-        <many-to-one name="pozicija" class="net.milanaleksic.mcs.domain.Pozicija" fetch="select">
+        <many-to-one name="pozicija" class="net.milanaleksic.mcs.domain.Pozicija" fetch="select" lazy="false">
             <column name="IDPOZICIJA" not-null="true" />
         </many-to-one>
         <property name="indeks" type="int">
