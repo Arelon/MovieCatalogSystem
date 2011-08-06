@@ -11,7 +11,6 @@
     <bean id="mainForm" class="net.milanaleksic.mcs.gui.MainForm" />
 
 	<bean id="applicationManager" class="net.milanaleksic.mcs.ApplicationManager">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
         <property name="lifecycleListeners">
             <set>
                 <ref bean="splashScreenManager" />

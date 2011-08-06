@@ -8,7 +8,6 @@ import net.milanaleksic.mcs.gui.SplashScreenManager;
 import net.milanaleksic.mcs.util.ProgramArgs;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.util.*;
 
@@ -21,9 +20,13 @@ public class ApplicationManager {
 
     @Autowired private MainForm mainForm;
 
+    private static ApplicationConfiguration applicationConfiguration;
+
     private Set<LifecycleListener> lifecycleListeners;
 
-    private static ApplicationConfiguration applicationConfiguration;
+    private static final String version = "0.5";
+    private ProgramArgs programArgs;
+    private UserConfiguration userConfiguration;
 
     public static void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
         ApplicationManager.applicationConfiguration = applicationConfiguration;
@@ -37,22 +40,9 @@ public class ApplicationManager {
         this.lifecycleListeners = lifecycleListeners;
     }
 
-    private HibernateTemplate hibernateTemplate;
-	private static final String version = "0.5";
-    private ProgramArgs programArgs;
-    private UserConfiguration userConfiguration;
-
     public UserConfiguration getUserConfiguration() {
         return userConfiguration;
     }
-
-    public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
 
 	public static String getVersion() {
 		return version;
