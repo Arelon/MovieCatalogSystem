@@ -43,8 +43,10 @@ public class RestorePointService implements InitializingBean {
                     "connect to KATALOG user db2admin using db2admin;\r\n" +
                     "\r\n";
 
+    private static final String MCS_VERSION_TAG = "/*MCS-VERSION: ";
+
     private static final String RESTORE_SCRIPT_HEADER =
-            "set schema DB2ADMIN;\n\n";
+            MCS_VERSION_TAG+"%d\n*/\n\nset schema DB2ADMIN;\n\n";
 
     private static final String RESTORE_SCRIPT_DB2_ONLY_HEADER =
             "CONNECT TO KATALOG USER DB2ADMIN USING db2admin";
@@ -91,7 +93,7 @@ public class RestorePointService implements InitializingBean {
                 pos2.print(RESTORE_SCRIPT_DB2_ONLY_HEADER);
             }
 
-            pos2.print(RESTORE_SCRIPT_HEADER);
+            pos2.print(getScriptHeader());
 
             log.debug("Working on TIPMEDIJA (1/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.TIPMEDIJA");
@@ -257,7 +259,7 @@ public class RestorePointService implements InitializingBean {
             createScriptStream.print(CREATE_SCRIPT_DB2_ONLY_HEADER);
         }
 
-        createScriptStream.print(RESTORE_SCRIPT_HEADER);
+        createScriptStream.print(getScriptHeader());
 
         createScriptStream.print(createRestartWithForTable("Param", "IdParam", conn));
         createScriptStream.print(createRestartWithForTable("Film", "IdFilm", conn));
@@ -267,6 +269,10 @@ public class RestorePointService implements InitializingBean {
         createScriptStream.print(createRestartWithForTable("Zanr", "IdZanr", conn));
 
         close(createScriptStream);
+    }
+
+    private String getScriptHeader() {
+        return String.format(RESTORE_SCRIPT_HEADER, databaseConfiguration.getDBVersion());
     }
 
     private void createRestoreDir() {
@@ -433,8 +439,22 @@ public class RestorePointService implements InitializingBean {
     }
 
     private int getDatabaseVersionFromRestorePoint() {
-        //TODO uncomplete: return 0 if no restore present, 1 if no version identifier in restore, or the version identifier
-        return 0;
+        File restoreFile = new File("restore//" + SCRIPT_KATALOG_RESTORE);
+        if (!restoreFile.exists())
+            return 0;
+        LineNumberReader reader = null;
+        try {
+            reader = new LineNumberReader(new FileReader(restoreFile));
+            String firstLine = reader.readLine();
+            if (firstLine.contains(MCS_VERSION_TAG))
+                return Integer.parseInt((firstLine.indexOf(MCS_VERSION_TAG) + firstLine.substring(MCS_VERSION_TAG.length())).trim());
+        } catch (IOException e) {
+            log.error("IO Error while reading DB version from restore point", e);
+        } finally {
+            if (reader != null)
+                try { reader.close(); } catch (IOException ignored) {}
+        }
+        return 1;
     }
 
     public void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint) {
@@ -450,6 +470,7 @@ public class RestorePointService implements InitializingBean {
     }
 
     private void safeRunDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+        log.debug(String.format("SafeRunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
         int startAlterVersion = dbVersionFromDatabase+1;
         if (dbVersionFromDatabase == 0) {
             int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
@@ -482,7 +503,6 @@ public class RestorePointService implements InitializingBean {
             } finally {
                 fis.close();
             }
-            conn.commit();
         }
     }
 
