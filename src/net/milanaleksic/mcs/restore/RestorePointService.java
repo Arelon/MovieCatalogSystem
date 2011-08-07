@@ -31,7 +31,6 @@ public class RestorePointService implements InitializingBean {
 
     private static final String STATEMENT_DELIMITER = ";";
 
-    private static final String SCRIPT_RESOURCE_RECREATE = "recreate_script.sql";
     private static final String SCRIPT_RESOURCE_ALTER = "alter_script_%d.sql";
 
     private static final String SCRIPT_KATALOG_RESTART_COUNTERS = "KATALOG_RESTART_COUNTERS.sql";
@@ -380,7 +379,7 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    public int getDatabaseVersion() {
+    public int getDatabaseVersionFromDatabase() {
         Connection conn = null;
         ResultSet rs = null;
         PreparedStatement st = null;
@@ -393,7 +392,7 @@ public class RestorePointService implements InitializingBean {
             rs.next();
 
             String dbVersion = rs.getString(1);
-            log.info("Expected DB version = "+databaseConfiguration.getDBVersion()+", DB version = "+dbVersion);
+            log.info("Expected DB version = " + databaseConfiguration.getDBVersion() + ", DB version = " + dbVersion);
 
             return Integer.valueOf(dbVersion);
 
@@ -413,45 +412,67 @@ public class RestorePointService implements InitializingBean {
     }
 
     public void restoreDatabaseIfNeeded() {
-        int version = getDatabaseVersion();
-        if (version > databaseConfiguration.getDBVersion())
-            throw new IllegalStateException(
-                    String.format("Database is not supported (MCS is of version %d, but your database is of version %d",
-                            databaseConfiguration.getDBVersion(), version));
-        else if (version == databaseConfiguration.getDBVersion())
+        int activeMCSDBVersion = databaseConfiguration.getDBVersion();
+        int versionFromDatabase = getDatabaseVersionFromDatabase();
+        if (versionFromDatabase == activeMCSDBVersion)
             return;
-        runDatabaseRecreation(version);
+
+        if (versionFromDatabase > activeMCSDBVersion)
+            throw new IllegalStateException(
+                    String.format("Database is not supported (MCS is of versionFromDatabase %d, but your database is of versionFromDatabase %d)",
+                            activeMCSDBVersion, versionFromDatabase));
+
+        int versionFromRestorePoint = getDatabaseVersionFromRestorePoint();
+        if (versionFromRestorePoint > activeMCSDBVersion) {
+            throw new IllegalStateException(
+                    String.format("Database restore point is not supported (MCS is of versionFromRestorePoint %d, but your database is of versionFromDatabase %d)",
+                            activeMCSDBVersion, versionFromRestorePoint));
+        }
+
+        runDatabaseRecreation(versionFromDatabase, versionFromRestorePoint);
     }
 
-    public void runDatabaseRecreation(int dbVersion) {
+    private int getDatabaseVersionFromRestorePoint() {
+        //TODO uncomplete: return 0 if no restore present, 1 if no version identifier in restore, or the version identifier
+        return 0;
+    }
+
+    public void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint) {
         Connection conn = null;
-        PreparedStatement st = null;
         try {
             conn = prepareDriverAndFetchConnection();
-
-            if (dbVersion == 0) {
-                log.info("Recreating DDL");
-                executeScriptOnConnection(getClass().getResourceAsStream(SCRIPT_RESOURCE_RECREATE), conn);
-
-                executeScriptOnConnection(conn, "restore//" + SCRIPT_KATALOG_RESTART_COUNTERS);
-                executeScriptOnConnection(conn, "restore//" + SCRIPT_KATALOG_RESTORE);
-            }
-
-            for (int i=dbVersion+1; i<=databaseConfiguration.getDBVersion(); i++) {
-                log.info("Running alter "+i);
-                executeScriptOnConnection(getClass().getResourceAsStream(String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
-            }
-
-            log.info("Restoration finished");
+            safeRunDatabaseRecreation(dbVersionFromDatabase, dbVersionFromRestorePoint, conn);
         } catch (Exception e) {
             log.error("Restoration failed", e);
         } finally {
-            close(st);
             close(conn);
         }
     }
 
-    private void executeScriptOnConnection(Connection conn, String restartCountersScript) throws IOException, SQLException {
+    private void safeRunDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+        int startAlterVersion = dbVersionFromDatabase+1;
+        if (dbVersionFromDatabase == 0) {
+            int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
+            for (int i=startAlterVersion; i<=ending; i++) {
+                log.info("Running alter "+i);
+                executeScriptOnConnection(getClass().getResourceAsStream(
+                        String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
+            }
+            startAlterVersion = ending+1;
+
+            if (dbVersionFromRestorePoint != 0) {
+                executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTART_COUNTERS, conn);
+                executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
+            }
+        }
+        for (int i=startAlterVersion; i<=databaseConfiguration.getDBVersion(); i++) {
+            log.info("Running alter "+i);
+            executeScriptOnConnection(getClass().getResourceAsStream(String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
+        }
+        log.info("Restoration finished");
+    }
+
+    private void executeScriptOnConnection(String restartCountersScript, Connection conn) throws IOException, SQLException {
         File fileRestartCountersScript = new File(restartCountersScript);
         log.info("Restoring file: " + fileRestartCountersScript.getName());
         if (fileRestartCountersScript.exists()) {
