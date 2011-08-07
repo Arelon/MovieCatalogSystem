@@ -1,11 +1,9 @@
 package net.milanaleksic.mcs;
 
-import net.milanaleksic.mcs.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.config.UserConfiguration;
+import net.milanaleksic.mcs.config.*;
 import net.milanaleksic.mcs.event.LifecycleListener;
 import net.milanaleksic.mcs.gui.MainForm;
 import net.milanaleksic.mcs.gui.SplashScreenManager;
-import net.milanaleksic.mcs.util.ProgramArgs;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +23,6 @@ public class ApplicationManager {
     private Set<LifecycleListener> lifecycleListeners;
 
     private static final String version = "0.5";
-    private ProgramArgs programArgs;
     private UserConfiguration userConfiguration;
 
     public static void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
@@ -47,14 +44,6 @@ public class ApplicationManager {
 	public static String getVersion() {
 		return version;
 	}
-
-    public void setProgramArgs(ProgramArgs programArgs) {
-        this.programArgs = programArgs;
-    }
-
-    public ProgramArgs getProgramArgs() {
-        return programArgs;
-    }
 
     public void setUserConfiguration(UserConfiguration userConfiguration) {
         this.userConfiguration = userConfiguration;

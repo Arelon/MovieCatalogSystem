@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.util;
+package net.milanaleksic.mcs.config;
 
 import org.kohsuke.args4j.Option;
 

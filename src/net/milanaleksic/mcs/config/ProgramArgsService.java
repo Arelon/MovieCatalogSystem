@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.util;
+package net.milanaleksic.mcs.config;
 
 import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.Startup;

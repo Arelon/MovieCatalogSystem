@@ -8,7 +8,7 @@
 
     <bean id="restorePointService" class="net.milanaleksic.mcs.restore.RestorePointService" />
 
-    <bean id="programArgsManager" class="net.milanaleksic.mcs.util.ProgramArgsService" />
+    <bean id="programArgsManager" class="net.milanaleksic.mcs.config.ProgramArgsService" />
 
     <bean id="mainForm" class="net.milanaleksic.mcs.gui.MainForm" />
 
