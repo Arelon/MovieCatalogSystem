@@ -7,7 +7,6 @@
 	<property name="root.dir" value=".." />
 	<property name="src.dir" value="../src" />
 	<property name="lib.dir" value="../lib" />
-	<property name="db.dir" value="distDB" />
 	<property name="restore.dir" value="restore" />
 	<property name="export.dir" value="../startup/export" />
 	<property name="restore.dir" value="../startup/restore" />
@@ -81,7 +80,6 @@
 			<zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar" />
 			<zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar" />
 			<zipfileset dir="${root.dir}" prefix="" includes="*.exe" />
-			<zipfileset dir="${db.dir}" prefix="bin/db" />
 			<zipfileset dir="${export.dir}" prefix="bin/export" />
 		</zip>
 

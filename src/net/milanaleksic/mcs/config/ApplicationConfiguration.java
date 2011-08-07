@@ -15,11 +15,11 @@ public class ApplicationConfiguration {
 
     @XmlEnum
     public enum DatabaseType {
-        @XmlEnumValue("derby")DERBY,
-        @XmlEnumValue("derby-jar")DERBY_JAR,
-        @XmlEnumValue("hsql")HSQL,
-        @XmlEnumValue("h2")H2,
-        @XmlEnumValue("db2")DB2
+        @XmlEnumValue("derby") DERBY,
+        @XmlEnumValue("derby-jar") DERBY_JAR,
+        @XmlEnumValue("hsql") HSQL,
+        @XmlEnumValue("h2") H2,
+        @XmlEnumValue("db2") DB2
     }
 
     public static class DatabaseConfiguration {
@@ -27,6 +27,7 @@ public class ApplicationConfiguration {
         private DatabaseType databaseType = DatabaseType.H2;
 
         private boolean databaseCreateRestore = true;
+        private int dbVersion = 1;
 
         public DatabaseType getDatabaseType() {
             return databaseType;
@@ -130,6 +131,10 @@ public class ApplicationConfiguration {
                     "databaseType=" + databaseType +
                     ", databaseCreateRestore=" + databaseCreateRestore +
                     '}';
+        }
+
+        public int getDBVersion() {
+            return dbVersion;
         }
     }
 
