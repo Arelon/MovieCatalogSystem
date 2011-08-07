@@ -32,8 +32,11 @@ public class RestorePointService implements InitializingBean {
     private static final String STATEMENT_DELIMITER = ";";
 
     private static final String SCRIPT_RESOURCE_RECREATE = "recreate_script.sql";
+    private static final String SCRIPT_RESOURCE_ALTER = "alter_script_%d.sql";
+
     private static final String SCRIPT_KATALOG_RESTART_COUNTERS = "KATALOG_RESTART_COUNTERS.sql";
     private static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
+    private static final String SCRIPT_KATALOG_RESTORE_WITH_TIMESTAMP = "KATALOG_RESTORE_%s.sql";
 
     private static final String CREATE_SCRIPT_DB2_ONLY_HEADER =
             "CREATE DATABASE KATALOG ON 'D:' USING CODESET UTF-8 TERRITORY RU COLLATE USING UCA400_NO;\r\n" +
@@ -91,7 +94,7 @@ public class RestorePointService implements InitializingBean {
 
             pos2.print(RESTORE_SCRIPT_HEADER);
 
-            log.info("Working on TIPMEDIJA (1/9)...");
+            log.info("Working on TIPMEDIJA (1/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.TIPMEDIJA");
             rs = st.executeQuery();
             while (rs.next())
@@ -100,7 +103,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on POZICIJA (2/9)...");
+            log.info("Working on POZICIJA (2/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.POZICIJA");
             rs = st.executeQuery();
             while (rs.next())
@@ -109,7 +112,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on ZANR (3/9)...");
+            log.info("Working on ZANR (3/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.ZANR");
             rs = st.executeQuery();
             while (rs.next())
@@ -118,7 +121,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on MEDIJ (4/9)...");
+            log.info("Working on MEDIJ (4/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.MEDIJ");
             rs = st.executeQuery();
             while (rs.next())
@@ -127,7 +130,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on FILM (5/9)...");
+            log.info("Working on FILM (5/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.FILM");
             rs = st.executeQuery();
             while (rs.next())
@@ -144,7 +147,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on ZAUZIMA (6/9)...");
+            log.info("Working on ZAUZIMA (6/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.ZAUZIMA");
             rs = st.executeQuery();
             while (rs.next())
@@ -153,27 +156,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on LOGERAKCIJA (7/9)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.LOGERAKCIJA");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO LOGERAKCIJA VALUES(" + rs.getInt("IDLOGERAKCIJA") + ", " + getSQLString(rs.getString("NAZIV")) + ")");
-
-            close(st);
-            close(rs);
-
-            log.info("Working on LOGER (8/9)...");
-            st = conn.prepareStatement("SELECT IDLOGER, IDLOGERAKCIJA, KONTEKST, VREME VREME FROM DB2ADMIN.LOGER");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO LOGER VALUES("
-                        + rs.getInt("IDLOGER") + ", "
-                        + rs.getInt("IDLOGERAKCIJA") + ", "
-                        + getSQLString(rs.getString("KONTEKST")) + ", "
-                        + getSQLString(rs.getString("VREME"))
-                        + ")");
-
-            log.info("Working on PARAM (9/9)...");
+            log.info("Working on PARAM (7/7)...");
             st = conn.prepareStatement("SELECT IDPARAM, NAME, VALUE FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'");
             rs = st.executeQuery();
             while (rs.next())
@@ -221,7 +204,8 @@ public class RestorePointService implements InitializingBean {
         long lastMod = restoreFile.lastModified();
         Date lastModDate = Calendar.getInstance().getTime();
         lastModDate.setTime(lastMod);
-        renamedOldRestoreFile = new File("restore" + File.separatorChar + "KATALOG_RESTORE_" + createTimestampString(lastModDate) + ".sql");
+        renamedOldRestoreFile = new File("restore" + File.separatorChar +
+                String.format(SCRIPT_KATALOG_RESTORE_WITH_TIMESTAMP, createTimestampString(lastModDate)));
         if (!restoreFile.renameTo(renamedOldRestoreFile))
             throw new IllegalStateException("Old restore file could not be renamed " + restoreFile + "->" + renamedOldRestoreFile);
 
@@ -277,8 +261,6 @@ public class RestorePointService implements InitializingBean {
         createScriptStream.print(RESTORE_SCRIPT_HEADER);
 
         createScriptStream.print(createRestartWithForTable("Param", "IdParam", conn));
-        createScriptStream.print(createRestartWithForTable("Loger", "IdLoger", conn));
-        createScriptStream.print(createRestartWithForTable("LogerAkcija", "IdLogerAkcija", conn));
         createScriptStream.print(createRestartWithForTable("Film", "IdFilm", conn));
         createScriptStream.print(createRestartWithForTable("Medij", "IdMedij", conn));
         createScriptStream.print(createRestartWithForTable("Pozicija", "IdPozicija", conn));
@@ -398,8 +380,7 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    public boolean validateDatabase() {
-        boolean valid = false;
+    public int getDatabaseVersion() {
         Connection conn = null;
         ResultSet rs = null;
         PreparedStatement st = null;
@@ -414,7 +395,7 @@ public class RestorePointService implements InitializingBean {
             String dbVersion = rs.getString(1);
             log.info("Expected DB version = "+databaseConfiguration.getDBVersion()+", DB version = "+dbVersion);
 
-            valid = dbVersion.equals(Integer.toString(databaseConfiguration.getDBVersion()));
+            return Integer.valueOf(dbVersion);
 
         } catch (Exception e) {
             log.error("Validation failed - " + e.getMessage());
@@ -423,7 +404,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(conn);
         }
-        return valid;
+        return 0;
     }
 
     @Override
@@ -431,17 +412,35 @@ public class RestorePointService implements InitializingBean {
         databaseConfiguration = ApplicationManager.getApplicationConfiguration().getDatabaseConfiguration();
     }
 
-    public void restoreDatabase() {
+    public void restoreDatabaseIfNeeded() {
+        int version = getDatabaseVersion();
+        if (version > databaseConfiguration.getDBVersion())
+            throw new IllegalStateException(
+                    String.format("Database is not supported (MCS is of version %d, but your database is of version %d",
+                            databaseConfiguration.getDBVersion(), version));
+        else if (version == databaseConfiguration.getDBVersion())
+            return;
+        runDatabaseRecreation(version);
+    }
+
+    public void runDatabaseRecreation(int dbVersion) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
             conn = prepareDriverAndFetchConnection();
 
-            log.info("Restoring DDL");
-            executeScriptOnConnection(getClass().getResourceAsStream(SCRIPT_RESOURCE_RECREATE), conn);
+            if (dbVersion == 0) {
+                log.info("Recreating DDL");
+                executeScriptOnConnection(getClass().getResourceAsStream(SCRIPT_RESOURCE_RECREATE), conn);
 
-            executeScriptOnConnection(conn, new File("restore//"+ SCRIPT_KATALOG_RESTART_COUNTERS));
-            executeScriptOnConnection(conn, new File("restore//"+ SCRIPT_KATALOG_RESTORE));
+                executeScriptOnConnection(conn, "restore//" + SCRIPT_KATALOG_RESTART_COUNTERS);
+                executeScriptOnConnection(conn, "restore//" + SCRIPT_KATALOG_RESTORE);
+            }
+
+            for (int i=dbVersion+1; i<=databaseConfiguration.getDBVersion(); i++) {
+                log.info("Running alter "+i);
+                executeScriptOnConnection(getClass().getResourceAsStream(String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
+            }
 
             log.info("Restoration finished");
         } catch (Exception e) {
@@ -452,12 +451,13 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    private void executeScriptOnConnection(Connection conn, File restartCountersScript) throws IOException, SQLException {
-        log.info("Restoring file: " + restartCountersScript.getName());
-        if (restartCountersScript.exists()) {
-            FileInputStream fis = new FileInputStream(restartCountersScript);
+    private void executeScriptOnConnection(Connection conn, String restartCountersScript) throws IOException, SQLException {
+        File fileRestartCountersScript = new File(restartCountersScript);
+        log.info("Restoring file: " + fileRestartCountersScript.getName());
+        if (fileRestartCountersScript.exists()) {
+            FileInputStream fis = new FileInputStream(fileRestartCountersScript);
             try {
-                executeScriptOnConnection(new FileInputStream(restartCountersScript), conn);
+                executeScriptOnConnection(fis, conn);
             } finally {
                 fis.close();
             }

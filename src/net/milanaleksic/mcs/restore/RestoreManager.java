@@ -12,14 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class RestoreManager implements LifecycleListener{
 
-    @Autowired private ApplicationManager applicationManager;
-
     @Autowired private RestorePointService restorePointService;
 
     @Override public void applicationStarted() {
-        if (!restorePointService.validateDatabase()) {
-             restorePointService.restoreDatabase();
-        }
+         restorePointService.restoreDatabaseIfNeeded();
     }
 
     @Override public void applicationShutdown() {

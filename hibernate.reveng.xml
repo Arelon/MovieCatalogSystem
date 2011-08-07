@@ -42,18 +42,10 @@
 		<column name="IDTIP" jdbc-type=''></column>
 		<column name="IDPOZICIJA" jdbc-type=''></column>
 	</table>
-	<table schema="XP" name="LOGER" class="net.milanaleksic.mcs.domain.Loger">
-		<column name="IDLOGERAKCIJA" jdbc-type=''></column>
-		<column name="KONTEKST" jdbc-type=''></column>
-		<column name="VREME" jdbc-type=''></column>
-	</table>
 	<table schema="XP" name="ZANR" class="net.milanaleksic.mcs.domain.Zanr">
 		<column name="ZANR" jdbc-type=''></column>
 	</table>
 	<table schema="XP" name="TIPMEDIJA" class="net.milanaleksic.mcs.domain.TipMedija">
-		<column name="NAZIV" jdbc-type=''></column>
-	</table>
-	<table schema="XP" name="LOGERAKCIJA" class="net.milanaleksic.mcs.domain.LogerAkcija">
 		<column name="NAZIV" jdbc-type=''></column>
 	</table>
 </hibernate-reverse-engineering>

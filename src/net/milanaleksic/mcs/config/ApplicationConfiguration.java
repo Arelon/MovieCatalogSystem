@@ -24,10 +24,10 @@ public class ApplicationConfiguration {
 
     public static class DatabaseConfiguration {
 
-        private DatabaseType databaseType = DatabaseType.H2;
+        private int dbVersion = 2;
 
+        private DatabaseType databaseType = DatabaseType.H2;
         private boolean databaseCreateRestore = true;
-        private int dbVersion = 1;
 
         public DatabaseType getDatabaseType() {
             return databaseType;
