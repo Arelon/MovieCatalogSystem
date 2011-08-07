@@ -80,8 +80,8 @@ public class RestorePointService implements InitializingBean {
             createRestoreDir();
             createRestartCountersScript(conn);
 
-            log.info("Renaming old restore script if there is one...");
             File restoreFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTORE);
+            log.debug("Renaming old restore script if there is one...");
             if (restoreFile.exists()) {
                 renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
             }
@@ -94,7 +94,7 @@ public class RestorePointService implements InitializingBean {
 
             pos2.print(RESTORE_SCRIPT_HEADER);
 
-            log.info("Working on TIPMEDIJA (1/7)...");
+            log.debug("Working on TIPMEDIJA (1/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.TIPMEDIJA");
             rs = st.executeQuery();
             while (rs.next())
@@ -103,7 +103,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on POZICIJA (2/7)...");
+            log.debug("Working on POZICIJA (2/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.POZICIJA");
             rs = st.executeQuery();
             while (rs.next())
@@ -112,7 +112,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on ZANR (3/7)...");
+            log.debug("Working on ZANR (3/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.ZANR");
             rs = st.executeQuery();
             while (rs.next())
@@ -121,7 +121,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on MEDIJ (4/7)...");
+            log.debug("Working on MEDIJ (4/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.MEDIJ");
             rs = st.executeQuery();
             while (rs.next())
@@ -130,7 +130,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on FILM (5/7)...");
+            log.debug("Working on FILM (5/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.FILM");
             rs = st.executeQuery();
             while (rs.next())
@@ -147,7 +147,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on ZAUZIMA (6/7)...");
+            log.debug("Working on ZAUZIMA (6/7)...");
             st = conn.prepareStatement("SELECT * FROM DB2ADMIN.ZAUZIMA");
             rs = st.executeQuery();
             while (rs.next())
@@ -156,7 +156,7 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
 
-            log.info("Working on PARAM (7/7)...");
+            log.debug("Working on PARAM (7/7)...");
             st = conn.prepareStatement("SELECT IDPARAM, NAME, VALUE FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'");
             rs = st.executeQuery();
             while (rs.next())
@@ -175,7 +175,7 @@ public class RestorePointService implements InitializingBean {
                 eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
             }
 
-            log.info("Restoring process finished successfully!");
+            log.info("Restore point creation process finished successfully!");
 
         } catch (Exception e) {
             log.error("Failure during restore creation ", e);
@@ -189,7 +189,7 @@ public class RestorePointService implements InitializingBean {
 
     private void eraseOldBackupIfIdenticalToCurrent(File renamedOldRestoreFile, File restoreFile) {
         if (returnMD5ForFile(renamedOldRestoreFile).equals(returnMD5ForFile(restoreFile))) {
-            log.info("Deleting current backup because it is identical to previous");
+            log.debug("Deleting current backup because it is identical to previous");
             File redundantZipFile = new File(renamedOldRestoreFile.getAbsolutePath() + ".zip");
             if (redundantZipFile.exists())
                 if (!redundantZipFile.delete())
@@ -216,7 +216,7 @@ public class RestorePointService implements InitializingBean {
     private void compressPreviousRestoreFiles(File renamedOldRestoreFile) {
         ZipOutputStream zos = null;
         try {
-            log.info("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
+            log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
             zos = new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"));
 
             writeFileToZipStream(zos, SCRIPT_KATALOG_RESTART_COUNTERS);
@@ -250,7 +250,7 @@ public class RestorePointService implements InitializingBean {
 
     private void createRestartCountersScript(Connection conn) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
         PrintStream createScriptStream;
-        log.info("Writing new CREATE script...");
+        log.debug("Writing new CREATE script...");
         File createFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTART_COUNTERS);
         createScriptStream = new PrintStream(new FileOutputStream(createFile), true, "UTF-8");
 
@@ -281,11 +281,11 @@ public class RestorePointService implements InitializingBean {
     private synchronized Connection prepareDriverAndFetchConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
         if (!driverRegistered) {
             driverRegistered = true;
-            log.info("Registering database driver...");
+            log.debug("Registering database driver");
             Class.forName(databaseConfiguration.getDBDialect()).newInstance();
         }
 
-        log.info("Getting connection...");
+        log.debug("Getting connection");
         return DriverManager.getConnection(databaseConfiguration.getDBUrl(),
                 databaseConfiguration.getDBUsername(), databaseConfiguration.getDBPassword());
     }
@@ -387,7 +387,7 @@ public class RestorePointService implements InitializingBean {
         try {
             conn = prepareDriverAndFetchConnection();
 
-            log.info("Validating database...");
+            log.info("Validating database");
             st = conn.prepareStatement("SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'");
             rs = st.executeQuery();
             rs.next();

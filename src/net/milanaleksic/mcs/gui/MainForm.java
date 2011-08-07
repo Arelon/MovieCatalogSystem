@@ -380,7 +380,7 @@ public class MainForm extends Observable {
 			buff.append(" order by m.tipMedija.naziv, m.indeks, f.nazivfilma)");
 			
 			String hsql = buff.toString();
-			log.info("Generisan upit: "+hsql);
+			log.debug("Generisan upit: "+hsql);
 			
 			long start = new Date().getTime();
 			Query query = session.createQuery(hsql);
@@ -411,13 +411,15 @@ public class MainForm extends Observable {
 
 			List<Film> sviFilmovi = query.list();
             long end = new Date().getTime();
-            log.info("Upit dohvatanja jedne stranice filmova je izvukao "+sviFilmovi.size()+" redova za "+(end-start)+"ms");
+            long fetchTime = end-start;
 
             start = System.currentTimeMillis();
 			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
 			end = new Date().getTime();
-			log.info("Upit dohvatanja ukupnog broja filmova koji ispunjavaju kriterijum za "+(end-start)+"ms");
-			
+            long fetchCountTime = end-start;
+
+            log.debug(String.format("FetchTime=%dms, FetchCountTime=%dms", fetchTime, fetchCountTime));
+
 			return sviFilmovi;
 		}
 		
@@ -435,7 +437,7 @@ public class MainForm extends Observable {
         this.addObserver(new Observer() {
 
 			@Override public void update(Observable obs, Object arg) {
-				log.info("Osvezavam prikaz stanja!");
+				log.debug("Osvezavam prikaz stanja!");
                 if (currentViewState.getMaxItemsPerPage()>0) {
                     long lowerBound = currentViewState.getActivePage()*currentViewState.getMaxItemsPerPage()+1;
                     if (currentViewState.getShowableCount()==0)
@@ -715,7 +717,7 @@ public class MainForm extends Observable {
 		super.notifyObservers();
 		
 		long end = new Date().getTime();
-		log.info("Lista je prikazana, umetanje zavrseno za "+(end-start)+"ms");
+		log.debug("ListEmbeddingTime="+(end-start)+"ms");
 		if (toolTicker != null)
 			toolTicker.setVisible(false);
 	}
