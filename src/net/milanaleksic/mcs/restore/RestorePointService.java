@@ -182,7 +182,7 @@ public class RestorePointService implements InitializingBean {
             log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
             zos = new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"));
 
-            writeFileToZipStream(zos, renamedOldRestoreFile.getName());
+            writeFileToZipStream(zos, renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
 
         } catch (Throwable t) {
             log.error("Failure while zipping restore script", t);
@@ -194,11 +194,11 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    private void writeFileToZipStream(ZipOutputStream zos, String fileName) throws IOException {
+    private void writeFileToZipStream(ZipOutputStream zos, String fileName, String entryName) throws IOException {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream("restore\\"+fileName);
-            ZipEntry zipEntry = new ZipEntry(fileName);
+            ZipEntry zipEntry = new ZipEntry(entryName);
             zos.putNextEntry(zipEntry);
             copyStream(fis, zos);
         } finally {
@@ -345,7 +345,6 @@ public class RestorePointService implements InitializingBean {
         ResultSet rs = null;
         PreparedStatement st = null;
         try {
-
             log.info("Validating database");
             st = conn.prepareStatement("SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'");
             rs = st.executeQuery();
@@ -355,7 +354,6 @@ public class RestorePointService implements InitializingBean {
             log.info("Expected DB version = " + databaseConfiguration.getDBVersion() + ", DB version = " + dbVersion);
 
             return Integer.valueOf(dbVersion);
-
         } catch (Exception e) {
             log.error("Validation failed - " + e.getMessage());
         } finally {
