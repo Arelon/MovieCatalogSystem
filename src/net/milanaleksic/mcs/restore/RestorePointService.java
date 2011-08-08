@@ -486,7 +486,7 @@ public class RestorePointService implements InitializingBean {
         StringBuilder script = new StringBuilder();
         String line;
         while ((line = scriptStreamReader.readLine()) != null) {
-            script.append(line);
+            script.append(line).append("\r\n");
         }
 
         PreparedStatement st = conn.prepareStatement(script.toString());
