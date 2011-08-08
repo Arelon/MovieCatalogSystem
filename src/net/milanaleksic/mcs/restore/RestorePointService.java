@@ -19,13 +19,6 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Posebna klasa za kreaciju kompletnog SQL skripta za ocuvanje
- * informacija o trenutnom stanju baze podataka...
- *
- * @author Milan Aleksic
- *         06.04.2008.
- */
 public class RestorePointService implements InitializingBean {
 
     private static final Log log = LogFactory.getLog(RestorePointService.class);
@@ -51,6 +44,16 @@ public class RestorePointService implements InitializingBean {
 
     private static final String RESTORE_SCRIPT_DB2_ONLY_HEADER =
             "CONNECT TO KATALOG USER DB2ADMIN USING db2admin";
+
+    private static final String[] OUTPUT_SQLS = {
+            "SELECT * FROM DB2ADMIN.TIPMEDIJA",
+            "SELECT * FROM DB2ADMIN.POZICIJA",
+            "SELECT * FROM DB2ADMIN.ZANR",
+            "SELECT * FROM DB2ADMIN.MEDIJ",
+            "SELECT * FROM DB2ADMIN.FILM",
+            "SELECT * FROM DB2ADMIN.ZAUZIMA",
+            "SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'"
+    };
 
     private ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
 
@@ -88,105 +91,72 @@ public class RestorePointService implements InitializingBean {
                 renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
             }
 
-            pos2 = new PrintStream(new FileOutputStream(restoreFile), true, "UTF-8");
-
-            if (databaseConfiguration.getDatabaseType().equals(ApplicationConfiguration.DatabaseType.DB2)) {
-                pos2.print(RESTORE_SCRIPT_DB2_ONLY_HEADER);
-            }
-
-            pos2.print(getScriptHeader());
-
-            log.debug("Working on TIPMEDIJA (1/7)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.TIPMEDIJA");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO TIPMEDIJA VALUES(" + rs.getInt("IDTIP") + ", " + getSQLString(rs.getString("NAZIV")) + ")");
-
-            close(st);
-            close(rs);
-
-            log.debug("Working on POZICIJA (2/7)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.POZICIJA");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO POZICIJA VALUES(" + rs.getInt("IDPOZICIJA") + ", " + getSQLString(rs.getString("POZICIJA")) + ")");
-
-            close(st);
-            close(rs);
-
-            log.debug("Working on ZANR (3/7)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.ZANR");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO ZANR VALUES(" + rs.getInt("IDZANR") + ", " + getSQLString(rs.getString("ZANR")) + ")");
-
-            close(st);
-            close(rs);
-
-            log.debug("Working on MEDIJ (4/7)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.MEDIJ");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO MEDIJ VALUES(" + rs.getInt("IDMEDIJ") + ", " + rs.getInt("INDEKS") + ", " + rs.getInt("IDTIP") + ", " + rs.getInt("IDPOZICIJA") + ")");
-
-            close(st);
-            close(rs);
-
-            log.debug("Working on FILM (5/7)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.FILM");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO FILM VALUES("
-                        + rs.getInt("IDFILM") + ", "
-                        + getSQLString(rs.getString("NAZIVFILMA")) + ", "
-                        + getSQLString(rs.getString("PREVODNAZIVAFILMA")) + ", "
-                        + rs.getInt("GODINA") + ", "
-                        + rs.getInt("IDZANR") + ", "
-                        + getSQLString(rs.getString("KOMENTAR")) + ", "
-                        + rs.getDouble("IMDBREJTING")
-                        + ")");
-
-            close(st);
-            close(rs);
-
-            log.debug("Working on ZAUZIMA (6/7)...");
-            st = conn.prepareStatement("SELECT * FROM DB2ADMIN.ZAUZIMA");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO ZAUZIMA VALUES(" + rs.getInt("IDMEDIJ") + ", " + rs.getString("IDFILM") + ")");
-
-            close(st);
-            close(rs);
-
-            log.debug("Working on PARAM (7/7)...");
-            st = conn.prepareStatement("SELECT IDPARAM, NAME, VALUE FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'");
-            rs = st.executeQuery();
-            while (rs.next())
-                outputStatement(pos2, "INSERT INTO PARAM VALUES("
-                        + getSQLString(rs.getString("IDPARAM")) + ", "
-                        + getSQLString(rs.getString("NAME")) + ", "
-                        + getSQLString(rs.getString("VALUE"))
-                        + ")");
-
-            close(st);
-            close(rs);
-
-            close(pos2);
+            printOutTableContentsToRestoreFile(conn, restoreFile);
 
             if (renamedOldRestoreFile != null) {
                 eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
             }
-
             log.info("Restore point creation process finished successfully!");
-
         } catch (Exception e) {
             log.error("Failure during restore creation ", e);
         } finally {
-            close(pos2);
             close(rs);
             close(st);
             close(conn);
         }
+    }
+
+    private void printOutTableContentsToRestoreFile(Connection conn, File restoreFile) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
+        PrintStream outputStream = null;
+        try {
+            outputStream = new PrintStream(new FileOutputStream(restoreFile), true, "UTF-8");
+            if (databaseConfiguration.getDatabaseType().equals(ApplicationConfiguration.DatabaseType.DB2)) {
+                outputStream.print(RESTORE_SCRIPT_DB2_ONLY_HEADER);
+            }
+            outputStream.print(getScriptHeader());
+            for(String sql : OUTPUT_SQLS) {
+                printInsertStatementsForResultOfSql(conn, outputStream, sql);
+            }
+        } finally {
+            if (outputStream != null) {
+                close(outputStream);
+            }
+        }
+    }
+
+    private void printInsertStatementsForResultOfSql(Connection conn, PrintStream outputStream, String sql) throws SQLException {
+        log.debug("Working on restore script "+sql);
+        PreparedStatement st2 = conn.prepareStatement(sql);
+        ResultSet rs2 = st2.executeQuery();
+        ResultSetMetaData metaData = rs2.getMetaData();
+        String tableName = metaData.getTableName(1);
+
+        StringBuilder colNames = new StringBuilder();
+        for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
+            colNames.append(metaData.getColumnName(colIter));
+            if (colIter != metaData.getColumnCount())
+                colNames.append(",");
+        }
+        while (rs2.next()) {
+            StringBuilder currentRowContents = new StringBuilder();
+            for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
+                int columnType = metaData.getColumnType(colIter);
+                if (columnType == Types.INTEGER)
+                    currentRowContents.append(rs2.getInt(colIter));
+                else if (columnType == Types.VARCHAR)
+                    currentRowContents.append(getSQLString(rs2.getString(colIter)));
+                else if (columnType == Types.DECIMAL)
+                    currentRowContents.append(rs2.getDouble(colIter));
+                else
+                    throw new IllegalArgumentException("SQL type not supported: "+ columnType + " for column "+metaData.getColumnName(colIter));
+                if (colIter != metaData.getColumnCount())
+                    currentRowContents.append(",");
+            }
+            outputStatement(outputStream, String.format("INSERT INTO %s(%s) VALUES(%s)", tableName, colNames, currentRowContents));
+        }
+
+        close(st2);
+        close(rs2);
     }
 
     private void eraseOldBackupIfIdenticalToCurrent(File renamedOldRestoreFile, File restoreFile) {
