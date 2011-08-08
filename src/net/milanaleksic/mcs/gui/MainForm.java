@@ -437,7 +437,6 @@ public class MainForm extends Observable {
         this.addObserver(new Observer() {
 
 			@Override public void update(Observable obs, Object arg) {
-				log.debug("Osvezavam prikaz stanja!");
                 if (currentViewState.getMaxItemsPerPage()>0) {
                     long lowerBound = currentViewState.getActivePage()*currentViewState.getMaxItemsPerPage()+1;
                     if (currentViewState.getShowableCount()==0)

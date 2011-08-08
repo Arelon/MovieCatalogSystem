@@ -27,23 +27,13 @@ public class RestorePointService implements InitializingBean {
 
     private static final String SCRIPT_RESOURCE_ALTER = "alter_script_%d.sql";
 
-    private static final String SCRIPT_KATALOG_RESTART_COUNTERS = "KATALOG_RESTART_COUNTERS.sql";
     private static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
     private static final String SCRIPT_KATALOG_RESTORE_WITH_TIMESTAMP = "KATALOG_RESTORE_%s.sql";
-
-    private static final String CREATE_SCRIPT_DB2_ONLY_HEADER =
-            "CREATE DATABASE KATALOG ON 'D:' USING CODESET UTF-8 TERRITORY RU COLLATE USING UCA400_NO;\r\n" +
-                    "\r\n" +
-                    "connect to KATALOG user db2admin using db2admin;\r\n" +
-                    "\r\n";
 
     private static final String MCS_VERSION_TAG = "/*MCS-VERSION: ";
 
     private static final String RESTORE_SCRIPT_HEADER =
             MCS_VERSION_TAG+"%d\n*/\n\nset schema DB2ADMIN;\n\n";
-
-    private static final String RESTORE_SCRIPT_DB2_ONLY_HEADER =
-            "CONNECT TO KATALOG USER DB2ADMIN USING db2admin";
 
     private static final String[] OUTPUT_SQLS = {
             "SELECT * FROM DB2ADMIN.TIPMEDIJA",
@@ -78,12 +68,10 @@ public class RestorePointService implements InitializingBean {
         Connection conn = null;
         ResultSet rs = null;
         PreparedStatement st = null;
-        PrintStream pos2 = null;
         File renamedOldRestoreFile = null;
         try {
             conn = prepareDriverAndFetchConnection();
             createRestoreDir();
-            createRestartCountersScript(conn);
 
             File restoreFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTORE);
             log.debug("Renaming old restore script if there is one...");
@@ -106,20 +94,23 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    private void printOutTableContentsToRestoreFile(Connection conn, File restoreFile) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
-        PrintStream outputStream = null;
+    private void printOutTableContentsToRestoreFile(Connection conn, File restoreFile) throws IOException, SQLException {
+        FileOutputStream fos = null;
         try {
-            outputStream = new PrintStream(new FileOutputStream(restoreFile), true, "UTF-8");
-            if (databaseConfiguration.getDatabaseType().equals(ApplicationConfiguration.DatabaseType.DB2)) {
-                outputStream.print(RESTORE_SCRIPT_DB2_ONLY_HEADER);
-            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintStream outputStream = new PrintStream(buffer, true, "UTF-8");
             outputStream.print(getScriptHeader());
+
+            appendRestartCountersScript(outputStream, conn);
+
             for(String sql : OUTPUT_SQLS) {
                 printInsertStatementsForResultOfSql(conn, outputStream, sql);
             }
+            fos = new FileOutputStream(restoreFile);
+            copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos);
         } finally {
-            if (outputStream != null) {
-                close(outputStream);
+            if (fos != null) {
+                close(fos);
             }
         }
     }
@@ -191,8 +182,6 @@ public class RestorePointService implements InitializingBean {
             log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
             zos = new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"));
 
-            writeFileToZipStream(zos, SCRIPT_KATALOG_RESTART_COUNTERS);
-
             writeFileToZipStream(zos, renamedOldRestoreFile.getName());
 
         } catch (Throwable t) {
@@ -220,26 +209,14 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    private void createRestartCountersScript(Connection conn) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
-        PrintStream createScriptStream;
-        log.debug("Writing new CREATE script...");
-        File createFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTART_COUNTERS);
-        createScriptStream = new PrintStream(new FileOutputStream(createFile), true, "UTF-8");
-
-        if (databaseConfiguration.getDatabaseType().equals(ApplicationConfiguration.DatabaseType.DB2)) {
-            createScriptStream.print(CREATE_SCRIPT_DB2_ONLY_HEADER);
-        }
-
-        createScriptStream.print(getScriptHeader());
-
-        createScriptStream.print(createRestartWithForTable("Param", "IdParam", conn));
-        createScriptStream.print(createRestartWithForTable("Film", "IdFilm", conn));
-        createScriptStream.print(createRestartWithForTable("Medij", "IdMedij", conn));
-        createScriptStream.print(createRestartWithForTable("Pozicija", "IdPozicija", conn));
-        createScriptStream.print(createRestartWithForTable("TipMedija", "IdTip", conn));
-        createScriptStream.print(createRestartWithForTable("Zanr", "IdZanr", conn));
-
-        close(createScriptStream);
+    private void appendRestartCountersScript(PrintStream outputStream, Connection conn) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
+        log.debug("Writing new Restart Counters script fragment...");
+        outputStream.print(createRestartWithForTable("Param", "IdParam", conn));
+        outputStream.print(createRestartWithForTable("Film", "IdFilm", conn));
+        outputStream.print(createRestartWithForTable("Medij", "IdMedij", conn));
+        outputStream.print(createRestartWithForTable("Pozicija", "IdPozicija", conn));
+        outputStream.print(createRestartWithForTable("TipMedija", "IdTip", conn));
+        outputStream.print(createRestartWithForTable("Zanr", "IdZanr", conn));
     }
 
     private String getScriptHeader() {
@@ -304,9 +281,9 @@ public class RestorePointService implements InitializingBean {
         pos.println();
     }
 
-    private void close(PrintStream pos) {
+    private void close(OutputStream pos) {
         if (pos != null) {
-            pos.close();
+            try { pos.close(); } catch(IOException ignored) {}
         }
     }
 
@@ -457,7 +434,6 @@ public class RestorePointService implements InitializingBean {
             startAlterVersion = ending+1;
 
             if (dbVersionFromRestorePoint != 0) {
-                executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTART_COUNTERS, conn);
                 executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
             }
         }
