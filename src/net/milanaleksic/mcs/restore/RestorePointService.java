@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.restore;
 
 import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -374,7 +375,15 @@ public class RestorePointService implements InitializingBean {
     public static void main(String[] args) {
         if (new File("log4j.xml").exists())
             DOMConfigurator.configure("log4j.xml");
-        new RestorePointService().createRestorePoint();
+        ApplicationConfiguration applicationConfiguration = ApplicationConfigurationManager.loadApplicationConfiguration();
+        ApplicationManager.setApplicationConfiguration(applicationConfiguration);
+        RestorePointService restorePointService = new RestorePointService();
+        try {
+            restorePointService.afterPropertiesSet();
+            restorePointService.createRestorePoint();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void copyStream(InputStream input, OutputStream output) throws IOException {
@@ -385,12 +394,10 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    public int getDatabaseVersionFromDatabase() {
-        Connection conn = null;
+    public int getDatabaseVersionFromDatabase(Connection conn) {
         ResultSet rs = null;
         PreparedStatement st = null;
         try {
-            conn = prepareDriverAndFetchConnection();
 
             log.info("Validating database");
             st = conn.prepareStatement("SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'");
@@ -407,7 +414,6 @@ public class RestorePointService implements InitializingBean {
         } finally {
             close(rs);
             close(st);
-            close(conn);
         }
         return 0;
     }
@@ -418,8 +424,20 @@ public class RestorePointService implements InitializingBean {
     }
 
     public void restoreDatabaseIfNeeded() {
+        Connection conn = null;
+        try {
+            conn = prepareDriverAndFetchConnection();
+            safeRestoreDatabaseIfNeeded(conn);
+        } catch (Exception e) {
+            log.error("Failure while creating restore point", e);
+        } finally {
+            close(conn);
+        }
+    }
+
+    private void safeRestoreDatabaseIfNeeded(Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
         int activeMCSDBVersion = databaseConfiguration.getDBVersion();
-        int versionFromDatabase = getDatabaseVersionFromDatabase();
+        int versionFromDatabase = getDatabaseVersionFromDatabase(conn);
         if (versionFromDatabase == activeMCSDBVersion)
             return;
 
@@ -434,8 +452,7 @@ public class RestorePointService implements InitializingBean {
                     String.format("Database restore point is not supported (MCS is of versionFromRestorePoint %d, but your database is of versionFromDatabase %d)",
                             activeMCSDBVersion, versionFromRestorePoint));
         }
-
-        runDatabaseRecreation(versionFromDatabase, versionFromRestorePoint);
+        runDatabaseRecreation(versionFromDatabase, versionFromRestorePoint, conn);
     }
 
     private int getDatabaseVersionFromRestorePoint() {
@@ -457,19 +474,7 @@ public class RestorePointService implements InitializingBean {
         return 1;
     }
 
-    public void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint) {
-        Connection conn = null;
-        try {
-            conn = prepareDriverAndFetchConnection();
-            safeRunDatabaseRecreation(dbVersionFromDatabase, dbVersionFromRestorePoint, conn);
-        } catch (Exception e) {
-            log.error("Restoration failed", e);
-        } finally {
-            close(conn);
-        }
-    }
-
-    private void safeRunDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+    private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
         log.debug(String.format("SafeRunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
         int startAlterVersion = dbVersionFromDatabase+1;
         if (dbVersionFromDatabase == 0) {
