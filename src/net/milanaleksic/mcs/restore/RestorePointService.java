@@ -35,14 +35,14 @@ public class RestorePointService implements InitializingBean {
     private static final String RESTORE_SCRIPT_HEADER =
             MCS_VERSION_TAG+"%d\n*/\n\nset schema DB2ADMIN;\n\n";
 
-    private static final String[] OUTPUT_SQLS = {
-            "SELECT * FROM DB2ADMIN.TIPMEDIJA",
-            "SELECT * FROM DB2ADMIN.POZICIJA",
-            "SELECT * FROM DB2ADMIN.ZANR",
-            "SELECT * FROM DB2ADMIN.MEDIJ",
-            "SELECT * FROM DB2ADMIN.FILM",
-            "SELECT * FROM DB2ADMIN.ZAUZIMA",
-            "SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'"
+    private static final RestoreSource[] restoreSources = new RestoreSource[] {
+            new TableRestoreSource("DB2ADMIN.TIPMEDIJA"),
+            new TableRestoreSource("DB2ADMIN.POZICIJA"),
+            new TableRestoreSource("DB2ADMIN.ZANR"),
+            new TableRestoreSource("DB2ADMIN.MEDIJ"),
+            new TableRestoreSource("DB2ADMIN.FILM"),
+            new TableRestoreSource("DB2ADMIN.ZAUZIMA"),
+            new ExactSqlRestoreSource("SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'")
     };
 
     private ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
@@ -103,8 +103,8 @@ public class RestorePointService implements InitializingBean {
 
             appendRestartCountersScript(outputStream, conn);
 
-            for(String sql : OUTPUT_SQLS) {
-                printInsertStatementsForResultOfSql(conn, outputStream, sql);
+            for(RestoreSource source : restoreSources) {
+                printInsertStatementsForRestoreSource(conn, outputStream, source);
             }
             fos = new FileOutputStream(restoreFile);
             copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos);
@@ -115,9 +115,9 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    private void printInsertStatementsForResultOfSql(Connection conn, PrintStream outputStream, String sql) throws SQLException {
-        log.debug("Working on restore script "+sql);
-        PreparedStatement st2 = conn.prepareStatement(sql);
+    private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
+        log.debug("Working on restore script "+source.getScript());
+        PreparedStatement st2 = conn.prepareStatement(source.getScript());
         ResultSet rs2 = st2.executeQuery();
         ResultSetMetaData metaData = rs2.getMetaData();
         String tableName = metaData.getTableName(1);
