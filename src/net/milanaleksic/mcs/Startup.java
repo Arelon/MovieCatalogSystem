@@ -41,8 +41,10 @@ public class Startup {
     }
 
     private static ApplicationContext bootSpringContext() {
+        long begin = System.currentTimeMillis();
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
         context.registerShutdownHook();
+        log.debug(String.format("Spring booted in %dms", System.currentTimeMillis()-begin));
         return context;
     }
 

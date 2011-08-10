@@ -6,7 +6,9 @@
 
     <context:annotation-config/>
 
-    <bean id="restorePointService" class="net.milanaleksic.mcs.restore.RestorePointService" />
+    <bean id="restorePointCreator" class="net.milanaleksic.mcs.restore.RestorePointCreator" />
+
+    <bean id="restorePointRestorer" class="net.milanaleksic.mcs.restore.RestorePointRestorer" />
 
     <bean id="programArgsManager" class="net.milanaleksic.mcs.config.ProgramArgsService" />
 
@@ -18,12 +20,13 @@
                 <ref bean="splashScreenManager" />
                 <bean class="net.milanaleksic.mcs.config.UserConfigurationManager" />
                 <bean class="net.milanaleksic.mcs.util.StatisticsManager" />
-                <bean class="net.milanaleksic.mcs.restore.RestoreManager" />
+                <ref bean="restoreManager" />
             </set>
         </property>
 	</bean>
 
     <bean id="splashScreenManager" class="net.milanaleksic.mcs.gui.SplashScreenManager" />
+    <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager" />
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 		<property name="configurationClass" value="net.milanaleksic.mcs.util.MCSHibernateConfigurationClass" />

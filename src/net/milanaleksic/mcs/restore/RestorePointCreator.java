@@ -3,13 +3,9 @@ package net.milanaleksic.mcs.restore;
 import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.springframework.beans.factory.InitializingBean;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.sql.*;
@@ -19,18 +15,11 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class RestorePointService implements InitializingBean {
-
-    private static final Log log = LogFactory.getLog(RestorePointService.class);
+public class RestorePointCreator extends AbstractRestorePointService {
 
     private static final String STATEMENT_DELIMITER = ";";
 
-    private static final String SCRIPT_RESOURCE_ALTER = "alter_script_%d.sql";
-
-    private static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
     private static final String SCRIPT_KATALOG_RESTORE_WITH_TIMESTAMP = "KATALOG_RESTORE_%s.sql";
-
-    private static final String MCS_VERSION_TAG = "/*MCS-VERSION: ";
 
     private static final String RESTORE_SCRIPT_HEADER =
             MCS_VERSION_TAG+"%d\n*/\n\nset schema DB2ADMIN;\n\n";
@@ -44,8 +33,6 @@ public class RestorePointService implements InitializingBean {
             new TableRestoreSource("DB2ADMIN.ZAUZIMA"),
             new ExactSqlRestoreSource("SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'")
     };
-
-    private ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
 
     private String createRestartWithForTable(String tableName, String idName, Connection conn) throws SQLException {
         ResultSet rs = null;
@@ -62,6 +49,11 @@ public class RestorePointService implements InitializingBean {
             close(st);
             close(rs);
         }
+    }
+
+    private String createTimestampString(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmss");
+        return sdf.format(date);
     }
 
     public void createRestorePoint() {
@@ -230,19 +222,6 @@ public class RestorePointService implements InitializingBean {
                 throw new IllegalStateException("Could not create restore directory");
     }
 
-    private boolean driverRegistered = false;
-    private synchronized Connection prepareDriverAndFetchConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-        if (!driverRegistered) {
-            driverRegistered = true;
-            log.debug("Registering database driver");
-            Class.forName(databaseConfiguration.getDBDialect()).newInstance();
-        }
-
-        log.debug("Getting connection");
-        return DriverManager.getConnection(databaseConfiguration.getDBUrl(),
-                databaseConfiguration.getDBUsername(), databaseConfiguration.getDBPassword());
-    }
-
     private String returnMD5ForFile(File input) {
         StringBuilder hash = new StringBuilder("");
         FileInputStream stream;
@@ -281,53 +260,15 @@ public class RestorePointService implements InitializingBean {
         pos.println();
     }
 
-    private void close(OutputStream pos) {
-        if (pos != null) {
-            try { pos.close(); } catch(IOException ignored) {}
-        }
-    }
-
-    private String createTimestampString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmss");
-        return sdf.format(date);
-    }
-
-    protected void close(ResultSet rs) {
-        if (rs != null)
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing ResultSet", e);
-            }
-    }
-
-    protected void close(PreparedStatement ps) {
-        if (ps != null)
-            try {
-                ps.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing PreparedStatement", e);
-            }
-    }
-
-    protected void close(Connection conn) {
-        if (conn != null)
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing DB Connection", e);
-            }
-    }
-
     public static void main(String[] args) {
         if (new File("log4j.xml").exists())
             DOMConfigurator.configure("log4j.xml");
         ApplicationConfiguration applicationConfiguration = ApplicationConfigurationManager.loadApplicationConfiguration();
         ApplicationManager.setApplicationConfiguration(applicationConfiguration);
-        RestorePointService restorePointService = new RestorePointService();
+        RestorePointCreator restorePointCreator = new RestorePointCreator();
         try {
-            restorePointService.afterPropertiesSet();
-            restorePointService.createRestorePoint();
+            restorePointCreator.afterPropertiesSet();
+            restorePointCreator.createRestorePoint();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -341,132 +282,12 @@ public class RestorePointService implements InitializingBean {
         }
     }
 
-    public int getDatabaseVersionFromDatabase(Connection conn) {
-        ResultSet rs = null;
-        PreparedStatement st = null;
-        try {
-            log.info("Validating database");
-            st = conn.prepareStatement("SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'");
-            rs = st.executeQuery();
-            rs.next();
 
-            String dbVersion = rs.getString(1);
-            log.info("Expected DB version = " + databaseConfiguration.getDBVersion() + ", DB version = " + dbVersion);
-
-            return Integer.valueOf(dbVersion);
-        } catch (Exception e) {
-            log.error("Validation failed - " + e.getMessage());
-        } finally {
-            close(rs);
-            close(st);
-        }
-        return 0;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         databaseConfiguration = ApplicationManager.getApplicationConfiguration().getDatabaseConfiguration();
     }
 
-    public void restoreDatabaseIfNeeded() {
-        Connection conn = null;
-        try {
-            conn = prepareDriverAndFetchConnection();
-            safeRestoreDatabaseIfNeeded(conn);
-        } catch (Exception e) {
-            log.error("Failure while creating restore point", e);
-        } finally {
-            close(conn);
-        }
-    }
 
-    private void safeRestoreDatabaseIfNeeded(Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
-        int activeMCSDBVersion = databaseConfiguration.getDBVersion();
-        int versionFromDatabase = getDatabaseVersionFromDatabase(conn);
-        if (versionFromDatabase == activeMCSDBVersion)
-            return;
-
-        if (versionFromDatabase > activeMCSDBVersion)
-            throw new IllegalStateException(
-                    String.format("Database is not supported (MCS is of versionFromDatabase %d, but your database is of versionFromDatabase %d)",
-                            activeMCSDBVersion, versionFromDatabase));
-
-        int versionFromRestorePoint = getDatabaseVersionFromRestorePoint();
-        if (versionFromRestorePoint > activeMCSDBVersion) {
-            throw new IllegalStateException(
-                    String.format("Database restore point is not supported (MCS is of versionFromRestorePoint %d, but your database is of versionFromDatabase %d)",
-                            activeMCSDBVersion, versionFromRestorePoint));
-        }
-        runDatabaseRecreation(versionFromDatabase, versionFromRestorePoint, conn);
-    }
-
-    private int getDatabaseVersionFromRestorePoint() {
-        File restoreFile = new File("restore//" + SCRIPT_KATALOG_RESTORE);
-        if (!restoreFile.exists())
-            return 0;
-        LineNumberReader reader = null;
-        try {
-            reader = new LineNumberReader(new FileReader(restoreFile));
-            String firstLine = reader.readLine();
-            if (firstLine.contains(MCS_VERSION_TAG))
-                return Integer.parseInt((firstLine.indexOf(MCS_VERSION_TAG) + firstLine.substring(MCS_VERSION_TAG.length())).trim());
-        } catch (IOException e) {
-            log.error("IO Error while reading DB version from restore point", e);
-        } finally {
-            if (reader != null)
-                try { reader.close(); } catch (IOException ignored) {}
-        }
-        return 1;
-    }
-
-    private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
-        log.debug(String.format("SafeRunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
-        int startAlterVersion = dbVersionFromDatabase+1;
-        if (dbVersionFromDatabase == 0) {
-            int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
-            for (int i=startAlterVersion; i<=ending; i++) {
-                log.info("Running alter "+i);
-                executeScriptOnConnection(getClass().getResourceAsStream(
-                        String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
-            }
-            startAlterVersion = ending+1;
-
-            if (dbVersionFromRestorePoint != 0) {
-                executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
-            }
-        }
-        for (int i=startAlterVersion; i<=databaseConfiguration.getDBVersion(); i++) {
-            log.info("Running alter "+i);
-            executeScriptOnConnection(getClass().getResourceAsStream(String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
-        }
-        log.info("Restoration finished");
-    }
-
-    private void executeScriptOnConnection(String restartCountersScript, Connection conn) throws IOException, SQLException {
-        File fileRestartCountersScript = new File(restartCountersScript);
-        log.info("Restoring file: " + fileRestartCountersScript.getName());
-        if (fileRestartCountersScript.exists()) {
-            FileInputStream fis = new FileInputStream(fileRestartCountersScript);
-            try {
-                executeScriptOnConnection(fis, conn);
-            } finally {
-                fis.close();
-            }
-        }
-    }
-
-    private void executeScriptOnConnection(InputStream stream, Connection conn) throws IOException, SQLException {
-        BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
-        StringBuilder script = new StringBuilder();
-        String line;
-        while ((line = scriptStreamReader.readLine()) != null) {
-            script.append(line).append("\r\n");
-        }
-
-        PreparedStatement st = conn.prepareStatement(script.toString());
-        st.execute();
-
-        close(st);
-        conn.commit();
-    }
 }
