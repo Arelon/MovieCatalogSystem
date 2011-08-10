@@ -4,8 +4,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -13,7 +11,7 @@ import org.eclipse.swt.widgets.*;
 
 public class ClosingForm {
 
-	private Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="10,10"
+	private Shell sShell = null;
 
     public ClosingForm() {
 		createSShell();
@@ -25,9 +23,6 @@ public class ClosingForm {
 		sShell.open();
 	}
 
-	/**
-	 * This method initializes sShell
-	 */
 	private void createSShell() {
 		GridData gridData = new GridData();
 		gridData.grabExcessVerticalSpace = true;
@@ -39,19 +34,6 @@ public class ClosingForm {
 		sShell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GRAY));
 		sShell.setSize(new Point(180, 30));
 		sShell.setLayout(new GridLayout());
-		sShell.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				// nista
-			}
-
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				// nista
-			}
-			
-		});
         Label label = new Label(sShell, SWT.NONE);
 		label.setText("Снимам restore SQL...");
 		label.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));

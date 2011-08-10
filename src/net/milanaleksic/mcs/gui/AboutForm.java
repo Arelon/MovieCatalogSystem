@@ -11,7 +11,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
-
 public class AboutForm {
 	
 	private static final String dodatniTekst = 
@@ -20,11 +19,10 @@ public class AboutForm {
 		"Јава 6, Eclipse SWT 3.4.1, Spring 2.5, Hibernate 3.6, H2 1.3\n"+
 		"Args4J, DOM4J, Log4J, EhCache, C3P0 итд.\n\n"+
 		"Иконе су део \"Crystal Project\"-а, аутор је Евералдо Келхо.\n\n"+
-		"Програм је још увек у развоју, све грешке молим пријавите аутору програма"
-		;  //  @jve:decl-index=0:
+		"Програм је још увек у развоју, све грешке молим пријавите аутору програма";
 
-	private Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="10,10"
-	private Shell parent = null; // @jve:decl-index=0:
+	private Shell sShell = null;
+	private Shell parent = null;
 	private Text textArea = null;
 
     public AboutForm(Shell parent) {
@@ -38,10 +36,7 @@ public class AboutForm {
 		sShell.open();
 	}
 	
-	/**
-	 * This method initializes sShell
-	 */
-	private void createSShell() { 
+	private void createSShell() {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		gridLayout.verticalSpacing = 10;
@@ -72,10 +67,6 @@ public class AboutForm {
 		textArea.setLayoutData(gridData1);
 	}
 
-	/**
-	 * This method initializes composite	
-	 *
-	 */
 	private void createComposite() {
 		GridData gridData3 = new GridData();
 		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
@@ -111,10 +102,6 @@ public class AboutForm {
         });
 	}
 
-	/**
-	 * This method initializes composite1	
-	 *
-	 */
 	private void createComposite1() {
 		GridData gridData2 = new GridData();
 		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
@@ -150,10 +137,6 @@ public class AboutForm {
         });
 	}
 
-	/**
-	 * This method initializes composite2	
-	 *
-	 */
 	private void createComposite2() {
 		GridData gridData11 = new GridData();
 		gridData11.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
