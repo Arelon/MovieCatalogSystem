@@ -60,13 +60,13 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
         if (versionFromDatabase > activeMCSDBVersion)
             throw new IllegalStateException(
-                    String.format("Database is not supported (MCS is of versionFromDatabase %d, but your database is of versionFromDatabase %d)",
+                    String.format("Database is not supported (MCS is of activeMCSDBVersion %d, but your database is of versionFromDatabase %d)",
                             activeMCSDBVersion, versionFromDatabase));
 
         int versionFromRestorePoint = getDatabaseVersionFromRestorePoint();
         if (versionFromRestorePoint > activeMCSDBVersion) {
             throw new IllegalStateException(
-                    String.format("Database restore point is not supported (MCS is of versionFromRestorePoint %d, but your database is of versionFromDatabase %d)",
+                    String.format("Database restore point is not supported (MCS is of activeMCSDBVersion %d, but your database is of versionFromRestorePoint %d)",
                             activeMCSDBVersion, versionFromRestorePoint));
         }
         runDatabaseRecreation(versionFromDatabase, versionFromRestorePoint, conn);
