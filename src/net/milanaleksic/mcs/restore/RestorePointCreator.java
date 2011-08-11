@@ -109,37 +109,50 @@ public class RestorePointCreator extends AbstractRestorePointService {
 
     private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
         log.debug("Working on restore script "+source.getScript());
-        PreparedStatement st2 = conn.prepareStatement(source.getScript());
-        ResultSet rs2 = st2.executeQuery();
-        ResultSetMetaData metaData = rs2.getMetaData();
-        String tableName = metaData.getTableName(1);
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = conn.prepareStatement(source.getScript());
+            resultSet = preparedStatement.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            String tableName = metaData.getTableName(1);
 
+            while (resultSet.next()) {
+                outputStatement(outputStream, generateInsertSqlForResultSet(resultSet, metaData, tableName, getListOfResultSetColumns(metaData)));
+            }
+        } finally {
+            close(preparedStatement);
+            close(resultSet);
+        }
+
+    }
+
+    private String getListOfResultSetColumns(ResultSetMetaData metaData) throws SQLException {
         StringBuilder colNames = new StringBuilder();
         for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
             colNames.append(metaData.getColumnName(colIter));
             if (colIter != metaData.getColumnCount())
                 colNames.append(",");
         }
-        while (rs2.next()) {
-            StringBuilder currentRowContents = new StringBuilder();
-            for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
-                int columnType = metaData.getColumnType(colIter);
-                if (columnType == Types.INTEGER)
-                    currentRowContents.append(rs2.getInt(colIter));
-                else if (columnType == Types.VARCHAR)
-                    currentRowContents.append(getSQLString(rs2.getString(colIter)));
-                else if (columnType == Types.DECIMAL)
-                    currentRowContents.append(rs2.getDouble(colIter));
-                else
-                    throw new IllegalArgumentException("SQL type not supported: "+ columnType + " for column "+metaData.getColumnName(colIter));
-                if (colIter != metaData.getColumnCount())
-                    currentRowContents.append(",");
-            }
-            outputStatement(outputStream, String.format("INSERT INTO %s(%s) VALUES(%s)", tableName, colNames, currentRowContents));
-        }
+        return colNames.toString();
+    }
 
-        close(st2);
-        close(rs2);
+    private String generateInsertSqlForResultSet(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String colNames) throws SQLException {
+        StringBuilder currentRowContents = new StringBuilder();
+        for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
+            int columnType = metaData.getColumnType(colIter);
+            if (columnType == Types.INTEGER)
+                currentRowContents.append(resultSet.getInt(colIter));
+            else if (columnType == Types.VARCHAR)
+                currentRowContents.append(getSQLString(resultSet.getString(colIter)));
+            else if (columnType == Types.DECIMAL)
+                currentRowContents.append(resultSet.getDouble(colIter));
+            else
+                throw new IllegalArgumentException("SQL type not supported: "+ columnType + " for column "+metaData.getColumnName(colIter));
+            if (colIter != metaData.getColumnCount())
+                currentRowContents.append(",");
+        }
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", tableName, colNames, currentRowContents);
     }
 
     private void eraseOldBackupIfIdenticalToCurrent(File renamedOldRestoreFile, File restoreFile) {

@@ -6,8 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.*;
 
 /**
@@ -41,6 +40,12 @@ public abstract class AbstractRestorePointService implements InitializingBean {
     protected void close(OutputStream pos) {
         if (pos != null) {
             try { pos.close(); } catch(IOException ignored) {}
+        }
+    }
+
+    protected void close(InputStream is) {
+        if (is != null) {
+            try { is.close(); } catch(IOException ignored) {}
         }
     }
 

@@ -92,7 +92,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     }
 
     private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
-        log.debug(String.format("SafeRunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
+        log.debug(String.format("RunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
         int startAlterVersion = dbVersionFromDatabase+1;
         if (dbVersionFromDatabase == 0) {
             int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
@@ -104,6 +104,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             startAlterVersion = ending+1;
 
             if (dbVersionFromRestorePoint != 0) {
+                log.info("Restoring content");
                 executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
             }
         }
@@ -122,7 +123,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             try {
                 executeScriptOnConnection(fis, conn);
             } finally {
-                fis.close();
+                close(fis);
             }
         }
     }
@@ -135,11 +136,14 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             script.append(line).append("\r\n");
         }
 
-        PreparedStatement st = conn.prepareStatement(script.toString());
-        st.execute();
-
-        close(st);
-        conn.commit();
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(script.toString());
+            st.execute();
+            conn.commit();
+        } finally {
+            close(st);
+        }
     }
 
 }
