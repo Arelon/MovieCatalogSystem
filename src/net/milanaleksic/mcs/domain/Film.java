@@ -18,32 +18,11 @@ public class Film implements Serializable, Comparable<Film> {
 	public Film() {
 	}
 
-	public Film(int idfilm, Zanr zanr, String nazivfilma, String prevodnazivafilma, int godina, BigDecimal imdbrejting) {
-		this.idfilm = idfilm;
-		this.zanr = zanr;
-		this.nazivfilma = nazivfilma;
-		this.prevodnazivafilma = prevodnazivafilma;
-		this.godina = godina;
-		this.imdbrejting = imdbrejting;
-	}
-
-	public Film(int idfilm, Zanr zanr, String nazivfilma, String prevodnazivafilma, int godina, String komentar, BigDecimal imdbrejting,
-			Set<Medij> medijs) {
-		this.idfilm = idfilm;
-		this.zanr = zanr;
-		this.nazivfilma = nazivfilma;
-		this.prevodnazivafilma = prevodnazivafilma;
-		this.godina = godina;
-		this.komentar = komentar;
-		this.imdbrejting = imdbrejting;
-		this.medijs = medijs;
-	}
-
 	public int getIdfilm() {
 		return this.idfilm;
 	}
 
-	public void setIdfilm(int idfilm) {
+	private void setIdfilm(int idfilm) {
 		this.idfilm = idfilm;
 	}
 

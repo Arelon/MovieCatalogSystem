@@ -12,22 +12,11 @@ public class TipMedija implements java.io.Serializable {
 	public TipMedija() {
 	}
 
-	public TipMedija(int idtip, String naziv) {
-		this.idtip = idtip;
-		this.naziv = naziv;
-	}
-
-	public TipMedija(int idtip, String naziv, Set<Medij> medijs) {
-		this.idtip = idtip;
-		this.naziv = naziv;
-		this.medijs = medijs;
-	}
-
 	public int getIdtip() {
 		return this.idtip;
 	}
 
-	public void setIdtip(int idtip) {
+	private void setIdtip(int idtip) {
 		this.idtip = idtip;
 	}
 

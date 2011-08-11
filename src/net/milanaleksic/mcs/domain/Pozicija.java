@@ -12,22 +12,11 @@ public class Pozicija implements java.io.Serializable {
 	public Pozicija() {
 	}
 
-	public Pozicija(int idpozicija, String pozicija) {
-		this.idpozicija = idpozicija;
-		this.pozicija = pozicija;
-	}
-
-	public Pozicija(int idpozicija, String pozicija, Set<Medij> medijs) {
-		this.idpozicija = idpozicija;
-		this.pozicija = pozicija;
-		this.medijs = medijs;
-	}
-
 	public int getIdpozicija() {
 		return this.idpozicija;
 	}
 
-	public void setIdpozicija(int idpozicija) {
+	private void setIdpozicija(int idpozicija) {
 		this.idpozicija = idpozicija;
 	}
 

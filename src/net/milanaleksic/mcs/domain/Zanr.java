@@ -12,22 +12,11 @@ public class Zanr implements java.io.Serializable {
 	public Zanr() {
 	}
 
-	public Zanr(int idzanr, String zanr) {
-		this.idzanr = idzanr;
-		this.zanr = zanr;
-	}
-
-	public Zanr(int idzanr, String zanr, Set<Film> films) {
-		this.idzanr = idzanr;
-		this.zanr = zanr;
-		this.films = films;
-	}
-
 	public int getIdzanr() {
 		return this.idzanr;
 	}
 
-	public void setIdzanr(int idzanr) {
+	private void setIdzanr(int idzanr) {
 		this.idzanr = idzanr;
 	}
 
