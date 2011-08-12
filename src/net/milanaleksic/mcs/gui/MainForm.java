@@ -7,24 +7,21 @@ import net.milanaleksic.mcs.export.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
 import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
+
+// do not allow java.awt.* to be added to import list because SWT's FileDialog
+// will not work in some cases(https://bugs.eclipse.org/bugs/show_bug.cgi?id=349387)
 
 public class MainForm extends Observable {
 
@@ -476,8 +473,7 @@ public class MainForm extends Observable {
 		sShell = new Shell();
 		sShell.setText(titleConst);
 		sShell.setMaximized(false);
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		sShell.setBounds(20, 20, 860, size.height-80);
+		sShell.setBounds(20, 20, 860, Display.getCurrent().getBounds().height-80);
 		createToolTicker();
 		createPanCombos();
 		createToolBar();
