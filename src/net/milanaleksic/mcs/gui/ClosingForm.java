@@ -1,8 +1,5 @@
 package net.milanaleksic.mcs.gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
@@ -15,11 +12,11 @@ public class ClosingForm {
 
     public ClosingForm() {
 		createSShell();
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Rectangle monitorBounds = Display.getCurrent().getPrimaryMonitor().getBounds();
 		sShell.setLocation(
 				new Point(
-						Math.abs(size.width-sShell.getSize().x) / 2, 
-						Math.abs(size.height-sShell.getSize().y) / 2 ));
+						Math.abs(monitorBounds.width-sShell.getSize().x) / 2,
+						Math.abs(monitorBounds.height-sShell.getSize().y) / 2 ));
 		sShell.open();
 	}
 

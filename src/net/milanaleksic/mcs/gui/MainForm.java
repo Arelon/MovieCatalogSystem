@@ -473,7 +473,7 @@ public class MainForm extends Observable {
 		sShell = new Shell();
 		sShell.setText(titleConst);
 		sShell.setMaximized(false);
-		sShell.setBounds(20, 20, 860, Display.getCurrent().getBounds().height-80);
+		sShell.setBounds(20, 20, 860, Display.getCurrent().getPrimaryMonitor().getBounds().height-80);
 		createToolTicker();
 		createPanCombos();
 		createToolBar();
