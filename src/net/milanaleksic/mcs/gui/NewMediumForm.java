@@ -1,7 +1,5 @@
 package net.milanaleksic.mcs.gui;
 
-import java.sql.SQLException;
-
 import net.milanaleksic.mcs.domain.*;
 
 import org.apache.log4j.Logger;
@@ -10,10 +8,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class NewMediumForm {
 
 	private static final Logger log = Logger.getLogger(NewMediumForm.class);
+
+    @Autowired private MedijRepository medijRepository;
 
 	private Shell sShell = null;
     private Button rbCD = null;
@@ -21,21 +22,18 @@ public class NewMediumForm {
     private Shell parent = null;
 	private Runnable parentRunner = null;
 
-	public NewMediumForm(Shell parent, Runnable runnable) {
-		this.parent = parent;
-		createSShell();
+    public void open(Shell parent, Runnable runnable) {
+        this.parent = parent;
+        this.parentRunner = runnable;
+        createSShell();
 		sShell.setLocation(
 				new Point(
-						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
+						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2,
 						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
+        obradaIzbora();
 		sShell.open();
-		obradaIzbora();
-		parentRunner = runnable;
-	}
+    }
 
-	/**
-	 * This method initializes sShell
-	 */
 	private void createSShell() {
 		GridData gridData2 = new GridData();
 		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
@@ -67,10 +65,6 @@ public class NewMediumForm {
 		});
 	}
 
-	/**
-	 * This method initializes group
-	 * 
-	 */
 	private void createGroup() {
 		GridLayout gridLayout1 = new GridLayout();
 		gridLayout1.numColumns = 1;
@@ -94,30 +88,10 @@ public class NewMediumForm {
 	}
 
 	public void obradaIzbora() {
-		Integer indeks = 1;
-                //TODO:NYI
-//                (Integer) template.execute(new HibernateCallback() {
-//
-//			@Override
-//			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-//				Query query = session.createQuery("select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija");
-//				String selected = rbCD.getSelection() ? "CD" : "DVD";
-//				query.setString("tipMedija", selected);
-//				if (query.list().get(0)==null)
-//					return new Integer("1");
-//				else
-//					return new Integer(query.list().get(0).toString());
-//			}
-//
-//		});
-
+		Integer indeks = medijRepository.getNextMedijIndeks(rbCD.getSelection() ? "CD" : "DVD");
 		textID.setText(indeks.toString());
 	}
 
-	/**
-	 * This method initializes composite
-	 * 
-	 */
 	private void createComposite() {
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;

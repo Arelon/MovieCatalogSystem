@@ -26,8 +26,9 @@ public class DeleteMovieForm {
     @Autowired
     private FilmRepository filmRepository;
 
-    public DeleteMovieForm(Shell parent, int filmId, Runnable runnable) {
+    public void open(Shell parent, int filmId, Runnable runnable) {
 		this.parent = parent;
+        this.parentRunner = runnable;
 		createSShell();
 		logger.info("DeleteMovieForm: FILMID=" + filmId);
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
@@ -36,7 +37,6 @@ public class DeleteMovieForm {
 		reReadData();
 		sShell.pack();
 		sShell.open();
-		parentRunner = runnable;
 	}
 
 	protected void reReadData() {

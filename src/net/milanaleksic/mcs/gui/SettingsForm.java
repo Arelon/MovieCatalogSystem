@@ -1,8 +1,6 @@
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.config.UserConfiguration;
-import net.milanaleksic.mcs.domain.Pozicija;
-import net.milanaleksic.mcs.domain.Zanr;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -12,7 +10,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 public class SettingsForm {
-	
+
 	private Shell sShell = null;
 	private Shell parent = null;
 	private Runnable parentRunner = null;
@@ -27,17 +25,17 @@ public class SettingsForm {
     private Text textElementsPerPage = null;
 
     private boolean changed=false;
-    private final UserConfiguration userConfiguration;
+    private UserConfiguration userConfiguration;
 
-    public SettingsForm(Shell parent, Runnable runnable, UserConfiguration userConfiguration) {
+    public void open(Shell parent, Runnable runnable, UserConfiguration userConfiguration) {
 		this.parent = parent;
         this.userConfiguration = userConfiguration;
+        this.parentRunner = runnable;
 		createSShell();
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
                 parent.getLocation().y + Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
 		reReadData();
 		sShell.open();
-		parentRunner = runnable;
 	}
 
 	private void reReadData() {

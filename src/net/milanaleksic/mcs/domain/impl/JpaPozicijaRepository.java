@@ -19,7 +19,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
 
     @Override
     public List<Pozicija> getPozicijas() {
-        log.debug("ZanrRepository::getZanrs");
+        log.debug("PozicijaRepository::getPozicijas");
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
         Root<Pozicija> from = cq.from(Pozicija.class);

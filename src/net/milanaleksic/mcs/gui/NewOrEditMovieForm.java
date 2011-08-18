@@ -1,10 +1,6 @@
 package net.milanaleksic.mcs.gui;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import net.milanaleksic.mcs.domain.*;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -12,10 +8,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class NewOrEditMovieForm {
 	
 	private static final Logger logger = Logger.getLogger(NewOrEditMovieForm.class);
+
+    @Autowired private NewMediumForm newMediumForm;
 
 	private Shell sShell = null;
 	private Composite composite = null;
@@ -33,23 +32,23 @@ public class NewOrEditMovieForm {
 	private HashMap<String, Integer> sviDiskovi;
 	
 	private Text textGodina = null;
-    private final Shell parent;
+    private Shell parent;
 	private Runnable parentRunner = null;
     private Text textKomentar = null;
     private Integer filmId = null;
 
-    public NewOrEditMovieForm(Shell parent, Integer filmId, Runnable runnable) {
+    public void open(Shell parent, Integer filmId, Runnable runnable) {
 		this.parent = parent;
-		createSShell();
+		this.filmId  = filmId;
+        this.parentRunner = runnable;
+        createSShell();
 		logger.info("NewOrEditMovieForm: FILMID="+filmId);
 		sShell.setLocation(
 				new Point(
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
 						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
-		this.filmId  = filmId;
 		resetControls();
-		sShell.open();
-		parentRunner = runnable;
+        sShell.open();
 	}
 	
 	private void resetControls() {
@@ -510,7 +509,7 @@ public class NewOrEditMovieForm {
 		btnNovMedij.setText("Нов диск ...");
 		btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                new NewMediumForm(sShell, new Runnable() {
+                newMediumForm.open(sShell, new Runnable() {
 
                     @Override
                     public void run() {

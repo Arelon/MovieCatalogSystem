@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Label;
 import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 
@@ -29,6 +28,20 @@ import java.util.List;
 public class MainForm extends Observable {
 
 	private static final Logger log = Logger.getLogger(MainForm.class);
+
+    @Autowired private NewOrEditMovieForm newOrEditMovieForm;
+
+    @Autowired private SettingsForm settingsForm;
+
+    @Autowired private ApplicationManager applicationManager;
+
+    @Autowired private ZanrRepository zanrRepository;
+
+    @Autowired private TipMedijaRepository tipMedijaRepository;
+
+    @Autowired private PozicijaRepository pozicijaRepository;
+
+    @Autowired private DeleteMovieForm deleteMovieForm;
 
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 
@@ -45,15 +58,6 @@ public class MainForm extends Observable {
 
     private CurrentViewState currentViewState = new CurrentViewState();
     private ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration;
-
-    @Autowired private ApplicationManager applicationManager;
-
-    @Autowired private ZanrRepository zanrRepository;
-
-    @Autowired private TipMedijaRepository tipMedijaRepository;
-
-    @Autowired private PozicijaRepository pozicijaRepository;
-
 
     // private classes
 
@@ -175,7 +179,7 @@ public class MainForm extends Observable {
 		
 		@Override public void mouseDoubleClick(MouseEvent mouseevent) {
 			if (mainTable.getSelectionIndex() != -1)
-				new NewOrEditMovieForm(sShell, 
+				newOrEditMovieForm.open(sShell,
 						(Integer)mainTable.getSelection()[0].getData(),
 								new Runnable() {
 
@@ -272,7 +276,7 @@ public class MainForm extends Observable {
 		@Override public void widgetSelected(SelectionEvent e) {
 			if (mainTable.getSelectionIndex() == -1)
 				return;
-			new DeleteMovieForm(sShell, (Integer) mainTable.getSelection()[0].getData(),
+			deleteMovieForm.open(sShell, (Integer) mainTable.getSelection()[0].getData(),
 					new Runnable() {
 
 						@Override public void run() {
@@ -287,7 +291,7 @@ public class MainForm extends Observable {
 	private class ToolSettingsSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
-			new SettingsForm(sShell, new Runnable() {
+			settingsForm.open(sShell, new Runnable() {
 
 				@Override public void run() {
 					resetPozicije();
@@ -330,7 +334,7 @@ public class MainForm extends Observable {
 	private class ToolNewSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
-			new NewOrEditMovieForm(sShell, null, new Runnable() {
+			newOrEditMovieForm.open(sShell, null, new Runnable() {
 
 				@Override
 				public void run() {

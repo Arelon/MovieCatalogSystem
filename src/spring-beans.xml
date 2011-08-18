@@ -1,33 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
-
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:annotation-config />
 
-    <context:component-scan base-package="net.milanaleksic.mcs.domain"/>
+    <import resource="spring-beans-gui.xml" />
 
-    <context:property-placeholder location="classpath:datasource.properties"/>
-
-    <bean id="abstractRestorePointService" abstract="true" class="net.milanaleksic.mcs.restore.AbstractRestorePointService">
-        <property name="dbDriver" value="${hibernate.connection.driver_class}"/>
-        <property name="dbUrl" value="${hibernate.connection.url}"/>
-        <property name="dbUsername" value="${hibernate.connection.username}"/>
-        <property name="dbPassword" value="${hibernate.connection.password}"/>
-    </bean>
-
-    <bean id="restorePointCreator" class="net.milanaleksic.mcs.restore.RestorePointCreator"
-          parent="abstractRestorePointService" />
-
-    <bean id="restorePointRestorer" class="net.milanaleksic.mcs.restore.RestorePointRestorer"
-          parent="abstractRestorePointService" />
+    <import resource="spring-beans-db.xml" />
 
     <bean id="programArgsManager" class="net.milanaleksic.mcs.config.ProgramArgsService" />
-
-    <bean id="mainForm" class="net.milanaleksic.mcs.gui.MainForm" />
 
 	<bean id="applicationManager" class="net.milanaleksic.mcs.ApplicationManager">
         <property name="lifecycleListeners">
@@ -39,32 +22,5 @@
             </set>
         </property>
 	</bean>
-
-    <bean id="splashScreenManager" class="net.milanaleksic.mcs.gui.SplashScreenManager" />
-
-    <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager" />
-
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource" />
-        <property name="persistenceUnitName" value="MovieCatalogSystemDB" />
-        <property name="jpaProperties">
-            <props>
-                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
-            </props>
-        </property>
-    </bean>
-
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${hibernate.connection.driver_class}" />
-        <property name="url" value="${hibernate.connection.url}" />
-        <property name="username" value="${hibernate.connection.username}" />
-        <property name="password" value="${hibernate.connection.password}" />
-    </bean>
-
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 
 </beans>
