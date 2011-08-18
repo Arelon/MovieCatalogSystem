@@ -23,7 +23,7 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);
         Root<TipMedija> from = cq.from(TipMedija.class);
-        cq.orderBy(builder.asc(from.get("naziv")));
+        cq.orderBy(builder.asc(builder.lower(from.<String>get("naziv"))));
         return entityManager.createQuery(cq).getResultList();
     }
 }

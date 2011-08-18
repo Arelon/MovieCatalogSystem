@@ -22,7 +22,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
         Root<Zanr> from = cq.from(Zanr.class);
-        cq.orderBy(builder.asc(from.get("zanr")));
+        cq.orderBy(builder.asc(builder.lower(from.<String>get("zanr"))));
         return entityManager.createQuery(cq).getResultList();
     }
 }
