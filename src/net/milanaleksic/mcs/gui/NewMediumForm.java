@@ -10,23 +10,18 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.hibernate.*;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class NewMediumForm {
 
-	private static final Logger log = Logger.getLogger(NewMediumForm.class); // @jve:decl-index=0:
+	private static final Logger log = Logger.getLogger(NewMediumForm.class);
 
-	private Shell sShell = null; // @jve:decl-index=0:visual-constraint="17,12"
+	private Shell sShell = null;
     private Button rbCD = null;
     private Text textID = null;
-    private Shell parent = null; // @jve:decl-index=0:
-	private Runnable parentRunner = null; // @jve:decl-index=0:
+    private Shell parent = null;
+	private Runnable parentRunner = null;
 
-	private HibernateTemplate template = null;
-
-	public NewMediumForm(Shell parent, Runnable runnable, HibernateTemplate hibernateTemplate) {
+	public NewMediumForm(Shell parent, Runnable runnable) {
 		this.parent = parent;
 		createSShell();
 		sShell.setLocation(
@@ -34,7 +29,6 @@ public class NewMediumForm {
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
 						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
 		sShell.open();
-		template = hibernateTemplate;
 		obradaIzbora();
 		parentRunner = runnable;
 	}
@@ -100,20 +94,22 @@ public class NewMediumForm {
 	}
 
 	public void obradaIzbora() {
-		Integer indeks = (Integer) template.execute(new HibernateCallback() {
-
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Query query = session.createQuery("select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija");
-				String selected = rbCD.getSelection() ? "CD" : "DVD";
-				query.setString("tipMedija", selected);
-				if (query.list().get(0)==null)
-					return new Integer("1");
-				else
-					return new Integer(query.list().get(0).toString());
-			}
-
-		});
+		Integer indeks = 1;
+                //TODO:NYI
+//                (Integer) template.execute(new HibernateCallback() {
+//
+//			@Override
+//			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+//				Query query = session.createQuery("select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija");
+//				String selected = rbCD.getSelection() ? "CD" : "DVD";
+//				query.setString("tipMedija", selected);
+//				if (query.list().get(0)==null)
+//					return new Integer("1");
+//				else
+//					return new Integer(query.list().get(0).toString());
+//			}
+//
+//		});
 
 		textID.setText(indeks.toString());
 	}
@@ -139,47 +135,38 @@ public class NewMediumForm {
 		composite.setLayoutData(gridData);
         Button btnOk = new Button(composite, SWT.NONE);
 		btnOk.setText("Сними");
-		btnOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-
-                template.execute(new HibernateCallback() {
-
-                    @Override
-                    public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-                        Transaction transaction = session.beginTransaction();
-
-                        String selected = rbCD.getSelection() ? "CD" : "DVD";
-                        Medij m = new Medij();
-                        m.setFilms(null);
-                        m.setIndeks(Integer.parseInt(textID.getText()));
-
-                        Query query = session.createQuery("from Pozicija p where p.pozicija=:primljen");
-                        query.setString("primljen", "присутан");
-                        Pozicija pozicija = (Pozicija) query.list().get(0);
-                        pozicija.addMedij(m);
-
-                        query = session.createQuery("from TipMedija t where t.naziv=:tipMedija");
-                        query.setString("tipMedija", selected);
-                        TipMedija tipMedija = (TipMedija) query.list().get(0);
-                        tipMedija.addMedij(m);
-
-                        log.info("Dodajem nov medij: indeksID=" + m.getIndeks() +
-                                ", pozicijaID=" + pozicija.getIdpozicija() +
-                                ", tipMedijaID=" + tipMedija.getIdtip());
-
-                        session.save(m);
-                        transaction.commit();
-                        return m;
-                    }
-
-                });
-
-                parentRunner.run();
-
-                sShell.close();
-            }
-        });
+        //TODO:NYI
+//		btnOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+//                Transaction transaction = session.beginTransaction();
+//
+//                String selected = rbCD.getSelection() ? "CD" : "DVD";
+//                Medij m = new Medij();
+//                m.setFilms(null);
+//                m.setIndeks(Integer.parseInt(textID.getText()));
+//
+//                Query query = session.createQuery("from Pozicija p where p.pozicija=:primljen");
+//                query.setString("primljen", "присутан");
+//                Pozicija pozicija = (Pozicija) query.list().get(0);
+//                pozicija.addMedij(m);
+//
+//                query = session.createQuery("from TipMedija t where t.naziv=:tipMedija");
+//                query.setString("tipMedija", selected);
+//                TipMedija tipMedija = (TipMedija) query.list().get(0);
+//                tipMedija.addMedij(m);
+//
+//                log.info("Dodajem nov medij: indeksID=" + m.getIndeks() +
+//                        ", pozicijaID=" + pozicija.getIdpozicija() +
+//                        ", tipMedijaID=" + tipMedija.getIdtip());
+//
+//                session.save(m);
+//                transaction.commit();
+//
+//                parentRunner.run();
+//
+//                sShell.close();
+//            }
+//        });
         Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText("Одустани");
 		btnCancel.setLayoutData(gridData12);

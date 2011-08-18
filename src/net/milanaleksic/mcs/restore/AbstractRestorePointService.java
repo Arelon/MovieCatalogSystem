@@ -24,17 +24,37 @@ public abstract class AbstractRestorePointService implements InitializingBean {
 
     protected ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
 
+    private String dbDriver;
+    protected String dbUrl;
+    private String dbUsername;
+    private String dbPassword;
+
+    public void setDbDriver(String dbDriver) {
+        this.dbDriver = dbDriver;
+    }
+
+    public void setDbUrl(String dbUrl) {
+        this.dbUrl = dbUrl;
+    }
+
+    public void setDbUsername(String dbUsername) {
+        this.dbUsername = dbUsername;
+    }
+
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+    }
+
     private boolean driverRegistered = false;
     protected synchronized Connection prepareDriverAndFetchConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
         if (!driverRegistered) {
             driverRegistered = true;
             log.debug("Registering database driver");
-            Class.forName(databaseConfiguration.getDBDialect()).newInstance();
+            Class.forName(dbDriver).newInstance();
         }
 
         log.debug("Getting connection");
-        return DriverManager.getConnection(databaseConfiguration.getDBUrl(),
-                databaseConfiguration.getDBUsername(), databaseConfiguration.getDBPassword());
+        return DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
     }
 
     protected void close(OutputStream pos) {

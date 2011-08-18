@@ -1,12 +1,24 @@
 package net.milanaleksic.mcs.domain;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name="ZANR", schema="DB2ADMIN")
+@org.hibernate.annotations.Cache(region="mcs",
+        usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Zanr implements java.io.Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="IDZANR")
 	private int idzanr;
+
+    @Column(name="ZANR", length = 100, nullable = false)
 	private String zanr;
+
+    @OneToMany(mappedBy = "zanr")
 	private Set<Film> films = new HashSet<Film>(0);
 
 	public Zanr() {

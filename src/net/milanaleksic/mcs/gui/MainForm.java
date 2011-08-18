@@ -7,14 +7,17 @@ import net.milanaleksic.mcs.export.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -25,11 +28,11 @@ import java.util.List;
 
 public class MainForm extends Observable {
 
-	private static final Logger log = Logger.getLogger(MainForm.class);  //  @jve:decl-index=0:
+	private static final Logger log = Logger.getLogger(MainForm.class);
 
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 
-	private Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="11,7"
+	private Shell sShell = null;
 	private Combo comboZanr = null;
 	private Combo comboTipMedija = null;
 	private Table mainTable = null;
@@ -44,7 +47,13 @@ public class MainForm extends Observable {
     private ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration;
 
     @Autowired private ApplicationManager applicationManager;
-    @Autowired private HibernateTemplate hibernateTemplate;
+
+    @Autowired private ZanrRepository zanrRepository;
+
+    @Autowired private TipMedijaRepository tipMedijaRepository;
+
+    @Autowired private PozicijaRepository pozicijaRepository;
+
 
     // private classes
 
@@ -174,7 +183,7 @@ public class MainForm extends Observable {
 										doFillMainTable();
 									}
 									
-								}, hibernateTemplate);
+								});
 		}			
 	}
 	
@@ -218,8 +227,8 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            @SuppressWarnings("unchecked")
-            final List<Film> allFilms = (List<Film>) hibernateTemplate.execute(new ListMoviesHibernateCallback());
+            //TODO: NYI
+            final List<Film> allFilms = new ArrayList<Film>(); //(List<Film>) hibernateTemplate.execute(new ListMoviesHibernateCallback());
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -270,7 +279,7 @@ public class MainForm extends Observable {
 							doFillMainTable();
 						}
 						
-					}, hibernateTemplate);
+					});
 		}
 		
 	}
@@ -286,13 +295,13 @@ public class MainForm extends Observable {
 					doFillMainTable();
 				}
 				
-			}, hibernateTemplate, applicationManager.getUserConfiguration());
+			}, applicationManager.getUserConfiguration());
 		}
 		
 		private void resetZanrova() {
 			comboZanr.setItems(new String [] {});
 			@SuppressWarnings("unchecked")
-			List<Zanr> zanrovi = (List<Zanr>) hibernateTemplate.find("from Zanr z order by LOWER(z.zanr) asc");
+			List<Zanr> zanrovi = zanrRepository.getZanrs();
 			comboZanr.add("Сви жанрови");
 			comboZanr.add("-----------");
 			for(Zanr zanr : zanrovi)
@@ -328,99 +337,99 @@ public class MainForm extends Observable {
 					doFillMainTable();
 				}
 				
-			}, hibernateTemplate);
+			});
 		}
 
 	}
 	
-	private class ListMoviesHibernateCallback implements HibernateCallback {
-
-        private final int maxItems;
-
-        public ListMoviesHibernateCallback() {
-            this.maxItems = 0;
-        }
-
-        public ListMoviesHibernateCallback(int maxItems) {
-            this.maxItems = maxItems;
-        }
-
-        @Override
-		@SuppressWarnings("unchecked")
-		public Object doInHibernate(Session session) throws HibernateException, SQLException {
-			final String ukljZanr = "f.zanr.zanr=:zanr";
-			final String ukljTipMedija = "m.tipMedija.naziv=:tipmedija";
-			final String ukljPozicija = "m.pozicija.pozicija=:pozicija";
-			final String ukljFilter = "(lower(f.nazivfilma) like :filter or lower(f.prevodnazivafilma) like :filter or lower(f.komentar) like :filter)";
-			final String filterText = currentViewState.getFilterText();
-
-			StringBuilder buff = new StringBuilder("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
-
-            StringBuilder countBuff = new StringBuilder("select count(distinct idfilm) from Film f, Medij m where f.idfilm in elements(m.films)");
- 
-			if (comboZanr.getSelectionIndex()>1) {
-				buff.append(" and ").append(ukljZanr);
-				countBuff.append(" and ").append(ukljZanr);
-			}
-			if (comboTipMedija.getSelectionIndex()>1) {
-				buff.append(" and ").append(ukljTipMedija);
-				countBuff.append(" and ").append(ukljTipMedija);
-			}
-			if (comboPozicija.getSelectionIndex()>1) {
-				buff.append(" and ").append(ukljPozicija);
-				countBuff.append(" and ").append(ukljPozicija);
-			}
-			if (filterText != null && filterText.length()>0) {
-				buff.append(" and ").append(ukljFilter);
-				countBuff.append(" and ").append(ukljFilter);
-			}
-			buff.append(" order by m.tipMedija.naziv, m.indeks, f.nazivfilma)");
-			
-			String hsql = buff.toString();
-			log.debug("Generisan upit: "+hsql);
-			
-			long start = new Date().getTime();
-			Query query = session.createQuery(hsql);
-			Query countQuery = session.createQuery(countBuff.toString());
-			if (comboZanr.getSelectionIndex()>1) {
-				query.setString("zanr", comboZanr.getText());
-				countQuery.setString("zanr", comboZanr.getText());
-			}
-			if (comboTipMedija.getSelectionIndex()>1) {
-				query.setString("tipmedija", comboTipMedija.getText());
-				countQuery.setString("tipmedija", comboTipMedija.getText());
-			}
-			if (comboPozicija.getSelectionIndex()>1) {
-				query.setString("pozicija", comboPozicija.getText());
-				countQuery.setString("pozicija", comboPozicija.getText());
-			}
-			if (filterText != null && filterText.length()>0) {
-				query.setString("filter", "%"+filterText.toLowerCase()+"%");
-				countQuery.setString("filter", "%"+filterText.toLowerCase()+"%");
-			}
-
-            if (maxItems >0) {
-                query.setFirstResult(currentViewState.getActivePage().intValue()*maxItems);
-                query.setMaxResults(maxItems);
-            }
-
-            currentViewState.setMaxItemsPerPage(maxItems);
-
-			List<Film> sviFilmovi = query.list();
-            long end = new Date().getTime();
-            long fetchTime = end-start;
-
-            start = System.currentTimeMillis();
-			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
-			end = new Date().getTime();
-            long fetchCountTime = end-start;
-
-            log.debug(String.format("FetchTime=%dms, FetchCountTime=%dms", fetchTime, fetchCountTime));
-
-			return sviFilmovi;
-		}
-		
-	}
+//	private class ListMoviesHibernateCallback implements HibernateCallback {
+//
+//        private final int maxItems;
+//
+//        public ListMoviesHibernateCallback() {
+//            this.maxItems = 0;
+//        }
+//
+//        public ListMoviesHibernateCallback(int maxItems) {
+//            this.maxItems = maxItems;
+//        }
+//
+//        @Override
+//		@SuppressWarnings("unchecked")
+//		public Object doInHibernate(Session session) throws HibernateException, SQLException {
+//			final String ukljZanr = "f.zanr.zanr=:zanr";
+//			final String ukljTipMedija = "m.tipMedija.naziv=:tipmedija";
+//			final String ukljPozicija = "m.pozicija.pozicija=:pozicija";
+//			final String ukljFilter = "(lower(f.nazivfilma) like :filter or lower(f.prevodnazivafilma) like :filter or lower(f.komentar) like :filter)";
+//			final String filterText = currentViewState.getFilterText();
+//
+//			StringBuilder buff = new StringBuilder("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
+//
+//            StringBuilder countBuff = new StringBuilder("select count(distinct idfilm) from Film f, Medij m where f.idfilm in elements(m.films)");
+//
+//			if (comboZanr.getSelectionIndex()>1) {
+//				buff.append(" and ").append(ukljZanr);
+//				countBuff.append(" and ").append(ukljZanr);
+//			}
+//			if (comboTipMedija.getSelectionIndex()>1) {
+//				buff.append(" and ").append(ukljTipMedija);
+//				countBuff.append(" and ").append(ukljTipMedija);
+//			}
+//			if (comboPozicija.getSelectionIndex()>1) {
+//				buff.append(" and ").append(ukljPozicija);
+//				countBuff.append(" and ").append(ukljPozicija);
+//			}
+//			if (filterText != null && filterText.length()>0) {
+//				buff.append(" and ").append(ukljFilter);
+//				countBuff.append(" and ").append(ukljFilter);
+//			}
+//			buff.append(" order by m.tipMedija.naziv, m.indeks, f.nazivfilma)");
+//
+//			String hsql = buff.toString();
+//			log.debug("Generisan upit: "+hsql);
+//
+//			long start = new Date().getTime();
+//			Query query = session.createQuery(hsql);
+//			Query countQuery = session.createQuery(countBuff.toString());
+//			if (comboZanr.getSelectionIndex()>1) {
+//				query.setString("zanr", comboZanr.getText());
+//				countQuery.setString("zanr", comboZanr.getText());
+//			}
+//			if (comboTipMedija.getSelectionIndex()>1) {
+//				query.setString("tipmedija", comboTipMedija.getText());
+//				countQuery.setString("tipmedija", comboTipMedija.getText());
+//			}
+//			if (comboPozicija.getSelectionIndex()>1) {
+//				query.setString("pozicija", comboPozicija.getText());
+//				countQuery.setString("pozicija", comboPozicija.getText());
+//			}
+//			if (filterText != null && filterText.length()>0) {
+//				query.setString("filter", "%"+filterText.toLowerCase()+"%");
+//				countQuery.setString("filter", "%"+filterText.toLowerCase()+"%");
+//			}
+//
+//            if (maxItems >0) {
+//                query.setFirstResult(currentViewState.getActivePage().intValue()*maxItems);
+//                query.setMaxResults(maxItems);
+//            }
+//
+//            currentViewState.setMaxItemsPerPage(maxItems);
+//
+//			List<Film> sviFilmovi = query.list();
+//            long end = new Date().getTime();
+//            long fetchTime = end-start;
+//
+//            start = System.currentTimeMillis();
+//			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
+//			end = new Date().getTime();
+//            long fetchCountTime = end-start;
+//
+//            log.debug(String.format("FetchTime=%dms, FetchCountTime=%dms", fetchTime, fetchCountTime));
+//
+//			return sviFilmovi;
+//		}
+//
+//	}
 	
 	
 	
@@ -517,8 +526,7 @@ public class MainForm extends Observable {
 		comboZanr.setLayoutData(gridData5);
 		comboZanr.setVisibleItemCount(16);
 		comboZanr.addSelectionListener(new ComboRefreshAdapter());
-		@SuppressWarnings("unchecked")
-		List<Zanr> zanrovi = (List<Zanr>) hibernateTemplate.find("from Zanr z order by LOWER(z.zanr) asc");
+		List<Zanr> zanrovi = zanrRepository.getZanrs();
 		comboZanr.add("Сви жанрови");
 		comboZanr.add("-----------");
 		for(Zanr zanr : zanrovi)
@@ -534,11 +542,9 @@ public class MainForm extends Observable {
 		comboTipMedija.setLayoutData(gridData1);
 		comboTipMedija.setVisibleItemCount(8);
 		comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
-		@SuppressWarnings("unchecked")
-		List<TipMedija> tipovi = (List<TipMedija>) hibernateTemplate.find("from TipMedija m order by LOWER(m.naziv) asc");
 		comboTipMedija.add("Сви медији");
 		comboTipMedija.add("-----------");
-		for(TipMedija tip : tipovi)
+		for(TipMedija tip : tipMedijaRepository.getTipMedijas())
 			comboTipMedija.add(tip.toString());
 		comboTipMedija.select(0);
 	}
@@ -556,11 +562,9 @@ public class MainForm extends Observable {
 
 	private void resetPozicije() {
 		comboPozicija.setItems(new String [] {});
-		@SuppressWarnings("unchecked") 
-		List<Pozicija> pozicije = (List<Pozicija>) hibernateTemplate.find("from Pozicija p order by LOWER(p.pozicija) asc");
 		comboPozicija.add("Било где");
 		comboPozicija.add("-----------");
-		for(Pozicija pozicija : pozicije)
+		for(Pozicija pozicija : pozicijaRepository.getPozicijas())
 			comboPozicija.add(pozicija.toString());
 		comboPozicija.select(0);
 	}
@@ -674,9 +678,10 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(true);
 			toolTicker.update();
 		}
+        //TODO:NYI
 		@SuppressWarnings("unchecked")
-		List<Film> sviFilmovi = (List<Film>) hibernateTemplate.execute(
-                new ListMoviesHibernateCallback(applicationManager.getUserConfiguration().getElementsPerPage()));
+		List<Film> sviFilmovi = new ArrayList<Film>();// (List<Film>) hibernateTemplate.execute(
+                //new ListMoviesHibernateCallback(applicationManager.getUserConfiguration().getElementsPerPage()));
 		long start = new Date().getTime();
 		int i=0;
 		

@@ -1,14 +1,39 @@
 package net.milanaleksic.mcs.domain;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name="MEDIJ", schema="DB2ADMIN")
+@org.hibernate.annotations.Cache(region="mcs",
+        usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Medij implements java.io.Serializable, Comparable<Medij> {
 
-	private int idmedij;
-	private TipMedija tipMedija;
-	private Pozicija pozicija;
-	private int indeks;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="IDMEDIJ")
+    private int idmedij;
+
+    @ManyToOne(targetEntity = TipMedija.class, fetch = FetchType.EAGER)
+    @JoinColumn(name="IDTIP", nullable = false)
+    @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
+    private TipMedija tipMedija;
+
+    @ManyToOne(targetEntity = Pozicija.class, fetch = FetchType.EAGER)
+    @JoinColumn(name="IDPOZICIJA", nullable = false)
+    @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
+    private Pozicija pozicija;
+
+    @Column(name = "INDEKS", nullable = false)
+    private int indeks;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "ZAUZIMA",
+        joinColumns = { @JoinColumn(name = "IDMEDIJ") },
+        inverseJoinColumns = { @JoinColumn(name = "IDFILM") }
+    )
 	private Set<Film> films = new HashSet<Film>(0);
 	
 	private String stringVal= null;

@@ -10,10 +10,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.hibernate.Query;
-import org.hibernate.Transaction;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class SettingsForm {
 	
@@ -31,12 +27,10 @@ public class SettingsForm {
     private Text textElementsPerPage = null;
 
     private boolean changed=false;
-    private final HibernateTemplate hibernateTemplate;
     private final UserConfiguration userConfiguration;
 
-    public SettingsForm(Shell parent, Runnable runnable, HibernateTemplate hibernateTemplate, UserConfiguration userConfiguration) {
+    public SettingsForm(Shell parent, Runnable runnable, UserConfiguration userConfiguration) {
 		this.parent = parent;
-        this.hibernateTemplate = hibernateTemplate;
         this.userConfiguration = userConfiguration;
 		createSShell();
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
@@ -47,30 +41,22 @@ public class SettingsForm {
 	}
 
 	private void reReadData() {
-		hibernateTemplate.execute(new HibernateCallback() {
-			
-			@SuppressWarnings("unchecked")
-			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
-				// preuzimanje svih pozicija
-				Query query = session.createQuery("from Pozicija p order by lower(p.pozicija)");
-				java.util.List<Pozicija> svePozicije = (java.util.List<Pozicija>) query.list();
-				listLokacije.setItems(new String[] {});
-				for (Pozicija pozicija : svePozicije) {
-					listLokacije.add(pozicija.toString());
-				}
-				
-				// preuzimanje svih zanrova
-				query = session.createQuery("from Zanr z order by lower(z.zanr)");
-				java.util.List<Zanr> sviZanrovi = (java.util.List<Zanr>) query.list();
-				listZanrovi.setItems(new String[] {});
-				for (Zanr zanr : sviZanrovi) {
-					listZanrovi.add(zanr.toString());
-				}
-				
-				return null;
-			}
-			
-		});
+        //TODO:NYI
+//		// preuzimanje svih pozicija
+//        Query query = session.createQuery("from Pozicija p order by lower(p.pozicija)");
+//        java.util.List<Pozicija> svePozicije = (java.util.List<Pozicija>) query.list();
+//        listLokacije.setItems(new String[] {});
+//        for (Pozicija pozicija : svePozicije) {
+//            listLokacije.add(pozicija.toString());
+//        }
+//
+//        // preuzimanje svih zanrova
+//        query = session.createQuery("from Zanr z order by lower(z.zanr)");
+//        java.util.List<Zanr> sviZanrovi = (java.util.List<Zanr>) query.list();
+//        listZanrovi.setItems(new String[] {});
+//        for (Zanr zanr : sviZanrovi) {
+//            listZanrovi.add(zanr.toString());
+//        }
         textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
 	}
 
@@ -202,35 +188,36 @@ public class SettingsForm {
         Button btnIzbrisiLokaciju = new Button(composite1, SWT.NONE);
 		btnIzbrisiLokaciju.setText("Избриши");
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
-		btnIzbrisiLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                hibernateTemplate.execute(new HibernateCallback() {
-
-                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-                        // preuzimanje podataka za film koji se azurira
-                        Transaction transaction = session.beginTransaction();
-                        Query query = session.createQuery("from Pozicija p where p.pozicija = :param");
-                        query.setString("param", listLokacije.getItem(listLokacije.getSelectionIndex()));
-                        Pozicija pozicija = (Pozicija) query.list().get(0);
-
-                        if (pozicija.getMedijs().size() > 0) {
-                            MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-                            box.setMessage("Забрањено је брисање, постоји " + pozicija.getMedijs().size() + " медијума који су на тој локацији!");
-                            box.setText("Грешка");
-                            box.open();
-                            return null;
-                        }
-
-                        session.delete(pozicija);
-                        transaction.commit();
-                        changed = true;
-                        reReadData();
-                        return null;
-                    }
-
-                });
-            }
-        });
+        //TODO:NYI
+//		btnIzbrisiLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+//                hibernateTemplate.execute(new HibernateCallback() {
+//
+//                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
+//                        // preuzimanje podataka za film koji se azurira
+//                        Transaction transaction = session.beginTransaction();
+//                        Query query = session.createQuery("from Pozicija p where p.pozicija = :param");
+//                        query.setString("param", listLokacije.getItem(listLokacije.getSelectionIndex()));
+//                        Pozicija pozicija = (Pozicija) query.list().get(0);
+//
+//                        if (pozicija.getMedijs().size() > 0) {
+//                            MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
+//                            box.setMessage("Забрањено је брисање, постоји " + pozicija.getMedijs().size() + " медијума који су на тој локацији!");
+//                            box.setText("Грешка");
+//                            box.open();
+//                            return null;
+//                        }
+//
+//                        session.delete(pozicija);
+//                        transaction.commit();
+//                        changed = true;
+//                        reReadData();
+//                        return null;
+//                    }
+//
+//                });
+//            }
+//        });
 	}
 
 	private void createGenresTabContents() {
@@ -253,35 +240,36 @@ public class SettingsForm {
         Button btnIzbrisiZanr = new Button(composite2, SWT.NONE);
 		btnIzbrisiZanr.setText("Избриши");
 		btnIzbrisiZanr.setLayoutData(gridData8);
-		btnIzbrisiZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                hibernateTemplate.execute(new HibernateCallback() {
-
-                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-                        // preuzimanje podataka za film koji se azurira
-                        Transaction transaction = session.beginTransaction();
-                        Query query = session.createQuery("from Zanr z where z.zanr = :param");
-                        query.setString("param", listZanrovi.getItem(listZanrovi.getSelectionIndex()));
-                        Zanr zanr = (Zanr) query.list().get(0);
-
-                        if (zanr.getFilms().size() > 0) {
-                            MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-                            box.setMessage("Забрањено је брисање, постоји " + zanr.getFilms().size() + " филмова који припадају овом жанру!");
-                            box.setText("Грешка");
-                            box.open();
-                            return null;
-                        }
-
-                        session.delete(zanr);
-                        transaction.commit();
-                        changed = true;
-                        reReadData();
-                        return null;
-                    }
-
-                });
-            }
-        });
+        //TODO:NYI
+//		btnIzbrisiZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+//                hibernateTemplate.execute(new HibernateCallback() {
+//
+//                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
+//                        // preuzimanje podataka za film koji se azurira
+//                        Transaction transaction = session.beginTransaction();
+//                        Query query = session.createQuery("from Zanr z where z.zanr = :param");
+//                        query.setString("param", listZanrovi.getItem(listZanrovi.getSelectionIndex()));
+//                        Zanr zanr = (Zanr) query.list().get(0);
+//
+//                        if (zanr.getFilms().size() > 0) {
+//                            MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
+//                            box.setMessage("Забрањено је брисање, постоји " + zanr.getFilms().size() + " филмова који припадају овом жанру!");
+//                            box.setText("Грешка");
+//                            box.open();
+//                            return null;
+//                        }
+//
+//                        session.delete(zanr);
+//                        transaction.commit();
+//                        changed = true;
+//                        reReadData();
+//                        return null;
+//                    }
+//
+//                });
+//            }
+//        });
 	}
 
 	private void createAddLocationPanel() {
@@ -299,26 +287,27 @@ public class SettingsForm {
 		textNovaLokacija.setLayoutData(gridData4);
         Button btnDodajLokaciju = new Button(composite3, SWT.NONE);
 		btnDodajLokaciju.setText("Додај ову локацију");
-		btnDodajLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                hibernateTemplate.execute(new HibernateCallback() {
-
-                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-                        // preuzimanje podataka za film koji se azurira
-                        Transaction transaction = session.beginTransaction();
-                        Pozicija pozicija = new Pozicija();
-                        pozicija.setPozicija(textNovaLokacija.getText());
-
-                        session.save(pozicija);
-                        transaction.commit();
-                        changed = true;
-                        reReadData();
-                        return null;
-                    }
-
-                });
-            }
-        });
+        //TODO:NYI
+//		btnDodajLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+//                hibernateTemplate.execute(new HibernateCallback() {
+//
+//                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
+//                        // preuzimanje podataka za film koji se azurira
+//                        Transaction transaction = session.beginTransaction();
+//                        Pozicija pozicija = new Pozicija();
+//                        pozicija.setPozicija(textNovaLokacija.getText());
+//
+//                        session.save(pozicija);
+//                        transaction.commit();
+//                        changed = true;
+//                        reReadData();
+//                        return null;
+//                    }
+//
+//                });
+//            }
+//        });
 	}
 
 	private void createAddGenrePanel() {
@@ -341,26 +330,27 @@ public class SettingsForm {
         Button btnDodajZanr = new Button(composite4, SWT.NONE);
 		btnDodajZanr.setText("Додај овај жанр");
 		btnDodajZanr.setLayoutData(gridData9);
-		btnDodajZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                hibernateTemplate.execute(new HibernateCallback() {
-
-                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-                        // preuzimanje podataka za film koji se azurira
-                        Transaction transaction = session.beginTransaction();
-                        Zanr zanr = new Zanr();
-                        zanr.setZanr(textNovZanr.getText());
-
-                        session.save(zanr);
-                        transaction.commit();
-                        changed = true;
-                        reReadData();
-                        return null;
-                    }
-
-                });
-            }
-        });
+        //TODO:NYI
+//		btnDodajZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+//                hibernateTemplate.execute(new HibernateCallback() {
+//
+//                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
+//                        // preuzimanje podataka za film koji se azurira
+//                        Transaction transaction = session.beginTransaction();
+//                        Zanr zanr = new Zanr();
+//                        zanr.setZanr(textNovZanr.getText());
+//
+//                        session.save(zanr);
+//                        transaction.commit();
+//                        changed = true;
+//                        reReadData();
+//                        return null;
+//                    }
+//
+//                });
+//            }
+//        });
 	}
 
 }

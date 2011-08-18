@@ -261,7 +261,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private String getSQLString(String input) {
-        if (databaseConfiguration.getConvertSQLUnicodeCharacters()) {
+        if (dbUrl.contains("db2")) {
             //log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
             return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
         } else

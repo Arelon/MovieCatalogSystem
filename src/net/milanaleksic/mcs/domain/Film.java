@@ -1,18 +1,47 @@
 package net.milanaleksic.mcs.domain;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
+@Entity
+@Table(name="FILM", schema="DB2ADMIN")
+@org.hibernate.annotations.Cache(region="mcs",
+        usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Film implements Serializable, Comparable<Film> {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "IDFILM")
 	private int idfilm;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="IDZANR", nullable=false)
+    @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
 	private Zanr zanr;
+
+    @Column(length = 100, nullable = false)
 	private String nazivfilma;
+
+    @Column(length = 100, nullable = false)
 	private String prevodnazivafilma;
+
+    @Column(nullable = false)
 	private int godina;
+
+    @Column(length = 1000)
 	private String komentar;
+
+    @Column(precision = 3, scale = 1, nullable = false)
 	private BigDecimal imdbrejting;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "ZAUZIMA",
+        joinColumns = { @JoinColumn(name = "IDFILM") },
+        inverseJoinColumns = { @JoinColumn(name = "IDMEDIJ") }
+    )
 	private Set<Medij> medijs = new HashSet<Medij>(0);
 
 	public Film() {

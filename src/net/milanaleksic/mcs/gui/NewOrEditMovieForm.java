@@ -12,20 +12,12 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.hibernate.*;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
-
-/**
- * @author Xp
- * 03.10.2007.
- */
 public class NewOrEditMovieForm {
 	
-	private static final Logger logger = Logger.getLogger(NewOrEditMovieForm.class);  //  @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(NewOrEditMovieForm.class);
 
-	private Shell sShell = null;  //  @jve:decl-index=0:visual-constraint="29,0"
+	private Shell sShell = null;
 	private Composite composite = null;
     private Text textNaziv = null;
     private Text textPrevod = null;
@@ -36,20 +28,18 @@ public class NewOrEditMovieForm {
 	private List listDiskovi = null;
     private Combo comboDisk = null;
 	
-	private HashMap<String, Integer> sviZanrovi;  //  @jve:decl-index=0:
-	private HashMap<String, Integer> sveLokacije;  //  @jve:decl-index=0:
-	private HashMap<String, Integer> sviDiskovi;  //  @jve:decl-index=0:
+	private HashMap<String, Integer> sviZanrovi;
+	private HashMap<String, Integer> sveLokacije;
+	private HashMap<String, Integer> sviDiskovi;
 	
 	private Text textGodina = null;
     private final Shell parent;
 	private Runnable parentRunner = null;
     private Text textKomentar = null;
     private Integer filmId = null;
-    private final HibernateTemplate hibernateTemplate;
 
-    public NewOrEditMovieForm(Shell parent, Integer filmId, Runnable runnable, HibernateTemplate hibernateTemplate) {
+    public NewOrEditMovieForm(Shell parent, Integer filmId, Runnable runnable) {
 		this.parent = parent;
-        this.hibernateTemplate = hibernateTemplate;
 		createSShell();
 		logger.info("NewOrEditMovieForm: FILMID="+filmId);
 		sShell.setLocation(
@@ -78,199 +68,184 @@ public class NewOrEditMovieForm {
 	 * Procitaj podatke iz baze podataka!
 	 */
 	protected void reReadData() {
-		hibernateTemplate.execute(new HibernateCallback() {
-			
-			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
-				
-				// preuzimanje svih podataka od interesa i upis u kombo boksove
-				refillCombos(session);
-				
-				// preuzimanje podataka za film koji se azurira
-				if (filmId != null) {
-					Query query = session.createQuery("from Film f where f.idfilm = :id");
-					query.setInteger("id", filmId);
-					@SuppressWarnings("unchecked")
-					java.util.List list = query.list();
-					if (list.size() != 1) {
-						MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-						box.setMessage("Нисам успео да јединствено идентификујем филм у бази, добио сам "+ list.size() + " одговора");
-						box.setText("Грешка");
-						box.open();
-						logger.error("Nisam uspeo da jedinstveno identifikujem film u bazi, " +
-								"na upit sam dobio " + list.size() + " odgovora");
-						return null;
-					}
-					Film film = (Film) list.get(0);
-					textNaziv.setText(film.getNazivfilma());
-					textPrevod.setText(film.getPrevodnazivafilma());
-					textGodina.setText(String.valueOf(film.getGodina()));
-					textIMDBOcena.setText(String.valueOf(film.getImdbrejting()));
-					textKomentar.setText(film.getKomentar());
-					comboZanr.select(comboZanr.indexOf(film.getZanr().getZanr()));
-					listDiskovi.removeAll();
-					for (Medij medij : film.getMedijs())
-						listDiskovi.add(medij.toString());
-					comboLokacija.select( comboLokacija.indexOf( film.getFilmLocation() ) );
-				}
-				else {
-					if (comboLokacija.indexOf("присутан") != -1)
-						comboLokacija.select(comboLokacija.indexOf("присутан"));
-					if (comboDisk.getItemCount() != 0)
-						comboDisk.select(comboDisk.getItemCount()-1);
-				}
-				
-				return null;
-			}
-
-		});
+        //TODO:NYI
+//        // preuzimanje svih podataka od interesa i upis u kombo boksove
+//        refillCombos(session);
+//
+//        // preuzimanje podataka za film koji se azurira
+//        if (filmId != null) {
+//            Query query = session.createQuery("from Film f where f.idfilm = :id");
+//            query.setInteger("id", filmId);
+//            @SuppressWarnings("unchecked")
+//            java.util.List list = query.list();
+//            if (list.size() != 1) {
+//                MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
+//                box.setMessage("Нисам успео да јединствено идентификујем филм у бази, добио сам "+ list.size() + " одговора");
+//                box.setText("Грешка");
+//                box.open();
+//                logger.error("Nisam uspeo da jedinstveno identifikujem film u bazi, " +
+//                        "na upit sam dobio " + list.size() + " odgovora");
+//                return null;
+//            }
+//            Film film = (Film) list.get(0);
+//            textNaziv.setText(film.getNazivfilma());
+//            textPrevod.setText(film.getPrevodnazivafilma());
+//            textGodina.setText(String.valueOf(film.getGodina()));
+//            textIMDBOcena.setText(String.valueOf(film.getImdbrejting()));
+//            textKomentar.setText(film.getKomentar());
+//            comboZanr.select(comboZanr.indexOf(film.getZanr().getZanr()));
+//            listDiskovi.removeAll();
+//            for (Medij medij : film.getMedijs())
+//                listDiskovi.add(medij.toString());
+//            comboLokacija.select( comboLokacija.indexOf( film.getFilmLocation() ) );
+//        }
+//        else {
+//            if (comboLokacija.indexOf("присутан") != -1)
+//                comboLokacija.select(comboLokacija.indexOf("присутан"));
+//            if (comboDisk.getItemCount() != 0)
+//                comboDisk.select(comboDisk.getItemCount()-1);
+//        }
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected void refillCombos(Session session) {
-		String previousZanr = comboZanr.getText();
-		String previousLokacija = comboLokacija.getText();
-		String previousDisk = comboDisk.getText();
-		if (comboZanr.getItemCount() != 0)
-			comboZanr.removeAll();
-		if (comboLokacija.getItemCount() != 0)
-			comboLokacija.removeAll();
-		if (comboDisk.getItemCount() != 0)
-			comboDisk.removeAll();
-		
-		sviZanrovi = new HashMap<String, Integer>();
-		sveLokacije = new HashMap<String, Integer>();
-		sviDiskovi = new HashMap<String, Integer>();
-		
-		Query query = session.createQuery("from Zanr z order by lower(z.zanr)");
-		java.util.List<Zanr> zanrovi = (java.util.List <Zanr>) query.list();
-		for (Zanr zanr : zanrovi) {
-			comboZanr.add(zanr.getZanr());
-			sviZanrovi.put(zanr.getZanr(), zanr.getIdzanr());
-		}
-		query = session.createQuery("from Pozicija p order by lower(p.pozicija)");
-		java.util.List<Pozicija> pozicije = (java.util.List <Pozicija>) query.list();
-		for (Pozicija pozicija : pozicije) {
-			comboLokacija.add(pozicija.getPozicija());
-			sveLokacije.put(pozicija.getPozicija(), pozicija.getIdpozicija());
-		}
-		query = session.createQuery("from Medij m order by tipMedija.naziv, indeks");
-		java.util.List<Medij> diskovi = (java.util.List <Medij>) query.list();
-		for (Medij medij : diskovi) {
-			comboDisk.add(medij.toString());
-			sviDiskovi.put(medij.toString(), medij.getIdmedij());
-		}
-		if (previousZanr != null && previousZanr.length()>0 && comboZanr.indexOf(previousZanr)!=-1)
-			comboZanr.select(comboZanr.indexOf(previousZanr));
-		if (previousLokacija != null && previousLokacija.length()>0 && comboLokacija.indexOf(previousLokacija)!=-1)
-			comboLokacija.select(comboLokacija.indexOf(previousLokacija));
-		if (previousDisk != null && previousDisk.length()>0 && comboDisk.indexOf(previousDisk)!=-1)
-			comboDisk.select(comboDisk.indexOf(previousDisk));
+	protected void refillCombos() {
+        //TODO:NYI
+//		String previousZanr = comboZanr.getText();
+//		String previousLokacija = comboLokacija.getText();
+//		String previousDisk = comboDisk.getText();
+//		if (comboZanr.getItemCount() != 0)
+//			comboZanr.removeAll();
+//		if (comboLokacija.getItemCount() != 0)
+//			comboLokacija.removeAll();
+//		if (comboDisk.getItemCount() != 0)
+//			comboDisk.removeAll();
+//
+//		sviZanrovi = new HashMap<String, Integer>();
+//		sveLokacije = new HashMap<String, Integer>();
+//		sviDiskovi = new HashMap<String, Integer>();
+//
+//		Query query = session.createQuery("from Zanr z order by lower(z.zanr)");
+//		java.util.List<Zanr> zanrovi = (java.util.List <Zanr>) query.list();
+//		for (Zanr zanr : zanrovi) {
+//			comboZanr.add(zanr.getZanr());
+//			sviZanrovi.put(zanr.getZanr(), zanr.getIdzanr());
+//		}
+//		query = session.createQuery("from Pozicija p order by lower(p.pozicija)");
+//		java.util.List<Pozicija> pozicije = (java.util.List <Pozicija>) query.list();
+//		for (Pozicija pozicija : pozicije) {
+//			comboLokacija.add(pozicija.getPozicija());
+//			sveLokacije.put(pozicija.getPozicija(), pozicija.getIdpozicija());
+//		}
+//		query = session.createQuery("from Medij m order by tipMedija.naziv, indeks");
+//		java.util.List<Medij> diskovi = (java.util.List <Medij>) query.list();
+//		for (Medij medij : diskovi) {
+//			comboDisk.add(medij.toString());
+//			sviDiskovi.put(medij.toString(), medij.getIdmedij());
+//		}
+//		if (previousZanr != null && previousZanr.length()>0 && comboZanr.indexOf(previousZanr)!=-1)
+//			comboZanr.select(comboZanr.indexOf(previousZanr));
+//		if (previousLokacija != null && previousLokacija.length()>0 && comboLokacija.indexOf(previousLokacija)!=-1)
+//			comboLokacija.select(comboLokacija.indexOf(previousLokacija));
+//		if (previousDisk != null && previousDisk.length()>0 && comboDisk.indexOf(previousDisk)!=-1)
+//			comboDisk.select(comboDisk.indexOf(previousDisk));
 	}
 
 	protected void dodajNoviFilm() {
-		hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
-				//refillCombos(session);
-				Transaction transaction = session.beginTransaction();
-				Film novFilm = new Film();
-				novFilm.setNazivfilma(textNaziv.getText().trim());
-				novFilm.setPrevodnazivafilma(textPrevod.getText().trim());
-				novFilm.setGodina(Integer.parseInt(textGodina.getText()));
-				novFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
-				novFilm.setKomentar(textKomentar.getText());
-				
-				Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())));
-				zanr.addFilm(novFilm);	
-				
-				if (listDiskovi.getItemCount() != 0) {
-					for (String item : listDiskovi.getItems()) {
-						Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item));
-						novFilm.addMedij(medij);
-						Pozicija pozicija = (Pozicija) session.get(Pozicija.class, sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())));
-						pozicija.addMedij(medij);
-					}
-				}
-				session.save(novFilm);
-				
-				transaction.commit();
-				reReadData();
-				return null;
-			}
-		});
+        //TODO:NYI
+//        //refillCombos(session);
+//        Transaction transaction = session.beginTransaction();
+//        Film novFilm = new Film();
+//        novFilm.setNazivfilma(textNaziv.getText().trim());
+//        novFilm.setPrevodnazivafilma(textPrevod.getText().trim());
+//        novFilm.setGodina(Integer.parseInt(textGodina.getText()));
+//        novFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
+//        novFilm.setKomentar(textKomentar.getText());
+//
+//        Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())));
+//        zanr.addFilm(novFilm);
+//
+//        if (listDiskovi.getItemCount() != 0) {
+//            for (String item : listDiskovi.getItems()) {
+//                Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item));
+//                novFilm.addMedij(medij);
+//                Pozicija pozicija = (Pozicija) session.get(Pozicija.class, sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())));
+//                pozicija.addMedij(medij);
+//            }
+//        }
+//        session.save(novFilm);
+//
+//        transaction.commit();
+//        reReadData();
 	}
 	
 	private void izmeniFilm() {
-		hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException ,java.sql.SQLException {
-				Transaction transaction = session.beginTransaction();
-				
-				Query query = session.createQuery("from Film f where f.idfilm = :id");
-				query.setInteger("id", filmId);
-				@SuppressWarnings("unchecked")
-				java.util.List<Film> list = (java.util.List<Film>) query.list();
-				if (list.size() != 1) {
-					logger.error("Nisam uspeo da jedinstveno identifikujem film u bazi, " +
-							"na upit sam dobio " + list.size() + " odgovora");
-					return null;
-				}
-				Film film = list.get(0);
-				
-				// za sledece nema problema - u pitanju je postavljanje nerefencijucih podataka
-				film.setNazivfilma(textNaziv.getText().trim());
-				film.setPrevodnazivafilma(textPrevod.getText().trim());
-				film.setGodina(Integer.parseInt(textGodina.getText()));
-				film.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
-				film.setKomentar(textKomentar.getText());
-				
-				// promena zanra po potrebi !
-				if (sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())) != film.getZanr().getIdzanr()) {
-					film.getZanr().getFilms().remove(film);
-					Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())));
-					zanr.addFilm(film);					
-				}
-
-				// pocinjemo rad sa medijima - prvo da pokupimo stare
-				ArrayList<String> raniji = new ArrayList<String>();
-				for (Medij medij : film.getMedijs())
-					raniji.add(medij.toString());
-				
-				// dodavanje i oduzimanje diskova po potrebi
-				if (listDiskovi.getItemCount() != 0) {
-					for (String item : listDiskovi.getItems()) {
-						//dohvatanje medija i pozicije
-						Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item));
-						Pozicija pozicija = (Pozicija) session.get(Pozicija.class, 
-								sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())));
-						if (raniji.contains(medij.toString())) {
-							if (medij.getPozicija().getIdpozicija() != 
-									sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()))) {
-								Pozicija staraPozicija = (Pozicija) session.get(Pozicija.class, medij.getPozicija().getIdpozicija());
-								staraPozicija.getMedijs().remove(medij);
-								pozicija.addMedij(medij);
-							}
-							raniji.remove(medij.toString());// vec postoji, nema potrebe nista da se radi...
-						}
-						else {
-							film.addMedij(medij);
-							pozicija.addMedij(medij);
-						}
-					}
-				}
-				
-				// mediji koji su ostali u kolekciji RANIJI su oni koji su za brisanje !
-				// iz nekog cudnog razloga ovde mora da se ponovo ucita disk ili obrada nece raditi
-				for (String medijOpis : raniji) {
-					logger.info("Brisem: "+medijOpis);
-					Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(medijOpis));
-					medij.getFilms().remove(film);
-					film.getMedijs().remove(medij);
-				}
-								
-				transaction.commit();
-				reReadData();
-				return null;
-			}
-		});
+        //TODO:NYI
+//        Transaction transaction = session.beginTransaction();
+//
+//        Query query = session.createQuery("from Film f where f.idfilm = :id");
+//        query.setInteger("id", filmId);
+//        @SuppressWarnings("unchecked")
+//        java.util.List<Film> list = (java.util.List<Film>) query.list();
+//        if (list.size() != 1) {
+//            logger.error("Nisam uspeo da jedinstveno identifikujem film u bazi, " +
+//                    "na upit sam dobio " + list.size() + " odgovora");
+//            return null;
+//        }
+//        Film film = list.get(0);
+//
+//        // za sledece nema problema - u pitanju je postavljanje nerefencijucih podataka
+//        film.setNazivfilma(textNaziv.getText().trim());
+//        film.setPrevodnazivafilma(textPrevod.getText().trim());
+//        film.setGodina(Integer.parseInt(textGodina.getText()));
+//        film.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
+//        film.setKomentar(textKomentar.getText());
+//
+//        // promena zanra po potrebi !
+//        if (sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())) != film.getZanr().getIdzanr()) {
+//            film.getZanr().getFilms().remove(film);
+//            Zanr zanr = (Zanr) session.get(Zanr.class, sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())));
+//            zanr.addFilm(film);
+//        }
+//
+//        // pocinjemo rad sa medijima - prvo da pokupimo stare
+//        ArrayList<String> raniji = new ArrayList<String>();
+//        for (Medij medij : film.getMedijs())
+//            raniji.add(medij.toString());
+//
+//        // dodavanje i oduzimanje diskova po potrebi
+//        if (listDiskovi.getItemCount() != 0) {
+//            for (String item : listDiskovi.getItems()) {
+//                //dohvatanje medija i pozicije
+//                Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(item));
+//                Pozicija pozicija = (Pozicija) session.get(Pozicija.class,
+//                        sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())));
+//                if (raniji.contains(medij.toString())) {
+//                    if (medij.getPozicija().getIdpozicija() !=
+//                            sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()))) {
+//                        Pozicija staraPozicija = (Pozicija) session.get(Pozicija.class, medij.getPozicija().getIdpozicija());
+//                        staraPozicija.getMedijs().remove(medij);
+//                        pozicija.addMedij(medij);
+//                    }
+//                    raniji.remove(medij.toString());// vec postoji, nema potrebe nista da se radi...
+//                }
+//                else {
+//                    film.addMedij(medij);
+//                    pozicija.addMedij(medij);
+//                }
+//            }
+//        }
+//
+//        // mediji koji su ostali u kolekciji RANIJI su oni koji su za brisanje !
+//        // iz nekog cudnog razloga ovde mora da se ponovo ucita disk ili obrada nece raditi
+//        for (String medijOpis : raniji) {
+//            logger.info("Brisem: "+medijOpis);
+//            Medij medij = (Medij) session.get(Medij.class, sviDiskovi.get(medijOpis));
+//            medij.getFilms().remove(film);
+//            film.getMedijs().remove(medij);
+//        }
+//
+//        transaction.commit();
+//        reReadData();
 	}
 	
 	
@@ -539,20 +514,13 @@ public class NewOrEditMovieForm {
 
                     @Override
                     public void run() {
-                        hibernateTemplate.execute(new HibernateCallback() {
-
-                            public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-                                // preuzimanje svih podataka od interesa i upis u kombo boksove
-                                refillCombos(session);
-                                if (comboDisk.getItemCount() > 0)
-                                    comboDisk.select(comboDisk.getItemCount() - 1);
-                                return null;
-                            }
-
-                        });
+                        // preuzimanje svih podataka od interesa i upis u kombo boksove
+                        refillCombos();
+                        if (comboDisk.getItemCount() > 0)
+                            comboDisk.select(comboDisk.getItemCount() - 1);
                     }
 
-                }, hibernateTemplate);
+                });
             }
         });
 	}

@@ -1,12 +1,24 @@
 package net.milanaleksic.mcs.domain;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name="TIPMEDIJA", schema="DB2ADMIN")
+@org.hibernate.annotations.Cache(region="mcs",
+        usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class TipMedija implements java.io.Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="IDTIP")
 	private int idtip;
+
+    @Column(name="NAZIV", length = 100, nullable = false)
 	private String naziv;
+
+    @OneToMany(mappedBy = "tipMedija")
 	private Set<Medij> medijs = new HashSet<Medij>(0);
 
 	public TipMedija() {

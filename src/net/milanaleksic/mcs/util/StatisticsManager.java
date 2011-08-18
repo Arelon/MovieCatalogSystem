@@ -6,6 +6,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.jpa.JpaTemplate;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * User: Milan Aleksic
@@ -18,16 +22,15 @@ public class StatisticsManager implements LifecycleListener {
 
     @Autowired private ApplicationManager applicationManager;
 
-    @Autowired private HibernateTemplate hibernateTemplate;
-
     @Override public void applicationStarted() {
-        if (applicationManager.getProgramArgs().isCollectStatistics())
-            hibernateTemplate.getSessionFactory().getStatistics().setStatisticsEnabled(true);
+//        if (applicationManager.getProgramArgs().isCollectStatistics()) {
+//            ((HibernateSessionProxy)entityManager.getDelegate()).getSessionFactory().getStatistics().setStatisticsEnabled(true);
+//        }
     }
 
     @Override public void applicationShutdown() {
-        if (applicationManager.getProgramArgs().isCollectStatistics()) {
-            log.info("Statistics information: "+ hibernateTemplate.getSessionFactory().getStatistics());
-        }
+//        if (applicationManager.getProgramArgs().isCollectStatistics()) {
+//            log.info("Statistics information: "+ hibernateTemplate.getSessionFactory().getStatistics());
+//        }
     }
 }

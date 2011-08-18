@@ -1,10 +1,8 @@
-/**
- * 
- */
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.domain.Film;
 
+import net.milanaleksic.mcs.domain.FilmRepository;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -13,28 +11,23 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.hibernate.Query;
-import org.hibernate.Transaction;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * @author Milan Aleksic 09.12.2007.
- */
 public class DeleteMovieForm {
 
-	private static final Logger logger = Logger.getLogger(DeleteMovieForm.class);  //  @jve:decl-index=0:
+	private static final Logger logger = Logger.getLogger(DeleteMovieForm.class);
 
-	private Shell sShell = null; // @jve:decl-index=0:visual-constraint="10,10"
+	private Shell sShell = null;
     private Shell parent = null;
-	private Integer filmId = null;
+	private int filmId = -1;
 	private Runnable parentRunner = null;
     private Label labFilmNaziv = null;
-    private final HibernateTemplate hibernateTemplate;
 
-    public DeleteMovieForm(Shell parent, Integer filmId, Runnable runnable, HibernateTemplate hibernateTemplate) {
+    @Autowired
+    private FilmRepository filmRepository;
+
+    public DeleteMovieForm(Shell parent, int filmId, Runnable runnable) {
 		this.parent = parent;
-        this.hibernateTemplate = hibernateTemplate;
 		createSShell();
 		logger.info("DeleteMovieForm: FILMID=" + filmId);
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
@@ -47,36 +40,13 @@ public class DeleteMovieForm {
 	}
 
 	protected void reReadData() {
-		hibernateTemplate.execute(new HibernateCallback() {
-
-			public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-
-				// preuzimanje podataka za film koji se azurira
-				if (filmId != null) {
-					Query query = session.createQuery("from Film f where f.idfilm = :id");
-					query.setInteger("id", filmId);
-					java.util.List<?> list = query.list();
-					if (list.size() != 1) {
-						MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-						box.setMessage("Нисам успео да јединствено идентификујем филм у бази, добио сам "+ list.size() + " одговора");
-						box.setText("Грешка");
-						box.open();
-						logger.error("Nisam uspeo da jedinstveno identifikujem film u bazi, " + "na upit sam dobio " + list.size() + " odgovora");
-						return null;
-					}
-					Film film = (Film) list.get(0);
-					labFilmNaziv.setText(film.getNazivfilma() + "\n(" + film.getPrevodnazivafilma() + ")");
-
-				}
-				return null;
-			}
-
-		});
+		// preuzimanje podataka za film koji se azurira
+        if (filmId != -1) {
+            Film film = filmRepository.getFilm(filmId);
+            labFilmNaziv.setText(film.getNazivfilma() + "\n(" + film.getPrevodnazivafilma() + ")");
+        }
 	}
 
-	/**
-	 * This method initializes sShell
-	 */
 	private void createSShell() {
 		GridLayout gridLayout1 = new GridLayout();
 		gridLayout1.numColumns = 2;
@@ -112,10 +82,6 @@ public class DeleteMovieForm {
 		});
 	}
 
-	/**
-	 * This method initializes composite
-	 * 
-	 */
 	private void createComposite() {
 		GridData gridData1 = new GridData();
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
@@ -136,30 +102,7 @@ public class DeleteMovieForm {
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                hibernateTemplate.execute(new HibernateCallback() {
-
-                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-
-                        // preuzimanje podataka za film koji se azurira
-                        if (filmId != null) {
-                            Transaction transaction = session.beginTransaction();
-                            Query query = session.createQuery("from Film f where f.idfilm = :id");
-                            query.setInteger("id", filmId);
-                            java.util.List<?> list = query.list();
-                            if (list.size() != 1) {
-                                logger.error("Nisam uspeo da jedinstveno identifikujem film u bazi, " +
-                                        "na upit sam dobio " + list.size() + " odgovora");
-                                return null;
-                            }
-                            Film film = (Film) list.get(0);
-                            session.delete(film);
-                            transaction.commit();
-                        }
-                        return null;
-                    }
-
-                });
-
+                filmRepository.deleteFilm(filmId);
                 parentRunner.run();
                 sShell.close();
             }
@@ -171,10 +114,6 @@ public class DeleteMovieForm {
         });
 	}
 
-	/**
-	 * This method initializes canvas
-	 * 
-	 */
 	private void createCanvas() {
 		GridData gridData3 = new GridData();
 		gridData3.verticalSpan = 2;
