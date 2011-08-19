@@ -21,7 +21,6 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
 
     @Override
     public List<Pozicija> getPozicijas() {
-        log.debug("PozicijaRepository::getPozicijas");
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
         Root<Pozicija> from = cq.from(Pozicija.class);
@@ -48,7 +47,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         query.setParameter("pozicija", pozicijaToDelete);
         long count = query.getSingleResult();
         if (count > 0)
-            throw new ApplicationException("You can't delete this Position since there are "+count+" movies in that position");
+            throw new ApplicationException("You can't delete this Position since "+count+" mediums are referencing it");
 
         entityManager.remove(pozicijaToDelete);
     }

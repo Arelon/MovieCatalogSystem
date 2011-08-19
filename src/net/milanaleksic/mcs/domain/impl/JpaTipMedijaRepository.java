@@ -19,7 +19,6 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
 
     @Override
     public List<TipMedija> getTipMedijas() {
-        log.debug("TipMedijaRepository::getTipMedijas");
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);
         Root<TipMedija> from = cq.from(TipMedija.class);

@@ -2,11 +2,9 @@ package net.milanaleksic.mcs.domain.impl;
 
 import net.milanaleksic.mcs.domain.Film;
 import net.milanaleksic.mcs.domain.FilmRepository;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 /**
@@ -20,7 +18,6 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
     @Override
     public Film getFilm(int idfilm) {
-        log.debug("FilmRepository::getFilm idFilm=" + idfilm);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Film> criteriaQuery = builder.createQuery(Film.class);
         Root<Film> from = criteriaQuery.from(Film.class);
@@ -34,7 +31,6 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
     @Override
     public void deleteFilm(int idfilm) {
-        log.debug("FilmRepository::getFilm idFilm=" + idfilm);
         entityManager.remove(entityManager.getReference(Film.class, idfilm));
     }
 

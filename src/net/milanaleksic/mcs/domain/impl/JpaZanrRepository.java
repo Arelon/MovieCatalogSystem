@@ -21,7 +21,6 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
 
     @Override
     public List<Zanr> getZanrs() {
-        log.debug("ZanrRepository::getZanrs");
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
         Root<Zanr> from = cq.from(Zanr.class);
@@ -48,7 +47,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         query.setParameter("zanr", zanrToDelete);
         long count = query.getSingleResult();
         if (count > 0)
-            throw new ApplicationException("You can't delete this Genre since there are "+count+" movies in that position");
+            throw new ApplicationException("You can't delete this Genre since "+count+" movies are referencing it");
 
         entityManager.remove(zanrToDelete);
     }

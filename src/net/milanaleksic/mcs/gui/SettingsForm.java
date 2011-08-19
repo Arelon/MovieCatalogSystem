@@ -4,8 +4,7 @@ import net.milanaleksic.mcs.config.UserConfiguration;
 import net.milanaleksic.mcs.domain.*;
 import net.milanaleksic.mcs.util.ApplicationException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -188,18 +187,14 @@ public class SettingsForm {
         Button btnIzbrisiLokaciju = new Button(composite1, SWT.NONE);
 		btnIzbrisiLokaciju.setText("Избриши");
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
-		btnIzbrisiLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                try {
-                    pozicijaRepository.deletePozicija(listLokacije.getItem(listLokacije.getSelectionIndex()));
-                    changed = true;
-                    reReadData();
-                } catch (ApplicationException exc) {
-                    MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-                    box.setMessage("Error: " + exc.getMessage());
-                    box.setText("Error");
-                    box.open();
-                }
+		btnIzbrisiLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                if (listLokacije.getSelectionIndex() < 0)
+                    return;
+                pozicijaRepository.deletePozicija(listLokacije.getItem(listLokacije.getSelectionIndex()));
+                changed = true;
+                reReadData();
             }
         });
 	}
@@ -224,18 +219,14 @@ public class SettingsForm {
         Button btnIzbrisiZanr = new Button(composite2, SWT.NONE);
 		btnIzbrisiZanr.setText("Избриши");
 		btnIzbrisiZanr.setLayoutData(gridData8);
-		btnIzbrisiZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                try {
-                    zanrRepository.deleteZanr(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
-                    changed = true;
-                    reReadData();
-                } catch (ApplicationException exc) {
-                    MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-                    box.setMessage("Error: " + exc.getMessage());
-                    box.setText("Error");
-                    box.open();
-                }
+		btnIzbrisiZanr.addSelectionListener(new HandledSelectionAdapter(sShell) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                if (listZanrovi.getSelectionIndex() < 0)
+                    return;
+                zanrRepository.deleteZanr(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
+                changed = true;
+                reReadData();
             }
         });
 	}
@@ -255,9 +246,13 @@ public class SettingsForm {
 		textNovaLokacija.setLayoutData(gridData4);
         Button btnDodajLokaciju = new Button(composite3, SWT.NONE);
 		btnDodajLokaciju.setText("Додај ову локацију");
-		btnDodajLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                pozicijaRepository.addPozicija(textNovaLokacija.getText());
+		btnDodajLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                String newLokacija = textNovaLokacija.getText();
+                if (newLokacija == null || newLokacija.isEmpty())
+                    throw new ApplicationException("Empty string not allowed");
+                pozicijaRepository.addPozicija(newLokacija);
                 changed = true;
                 reReadData();
             }
@@ -284,9 +279,13 @@ public class SettingsForm {
         Button btnDodajZanr = new Button(composite4, SWT.NONE);
 		btnDodajZanr.setText("Додај овај жанр");
 		btnDodajZanr.setLayoutData(gridData9);
-		btnDodajZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                zanrRepository.addZanr(textNovZanr.getText());
+		btnDodajZanr.addSelectionListener(new HandledSelectionAdapter(sShell) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                String newZanr = textNovZanr.getText();
+                if (newZanr == null || newZanr.isEmpty())
+                    throw new ApplicationException("Empty string not allowed");
+                zanrRepository.addZanr(newZanr);
                 changed = true;
                 reReadData();
             }
