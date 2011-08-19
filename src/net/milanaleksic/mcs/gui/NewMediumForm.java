@@ -1,9 +1,9 @@
 package net.milanaleksic.mcs.gui;
 
-import net.milanaleksic.mcs.domain.*;
-
-import org.apache.log4j.Logger;
+import net.milanaleksic.mcs.domain.MedijRepository;
+import net.milanaleksic.mcs.util.ApplicationException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -11,8 +11,6 @@ import org.eclipse.swt.widgets.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class NewMediumForm {
-
-	private static final Logger log = Logger.getLogger(NewMediumForm.class);
 
     @Autowired private MedijRepository medijRepository;
 
@@ -109,38 +107,16 @@ public class NewMediumForm {
 		composite.setLayoutData(gridData);
         Button btnOk = new Button(composite, SWT.NONE);
 		btnOk.setText("Сними");
-        //TODO:NYI
-//		btnOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-//                Transaction transaction = session.beginTransaction();
-//
-//                String selected = rbCD.getSelection() ? "CD" : "DVD";
-//                Medij m = new Medij();
-//                m.setFilms(null);
-//                m.setIndeks(Integer.parseInt(textID.getText()));
-//
-//                Query query = session.createQuery("from Pozicija p where p.pozicija=:primljen");
-//                query.setString("primljen", "присутан");
-//                Pozicija pozicija = (Pozicija) query.list().get(0);
-//                pozicija.addMedij(m);
-//
-//                query = session.createQuery("from TipMedija t where t.naziv=:tipMedija");
-//                query.setString("tipMedija", selected);
-//                TipMedija tipMedija = (TipMedija) query.list().get(0);
-//                tipMedija.addMedij(m);
-//
-//                log.info("Dodajem nov medij: indeksID=" + m.getIndeks() +
-//                        ", pozicijaID=" + pozicija.getIdpozicija() +
-//                        ", tipMedijaID=" + tipMedija.getIdtip());
-//
-//                session.save(m);
-//                transaction.commit();
-//
-//                parentRunner.run();
-//
-//                sShell.close();
-//            }
-//        });
+		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                medijRepository.saveMedij(
+                        Integer.parseInt(textID.getText()),
+                        rbCD.getSelection() ? "CD" : "DVD");
+                parentRunner.run();
+                sShell.close();
+            }
+        });
         Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText("Одустани");
 		btnCancel.setLayoutData(gridData12);

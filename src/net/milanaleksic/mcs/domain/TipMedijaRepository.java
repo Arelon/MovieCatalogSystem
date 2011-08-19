@@ -11,4 +11,5 @@ public interface TipMedijaRepository {
 
     List<TipMedija> getTipMedijas();
 
+    TipMedija getTipMedija(String name);
 }

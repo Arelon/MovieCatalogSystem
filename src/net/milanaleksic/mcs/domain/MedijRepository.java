@@ -9,4 +9,5 @@ public interface MedijRepository {
 
     public int getNextMedijIndeks(String s) ;
 
+    void saveMedij(int index, String mediumTypeName);
 }

@@ -19,6 +19,8 @@ import java.util.List;
 @Transactional
 public class JpaPozicijaRepository extends AbstractRepository implements PozicijaRepository {
 
+    private final String DEFAULT_POZICIJA_NAME = "присутан";
+
     @Override
     public List<Pozicija> getPozicijas() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -50,5 +52,14 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
             throw new ApplicationException("You can't delete this Position since "+count+" mediums are referencing it");
 
         entityManager.remove(pozicijaToDelete);
+    }
+
+    @Override
+    public Pozicija getDefaultPozicija() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
+        Root<Pozicija> from = cq.from(Pozicija.class);
+        cq.where(builder.equal(from.<String>get("pozicija"), DEFAULT_POZICIJA_NAME));
+        return entityManager.createQuery(cq).getSingleResult();
     }
 }
