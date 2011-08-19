@@ -26,4 +26,11 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         cq.orderBy(builder.asc(builder.lower(from.<String>get("pozicija"))));
         return entityManager.createQuery(cq).getResultList();
     }
+
+    @Override
+    public void addPozicija(String newPozicija) {
+        Pozicija pozicija = new Pozicija();
+        pozicija.setPozicija(newPozicija);
+        entityManager.persist(pozicija);
+    }
 }

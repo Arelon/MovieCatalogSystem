@@ -11,4 +11,5 @@ public interface PozicijaRepository {
 
     List<Pozicija> getPozicijas();
 
+    void addPozicija(String newPozicija);
 }

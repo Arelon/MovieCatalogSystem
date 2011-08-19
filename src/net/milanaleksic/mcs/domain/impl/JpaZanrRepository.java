@@ -25,4 +25,11 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         cq.orderBy(builder.asc(builder.lower(from.<String>get("zanr"))));
         return entityManager.createQuery(cq).getResultList();
     }
+
+    @Override
+    public void addZanr(String newZanr) {
+        Zanr zanr = new Zanr();
+        zanr.setZanr(newZanr);
+        entityManager.persist(zanr);
+    }
 }

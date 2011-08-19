@@ -11,4 +11,5 @@ public interface ZanrRepository {
 
     List<Zanr> getZanrs();
 
+    void addZanr(String newZanr);
 }
