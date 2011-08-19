@@ -192,14 +192,14 @@ public class SettingsForm {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 try {
                     pozicijaRepository.deletePozicija(listLokacije.getItem(listLokacije.getSelectionIndex()));
+                    changed = true;
+                    reReadData();
                 } catch (ApplicationException exc) {
                     MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
                     box.setMessage("Error: " + exc.getMessage());
                     box.setText("Error");
                     box.open();
                 }
-                changed = true;
-                reReadData();
             }
         });
 	}
@@ -228,14 +228,14 @@ public class SettingsForm {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 try {
                     zanrRepository.deleteZanr(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
+                    changed = true;
+                    reReadData();
                 } catch (ApplicationException exc) {
                     MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
                     box.setMessage("Error: " + exc.getMessage());
                     box.setText("Error");
                     box.open();
                 }
-                changed = true;
-                reReadData();
             }
         });
 	}

@@ -1,13 +1,14 @@
 package net.milanaleksic.mcs.domain.impl;
 
-import net.milanaleksic.mcs.domain.*;
+import net.milanaleksic.mcs.domain.Zanr;
+import net.milanaleksic.mcs.domain.ZanrRepository;
 import net.milanaleksic.mcs.util.ApplicationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * User: Milan Aleksic
@@ -42,9 +43,13 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         Root<Zanr> from = cq.from(Zanr.class);
         cq.where(builder.equal(from.<String>get("zanr"), zanr));
         Zanr zanrToDelete = entityManager.createQuery(cq).getSingleResult();
-        Set<Film> films = zanrToDelete.getFilms();
-        if (films != null && films.size()>0)
-            throw new ApplicationException("You can't delete this Genre since there are "+films.size()+" movies in that position");
+
+        TypedQuery<Long> query = entityManager.createQuery("select count(*) from Film where zanr=:zanr", Long.class);
+        query.setParameter("zanr", zanrToDelete);
+        long count = query.getSingleResult();
+        if (count > 0)
+            throw new ApplicationException("You can't delete this Genre since there are "+count+" movies in that position");
+
         entityManager.remove(zanrToDelete);
     }
 }

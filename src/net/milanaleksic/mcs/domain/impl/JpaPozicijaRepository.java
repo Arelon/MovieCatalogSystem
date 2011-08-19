@@ -1,13 +1,14 @@
 package net.milanaleksic.mcs.domain.impl;
 
-import net.milanaleksic.mcs.domain.*;
+import net.milanaleksic.mcs.domain.Pozicija;
+import net.milanaleksic.mcs.domain.PozicijaRepository;
 import net.milanaleksic.mcs.util.ApplicationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * User: Milan Aleksic
@@ -42,9 +43,13 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         Root<Pozicija> from = cq.from(Pozicija.class);
         cq.where(builder.equal(from.<String>get("pozicija"), pozicija));
         Pozicija pozicijaToDelete = entityManager.createQuery(cq).getSingleResult();
-        Set<Medij> medijs = pozicijaToDelete.getMedijs();
-        if (medijs != null && medijs.size()>0)
-            throw new ApplicationException("You can't delete this Position since there are "+medijs.size()+" movies in that position");
+
+        TypedQuery<Long> query = entityManager.createQuery("select count(*) from Medij where pozicija=:pozicija", Long.class);
+        query.setParameter("pozicija", pozicijaToDelete);
+        long count = query.getSingleResult();
+        if (count > 0)
+            throw new ApplicationException("You can't delete this Position since there are "+count+" movies in that position");
+
         entityManager.remove(pozicijaToDelete);
     }
 }
