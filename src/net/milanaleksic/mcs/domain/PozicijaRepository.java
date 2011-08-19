@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain;
 
+import net.milanaleksic.mcs.util.ApplicationException;
+
 import java.util.List;
 
 /**
@@ -12,4 +14,6 @@ public interface PozicijaRepository {
     List<Pozicija> getPozicijas();
 
     void addPozicija(String newPozicija);
+
+    void deletePozicija(String pozicija) throws ApplicationException;
 }

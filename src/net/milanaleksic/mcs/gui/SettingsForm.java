@@ -1,10 +1,11 @@
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.config.UserConfiguration;
-
 import net.milanaleksic.mcs.domain.*;
+import net.milanaleksic.mcs.util.ApplicationException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -187,36 +188,20 @@ public class SettingsForm {
         Button btnIzbrisiLokaciju = new Button(composite1, SWT.NONE);
 		btnIzbrisiLokaciju.setText("Избриши");
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
-        //TODO:NYI
-//		btnIzbrisiLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-//                hibernateTemplate.execute(new HibernateCallback() {
-//
-//                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-//                        // preuzimanje podataka za film koji se azurira
-//                        Transaction transaction = session.beginTransaction();
-//                        Query query = session.createQuery("from Pozicija p where p.pozicija = :param");
-//                        query.setString("param", listLokacije.getItem(listLokacije.getSelectionIndex()));
-//                        Pozicija pozicija = (Pozicija) query.list().get(0);
-//
-//                        if (pozicija.getMedijs().size() > 0) {
-//                            MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-//                            box.setMessage("Забрањено је брисање, постоји " + pozicija.getMedijs().size() + " медијума који су на тој локацији!");
-//                            box.setText("Грешка");
-//                            box.open();
-//                            return null;
-//                        }
-//
-//                        session.delete(pozicija);
-//                        transaction.commit();
-//                        changed = true;
-//                        reReadData();
-//                        return null;
-//                    }
-//
-//                });
-//            }
-//        });
+		btnIzbrisiLokaciju.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                try {
+                    pozicijaRepository.deletePozicija(listLokacije.getItem(listLokacije.getSelectionIndex()));
+                } catch (ApplicationException exc) {
+                    MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
+                    box.setMessage("Error: " + exc.getMessage());
+                    box.setText("Error");
+                    box.open();
+                }
+                changed = true;
+                reReadData();
+            }
+        });
 	}
 
 	private void createGenresTabContents() {
@@ -239,36 +224,20 @@ public class SettingsForm {
         Button btnIzbrisiZanr = new Button(composite2, SWT.NONE);
 		btnIzbrisiZanr.setText("Избриши");
 		btnIzbrisiZanr.setLayoutData(gridData8);
-        //TODO:NYI
-//		btnIzbrisiZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-//            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-//                hibernateTemplate.execute(new HibernateCallback() {
-//
-//                    public Object doInHibernate(org.hibernate.Session session) throws org.hibernate.HibernateException, java.sql.SQLException {
-//                        // preuzimanje podataka za film koji se azurira
-//                        Transaction transaction = session.beginTransaction();
-//                        Query query = session.createQuery("from Zanr z where z.zanr = :param");
-//                        query.setString("param", listZanrovi.getItem(listZanrovi.getSelectionIndex()));
-//                        Zanr zanr = (Zanr) query.list().get(0);
-//
-//                        if (zanr.getFilms().size() > 0) {
-//                            MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
-//                            box.setMessage("Забрањено је брисање, постоји " + zanr.getFilms().size() + " филмова који припадају овом жанру!");
-//                            box.setText("Грешка");
-//                            box.open();
-//                            return null;
-//                        }
-//
-//                        session.delete(zanr);
-//                        transaction.commit();
-//                        changed = true;
-//                        reReadData();
-//                        return null;
-//                    }
-//
-//                });
-//            }
-//        });
+		btnIzbrisiZanr.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                try {
+                    zanrRepository.deleteZanr(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
+                } catch (ApplicationException exc) {
+                    MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR);
+                    box.setMessage("Error: " + exc.getMessage());
+                    box.setText("Error");
+                    box.open();
+                }
+                changed = true;
+                reReadData();
+            }
+        });
 	}
 
 	private void createAddLocationPanel() {

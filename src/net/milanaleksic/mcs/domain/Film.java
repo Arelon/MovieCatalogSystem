@@ -39,6 +39,7 @@ public class Film implements Serializable, Comparable<Film> {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "ZAUZIMA",
+        schema = "DB2ADMIN",
         joinColumns = { @JoinColumn(name = "IDFILM") },
         inverseJoinColumns = { @JoinColumn(name = "IDMEDIJ") }
     )

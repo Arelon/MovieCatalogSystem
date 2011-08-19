@@ -31,12 +31,14 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "ZAUZIMA",
+        schema = "DB2ADMIN",
         joinColumns = { @JoinColumn(name = "IDMEDIJ") },
         inverseJoinColumns = { @JoinColumn(name = "IDFILM") }
     )
 	private Set<Film> films = new HashSet<Film>(0);
 	
-	private String stringVal= null;
+	@Transient
+    private String stringVal= null;
 
 	public Medij() {
 	}

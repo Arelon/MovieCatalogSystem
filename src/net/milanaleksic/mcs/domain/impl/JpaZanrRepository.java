@@ -1,11 +1,13 @@
 package net.milanaleksic.mcs.domain.impl;
 
 import net.milanaleksic.mcs.domain.*;
+import net.milanaleksic.mcs.util.ApplicationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: Milan Aleksic
@@ -31,5 +33,18 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         Zanr zanr = new Zanr();
         zanr.setZanr(newZanr);
         entityManager.persist(zanr);
+    }
+
+    @Override
+    public void deleteZanr(String zanr) throws ApplicationException {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
+        Root<Zanr> from = cq.from(Zanr.class);
+        cq.where(builder.equal(from.<String>get("zanr"), zanr));
+        Zanr zanrToDelete = entityManager.createQuery(cq).getSingleResult();
+        Set<Film> films = zanrToDelete.getFilms();
+        if (films != null && films.size()>0)
+            throw new ApplicationException("You can't delete this Genre since there are "+films.size()+" movies in that position");
+        entityManager.remove(zanrToDelete);
     }
 }
