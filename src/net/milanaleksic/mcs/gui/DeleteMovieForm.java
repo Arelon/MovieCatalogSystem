@@ -3,10 +3,10 @@ package net.milanaleksic.mcs.gui;
 import net.milanaleksic.mcs.domain.Film;
 
 import net.milanaleksic.mcs.domain.FilmRepository;
+import net.milanaleksic.mcs.util.ApplicationException;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -100,8 +100,8 @@ public class DeleteMovieForm {
         Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText("\u041e\u0434\u0443\u0441\u0442\u0430\u043d\u0438");
 		btnCancel.setLayoutData(gridData12);
-		btnOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
+            @Override public void handledSelected(SelectionEvent event) throws ApplicationException {
                 filmRepository.deleteFilm(filmId);
                 parentRunner.run();
                 sShell.close();

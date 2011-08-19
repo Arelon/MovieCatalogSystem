@@ -33,6 +33,9 @@
         </property>
     </bean>
 
+    <!--suppress SpringModelInspection -->
+    <bean id="sessionFactory" factory-bean="entityManagerFactory" factory-method="getSessionFactory" />
+
     <bean id="abstractRestorePointService" abstract="true" class="net.milanaleksic.mcs.restore.AbstractRestorePointService">
         <property name="dbDriver" value="${hibernate.connection.driver_class}"/>
         <property name="dbUrl" value="${hibernate.connection.url}"/>

@@ -4,12 +4,8 @@ import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.event.LifecycleListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.jpa.JpaTemplate;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * User: Milan Aleksic
@@ -22,15 +18,20 @@ public class StatisticsManager implements LifecycleListener {
 
     @Autowired private ApplicationManager applicationManager;
 
+    @SuppressWarnings({"SpringJavaAutowiringInspection"})
+    @Autowired
+    private SessionFactory sessionFactory;
+
     @Override public void applicationStarted() {
-//        if (applicationManager.getProgramArgs().isCollectStatistics()) {
-//            ((HibernateSessionProxy)entityManager.getDelegate()).getSessionFactory().getStatistics().setStatisticsEnabled(true);
-//        }
+        if (applicationManager.getProgramArgs().isCollectStatistics()) {
+            sessionFactory.getStatistics().setStatisticsEnabled(true);
+        }
     }
 
     @Override public void applicationShutdown() {
-//        if (applicationManager.getProgramArgs().isCollectStatistics()) {
-//            log.info("Statistics information: "+ hibernateTemplate.getSessionFactory().getStatistics());
-//        }
+        if (applicationManager.getProgramArgs().isCollectStatistics()) {
+            log.info("Statistics information: " + sessionFactory.getStatistics());
+        }
     }
+
 }
