@@ -19,21 +19,21 @@ public class DeleteMovieForm {
 
 	private Shell sShell = null;
     private Shell parent = null;
-	private int filmId = -1;
 	private Runnable parentRunner = null;
     private Label labFilmNaziv = null;
+    private Film film = null;
 
     @Autowired
     private FilmRepository filmRepository;
 
-    public void open(Shell parent, int filmId, Runnable runnable) {
+    public void open(Shell parent, Film film, Runnable runnable) {
 		this.parent = parent;
         this.parentRunner = runnable;
 		createSShell();
-		logger.info("DeleteMovieForm: FILMID=" + filmId);
+		logger.info("DeleteMovieForm: FILMID=" + film.getIdfilm());
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
 				+ Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
-		this.filmId = filmId;
+		this.film = film;
 		reReadData();
 		sShell.pack();
 		sShell.open();
@@ -41,8 +41,7 @@ public class DeleteMovieForm {
 
 	protected void reReadData() {
 		// preuzimanje podataka za film koji se azurira
-        if (filmId != -1) {
-            Film film = filmRepository.getFilm(filmId);
+        if (film != null) {
             labFilmNaziv.setText(film.getNazivfilma() + "\n(" + film.getPrevodnazivafilma() + ")");
         }
 	}
@@ -102,7 +101,7 @@ public class DeleteMovieForm {
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
             @Override public void handledSelected(SelectionEvent event) throws ApplicationException {
-                filmRepository.deleteFilm(filmId);
+                filmRepository.deleteFilm(film);
                 parentRunner.run();
                 sShell.close();
             }

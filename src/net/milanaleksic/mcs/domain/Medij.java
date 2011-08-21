@@ -28,7 +28,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
     @Column(name = "INDEKS", nullable = false)
     private int indeks;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "ZAUZIMA",
         schema = "DB2ADMIN",

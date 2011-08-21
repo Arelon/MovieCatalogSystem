@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -43,6 +42,8 @@ public class MainForm extends Observable {
 
     @Autowired private DeleteMovieForm deleteMovieForm;
 
+    @Autowired private FilmRepository filmRepository;
+
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 
 	private Shell sShell = null;
@@ -65,7 +66,7 @@ public class MainForm extends Observable {
 
 		private volatile Long activePage = 0L;
 		private volatile Long showableCount = 0L;
-		private volatile String filterText = "";
+		private volatile String filterText = null;
         private volatile int maxItemsPerPage;
 
         public String getFilterText() {
@@ -106,7 +107,6 @@ public class MainForm extends Observable {
 		
 		@Override public void keyPressed(KeyEvent e) {
 			String filterText = currentViewState.getFilterText();
-			
 			switch (e.keyCode) {
 				case SWT.ARROW_LEFT:
 					new PreviousPageSelectionAdapter().widgetSelected(null);
@@ -180,7 +180,7 @@ public class MainForm extends Observable {
 		@Override public void mouseDoubleClick(MouseEvent mouseevent) {
 			if (mainTable.getSelectionIndex() != -1)
 				newOrEditMovieForm.open(sShell,
-						(Integer)mainTable.getSelection()[0].getData(),
+						(Film)mainTable.getSelection()[0].getData(),
 								new Runnable() {
 
 									@Override public void run() {
@@ -231,8 +231,7 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            //TODO: NYI
-            final List<Film> allFilms = new ArrayList<Film>(); //(List<Film>) hibernateTemplate.execute(new ListMoviesHibernateCallback());
+            final List<Film> allFilms = getAllFilms(0);
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -276,7 +275,7 @@ public class MainForm extends Observable {
 		@Override public void widgetSelected(SelectionEvent e) {
 			if (mainTable.getSelectionIndex() == -1)
 				return;
-			deleteMovieForm.open(sShell, (Integer) mainTable.getSelection()[0].getData(),
+			deleteMovieForm.open(sShell, (Film) mainTable.getSelection()[0].getData(),
 					new Runnable() {
 
 						@Override public void run() {
@@ -308,8 +307,10 @@ public class MainForm extends Observable {
 			List<Zanr> zanrovi = zanrRepository.getZanrs();
 			comboZanr.add("Сви жанрови");
 			comboZanr.add("-----------");
-			for(Zanr zanr : zanrovi)
+			for(Zanr zanr : zanrovi) {
 				comboZanr.add(zanr.toString());
+                comboZanr.setData(Integer.toString(comboZanr.getItemCount()), zanr);
+            }
 			comboZanr.select(0);
 		}
 
@@ -345,96 +346,7 @@ public class MainForm extends Observable {
 		}
 
 	}
-	
-//	private class ListMoviesHibernateCallback implements HibernateCallback {
-//
-//        private final int maxItems;
-//
-//        public ListMoviesHibernateCallback() {
-//            this.maxItems = 0;
-//        }
-//
-//        public ListMoviesHibernateCallback(int maxItems) {
-//            this.maxItems = maxItems;
-//        }
-//
-//        @Override
-//		@SuppressWarnings("unchecked")
-//		public Object doInHibernate(Session session) throws HibernateException, SQLException {
-//			final String ukljZanr = "f.zanr.zanr=:zanr";
-//			final String ukljTipMedija = "m.tipMedija.naziv=:tipmedija";
-//			final String ukljPozicija = "m.pozicija.pozicija=:pozicija";
-//			final String ukljFilter = "(lower(f.nazivfilma) like :filter or lower(f.prevodnazivafilma) like :filter or lower(f.komentar) like :filter)";
-//			final String filterText = currentViewState.getFilterText();
-//
-//			StringBuilder buff = new StringBuilder("select f from Film f where idfilm in (select f.idfilm from Film f, Medij m where f.idfilm in elements(m.films)");
-//
-//            StringBuilder countBuff = new StringBuilder("select count(distinct idfilm) from Film f, Medij m where f.idfilm in elements(m.films)");
-//
-//			if (comboZanr.getSelectionIndex()>1) {
-//				buff.append(" and ").append(ukljZanr);
-//				countBuff.append(" and ").append(ukljZanr);
-//			}
-//			if (comboTipMedija.getSelectionIndex()>1) {
-//				buff.append(" and ").append(ukljTipMedija);
-//				countBuff.append(" and ").append(ukljTipMedija);
-//			}
-//			if (comboPozicija.getSelectionIndex()>1) {
-//				buff.append(" and ").append(ukljPozicija);
-//				countBuff.append(" and ").append(ukljPozicija);
-//			}
-//			if (filterText != null && filterText.length()>0) {
-//				buff.append(" and ").append(ukljFilter);
-//				countBuff.append(" and ").append(ukljFilter);
-//			}
-//			buff.append(" order by m.tipMedija.naziv, m.indeks, f.nazivfilma)");
-//
-//			String hsql = buff.toString();
-//			log.debug("Generisan upit: "+hsql);
-//
-//			long start = new Date().getTime();
-//			Query query = session.createQuery(hsql);
-//			Query countQuery = session.createQuery(countBuff.toString());
-//			if (comboZanr.getSelectionIndex()>1) {
-//				query.setString("zanr", comboZanr.getText());
-//				countQuery.setString("zanr", comboZanr.getText());
-//			}
-//			if (comboTipMedija.getSelectionIndex()>1) {
-//				query.setString("tipmedija", comboTipMedija.getText());
-//				countQuery.setString("tipmedija", comboTipMedija.getText());
-//			}
-//			if (comboPozicija.getSelectionIndex()>1) {
-//				query.setString("pozicija", comboPozicija.getText());
-//				countQuery.setString("pozicija", comboPozicija.getText());
-//			}
-//			if (filterText != null && filterText.length()>0) {
-//				query.setString("filter", "%"+filterText.toLowerCase()+"%");
-//				countQuery.setString("filter", "%"+filterText.toLowerCase()+"%");
-//			}
-//
-//            if (maxItems >0) {
-//                query.setFirstResult(currentViewState.getActivePage().intValue()*maxItems);
-//                query.setMaxResults(maxItems);
-//            }
-//
-//            currentViewState.setMaxItemsPerPage(maxItems);
-//
-//			List<Film> sviFilmovi = query.list();
-//            long end = new Date().getTime();
-//            long fetchTime = end-start;
-//
-//            start = System.currentTimeMillis();
-//			currentViewState.setShowableCount((Long)countQuery.uniqueResult());
-//			end = new Date().getTime();
-//            long fetchCountTime = end-start;
-//
-//            log.debug(String.format("FetchTime=%dms, FetchCountTime=%dms", fetchTime, fetchCountTime));
-//
-//			return sviFilmovi;
-//		}
-//
-//	}
-	
+
 	
 	
 	
@@ -458,7 +370,8 @@ public class MainForm extends Observable {
                 }
                 else
                     labelCurrent.setText(currentViewState.getShowableCount().toString());
-				labelFilter.setText(currentViewState.getFilterText());
+                String filter = currentViewState.getFilterText();
+				labelFilter.setText(filter == null ? "" : null);
 				wrapperDataInfo.pack();
 			}
 
@@ -475,7 +388,8 @@ public class MainForm extends Observable {
         if (sShell != null)
             return;
         createSShell();
-        sShell.setImage(new Image(sShell.getDisplay(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/res/database-64.png")));
+        sShell.setImage(new Image(sShell.getDisplay(),
+                MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/res/database-64.png")));
     }
 
 	public boolean isDisposed() {
@@ -533,8 +447,10 @@ public class MainForm extends Observable {
 		List<Zanr> zanrovi = zanrRepository.getZanrs();
 		comboZanr.add("Сви жанрови");
 		comboZanr.add("-----------");
-		for(Zanr zanr : zanrovi)
-			comboZanr.add(zanr.toString());
+		for(Zanr zanr : zanrovi) {
+            comboZanr.setData(Integer.toString(comboZanr.getItemCount()), zanr);
+            comboZanr.add(zanr.toString());
+        }
 		comboZanr.select(0);
 	}
 	
@@ -548,8 +464,10 @@ public class MainForm extends Observable {
 		comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
 		comboTipMedija.add("Сви медији");
 		comboTipMedija.add("-----------");
-		for(TipMedija tip : tipMedijaRepository.getTipMedijas())
+		for(TipMedija tip : tipMedijaRepository.getTipMedijas()) {
+            comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
 			comboTipMedija.add(tip.toString());
+        }
 		comboTipMedija.select(0);
 	}
 
@@ -568,8 +486,10 @@ public class MainForm extends Observable {
 		comboPozicija.setItems(new String [] {});
 		comboPozicija.add("Било где");
 		comboPozicija.add("-----------");
-		for(Pozicija pozicija : pozicijaRepository.getPozicijas())
-			comboPozicija.add(pozicija.toString());
+		for(Pozicija pozicija : pozicijaRepository.getPozicijas()) {
+            comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
+            comboPozicija.add(pozicija.toString());
+        }
 		comboPozicija.select(0);
 	}
 
@@ -682,10 +602,7 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(true);
 			toolTicker.update();
 		}
-        //TODO:NYI
-		@SuppressWarnings("unchecked")
-		List<Film> sviFilmovi = new ArrayList<Film>();// (List<Film>) hibernateTemplate.execute(
-                //new ListMoviesHibernateCallback(applicationManager.getUserConfiguration().getElementsPerPage()));
+		List<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
 		long start = new Date().getTime();
 		int i=0;
 		
@@ -716,7 +633,7 @@ public class MainForm extends Observable {
 		// pa sve do poslednjeg unetog 
 		for (int j=mainTable.getItemCount()-1; j>=i ; j--)
 			mainTable.remove(j);
-		
+
 		setChanged();
 		super.notifyObservers();
 		
@@ -725,5 +642,25 @@ public class MainForm extends Observable {
 		if (toolTicker != null)
 			toolTicker.setVisible(false);
 	}
+
+    public List<Film> getAllFilms(int maxItems) {
+        Zanr zanrFilter = (Zanr)comboZanr.getData(
+                Integer.toString(comboZanr.getSelectionIndex()));
+        TipMedija tipMedijaFilter = (TipMedija)comboTipMedija.getData(
+                Integer.toString(comboTipMedija.getSelectionIndex()));
+        Pozicija pozicijaFilter = (Pozicija)comboPozicija.getData(
+                Integer.toString(comboPozicija.getSelectionIndex()));
+        String filterText = currentViewState.getFilterText() == null ?
+                null :
+                '%'+currentViewState.getFilterText()+'%';
+        int startFrom = currentViewState.getActivePage().intValue()*maxItems;
+        currentViewState.setMaxItemsPerPage(maxItems);
+
+//        StringBuilder countBuff = new StringBuilder("select count(distinct idfilm) from Film f, Medij m where f.idfilm in elements(m.films)");
+//        currentViewState.setShowableCount((Long)countQuery.uniqueResult());
+
+        return filmRepository.getFilmByCriteria(startFrom, maxItems,
+                zanrFilter, tipMedijaFilter, pozicijaFilter, filterText);
+    }
 	
 }

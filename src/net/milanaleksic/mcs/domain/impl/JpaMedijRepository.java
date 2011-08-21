@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.Query;
 import javax.persistence.TypedQuery;
+import java.util.List;
 
 /**
  * User: Milan Aleksic
@@ -51,5 +51,12 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
 
 
         entityManager.persist(medij);
+    }
+
+    @Override
+    public List<Medij> getMedijs() {
+        TypedQuery<Medij> query = entityManager.createQuery(
+            "from Medij m order by m.tipMedija.naziv, indeks", Medij.class);
+        return query.getResultList();
     }
 }

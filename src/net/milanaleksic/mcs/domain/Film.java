@@ -36,7 +36,7 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(precision = 3, scale = 1, nullable = false)
 	private BigDecimal imdbrejting;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "ZAUZIMA",
         schema = "DB2ADMIN",

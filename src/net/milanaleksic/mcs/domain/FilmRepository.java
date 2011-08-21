@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain;
 
+import java.util.List;
+
 /**
  * User: Milan Aleksic
  * Date: 8/10/11
@@ -7,7 +9,9 @@ package net.milanaleksic.mcs.domain;
  */
 public interface FilmRepository {
 
-    Film getFilm(int idfilm);
+    void deleteFilm(Film film);
 
-    void deleteFilm(int filmId);
+    void saveFilm(Film newFilm);
+
+    List<Film> getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String filterText);
 }

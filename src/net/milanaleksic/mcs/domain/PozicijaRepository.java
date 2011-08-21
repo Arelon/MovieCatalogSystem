@@ -15,8 +15,9 @@ public interface PozicijaRepository {
 
     void addPozicija(String newPozicija);
 
-    void deletePozicija(String pozicija) throws ApplicationException;
+    void deletePozicijaByName(String pozicija) throws ApplicationException;
 
     Pozicija getDefaultPozicija();
 
+    Pozicija getByName(String locationName);
 }

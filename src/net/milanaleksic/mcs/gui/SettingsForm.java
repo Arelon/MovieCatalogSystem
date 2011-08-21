@@ -192,7 +192,7 @@ public class SettingsForm {
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listLokacije.getSelectionIndex() < 0)
                     return;
-                pozicijaRepository.deletePozicija(listLokacije.getItem(listLokacije.getSelectionIndex()));
+                pozicijaRepository.deletePozicijaByName(listLokacije.getItem(listLokacije.getSelectionIndex()));
                 changed = true;
                 reReadData();
             }
@@ -224,7 +224,7 @@ public class SettingsForm {
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listZanrovi.getSelectionIndex() < 0)
                     return;
-                zanrRepository.deleteZanr(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
+                zanrRepository.deleteZanrByName(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
                 changed = true;
                 reReadData();
             }

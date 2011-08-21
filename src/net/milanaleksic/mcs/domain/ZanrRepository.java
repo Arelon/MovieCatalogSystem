@@ -15,5 +15,7 @@ public interface ZanrRepository {
 
     void addZanr(String newZanr);
 
-    void deleteZanr(String zanr) throws ApplicationException;
+    void deleteZanrByName(String zanr) throws ApplicationException;
+
+    Zanr getZanrByName(String genreName);
 }

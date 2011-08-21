@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional
 public class JpaPozicijaRepository extends AbstractRepository implements PozicijaRepository {
 
-    private final String DEFAULT_POZICIJA_NAME = "присутан";
+    private static final String DEFAULT_POZICIJA_NAME = "присутан";
 
     @Override
     public List<Pozicija> getPozicijas() {
@@ -38,13 +38,8 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     }
 
     @Override
-    public void deletePozicija(String pozicija) throws ApplicationException {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
-        Root<Pozicija> from = cq.from(Pozicija.class);
-        cq.where(builder.equal(from.<String>get("pozicija"), pozicija));
-        Pozicija pozicijaToDelete = entityManager.createQuery(cq).getSingleResult();
-
+    public void deletePozicijaByName(String pozicija) throws ApplicationException {
+        Pozicija pozicijaToDelete = getByName(pozicija);
         TypedQuery<Long> query = entityManager.createQuery("select count(*) from Medij where pozicija=:pozicija", Long.class);
         query.setParameter("pozicija", pozicijaToDelete);
         long count = query.getSingleResult();
@@ -60,6 +55,15 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
         Root<Pozicija> from = cq.from(Pozicija.class);
         cq.where(builder.equal(from.<String>get("pozicija"), DEFAULT_POZICIJA_NAME));
+        return entityManager.createQuery(cq).getSingleResult();
+    }
+
+    @Override
+    public Pozicija getByName(String locationName) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
+        Root<Pozicija> from = cq.from(Pozicija.class);
+        cq.where(builder.equal(from.<String>get("pozicija"), locationName));
         return entityManager.createQuery(cq).getSingleResult();
     }
 }
