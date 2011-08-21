@@ -36,9 +36,8 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Film> cq = builder.createQuery(Film.class);
         Root<Film> film = cq.from(Film.class);
-        cq.select(film)
-                .distinct(true);
-        Join<Film, Medij> medij = film.join("medijs", JoinType.LEFT);
+        cq.select(film);
+        Fetch<Film, Medij> fetch = film.fetch("medijs");
 
         List<Predicate> predicates = new ArrayList<Predicate>();
         if (textFilter != null)
@@ -50,9 +49,9 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (zanrFilter != null)
             predicates.add(builder.equal(film.<String>get("zanr"), zanrFilter));
         if (tipMedijaFilter != null)
-            predicates.add(builder.equal(medij.<TipMedija>get("tipMedija"), tipMedijaFilter));
+            predicates.add(builder.equal(film.<Medij>get("medijs").<TipMedija>get("tipMedija"), tipMedijaFilter));
         if (pozicijaFilter != null)
-            predicates.add(builder.equal(medij.<TipMedija>get("pozicija"), pozicijaFilter));
+            predicates.add(builder.equal(film.<Medij>get("medijs").<TipMedija>get("pozicija"), pozicijaFilter));
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -60,7 +59,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             cq.where(builder.and(predicates.toArray(new Predicate[0])));
 
         cq.orderBy(//builder.asc(medij.<String>get("tipMedija.naziv")),
-                builder.asc(medij.<String>get("indeks")),
+                //builder.asc(film.<Medij>get("medijs").<String>get("indeks")),
                 builder.asc(film.<String>get("nazivfilma")));
         TypedQuery<Film> query = entityManager.createQuery(cq);
         if (maxItems > 0) {
