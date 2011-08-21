@@ -17,9 +17,9 @@
             <property name="hibernate.connection.aggressive_release" value="false" />
             <property name="hibernate.connection.autocommit" value="true" />
 
-            <property name="hibernate.connection.show_sql" value="true" />
-            <property name="hibernate.connection.format_sql" value="true" />
-            <property name="hibernate.connection.use_sql_comments" value="true" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.use_sql_comments" value="true" />
         </properties>
 	</persistence-unit>
 </persistence>

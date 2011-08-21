@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Date: 8/19/11
  * Time: 9:18 PM
  */
-public class RepositoryMethodExecutionAspect {
+public class MethodTimingAspect {
 
     protected final Logger log = Logger.getLogger(this.getClass());
     private long warningTime = 100;
@@ -21,7 +21,7 @@ public class RepositoryMethodExecutionAspect {
         this.warningTime = warningTime;
     }
 
-    public Object analyzeRepositoryMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    public Object timeMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         if (thisIsFirstQuery.getAndSet(false))
             return proceedingJoinPoint.proceed();
         long begin = System.currentTimeMillis();
