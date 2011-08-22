@@ -63,7 +63,10 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
         Root<Pozicija> from = cq.from(Pozicija.class);
-        cq.where(builder.equal(from.<String>get("pozicija"), locationName));
-        return entityManager.createQuery(cq).getSingleResult();
+        ParameterExpression<String> locationNameParameter = builder.parameter(String.class, "locationName");
+        cq.where(builder.equal(from.<String>get("pozicija"), locationNameParameter));
+        TypedQuery<Pozicija> query = entityManager.createQuery(cq);
+        query.setParameter(locationNameParameter, locationName);
+        return query.getSingleResult();
     }
 }

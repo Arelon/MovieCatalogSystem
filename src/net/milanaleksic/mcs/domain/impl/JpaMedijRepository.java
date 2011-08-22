@@ -45,11 +45,6 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
         TipMedija tipMedija = tipMedijaRepository.getTipMedija(mediumTypeName);
         tipMedija.addMedij(medij);
 
-        log.info("Adding new medium: indeksID=" + medij.getIndeks() +
-                        ", pozicijaID=" + defaultPozicija.getIdpozicija() +
-                        ", tipMedijaID=" + tipMedija.getIdtip());
-
-
         entityManager.persist(medij);
     }
 

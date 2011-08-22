@@ -5,6 +5,7 @@ import net.milanaleksic.mcs.domain.TipMedijaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
 
@@ -27,11 +28,14 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
     }
 
     @Override
-    public TipMedija getTipMedija(String name) {
+    public TipMedija getTipMedija(String mediumTypeName) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);
         Root<TipMedija> from = cq.from(TipMedija.class);
-        cq.where(builder.equal(from.<String>get("naziv"), name));
-        return entityManager.createQuery(cq).getSingleResult();
+        ParameterExpression<String> mediumTypeNameParameter = builder.parameter(String.class, "mediumTypeName");
+        cq.where(builder.equal(from.<String>get("naziv"), mediumTypeNameParameter));
+        TypedQuery<TipMedija> query = entityManager.createQuery(cq);
+        query.setParameter(mediumTypeNameParameter, mediumTypeName);
+        return query.getSingleResult();
     }
 }
