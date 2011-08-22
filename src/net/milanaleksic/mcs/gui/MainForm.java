@@ -622,7 +622,7 @@ public class MainForm extends Observable {
 					film.getFilmLocation(),
 					film.getKomentar()
 			});
-            item.setData(film.getIdfilm());
+            item.setData(film);
 		}
 		// brisemo preostale (visak) elemente od poslednjeg u tabeli
 		// pa sve do poslednjeg unetog 
