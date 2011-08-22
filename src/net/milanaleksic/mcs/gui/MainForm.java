@@ -7,15 +7,10 @@ import net.milanaleksic.mcs.export.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -143,7 +138,7 @@ public class MainForm extends Observable {
 			
 			if (!Character.isLetterOrDigit(e.character))
 				return;
-			if (filterText.length() == 0)
+			if (filterText == null)
 				currentViewState.setFilterText("" + e.character);
 			else
 				currentViewState.setFilterText(filterText + e.character);
@@ -371,7 +366,7 @@ public class MainForm extends Observable {
                 else
                     labelCurrent.setText(currentViewState.getShowableCount().toString());
                 String filter = currentViewState.getFilterText();
-				labelFilter.setText(filter == null ? "" : null);
+				labelFilter.setText(filter == null ? "" : filter);
 				wrapperDataInfo.pack();
 			}
 
