@@ -298,13 +298,13 @@ public class MainForm extends Observable {
 		
 		private void resetZanrova() {
 			comboZanr.setItems(new String [] {});
-			@SuppressWarnings("unchecked")
 			List<Zanr> zanrovi = zanrRepository.getZanrs();
 			comboZanr.add("Сви жанрови");
 			comboZanr.add("-----------");
+            int iter = 2;
 			for(Zanr zanr : zanrovi) {
 				comboZanr.add(zanr.toString());
-                comboZanr.setData(Integer.toString(comboZanr.getItemCount()), zanr);
+                comboZanr.setData(Integer.toString(iter++), zanr);
             }
 			comboZanr.select(0);
 		}
@@ -442,8 +442,9 @@ public class MainForm extends Observable {
 		List<Zanr> zanrovi = zanrRepository.getZanrs();
 		comboZanr.add("Сви жанрови");
 		comboZanr.add("-----------");
+        int iter = 2;
 		for(Zanr zanr : zanrovi) {
-            comboZanr.setData(Integer.toString(comboZanr.getItemCount()), zanr);
+            comboZanr.setData(Integer.toString(iter++), zanr);
             comboZanr.add(zanr.toString());
         }
 		comboZanr.select(0);
