@@ -17,7 +17,7 @@ public class ApplicationConfigurationManager {
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
-    public static ApplicationConfiguration loadApplicationConfiguration() {
+    public ApplicationConfiguration loadApplicationConfiguration() {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
         InputStream configurationFile = ApplicationConfigurationManager.class.getResourceAsStream("/"+CONFIGURATION_FILE);
         try {

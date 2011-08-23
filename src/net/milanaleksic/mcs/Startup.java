@@ -1,9 +1,6 @@
 package net.milanaleksic.mcs;
 
-import net.milanaleksic.mcs.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -22,18 +19,14 @@ public class Startup {
 
     public static void main(String[] args) {
         programArgs = args;
-        loadLog4JOverride();
         FileLock lock = null;
         try {
             lock = getSingletonApplicationFileLock();
-
-            ApplicationConfiguration applicationConfiguration = ApplicationConfigurationManager.loadApplicationConfiguration();
-            ApplicationManager.setApplicationConfiguration(applicationConfiguration);
-
             ApplicationContext applicationContext = bootSpringContext();
             ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager"));
             applicationManager.entryPoint();
-
+        } catch (Throwable t) {
+            log.error("Application error!", t);
         } finally {
             if (lock != null)
                 closeSingletonApplicationLock(lock);
@@ -46,11 +39,6 @@ public class Startup {
         context.registerShutdownHook();
         log.debug(String.format("Spring booted in %dms", System.currentTimeMillis()-begin));
         return context;
-    }
-
-    private static void loadLog4JOverride() {
-        if (new File("log4j.xml").exists())
-            DOMConfigurator.configure("log4j.xml");
     }
 
     private static FileLock getSingletonApplicationFileLock() {
