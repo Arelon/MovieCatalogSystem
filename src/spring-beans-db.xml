@@ -29,6 +29,23 @@
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.cache.use_second_level_cache">true</prop>
+                <prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+                <prop key="hibernate.cache.provider_configuration_file_resource_path">/ehcache.xml</prop>
+                <prop key="hibernate.cache.use_query_cache">false</prop>
+    
+                <prop key="hibernate.c3p0.min_size">2</prop>
+                <prop key="hibernate.c3p0.max_size">8</prop>
+                <prop key="hibernate.c3p0.timeout">5</prop>
+                <prop key="hibernate.c3p0.idle_test_period">3000</prop>
+                <prop key="hibernate.c3p0.max_statements">50</prop>
+    
+                <prop key="hibernate.connection.aggressive_release">false</prop>
+                <prop key="hibernate.connection.autocommit">true</prop>
+    
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.use_sql_comments">true</prop>
             </props>
         </property>
     </bean>
