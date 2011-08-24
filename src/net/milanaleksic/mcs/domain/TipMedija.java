@@ -20,6 +20,7 @@ public class TipMedija implements java.io.Serializable {
 	private String naziv;
 
     @OneToMany(mappedBy = "tipMedija")
+    @org.hibernate.annotations.BatchSize(size=15)
 	private Set<Medij> medijs = new HashSet<Medij>(0);
 
 	public TipMedija() {

@@ -20,6 +20,7 @@ public class Zanr implements java.io.Serializable {
 	private String zanr;
 
     @OneToMany(mappedBy = "zanr")
+    @org.hibernate.annotations.BatchSize(size=5)
 	private Set<Film> films = new HashSet<Film>(0);
 
 	public Zanr() {

@@ -36,6 +36,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
         joinColumns = { @JoinColumn(name = "IDMEDIJ") },
         inverseJoinColumns = { @JoinColumn(name = "IDFILM") }
     )
+    @org.hibernate.annotations.BatchSize(size=3)
 	private Set<Film> films = new HashSet<Film>(0);
 	
 	@Transient
