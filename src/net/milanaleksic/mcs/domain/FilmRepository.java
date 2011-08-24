@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.domain;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * User: Milan Aleksic
@@ -13,5 +13,5 @@ public interface FilmRepository {
 
     void saveFilm(Film newFilm);
 
-    List<Film> getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String filterText);
+    Set<Film> getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String filterText);
 }

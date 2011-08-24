@@ -6,6 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="MEDIJ", schema="DB2ADMIN")
+@Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Medij implements java.io.Serializable, Comparable<Medij> {
@@ -35,6 +36,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
         joinColumns = { @JoinColumn(name = "IDMEDIJ") },
         inverseJoinColumns = { @JoinColumn(name = "IDFILM") }
     )
+    @org.hibernate.annotations.BatchSize(size=3)
 	private Set<Film> films = new HashSet<Film>(0);
 	
 	@Transient

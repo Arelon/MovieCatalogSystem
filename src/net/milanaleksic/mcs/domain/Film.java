@@ -7,6 +7,7 @@ import java.util.*;
 
 @Entity
 @Table(name="FILM", schema="DB2ADMIN")
+@Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Film implements Serializable, Comparable<Film> {
@@ -43,6 +44,7 @@ public class Film implements Serializable, Comparable<Film> {
         joinColumns = { @JoinColumn(name = "IDFILM") },
         inverseJoinColumns = { @JoinColumn(name = "IDMEDIJ") }
     )
+    @org.hibernate.annotations.BatchSize(size=15)
 	private Set<Medij> medijs = new HashSet<Medij>(0);
 
 	public Film() {

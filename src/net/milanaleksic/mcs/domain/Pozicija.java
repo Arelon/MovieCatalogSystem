@@ -6,6 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="POZICIJA", schema="DB2ADMIN")
+@Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Pozicija implements java.io.Serializable {
@@ -19,6 +20,7 @@ public class Pozicija implements java.io.Serializable {
 	private String pozicija;
 
 	@OneToMany(mappedBy = "pozicija")
+    @org.hibernate.annotations.BatchSize(size=15)
     private Set<Medij> medijs = new HashSet<Medij>(0);
 
 	public Pozicija() {
