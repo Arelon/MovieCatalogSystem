@@ -7,6 +7,7 @@ import java.util.*;
 
 @Entity
 @Table(name="FILM", schema="DB2ADMIN")
+@Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Film implements Serializable, Comparable<Film> {

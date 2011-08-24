@@ -6,6 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="POZICIJA", schema="DB2ADMIN")
+@Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Pozicija implements java.io.Serializable {
