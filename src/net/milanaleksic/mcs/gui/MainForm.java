@@ -226,7 +226,8 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            final List<Film> allFilms = getAllFilms(0);
+            final Set<Film> allFilmsSet = getAllFilms(0);
+            final List<Film> allFilms = new ArrayList<Film>(allFilmsSet);
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -598,7 +599,7 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(true);
 			toolTicker.update();
 		}
-		List<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
+		Set<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
 		long start = new Date().getTime();
 		int i=0;
 		
@@ -639,7 +640,7 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(false);
 	}
 
-    public List<Film> getAllFilms(int maxItems) {
+    public Set<Film> getAllFilms(int maxItems) {
         Zanr zanrFilter = (Zanr)comboZanr.getData(
                 Integer.toString(comboZanr.getSelectionIndex()));
         TipMedija tipMedijaFilter = (TipMedija)comboTipMedija.getData(
