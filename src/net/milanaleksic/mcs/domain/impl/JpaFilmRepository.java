@@ -100,7 +100,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             }
             log.info("films.size() = "+films.size()+", fetchedCount = "+fetchedCount+", maxItems = "+maxItems);
         }
-        while (maxItems == 0 || (films.size()<maxItems && fetchedCount>0));
+        while (maxItems != 0 && films.size()<maxItems && fetchedCount>0);
 
         for (Film film : films) {
             Hibernate.initialize(film.getMedijs());
