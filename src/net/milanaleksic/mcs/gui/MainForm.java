@@ -653,11 +653,11 @@ public class MainForm extends Observable {
         int startFrom = currentViewState.getActivePage().intValue()*maxItems;
         currentViewState.setMaxItemsPerPage(maxItems);
 
-//        StringBuilder countBuff = new StringBuilder("select count(distinct idfilm) from Film f, Medij m where f.idfilm in elements(m.films)");
-//        currentViewState.setShowableCount((Long)countQuery.uniqueResult());
-
-        return filmRepository.getFilmByCriteria(startFrom, maxItems,
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(startFrom, maxItems,
                 zanrFilter, tipMedijaFilter, pozicijaFilter, filterText);
+        currentViewState.setShowableCount(filmsWithCount.count);
+
+        return filmsWithCount.films;
     }
 	
 }

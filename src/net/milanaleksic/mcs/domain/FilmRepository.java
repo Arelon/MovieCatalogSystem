@@ -9,9 +9,19 @@ import java.util.Set;
  */
 public interface FilmRepository {
 
+    public class FilmsWithCount {
+        public final Set<Film> films;
+        public final long count;
+
+        public FilmsWithCount(Set<Film> films, long count) {
+            this.films = films;
+            this.count = count;
+        }
+    }
+
     void deleteFilm(Film film);
 
     void saveFilm(Film newFilm);
 
-    Set<Film> getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String filterText);
+    FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String filterText);
 }

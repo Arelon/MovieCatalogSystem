@@ -4,6 +4,9 @@ import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.domain.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import org.hamcrest.Matchers;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,35 +39,38 @@ public class JpaFilmRepositoryIntegrationTest {
 
     @Test
     public void get_films() {
-        Set<Film> films = filmRepository.getFilmByCriteria(0, 10, null, null, null, null);
-        Assert.assertTrue("Films are empty", films.size() != 0);
-        Assert.assertEquals("Size is not as expected!", films.size(), 10);
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 10, null, null, null, null);
+        assertThat("Films are empty", filmsWithCount.films.size(), not(0));
+        assertThat("Size is not as expected!", filmsWithCount.films.size(), equalTo(10));
     }
 
     @Test
     public void get_films_no_limit() {
-        Set<Film> films = filmRepository.getFilmByCriteria(0, 0, null, null, null, null);
-        Assert.assertTrue("Films are empty", films.size() != 0);
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, null, null, null, null);
+        assertThat("Films are empty", filmsWithCount.films.size(), not(0));
+        assertThat("Films count is not identical to the collection size", 0L+filmsWithCount.films.size(), equalTo(filmsWithCount.count));
     }
 
     @Test
     public void get_films_with_zanr() {
         Zanr zanr = zanrRepository.getZanrByName("акција");
-        Set<Film> films = filmRepository.getFilmByCriteria(0, 23, zanr, null, null, null);
-        for (Film film:films) {
-            Assert.assertEquals(zanr.getIdzanr(), film.getZanr().getIdzanr());
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 23, zanr, null, null, null);
+        for (Film film : filmsWithCount.films) {
+            assertThat("Zanr is not correct", zanr.getIdzanr(), equalTo(film.getZanr().getIdzanr()));
         }
-        Assert.assertEquals("Size is not as expected!", films.size(), 23);
+        assertThat("Size is not as expected!", filmsWithCount.films.size(), equalTo(23));
     }
 
     @Test
     public void get_films_with_zanr_no_limit() {
         Zanr zanr = zanrRepository.getZanrByName("акција");
-        Set<Film> films = filmRepository.getFilmByCriteria(0, 0, zanr, null, null, null);
-        Assert.assertTrue("Films are empty", films.size() != 0);
-        for (Film film:films) {
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, zanr, null, null, null);
+        Assert.assertTrue("Films are empty", filmsWithCount.films.size() != 0);
+        for (Film film : filmsWithCount.films) {
+            assertThat("Zanr is not correct", zanr.getIdzanr(), equalTo(film.getZanr().getIdzanr()));
             Assert.assertEquals(zanr.getIdzanr(), film.getZanr().getIdzanr());
         }
+        assertThat("Films count is not identical to the collection size!", 0L+filmsWithCount.films.size(), equalTo(filmsWithCount.count));
     }
 
 }

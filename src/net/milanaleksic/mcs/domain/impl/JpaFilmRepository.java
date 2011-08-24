@@ -29,13 +29,13 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     }
 
     @Override
-    public Set<Film> getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter,
+    public FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter,
                                        Pozicija pozicijaFilter, String textFilter) {
         int fetchedCount;
         int totallyFetchedCount = 0;
         Set<Film> films = new HashSet<Film>();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         do {
-            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Film> cq = builder.createQuery(Film.class);
             Root<Film> film = cq.from(Film.class);
             cq.select(film);
@@ -98,7 +98,6 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
                         break;
                 }
             }
-            log.info("films.size() = "+films.size()+", fetchedCount = "+fetchedCount+", maxItems = "+maxItems);
         }
         while (maxItems != 0 && films.size()<maxItems && fetchedCount>0);
 
@@ -106,7 +105,54 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             Hibernate.initialize(film.getMedijs());
         }
 
-        return films;
+
+
+
+
+        CriteriaQuery<Long> cq = builder.createQuery(Long.class);
+        Root<Film> film = cq.from(Film.class);
+        cq.select(builder.countDistinct(film));
+        Join<Film, Medij> medij = film.join("medijs", JoinType.LEFT);
+
+        List<Predicate> predicates = new ArrayList<Predicate>();
+
+        ParameterExpression<String> textFilterParameter = null;
+        if (textFilter != null) {
+            textFilterParameter = builder.parameter(String.class, "filter");
+            predicates.add(builder.or(
+                    builder.like(builder.lower(film.<String>get("nazivfilma")), textFilterParameter),
+                    builder.like(builder.lower(film.<String>get("prevodnazivafilma")), textFilterParameter),
+                    builder.like(builder.lower(film.<String>get("komentar")), textFilterParameter)
+            ));
+        }
+        ParameterExpression<Zanr> zanrParameter = null;
+        if (zanrFilter != null)
+            predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
+        ParameterExpression<TipMedija> tipMedijaParameter = null;
+        if (tipMedijaFilter != null)
+            predicates.add(builder.equal(medij.<TipMedija>get("tipMedija"), tipMedijaParameter = builder.parameter(TipMedija.class, "tipMedija")));
+        ParameterExpression<Pozicija> pozicijaParameter = null;
+        if (pozicijaFilter != null)
+            predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
+
+        if (predicates.size()==1)
+            cq.where(predicates.get(0));
+        else if (predicates.size()>1)
+            cq.where(builder.and(predicates.toArray(new Predicate[1])));
+
+        TypedQuery<Long> query = entityManager.createQuery(cq);
+        if (textFilter != null)
+            query.setParameter(textFilterParameter, textFilter);
+        if (zanrFilter != null)
+            query.setParameter(zanrParameter, zanrFilter);
+        if (tipMedijaFilter != null)
+            query.setParameter(tipMedijaParameter, tipMedijaFilter);
+        if (pozicijaFilter != null)
+            query.setParameter(pozicijaParameter, pozicijaFilter);
+
+        Long count = query.getSingleResult();
+
+        return new FilmsWithCount(films, count);
     }
 
 }
