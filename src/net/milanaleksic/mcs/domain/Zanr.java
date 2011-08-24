@@ -59,5 +59,21 @@ public class Zanr implements java.io.Serializable {
 		f.setZanr(this);
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Zanr zanr1 = (Zanr) o;
+
+        if (zanr != null ? !zanr.equals(zanr1.zanr) : zanr1.zanr != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = zanr != null ? zanr.hashCode() : 0;
+        return result;
+    }
 }

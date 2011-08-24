@@ -59,5 +59,21 @@ public class Pozicija implements java.io.Serializable {
 		m.setPozicija(this);
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Pozicija pozicija1 = (Pozicija) o;
+
+        if (pozicija != null ? !pozicija.equals(pozicija1.pozicija) : pozicija1.pozicija != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pozicija != null ? pozicija.hashCode() : 0;
+        return result;
+    }
 }

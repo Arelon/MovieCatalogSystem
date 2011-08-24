@@ -59,5 +59,21 @@ public class TipMedija implements java.io.Serializable {
 		m.setTipMedija(this);
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        TipMedija tipMedija = (TipMedija) o;
+
+        if (naziv != null ? !naziv.equals(tipMedija.naziv) : tipMedija.naziv != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = naziv != null ? naziv.hashCode() : 0;
+        return result;
+    }
 }

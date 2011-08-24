@@ -162,4 +162,33 @@ public class Film implements Serializable, Comparable<Film> {
     public int compareTo(Film o) {
 		return getMedijListAsString().compareTo(o.getMedijListAsString());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Film film = (Film) o;
+
+        if (godina != film.godina) return false;
+        if (imdbrejting != null ? !imdbrejting.equals(film.imdbrejting) : film.imdbrejting != null) return false;
+        if (komentar != null ? !komentar.equals(film.komentar) : film.komentar != null) return false;
+        if (nazivfilma != null ? !nazivfilma.equals(film.nazivfilma) : film.nazivfilma != null) return false;
+        if (prevodnazivafilma != null ? !prevodnazivafilma.equals(film.prevodnazivafilma) : film.prevodnazivafilma != null)
+            return false;
+        if (zanr != null ? !zanr.equals(film.zanr) : film.zanr != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = zanr != null ? zanr.hashCode() : 0;
+        result = 31 * result + (nazivfilma != null ? nazivfilma.hashCode() : 0);
+        result = 31 * result + (prevodnazivafilma != null ? prevodnazivafilma.hashCode() : 0);
+        result = 31 * result + godina;
+        result = 31 * result + (komentar != null ? komentar.hashCode() : 0);
+        result = 31 * result + (imdbrejting != null ? imdbrejting.hashCode() : 0);
+        return result;
+    }
 }
