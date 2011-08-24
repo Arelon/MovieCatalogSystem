@@ -4,11 +4,12 @@ import net.milanaleksic.mcs.config.*;
 import net.milanaleksic.mcs.event.LifecycleListener;
 import net.milanaleksic.mcs.gui.MainForm;
 import net.milanaleksic.mcs.gui.SplashScreenManager;
-import net.milanaleksic.mcs.config.ProgramArgs;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.io.File;
+import java.util.Set;
 
 /**
  * @author Milan 22 Sep 2007
@@ -19,7 +20,7 @@ public class ApplicationManager {
 
     @Autowired private MainForm mainForm;
 
-    private static ApplicationConfiguration applicationConfiguration;
+    private ApplicationConfiguration applicationConfiguration;
 
     private Set<LifecycleListener> lifecycleListeners;
 
@@ -27,11 +28,13 @@ public class ApplicationManager {
     private ProgramArgs programArgs;
     private UserConfiguration userConfiguration;
 
-    public static void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
-        ApplicationManager.applicationConfiguration = applicationConfiguration;
+    public ApplicationManager() {
+        if (new File("log4j.xml").exists())
+            DOMConfigurator.configure("log4j.xml");
+        applicationConfiguration = new ApplicationConfigurationManager().loadApplicationConfiguration();
     }
 
-    public static ApplicationConfiguration getApplicationConfiguration() {
+    public ApplicationConfiguration getApplicationConfiguration() {
         return applicationConfiguration;
     }
 
@@ -95,6 +98,4 @@ public class ApplicationManager {
 
         display.dispose();
     }
-
-
 }

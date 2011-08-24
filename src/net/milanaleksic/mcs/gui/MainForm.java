@@ -350,7 +350,6 @@ public class MainForm extends Observable {
 
     public MainForm() {
         this.currentViewState = new CurrentViewState();
-        this.interfaceConfiguration = ApplicationManager.getApplicationConfiguration().getInterfaceConfiguration();
         this.addObserver(new Observer() {
 
 			@Override public void update(Observable obs, Object arg) {
@@ -382,6 +381,7 @@ public class MainForm extends Observable {
     private void checkCreated() {
         if (sShell != null)
             return;
+        this.interfaceConfiguration = applicationManager.getApplicationConfiguration().getInterfaceConfiguration();
         createSShell();
         sShell.setImage(new Image(sShell.getDisplay(),
                 MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/res/database-64.png")));

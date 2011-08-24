@@ -26,6 +26,8 @@ public class ProgramArgsService implements InitializingBean {
     }
 
     private static ProgramArgs getApplicationArgs(String[] args) {
+        if (args == null)
+            return null;
         ProgramArgs programArgs = new ProgramArgs();
         CmdLineParser parser = new CmdLineParser(programArgs);
         try {

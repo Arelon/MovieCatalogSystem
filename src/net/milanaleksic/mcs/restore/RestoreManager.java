@@ -23,6 +23,8 @@ import java.util.Date;
  */
 public class RestoreManager implements LifecycleListener {
 
+    @Autowired private ApplicationManager applicationManager;
+
     @Autowired private RestorePointCreator restorePointCreator;
 
     @Autowired private RestorePointRestorer restorePointRestorer;
@@ -32,7 +34,7 @@ public class RestoreManager implements LifecycleListener {
     }
 
     @Override public void applicationShutdown() {
-        if (ApplicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
+        if (applicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
             new ClosingForm();
             restorePointCreator.createRestorePoint();
         }

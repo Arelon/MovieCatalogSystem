@@ -276,8 +276,6 @@ public class RestorePointCreator extends AbstractRestorePointService {
     public static void main(String[] args) {
         if (new File("log4j.xml").exists())
             DOMConfigurator.configure("log4j.xml");
-        ApplicationConfiguration applicationConfiguration = ApplicationConfigurationManager.loadApplicationConfiguration();
-        ApplicationManager.setApplicationConfiguration(applicationConfiguration);
         RestorePointCreator restorePointCreator = new RestorePointCreator();
         try {
             restorePointCreator.afterPropertiesSet();
@@ -295,11 +293,9 @@ public class RestorePointCreator extends AbstractRestorePointService {
         }
     }
 
-
-
     @Override
     public void afterPropertiesSet() throws Exception {
-        databaseConfiguration = ApplicationManager.getApplicationConfiguration().getDatabaseConfiguration();
+        databaseConfiguration = applicationManager.getApplicationConfiguration().getDatabaseConfiguration();
     }
 
 
