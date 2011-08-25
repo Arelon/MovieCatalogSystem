@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.domain.impl;
 
 import net.milanaleksic.mcs.domain.*;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +38,6 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             CriteriaQuery<Film> cq = builder.createQuery(Film.class);
             Root<Film> film = cq.from(Film.class);
             cq.select(film);
-            Join<Film, Medij> medij = film.join("medijs", JoinType.LEFT);
 
             List<Predicate> predicates = new ArrayList<Predicate>();
 
@@ -57,18 +55,17 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
                 predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
             ParameterExpression<TipMedija> tipMedijaParameter = null;
             if (tipMedijaFilter != null)
-                predicates.add(builder.equal(medij.<TipMedija>get("tipMedija"), tipMedijaParameter = builder.parameter(TipMedija.class, "tipMedija")));
+                predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaFilter.getNaziv()));
             ParameterExpression<Pozicija> pozicijaParameter = null;
-            if (pozicijaFilter != null)
-                predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
+            //if (pozicijaFilter != null)
+            //    predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
 
             if (predicates.size()==1)
                 cq.where(predicates.get(0));
             else if (predicates.size()>1)
                 cq.where(builder.and(predicates.toArray(new Predicate[1])));
 
-            cq.orderBy(builder.asc(medij.<String>get("tipMedija").<String>get("naziv")),
-                    builder.asc(medij.<String>get("indeks")),
+            cq.orderBy(builder.asc(film.<String>get("medijListAsString")),
                     builder.asc(film.<String>get("nazivfilma")));
 
             TypedQuery<Film> query = entityManager.createQuery(cq);
@@ -101,18 +98,11 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         }
         while (maxItems != 0 && films.size()<maxItems && fetchedCount>0);
 
-        for (Film film : films) {
-            Hibernate.initialize(film.getMedijs());
-        }
-
-
-
 
 
         CriteriaQuery<Long> cq = builder.createQuery(Long.class);
         Root<Film> film = cq.from(Film.class);
         cq.select(builder.countDistinct(film));
-        Join<Film, Medij> medij = film.join("medijs", JoinType.LEFT);
 
         List<Predicate> predicates = new ArrayList<Predicate>();
 
@@ -130,10 +120,10 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
         ParameterExpression<TipMedija> tipMedijaParameter = null;
         if (tipMedijaFilter != null)
-            predicates.add(builder.equal(medij.<TipMedija>get("tipMedija"), tipMedijaParameter = builder.parameter(TipMedija.class, "tipMedija")));
+            predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaFilter.getNaziv()));
         ParameterExpression<Pozicija> pozicijaParameter = null;
-        if (pozicijaFilter != null)
-            predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
+//        if (pozicijaFilter != null)
+//            predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
