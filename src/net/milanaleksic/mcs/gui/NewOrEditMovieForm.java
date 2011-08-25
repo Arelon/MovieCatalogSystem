@@ -1,9 +1,5 @@
 package net.milanaleksic.mcs.gui;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import net.milanaleksic.mcs.domain.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -12,6 +8,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NewOrEditMovieForm {
 	
@@ -89,7 +89,7 @@ public class NewOrEditMovieForm {
             listDiskovi.removeAll();
             for (Medij medij : activeFilm.getMedijs())
                 listDiskovi.add(medij.toString());
-            comboLokacija.select( comboLokacija.indexOf( activeFilm.getFilmLocation() ) );
+            comboLokacija.select( comboLokacija.indexOf( activeFilm.getPozicija() ) );
         }
         else {
             if (comboLokacija.indexOf("присутан") != -1)

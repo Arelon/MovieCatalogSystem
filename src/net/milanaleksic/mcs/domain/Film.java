@@ -50,6 +50,9 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(name="MEDIJ_LIST")
     private String medijListAsString;
 
+    @Column(name="POZICIJA")
+    private String pozicija;
+
 	public Film() {
 	}
 
@@ -116,6 +119,7 @@ public class Film implements Serializable, Comparable<Film> {
 	public void setMedijs(Set<Medij> medijs) {
         if ((medijs != this.medijs && this.medijs != null) || (this.medijs == null && medijListAsString == null)) {
             this.refreshMedijListAsString();
+            this.refreshFilmLocation();
         }
         this.medijs = medijs;
     }
@@ -128,8 +132,16 @@ public class Film implements Serializable, Comparable<Film> {
 		medijs.add(m);
 		m.getFilms().add(this);
 	}
-	
-	public String getFilmLocation() {
+
+    public String getPozicija() {
+        return pozicija;
+    }
+
+    public void setPozicija(String pozicija) {
+        this.pozicija = pozicija;
+    }
+
+    private void refreshFilmLocation() {
 		// priprema informacija za narednu obradu (polje "prisutan")
 		int brojNeprisutnih = 0;
 		for (Medij medij : getMedijs()) {
@@ -152,7 +164,6 @@ public class Film implements Serializable, Comparable<Film> {
 			if (!medij.getPozicija().getPozicija().equals("присутан"))
 				prisutan = medij.getPozicija().toString();
 		}
-		return prisutan;
 	}
 
     public String getMedijListAsString() {

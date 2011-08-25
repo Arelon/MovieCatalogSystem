@@ -255,7 +255,7 @@ public class MainForm extends Observable {
                         case 3:
                             return allFilms.get(row).getZanr().getZanr();
                         case 4:
-                            return allFilms.get(row).getFilmLocation();
+                            return allFilms.get(row).getPozicija();
                         default:
                             return "";
                     }
@@ -621,7 +621,7 @@ public class MainForm extends Observable {
 					film.getNazivfilma(),
 					film.getPrevodnazivafilma(),
 					film.getZanr().getZanr(),
-					film.getFilmLocation(),
+					film.getPozicija(),
 					film.getKomentar()
 			});
             item.setData(film);

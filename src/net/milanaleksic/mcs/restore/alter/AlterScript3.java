@@ -38,20 +38,31 @@ public class AlterScript3 implements AlterScript {
             DBUtil.close(st);
             DBUtil.close(rs);
 
+            String defaultPosition = "присутан";
+
             for (Integer idfilm : filmIds) {
-                st = conn.prepareStatement("SELECT naziv || indeks from DB2ADMIN.Zauzima z \n" +
+                st = conn.prepareStatement("SELECT naziv, indeks, pozicija from DB2ADMIN.Zauzima z\n" +
                         "inner join db2admin.medij m on z.idmedij=m.idmedij \n" +
-                        "inner join db2admin.tipmedija t on t.idtip=m.idtip\n" +
-                        "where idfilm=?" +
+                        "inner join db2admin.tipmedija t on t.idtip=m.idtip \n" +
+                        "inner join db2admin.pozicija p on m.idpozicija=p.idpozicija \n" +
+                        "where idfilm=?\n" +
                         "order by m.idtip, m.indeks");
                 st.setInt(1, idfilm);
                 rs = st.executeQuery();
 
+                String filmPosition = defaultPosition;
                 StringBuilder builder = new StringBuilder();
                 while (rs.next()) {
                     if (builder.length()!=0)
                         builder.append(" ");
-                    builder.append(rs.getString(1));
+                    String indeks = rs.getString(2);
+                    while (indeks.length()<3)
+                        indeks = '0'+indeks;
+                    builder.append(rs.getString(1)).append(indeks);
+                    String position = rs.getString(3);
+                    if (!defaultPosition.equals(position)) {
+                        filmPosition = position;
+                    }
                 }
                 String medijList = builder.toString();
 
@@ -60,9 +71,10 @@ public class AlterScript3 implements AlterScript {
                 DBUtil.close(st);
                 DBUtil.close(rs);
 
-                st = conn.prepareStatement("update DB2ADMIN.Film set MEDIJ_LIST=? where idfilm=?");
+                st = conn.prepareStatement("update DB2ADMIN.Film set MEDIJ_LIST=?, POZICIJA=? where idfilm=?");
                 st.setString(1, medijList);
-                st.setInt(2, idfilm);
+                st.setString(2, filmPosition);
+                st.setInt(3, idfilm);
                 int cntRows = st.executeUpdate();
                 if (cntRows != 1)
                     log.warn("Could not update movie with id:" + idfilm);

@@ -53,12 +53,12 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             ParameterExpression<Zanr> zanrParameter = null;
             if (zanrFilter != null)
                 predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
-            ParameterExpression<TipMedija> tipMedijaParameter = null;
+            ParameterExpression<String> tipMedijaParameter = null;
             if (tipMedijaFilter != null)
-                predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaFilter.getNaziv()));
-            ParameterExpression<Pozicija> pozicijaParameter = null;
-            //if (pozicijaFilter != null)
-            //    predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
+                predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
+            ParameterExpression<String> pozicijaParameter = null;
+            if (pozicijaFilter != null)
+                predicates.add(builder.equal(film.<String>get("pozicija"), pozicijaParameter = builder.parameter(String.class, "pozicija")));
 
             if (predicates.size()==1)
                 cq.where(predicates.get(0));
@@ -74,9 +74,9 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             if (zanrFilter != null)
                 query.setParameter(zanrParameter, zanrFilter);
             if (tipMedijaFilter != null)
-                query.setParameter(tipMedijaParameter, tipMedijaFilter);
+                query.setParameter(tipMedijaParameter, '%'+tipMedijaFilter.getNaziv()+'%');
             if (pozicijaFilter != null)
-                query.setParameter(pozicijaParameter, pozicijaFilter);
+                query.setParameter(pozicijaParameter, pozicijaFilter.getPozicija());
             if (maxItems > 0) {
                 query.setFirstResult(startFrom + totallyFetchedCount);
                 query.setMaxResults(maxItems);
@@ -118,12 +118,12 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         ParameterExpression<Zanr> zanrParameter = null;
         if (zanrFilter != null)
             predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
-        ParameterExpression<TipMedija> tipMedijaParameter = null;
+        ParameterExpression<String> tipMedijaParameter = null;
         if (tipMedijaFilter != null)
-            predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaFilter.getNaziv()));
-        ParameterExpression<Pozicija> pozicijaParameter = null;
-//        if (pozicijaFilter != null)
-//            predicates.add(builder.equal(medij.<Pozicija>get("pozicija"), pozicijaParameter = builder.parameter(Pozicija.class, "pozicija")));
+            predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
+        ParameterExpression<String> pozicijaParameter = null;
+        if (pozicijaFilter != null)
+            predicates.add(builder.equal(film.<String>get("pozicija"), pozicijaParameter = builder.parameter(String.class, "pozicija")));
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -136,9 +136,9 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (zanrFilter != null)
             query.setParameter(zanrParameter, zanrFilter);
         if (tipMedijaFilter != null)
-            query.setParameter(tipMedijaParameter, tipMedijaFilter);
+            query.setParameter(tipMedijaParameter, '%'+tipMedijaFilter.getNaziv()+'%');
         if (pozicijaFilter != null)
-            query.setParameter(pozicijaParameter, pozicijaFilter);
+            query.setParameter(pozicijaParameter, pozicijaFilter.getPozicija());
 
         Long count = query.getSingleResult();
 
