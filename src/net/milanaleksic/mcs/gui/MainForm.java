@@ -173,17 +173,19 @@ public class MainForm extends Observable {
 	private class MainTableMouseListener extends MouseAdapter {
 		
 		@Override public void mouseDoubleClick(MouseEvent mouseevent) {
-			if (mainTable.getSelectionIndex() != -1)
-				newOrEditMovieForm.open(sShell,
-						(Film)mainTable.getSelection()[0].getData(),
-								new Runnable() {
+			if (mainTable.getSelectionIndex() != -1) {
+                Film rawFilm = (Film)mainTable.getSelection()[0].getData();
+                newOrEditMovieForm.open(sShell,
+                        filmRepository.getCompleteFilm(rawFilm),
+                        new Runnable() {
 
-									@Override public void run() {
-										doFillMainTable();
-									}
-									
-								});
-		}			
+                            @Override public void run() {
+                                doFillMainTable();
+                            }
+
+                        });
+            }
+		}
 	}
 	
 	private class MainFormShellListener extends ShellAdapter {

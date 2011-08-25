@@ -18,13 +18,20 @@ import java.util.*;
 public class JpaFilmRepository extends AbstractRepository implements FilmRepository {
 
     @Override
+    public Film getCompleteFilm(Film rawFilm) {
+        rawFilm = entityManager.merge(rawFilm);
+        rawFilm.getMedijs().size();
+        return rawFilm;
+    }
+
+    @Override
     public void deleteFilm(Film film) {
         entityManager.remove(film);
     }
 
     @Override
     public void saveFilm(Film newFilm) {
-        entityManager.persist(newFilm);
+        entityManager.merge(newFilm);
     }
 
     @Override

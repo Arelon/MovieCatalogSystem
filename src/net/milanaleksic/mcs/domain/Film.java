@@ -118,8 +118,7 @@ public class Film implements Serializable, Comparable<Film> {
 
 	public void setMedijs(Set<Medij> medijs) {
         if ((medijs != this.medijs && this.medijs != null) || (this.medijs == null && medijListAsString == null)) {
-            this.refreshMedijListAsString();
-            this.refreshFilmLocation();
+            refreshDeNormalizedAttributes();
         }
         this.medijs = medijs;
     }
@@ -131,14 +130,21 @@ public class Film implements Serializable, Comparable<Film> {
 	public void addMedij(Medij m) {
 		medijs.add(m);
 		m.getFilms().add(this);
+        refreshDeNormalizedAttributes();
 	}
+
+    public void removeMedij(Medij medij) {
+		medijs.remove(medij);
+        refreshDeNormalizedAttributes();
+    }
+
+    private void refreshDeNormalizedAttributes() {
+        this.refreshMedijListAsString();
+        this.refreshFilmLocation();
+    }
 
     public String getPozicija() {
         return pozicija;
-    }
-
-    public void setPozicija(String pozicija) {
-        this.pozicija = pozicija;
     }
 
     private void refreshFilmLocation() {
@@ -149,29 +155,23 @@ public class Film implements Serializable, Comparable<Film> {
 				brojNeprisutnih++;
 		}
 		
-		// obrada polja "prisutan"
-		String prisutan;
 		if (brojNeprisutnih==0)
-			prisutan = "присутан";
+			pozicija = "присутан";
 		else {
             StringBuilder builder = new StringBuilder();
 			for (Medij medij : getMedijs()) {
                 builder.append(medij.toString()).append("-").append(medij.getPozicija().toString()).append("; ");
 			}
-			prisutan = builder.substring(0, builder.length()-2);
+			pozicija = builder.substring(0, builder.length()-2);
 		}						
 		for (Medij medij : getMedijs()) {
 			if (!medij.getPozicija().getPozicija().equals("присутан"))
-				prisutan = medij.getPozicija().toString();
+				pozicija = medij.getPozicija().toString();
 		}
 	}
 
     public String getMedijListAsString() {
         return medijListAsString;
-    }
-
-    public void setMedijListAsString(String medijListAsString) {
-        this.medijListAsString = medijListAsString;
     }
 
     public void refreshMedijListAsString() {
@@ -220,4 +220,5 @@ public class Film implements Serializable, Comparable<Film> {
         result = 31 * result + (imdbrejting != null ? imdbrejting.hashCode() : 0);
         return result;
     }
+
 }

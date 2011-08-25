@@ -20,4 +20,6 @@ public interface PozicijaRepository {
     Pozicija getDefaultPozicija();
 
     Pozicija getByName(String locationName);
+
+    Pozicija getCompletePozicija(Pozicija pozicija);
 }

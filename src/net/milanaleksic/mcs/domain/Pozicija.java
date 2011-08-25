@@ -59,6 +59,10 @@ public class Pozicija implements java.io.Serializable {
 		m.setPozicija(this);
 	}
 
+    public void removeMedij(Medij medij) {
+		medijs.remove(medij);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,4 +80,5 @@ public class Pozicija implements java.io.Serializable {
         int result = pozicija != null ? pozicija.hashCode() : 0;
         return result;
     }
+
 }

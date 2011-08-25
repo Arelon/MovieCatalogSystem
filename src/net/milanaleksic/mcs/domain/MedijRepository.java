@@ -9,7 +9,9 @@ import java.util.List;
  */
 public interface MedijRepository {
 
-    public int getNextMedijIndeks(String s) ;
+    Medij getCompleteMedij(Medij rawMedij) ;
+
+    int getNextMedijIndeks(String s) ;
 
     void saveMedij(int index, String mediumTypeName);
 

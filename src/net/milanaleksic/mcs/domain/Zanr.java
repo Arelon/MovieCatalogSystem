@@ -59,6 +59,10 @@ public class Zanr implements java.io.Serializable {
 		f.setZanr(this);
 	}
 
+    public void removeFilm(Film film) {
+        films.remove(film);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

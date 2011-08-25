@@ -85,6 +85,10 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
 		this.films = films;
 	}
 
+    public void removeFilm(Film film) {
+        films.remove(film);
+    }
+
 	@Override
 	public String toString() {
 		if (stringVal == null) {
@@ -122,4 +126,5 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
         result = 31 * result + indeks;
         return result;
     }
+
 }

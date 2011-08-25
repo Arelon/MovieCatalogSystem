@@ -19,6 +19,8 @@ public interface FilmRepository {
         }
     }
 
+    Film getCompleteFilm(Film rawFilm);
+
     void deleteFilm(Film film);
 
     void saveFilm(Film newFilm);

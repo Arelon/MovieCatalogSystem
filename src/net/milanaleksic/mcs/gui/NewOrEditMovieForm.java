@@ -167,7 +167,7 @@ public class NewOrEditMovieForm {
 
         // promena zanra po potrebi !
         if (!sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())).equals(activeFilm.getZanr())) {
-            activeFilm.getZanr().getFilms().remove(activeFilm);
+            activeFilm.getZanr().removeFilm(activeFilm);    //TODO: check if this line is semantically correct
             activeFilm.getZanr().addFilm(activeFilm);
         }
 
@@ -184,13 +184,16 @@ public class NewOrEditMovieForm {
                 Pozicija pozicija = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
                 if (raniji.contains(medij.toString())) {
                     if (!medij.getPozicija().equals(sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())))) {
-                        medij.getPozicija().getMedijs().remove(medij);
+                        medij.getPozicija().removeMedij(medij);
+                        pozicija = pozicijaRepository.getCompletePozicija(pozicija);
                         pozicija.addMedij(medij);
                     }
                     raniji.remove(medij.toString());// vec postoji, nema potrebe nista da se radi...
                 }
                 else {
+                    medij = medijRepository.getCompleteMedij(medij);
                     activeFilm.addMedij(medij);
+                    pozicija = pozicijaRepository.getCompletePozicija(pozicija);
                     pozicija.addMedij(medij);
                 }
             }
@@ -201,8 +204,9 @@ public class NewOrEditMovieForm {
         for (String medijOpis : raniji) {
             logger.info("Brisem: "+medijOpis);
             Medij medij = sviDiskovi.get(medijOpis);
-            medij.getFilms().remove(activeFilm);
-            activeFilm.getMedijs().remove(medij);
+            medij = medijRepository.getCompleteMedij(medij);
+            medij.removeFilm(activeFilm);
+            activeFilm.removeMedij(medij);
         }
 
         filmRepository.saveFilm(activeFilm);
