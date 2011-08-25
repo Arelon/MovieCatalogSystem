@@ -1,10 +1,11 @@
 package net.milanaleksic.mcs.restore;
 
+import net.milanaleksic.mcs.restore.alter.AlterScript;
+import net.milanaleksic.mcs.util.DBUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.sql.*;
 
 /**
@@ -16,7 +17,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
-    private static final String SCRIPT_RESOURCE_ALTER = "alter_script_%d.sql";
+    private static final String SCRIPT_RESOURCE_ALTER = "alter/alter_script_%d.sql";
 
     public void restoreDatabaseIfNeeded() {
         Connection conn = null;
@@ -26,7 +27,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         } catch (Exception e) {
             log.error("Failure while creating restore point", e);
         } finally {
-            close(conn);
+            DBUtil.close(conn);
         }
     }
 
@@ -46,8 +47,8 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         } catch (Exception e) {
             log.error("Validation failed - " + e.getMessage());
         } finally {
-            close(rs);
-            close(st);
+            DBUtil.close(rs);
+            DBUtil.close(st);
         }
         return 0;
     }
@@ -97,53 +98,34 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         if (dbVersionFromDatabase == 0) {
             int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
             for (int i=startAlterVersion; i<=ending; i++) {
-                log.info("Running alter "+i);
-                executeScriptOnConnection(getClass().getResourceAsStream(
-                        String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
+                runAltersForVersion(conn, i);
             }
             startAlterVersion = ending+1;
 
             if (dbVersionFromRestorePoint != 0) {
                 log.info("Restoring content");
-                executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
+                DBUtil.executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
             }
         }
-        for (int i=startAlterVersion; i<=databaseConfiguration.getDBVersion(); i++) {
-            log.info("Running alter "+i);
-            executeScriptOnConnection(getClass().getResourceAsStream(String.format(SCRIPT_RESOURCE_ALTER, i)), conn);
-        }
+        for (int i=startAlterVersion; i<=databaseConfiguration.getDBVersion(); i++)
+            runAltersForVersion(conn, i);
         log.info("Restoration finished");
     }
 
-    private void executeScriptOnConnection(String restartCountersScript, Connection conn) throws IOException, SQLException {
-        File fileRestartCountersScript = new File(restartCountersScript);
-        log.info("Restoring file: " + fileRestartCountersScript.getName());
-        if (fileRestartCountersScript.exists()) {
-            FileInputStream fis = new FileInputStream(fileRestartCountersScript);
-            try {
-                executeScriptOnConnection(fis, conn);
-            } finally {
-                close(fis);
-            }
-        }
-    }
-
-    private void executeScriptOnConnection(InputStream stream, Connection conn) throws IOException, SQLException {
-        BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
-        StringBuilder script = new StringBuilder();
-        String line;
-        while ((line = scriptStreamReader.readLine()) != null) {
-            script.append(line).append("\r\n");
-        }
-
-        PreparedStatement st = null;
+    private void runAltersForVersion(Connection conn, int alterVersion) throws IOException, SQLException {
+        log.info("Running SQL DB alter "+ alterVersion);
+        DBUtil.executeScriptOnConnection(getClass().getResourceAsStream(
+                String.format(SCRIPT_RESOURCE_ALTER, alterVersion)), conn);
         try {
-            st = conn.prepareStatement(script.toString());
-            st.execute();
-            conn.commit();
-        } finally {
-            close(st);
+            AlterScript alterScript = (AlterScript) Class.forName(
+                    "net.milanaleksic.mcs.restore.alter.AlterScript"+ alterVersion).newInstance();
+            log.info("Running application-driven DB alter "+ alterVersion);
+            alterScript.executeAlterOnConnection(conn);
+        } catch (ClassNotFoundException ignored) {
+            // if class has not been found, there is no app-driven alter... proceed
         }
+        catch (InstantiationException ignored) {}
+        catch (IllegalAccessException ignored) {}
     }
 
 }

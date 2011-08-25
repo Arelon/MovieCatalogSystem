@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.restore;
 
+import net.milanaleksic.mcs.util.DBUtil;
 import net.milanaleksic.mcs.util.StreamUtil;
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -41,8 +42,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             } else
                 throw new IllegalStateException("I could not fetch next ID for table " + tableName);
         } finally {
-            close(st);
-            close(rs);
+            DBUtil.close(st);
+            DBUtil.close(rs);
         }
     }
 
@@ -75,9 +76,9 @@ public class RestorePointCreator extends AbstractRestorePointService {
         } catch (Exception e) {
             log.error("Failure during restore creation ", e);
         } finally {
-            close(rs);
-            close(st);
-            close(conn);
+            DBUtil.close(rs);
+            DBUtil.close(st);
+            DBUtil.close(conn);
         }
     }
 
@@ -116,8 +117,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 outputStatement(outputStream, generateInsertSqlForResultSet(resultSet, metaData, tableName, getListOfResultSetColumns(metaData)));
             }
         } finally {
-            close(preparedStatement);
-            close(resultSet);
+            DBUtil.close(preparedStatement);
+            DBUtil.close(resultSet);
         }
 
     }
@@ -148,6 +149,13 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 currentRowContents.append(",");
         }
         return String.format("INSERT INTO %s(%s) VALUES(%s)", tableName, colNames, currentRowContents);
+    }
+
+    private String getSQLString(String value) {
+        if (dbUrl.contains("db2")) {
+            return DBUtil.getSQLStringForDB2(value);
+        } else
+            return DBUtil.getSQLString(value);
     }
 
     private void eraseOldBackupIfIdenticalToCurrent(File renamedOldRestoreFile, File restoreFile) {
@@ -213,16 +221,6 @@ public class RestorePointCreator extends AbstractRestorePointService {
         if (!restoreDir.exists())
             if (!restoreDir.mkdir())
                 throw new IllegalStateException("Could not create restore directory");
-    }
-
-    private String getSQLString(String input) {
-        if (input == null)
-            return "NULL";
-        if (dbUrl.contains("db2")) {
-            //log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
-            return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
-        } else
-            return '\'' + input.replaceAll("'", "''") + '\'';
     }
 
     private void outputStatement(PrintStream pos, String string) {

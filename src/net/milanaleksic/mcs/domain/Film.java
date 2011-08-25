@@ -47,6 +47,9 @@ public class Film implements Serializable, Comparable<Film> {
     @org.hibernate.annotations.BatchSize(size=15)
 	private Set<Medij> medijs = new HashSet<Medij>(0);
 
+    @Column(name="MEDIJ_LIST")
+    private String medijListAsString;
+
 	public Film() {
 	}
 
@@ -111,8 +114,11 @@ public class Film implements Serializable, Comparable<Film> {
 	}
 
 	public void setMedijs(Set<Medij> medijs) {
-		this.medijs = medijs;
-	}
+        if ((medijs != this.medijs && this.medijs != null) || (this.medijs == null && medijListAsString == null)) {
+            this.refreshMedijListAsString();
+        }
+        this.medijs = medijs;
+    }
 	
 	public String toString() {
 		return getNazivfilma();
@@ -150,17 +156,29 @@ public class Film implements Serializable, Comparable<Film> {
 	}
 
     public String getMedijListAsString() {
+        return medijListAsString;
+    }
+
+    public void setMedijListAsString(String medijListAsString) {
+        this.medijListAsString = medijListAsString;
+    }
+
+    public void refreshMedijListAsString() {
         StringBuilder medijInfo = new StringBuilder();
         Object[] mediji = getMedijs().toArray();
         Arrays.sort(mediji);
         for (Object medij : mediji)
             medijInfo.append(medij.toString()).append(' ');
-        return medijInfo.toString();
+        medijListAsString = medijInfo.toString();
     }
 
     @Override
     public int compareTo(Film o) {
-		return getMedijListAsString().compareTo(o.getMedijListAsString());
+        if (medijListAsString == null)
+            refreshMedijListAsString();
+        if (o.getMedijListAsString() == null)
+            o.refreshMedijListAsString();
+		return medijListAsString.compareTo(o.medijListAsString);
     }
 
     @Override

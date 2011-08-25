@@ -7,7 +7,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.*;
 
 /**
@@ -64,39 +65,6 @@ public abstract class AbstractRestorePointService implements InitializingBean {
         if (pos != null) {
             try { pos.close(); } catch(IOException ignored) {}
         }
-    }
-
-    protected void close(InputStream is) {
-        if (is != null) {
-            try { is.close(); } catch(IOException ignored) {}
-        }
-    }
-
-    protected void close(ResultSet rs) {
-        if (rs != null)
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing ResultSet", e);
-            }
-    }
-
-    protected void close(PreparedStatement ps) {
-        if (ps != null)
-            try {
-                ps.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing PreparedStatement", e);
-            }
-    }
-
-    protected void close(Connection conn) {
-        if (conn != null)
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing DB Connection", e);
-            }
     }
 
     @Override

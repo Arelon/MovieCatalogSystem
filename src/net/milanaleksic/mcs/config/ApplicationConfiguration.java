@@ -1,9 +1,6 @@
 package net.milanaleksic.mcs.config;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
-import java.io.File;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * User: Milan Aleksic
@@ -15,7 +12,7 @@ public class ApplicationConfiguration {
 
     public static class DatabaseConfiguration {
 
-        private int dbVersion = 2;
+        private int dbVersion = 3;
 
         private boolean databaseCreateRestore = true;
 
