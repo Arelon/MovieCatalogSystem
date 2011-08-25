@@ -1,18 +1,13 @@
 package net.milanaleksic.mcs.restore;
 
-import net.milanaleksic.mcs.ApplicationManager;
-import net.milanaleksic.mcs.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.config.ApplicationConfigurationManager;
+import net.milanaleksic.mcs.util.StreamUtil;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import java.io.*;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class RestorePointCreator extends AbstractRestorePointService {
@@ -99,7 +94,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 printInsertStatementsForRestoreSource(conn, outputStream, source);
             }
             fos = new FileOutputStream(restoreFile);
-            copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos);
+            StreamUtil.copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos);
         } finally {
             if (fos != null) {
                 close(fos);
@@ -156,7 +151,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void eraseOldBackupIfIdenticalToCurrent(File renamedOldRestoreFile, File restoreFile) {
-        if (returnMD5ForFile(renamedOldRestoreFile).equals(returnMD5ForFile(restoreFile))) {
+        if (StreamUtil.returnMD5ForFile(renamedOldRestoreFile).equals(StreamUtil.returnMD5ForFile(restoreFile))) {
             log.debug("Deleting current backup because it is identical to previous");
             File redundantZipFile = new File(renamedOldRestoreFile.getAbsolutePath() + ".zip");
             if (redundantZipFile.exists())
@@ -187,28 +182,13 @@ public class RestorePointCreator extends AbstractRestorePointService {
             log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
             zos = new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"));
 
-            writeFileToZipStream(zos, renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
+            StreamUtil.writeFileToZipStream(zos, renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
 
         } catch (Throwable t) {
             log.error("Failure while zipping restore script", t);
         } finally {
             if (zos != null) try {
                 zos.close();
-            } catch (Throwable ignored) {
-            }
-        }
-    }
-
-    private void writeFileToZipStream(ZipOutputStream zos, String fileName, String entryName) throws IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream("restore\\"+fileName);
-            ZipEntry zipEntry = new ZipEntry(entryName);
-            zos.putNextEntry(zipEntry);
-            copyStream(fis, zos);
-        } finally {
-            if (fis != null) try {
-                fis.close();
             } catch (Throwable ignored) {
             }
         }
@@ -235,32 +215,9 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 throw new IllegalStateException("Could not create restore directory");
     }
 
-    private String returnMD5ForFile(File input) {
-        StringBuilder hash = new StringBuilder("");
-        FileInputStream stream;
-        MessageDigest digestAlg;
-        try {
-            digestAlg = MessageDigest.getInstance("MD5");
-            stream = new FileInputStream(input);
-            DigestInputStream digest = new DigestInputStream(stream, digestAlg);
-            while (digest.read() != -1) {
-                // keep reading
-            }
-            digest.close();
-
-            byte[] calcDigest = digestAlg.digest();
-            for (byte aCalcDigest : calcDigest)
-                hash.append(String.format("%1$02X", aCalcDigest));
-
-            log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash.toString());
-
-        } catch (Exception e) {
-            log.error("Failure while calculating MD5", e);
-        }
-        return hash.toString();
-    }
-
     private String getSQLString(String input) {
+        if (input == null)
+            return "NULL";
         if (dbUrl.contains("db2")) {
             //log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
             return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
@@ -282,14 +239,6 @@ public class RestorePointCreator extends AbstractRestorePointService {
             restorePointCreator.createRestorePoint();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public void copyStream(InputStream input, OutputStream output) throws IOException {
-        byte[] buffer = new byte[32 * 1024];
-        int bytesRead;
-        while ((bytesRead = input.read(buffer, 0, buffer.length)) > 0) {
-            output.write(buffer, 0, bytesRead);
         }
     }
 
