@@ -53,10 +53,7 @@
 
     <bean id="abstractRestorePointService" abstract="true"
           class="net.milanaleksic.mcs.restore.AbstractRestorePointService">
-        <property name="dbDriver" value="${hibernate.connection.driver_class}"/>
-        <property name="dbUrl" value="${hibernate.connection.url}"/>
-        <property name="dbUsername" value="${hibernate.connection.username}"/>
-        <property name="dbPassword" value="${hibernate.connection.password}"/>
+        <property name="useDB2StyleStringInScripts" value="${hibernate.connection.isdb2}" />
     </bean>
 
     <bean id="restorePointCreator" class="net.milanaleksic.mcs.restore.RestorePointCreator"

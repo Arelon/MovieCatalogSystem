@@ -58,7 +58,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
         PreparedStatement st = null;
         File renamedOldRestoreFile = null;
         try {
-            conn = prepareDriverAndFetchConnection();
+            conn = getConnection();
             createRestoreDir();
 
             File restoreFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTORE);
@@ -152,7 +152,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private String getSQLString(String value) {
-        if (dbUrl.contains("db2")) {
+        if (useDB2StyleStringInScripts) {
             return DBUtil.getSQLStringForDB2(value);
         } else
             return DBUtil.getSQLString(value);

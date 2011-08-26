@@ -7,9 +7,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * User: Milan Aleksic
@@ -24,41 +26,20 @@ public abstract class AbstractRestorePointService implements InitializingBean {
 
     @Autowired ApplicationManager applicationManager;
 
+    @Autowired DataSource dataSource;
+
     protected final Log log = LogFactory.getLog(this.getClass());
 
     protected ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
 
-    private String dbDriver;
-    protected String dbUrl;
-    private String dbUsername;
-    private String dbPassword;
+    protected boolean useDB2StyleStringInScripts;
 
-    public void setDbDriver(String dbDriver) {
-        this.dbDriver = dbDriver;
+    public void setUseDB2StyleStringInScripts(boolean useDB2StyleStringInScripts) {
+        this.useDB2StyleStringInScripts = useDB2StyleStringInScripts;
     }
 
-    public void setDbUrl(String dbUrl) {
-        this.dbUrl = dbUrl;
-    }
-
-    public void setDbUsername(String dbUsername) {
-        this.dbUsername = dbUsername;
-    }
-
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
-    }
-
-    private boolean driverRegistered = false;
-    protected synchronized Connection prepareDriverAndFetchConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-        if (!driverRegistered) {
-            driverRegistered = true;
-            log.debug("Registering database driver");
-            Class.forName(dbDriver).newInstance();
-        }
-
-        log.debug("Getting connection");
-        return DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+    protected synchronized Connection getConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+        return dataSource.getConnection();
     }
 
     protected void close(OutputStream pos) {

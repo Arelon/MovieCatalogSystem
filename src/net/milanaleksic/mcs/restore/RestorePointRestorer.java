@@ -22,7 +22,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     public void restoreDatabaseIfNeeded() {
         Connection conn = null;
         try {
-            conn = prepareDriverAndFetchConnection();
+            conn = getConnection();
             safeRestoreDatabaseIfNeeded(conn);
         } catch (Exception e) {
             log.error("Failure while creating restore point", e);
