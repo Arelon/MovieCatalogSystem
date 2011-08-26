@@ -29,6 +29,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Pozicija> getPozicijas() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
@@ -57,6 +58,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Pozicija getDefaultPozicija() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
@@ -66,6 +68,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Pozicija getByName(String locationName) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);

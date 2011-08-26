@@ -14,18 +14,24 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${hibernate.connection.driver_class}" />
-        <property name="url" value="${hibernate.connection.url}" />
-        <property name="username" value="${hibernate.connection.username}" />
-        <property name="password" value="${hibernate.connection.password}" />
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="user" value="${hibernate.connection.username}"/>
+        <property name="password" value="${hibernate.connection.password}"/>
+        <property name="driverClass" value="${hibernate.connection.driver_class}"/>
+        <property name="jdbcUrl" value="${hibernate.connection.url}"/>
+        <property name="initialPoolSize" value="2"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="minPoolSize" value="2"/>
+        <property name="acquireIncrement" value="1"/>
+        <property name="acquireRetryAttempts" value="0"/>
+        <property name="maxStatements" value="50" />
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource" />
-        <property name="persistenceUnitName" value="MovieCatalogSystemDB" />
+        <property name="dataSource" ref="dataSource"/>
+        <property name="persistenceUnitName" value="MovieCatalogSystemDB"/>
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
@@ -33,27 +39,20 @@
                 <prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
                 <prop key="hibernate.cache.provider_configuration_file_resource_path">/ehcache.xml</prop>
                 <prop key="hibernate.cache.use_query_cache">false</prop>
-    
-                <prop key="hibernate.c3p0.min_size">2</prop>
-                <prop key="hibernate.c3p0.max_size">8</prop>
-                <prop key="hibernate.c3p0.timeout">5</prop>
-                <prop key="hibernate.c3p0.idle_test_period">3000</prop>
-                <prop key="hibernate.c3p0.max_statements">50</prop>
-    
-                <prop key="hibernate.connection.aggressive_release">false</prop>
-                <prop key="hibernate.connection.autocommit">true</prop>
-    
+                 <!--
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>
                 <prop key="hibernate.use_sql_comments">true</prop>
+                -->
             </props>
         </property>
     </bean>
 
     <!--suppress SpringModelInspection -->
-    <bean id="sessionFactory" factory-bean="entityManagerFactory" factory-method="getSessionFactory" />
+    <bean id="sessionFactory" factory-bean="entityManagerFactory" factory-method="getSessionFactory"/>
 
-    <bean id="abstractRestorePointService" abstract="true" class="net.milanaleksic.mcs.restore.AbstractRestorePointService">
+    <bean id="abstractRestorePointService" abstract="true"
+          class="net.milanaleksic.mcs.restore.AbstractRestorePointService">
         <property name="dbDriver" value="${hibernate.connection.driver_class}"/>
         <property name="dbUrl" value="${hibernate.connection.url}"/>
         <property name="dbUsername" value="${hibernate.connection.username}"/>
@@ -61,11 +60,11 @@
     </bean>
 
     <bean id="restorePointCreator" class="net.milanaleksic.mcs.restore.RestorePointCreator"
-          parent="abstractRestorePointService" />
+          parent="abstractRestorePointService"/>
 
     <bean id="restorePointRestorer" class="net.milanaleksic.mcs.restore.RestorePointRestorer"
-          parent="abstractRestorePointService" />
+          parent="abstractRestorePointService"/>
 
-    <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager" />
+    <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager"/>
 
 </beans>

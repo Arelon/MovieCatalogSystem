@@ -20,6 +20,7 @@ import java.util.List;
 public class JpaZanrRepository extends AbstractRepository implements ZanrRepository {
 
     @Override
+    @Transactional(readOnly = true)
     public List<Zanr> getZanrs() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
@@ -49,6 +50,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Zanr getZanrByName(String genreName) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);

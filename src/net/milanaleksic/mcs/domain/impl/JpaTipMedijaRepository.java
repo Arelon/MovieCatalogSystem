@@ -19,6 +19,7 @@ import java.util.List;
 public class JpaTipMedijaRepository extends AbstractRepository implements TipMedijaRepository {
 
     @Override
+    @Transactional(readOnly = true)
     public List<TipMedija> getTipMedijas() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);
@@ -28,6 +29,7 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TipMedija getTipMedija(String mediumTypeName) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);

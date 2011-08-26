@@ -29,6 +29,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getNextMedijIndeks(String mediumTypeName) {
         TypedQuery<Integer> query = entityManager.createQuery(
                 "select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija", Integer.class);
@@ -56,6 +57,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Medij> getMedijs() {
         TypedQuery<Medij> query = entityManager.createQuery(
             "from Medij m order by m.tipMedija.naziv, indeks", Medij.class);

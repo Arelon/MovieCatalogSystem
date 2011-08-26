@@ -14,7 +14,7 @@ import java.util.*;
  * Time: 11:35 PM
  */
 @Repository
-@Transactional
+@Transactional()
 public class JpaFilmRepository extends AbstractRepository implements FilmRepository {
 
     @Override
@@ -35,6 +35,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     }
 
     @Override
+    @Transactional(readOnly = true)
     public FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter,
                                        Pozicija pozicijaFilter, String textFilter) {
         int fetchedCount;
