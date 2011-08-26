@@ -4,7 +4,7 @@
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
     <info organisation="net.milanaleksic" module="mcs"/>
     <dependencies>
-        <dependency org="org.antlr" name="antlr" rev="3.4">
+        <dependency org="antlr" name="antlr" rev="2.7.6" transitive="false">
             <artifact name="antlr" type="jar"/>
         </dependency>
         <dependency org="args4j" name="args4j" rev="2.0.16" transitive="false">
@@ -13,10 +13,16 @@
         <dependency org="aopalliance" name="aopalliance" rev="1.0" transitive="false">
             <artifact name="aopalliance" type="jar"/>
         </dependency>
-        <dependency org="org.aspectj" name="aspectjweaver" rev="1.6.11">
+        <dependency org="org.aspectj" name="aspectjweaver" rev="1.6.11" transitive="false">
             <artifact name="aspectjweaver" type="jar"/>
         </dependency>
-        <dependency org="c3p0" name="c3p0" rev="0.9.1.2">
+        <dependency org="org.aspectj" name="aspectjtools" rev="1.6.11" transitive="false">
+            <artifact name="aspectjtools" type="jar"/>
+        </dependency>
+        <dependency org="org.aspectj" name="aspectjrt" rev="1.6.11" transitive="false">
+            <artifact name="aspectjrt" type="jar"/>
+        </dependency>
+        <dependency org="c3p0" name="c3p0" rev="0.9.1.2" transitive="false">
             <artifact name="c3p0" type="jar"/>
         </dependency>
         <dependency org="net.sf.ehcache" name="ehcache-core" rev="2.4.4" transitive="false">
@@ -46,25 +52,25 @@
         <dependency org="org.hibernate" name="hibernate-commons-annotations" rev="3.2.0.Final" transitive="false">
             <artifact name="hibernate-commons-annotations" type="jar"/>
         </dependency>
-        <dependency org="commons-collections" name="commons-collections" rev="3.1">
+        <dependency org="commons-collections" name="commons-collections" rev="3.1" transitive="false">
             <artifact name="commons-collections" type="jar"/>
         </dependency>
-        <dependency org="cglib" name="cglib" rev="2.2.2">
+        <dependency org="cglib" name="cglib" rev="2.2.2" transitive="false">
             <artifact name="cglib" type="jar"/>
         </dependency>
-        <dependency org="javax.transaction" name="jta" rev="1.1">
+        <dependency org="javax.transaction" name="jta" rev="1.1" transitive="false">
             <artifact name="jta" type="jar"/>
         </dependency>
         <dependency org="org.javassist" name="javassist" rev="3.15.0-GA" transitive="false">
             <artifact name="javassist" type="jar"/>
         </dependency>
-        <dependency org="org.eclipse.persistence" name="javax.persistence" rev="2.0.0">
+        <dependency org="org.eclipse.persistence" name="javax.persistence" rev="2.0.0" transitive="false">
             <artifact name="javax.persistence" type="jar"/>
         </dependency>
         <dependency org="junit" name="junit" rev="4.8.2" transitive="false">
             <artifact name="junit" type="jar"/>
         </dependency>
-        <dependency org="commons-logging" name="commons-logging" rev="1.1.1">
+        <dependency org="commons-logging" name="commons-logging" rev="1.1.1" transitive="false">
             <artifact name="commons-logging" type="jar"/>
         </dependency>
         <dependency org="log4j" name="log4j" rev="1.2.16" transitive="false">

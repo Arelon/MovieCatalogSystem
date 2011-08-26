@@ -602,7 +602,6 @@ public class MainForm extends Observable {
 			toolTicker.update();
 		}
 		Set<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
-		long start = new Date().getTime();
 		int i=0;
 		
         Object[] nizFilmova = sviFilmovi.toArray();
@@ -636,8 +635,6 @@ public class MainForm extends Observable {
 		setChanged();
 		super.notifyObservers();
 		
-		long end = new Date().getTime();
-		log.debug("ListEmbeddingTime="+(end-start)+"ms");
 		if (toolTicker != null)
 			toolTicker.setVisible(false);
 	}

@@ -1,0 +1,11 @@
+<aspectj>
+	<aspects>
+		<aspect name="net.milanaleksic.mcs.util.MethodTimingAspect" />
+	</aspects>
+	<weaver options="-1.5 -Xset:weaveJavaxPackages=true">
+		<include within="net.milanaleksic.mcs..*" />
+		<exclude within="sun.*"/>
+        <exclude within="javax.*"/>
+        <exclude within="java.*"/>
+	</weaver>
+</aspectj>

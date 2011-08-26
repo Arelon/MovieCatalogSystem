@@ -56,16 +56,25 @@
     </path>
 
     <target name="init" description="Init tasks" depends="resolve">
+        <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath" />
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
+        <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
         <tstamp/>
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="init">
         <mkdir dir="${compile.dir}"/>
 
-        <javac srcdir="${src.dir}" classpathref="classpath" target="1.6" destdir="${compile.dir}" encoding="UTF-8">
-        </javac>
+        <!--<javac srcdir="${src.dir}" classpathref="classpath" target="1.6" destdir="${compile.dir}" encoding="UTF-8">-->
+        <!--</javac>-->
+
+		<iajc destDir="${compile.dir}" source="1.6" sourceRootCopyFilter="**/*.java" inpathDirCopyFilter="**/*.java,**/*.class" encoding="UTF-8" showWeaveInfo="true">
+			<sourceroots>
+				<pathelement location="${src.dir}" />
+			</sourceroots>
+			<classpath refid="classpath" />
+		</iajc>
 
         <copy todir="${compile.dir}" overwrite="true">
             <fileset dir="${src.dir}">
@@ -110,7 +119,13 @@
         <delete file="${ant.project.name}-${src.version}.${build.version}-*.zip" failonerror="false"/>
 
         <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.version}-${DSTAMP}${TSTAMP}.zip">
-            <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib" excludes="mcs.jar"/>
+            <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
+                <exclude name="mcs.jar" />
+                <exclude name="aspectjtools.jar" />
+                <exclude name="aspectjweaver.jar" />
+                <exclude name="hamcrest*.jar" />
+                <exclude name="junit.jar" />
+            </zipfileset>
             <zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar"/>
             <zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar"/>
             <zipfileset dir="${root.dir}" prefix="" includes="*.exe"/>
