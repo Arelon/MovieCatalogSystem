@@ -30,10 +30,14 @@ public class RestoreManager implements LifecycleListener {
     @Autowired private RestorePointRestorer restorePointRestorer;
 
     @Override public void applicationStarted() {
-         restorePointRestorer.restoreDatabaseIfNeeded();
+        if (applicationManager.getProgramArgs().isNoRestorationProcessing())
+            return;
+        restorePointRestorer.restoreDatabaseIfNeeded();
     }
 
     @Override public void applicationShutdown() {
+        if (applicationManager.getProgramArgs().isNoRestorationProcessing())
+            return;
         if (applicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
             new ClosingForm();
             restorePointCreator.createRestorePoint();
