@@ -16,7 +16,7 @@ public class AboutForm {
 	private static final String dodatniTekst = 
 		"Верзија програма: " + ApplicationManager.getVersion() + "\n\n" +
 		"У развоју су коришћене следеће бесплатне технологије:\n"+
-		"Јава 6, Eclipse SWT 3.4.1, Spring 2.5, Hibernate 3.6, H2 1.3\n"+
+		"Јава 6, Eclipse SWT 3.7, Spring 3.0.5, Hibernate 3.6, H2 1.3\n"+
 		"Args4J, DOM4J, Log4J, EhCache, C3P0 итд.\n\n"+
 		"Иконе су део \"Crystal Project\"-а, аутор је Евералдо Келхо.\n\n"+
 		"Програм је још увек у развоју, све грешке молим пријавите аутору програма";
@@ -63,7 +63,7 @@ public class AboutForm {
 			}
 		});
 		textArea = new Text(sShell, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY | SWT.CENTER | SWT.BORDER);
-		textArea.setText("Copyright(C)2007-2010 by Milan Aleksic");
+		textArea.setText("Copyright(C)2007-2011 by Milan Aleksic");
 		textArea.setLayoutData(gridData1);
 	}
 
