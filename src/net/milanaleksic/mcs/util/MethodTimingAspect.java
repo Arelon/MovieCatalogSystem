@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
+import java.text.NumberFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -28,13 +29,16 @@ public class MethodTimingAspect {
     public Object doTimeMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         if (thisIsFirstQuery.getAndSet(false) || !log.isDebugEnabled())
             return proceedingJoinPoint.proceed();
-        long begin = System.currentTimeMillis();
+        long begin = System.nanoTime();
         Object result = proceedingJoinPoint.proceed();
-        long period = System.currentTimeMillis() - begin;
-        if (period >= warningTime)
-            log.warn("MethodTiming (long) [" + proceedingJoinPoint.getSignature().toShortString() + "] - " + period + "ms");
+        double periodUs = (System.nanoTime() - begin) / 1000000.0;
+        String periodAsString = NumberFormat.getInstance().format(periodUs);
+        if (periodUs >= warningTime)
+            log.warn("MethodTiming (long) [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
+                    + periodAsString + "ms");
         else
-            log.debug("MethodTiming [" + proceedingJoinPoint.getSignature().toShortString() + "] - " + period + "ms");
+            log.debug("MethodTiming [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
+                    + periodAsString + "ms");
         return result;
     }
 }
