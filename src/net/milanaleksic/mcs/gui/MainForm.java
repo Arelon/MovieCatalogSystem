@@ -228,8 +228,7 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            final Set<Film> allFilmsSet = getAllFilms(0);
-            final List<Film> allFilms = new ArrayList<Film>(allFilmsSet);
+            final Film[] allFilms = getAllFilms(0).toArray(new Film[0]);
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {
@@ -237,7 +236,7 @@ public class MainForm extends Observable {
 				}
 
 				@Override public int getItemCount() {
-					return allFilms.size();
+					return allFilms.length;
 				}
 				
 				@Override public int getColumnCount() {
@@ -249,15 +248,15 @@ public class MainForm extends Observable {
 						return mainTable.getColumn(column).getText();
                     switch(column) {
                         case 0:
-                            return allFilms.get(row).getMedijListAsString();
+                            return allFilms[row].getMedijListAsString();
                         case 1:
-                            return allFilms.get(row).getNazivfilma();
+                            return allFilms[row].getNazivfilma();
                         case 2:
-                            return allFilms.get(row).getPrevodnazivafilma();
+                            return allFilms[row].getPrevodnazivafilma();
                         case 3:
-                            return allFilms.get(row).getZanr().getZanr();
+                            return allFilms[row].getZanr().getZanr();
                         case 4:
-                            return allFilms.get(row).getPozicija();
+                            return allFilms[row].getPozicija();
                         default:
                             return "";
                     }
@@ -601,15 +600,12 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(true);
 			toolTicker.update();
 		}
-		Set<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
+		List<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
 		int i=0;
 		
-        Object[] nizFilmova = sviFilmovi.toArray();
-		Arrays.sort(nizFilmova);		
-		
-		if (nizFilmova.length < mainTable.getTopIndex())
+		if (sviFilmovi.size() < mainTable.getTopIndex())
 			mainTable.setTopIndex(0);
-		for (Object filmObj : nizFilmova) {
+		for (Object filmObj : sviFilmovi) {
 			Film film = (Film) filmObj;
 			TableItem item;
 			if (i < mainTable.getItemCount())
@@ -639,7 +635,7 @@ public class MainForm extends Observable {
 			toolTicker.setVisible(false);
 	}
 
-    public Set<Film> getAllFilms(int maxItems) {
+    public List<Film> getAllFilms(int maxItems) {
         Zanr zanrFilter = (Zanr)comboZanr.getData(
                 Integer.toString(comboZanr.getSelectionIndex()));
         TipMedija tipMedijaFilter = (TipMedija)comboTipMedija.getData(

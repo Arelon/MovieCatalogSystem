@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.domain;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * User: Milan Aleksic
@@ -10,10 +10,10 @@ import java.util.Set;
 public interface FilmRepository {
 
     public class FilmsWithCount {
-        public final Set<Film> films;
+        public final List<Film> films;
         public final long count;
 
-        public FilmsWithCount(Set<Film> films, long count) {
+        public FilmsWithCount(List<Film> films, long count) {
             this.films = films;
             this.count = count;
         }
