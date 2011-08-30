@@ -85,6 +85,8 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (pozicijaFilter != null)
             query.setParameter(pozicijaParameter, pozicijaFilter.getPozicija());
 
+        query.setHint("org.hibernate.cacheable", true);
+
         return query.getSingleResult();
     }
 
@@ -136,6 +138,8 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             query.setFirstResult(startFrom);
             query.setMaxResults(maxItems);
         }
+
+        query.setHint("org.hibernate.cacheable", true);
 
         return query.getResultList();
     }
