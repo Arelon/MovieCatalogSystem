@@ -6,6 +6,7 @@ import net.milanaleksic.mcs.util.ApplicationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
@@ -26,7 +27,9 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
         Root<Zanr> from = cq.from(Zanr.class);
         cq.orderBy(builder.asc(builder.lower(from.<String>get("zanr"))));
-        return entityManager.createQuery(cq).getResultList();
+        TypedQuery<Zanr> query = entityManager.createQuery(cq);
+        query.setHint("org.hibernate.cacheable", true);
+        return query.getResultList();
     }
 
     @Override

@@ -61,6 +61,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     public List<Medij> getMedijs() {
         TypedQuery<Medij> query = entityManager.createQuery(
             "from Medij m order by m.tipMedija.naziv, indeks", Medij.class);
+        query.setHint("org.hibernate.cacheable", true);
         return query.getResultList();
     }
 }
