@@ -7,7 +7,13 @@
         <isset property="env.IVY_HOME"/>
     </condition>
 
-    <target name="download-ivy" unless="offline">
+    <target name="clean" description="Init tasks">
+        <delete dir="${compile.dir}" failonerror="false"/>
+        <delete dir="${distro.dir}" failonerror="false"/>
+        <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
+    </target>
+
+    <target name="download-ivy" unless="offline" depends="clean">
         <mkdir dir="${ivy.jar.dir}"/>
         <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
              dest="${ivy.jar.file}" usetimestamp="true"/>
@@ -38,9 +44,6 @@
 
     <target name="init" description="Init tasks" depends="resolve">
         <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath" />
-        <delete dir="${compile.dir}" failonerror="false"/>
-        <delete dir="${distro.dir}" failonerror="false"/>
-        <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
         <tstamp/>
     </target>
 
@@ -114,7 +117,6 @@
 
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
-        <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
     </target>
 
 
