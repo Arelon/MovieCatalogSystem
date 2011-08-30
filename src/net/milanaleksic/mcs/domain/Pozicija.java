@@ -19,7 +19,7 @@ public class Pozicija implements java.io.Serializable {
     @Column(name="POZICIJA", length = 100, nullable = false)
 	private String pozicija;
 
-	@OneToMany(mappedBy = "pozicija", fetch = FetchType.LAZY)
+	@OneToMany(orphanRemoval=true, mappedBy = "pozicija", fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=15)

@@ -1,6 +1,10 @@
 package net.milanaleksic.mcs.domain;
 
+import org.hibernate.annotations.*;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
@@ -20,6 +24,7 @@ public class Film implements Serializable, Comparable<Film> {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="IDZANR", nullable=false)
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	private Zanr zanr;
 
     @Column(length = 100, nullable = false)
@@ -44,6 +49,7 @@ public class Film implements Serializable, Comparable<Film> {
         joinColumns = { @JoinColumn(name = "IDFILM") },
         inverseJoinColumns = { @JoinColumn(name = "IDMEDIJ") }
     )
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=15)

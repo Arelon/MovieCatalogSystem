@@ -19,7 +19,7 @@ public class TipMedija implements java.io.Serializable {
     @Column(name="NAZIV", length = 100, nullable = false)
 	private String naziv;
 
-    @OneToMany(mappedBy = "tipMedija", fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval=true, mappedBy = "tipMedija", fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=15)
