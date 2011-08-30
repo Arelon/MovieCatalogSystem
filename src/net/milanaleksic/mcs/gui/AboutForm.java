@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.net.URI;
 
 import net.milanaleksic.mcs.ApplicationManager;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;

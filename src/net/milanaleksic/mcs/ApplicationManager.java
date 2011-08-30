@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Display;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -24,7 +26,7 @@ public class ApplicationManager {
 
     private Set<LifecycleListener> lifecycleListeners;
 
-    private static final String version = "0.5";
+    private static String version = null;
     private ProgramArgs programArgs;
     private UserConfiguration userConfiguration;
 
@@ -46,9 +48,18 @@ public class ApplicationManager {
         return userConfiguration;
     }
 
-	public static String getVersion() {
-		return version;
-	}
+    public static synchronized String getVersion() {
+        if (version==null) {
+            Properties properties = new Properties();
+            try {
+                properties.load(Startup.class.getResourceAsStream("version.properties"));
+                version = properties.getProperty("src.version")+'.'+properties.getProperty("build.number");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return version;
+    }
 
     public void setProgramArgs(ProgramArgs programArgs) {
         this.programArgs = programArgs;
@@ -84,7 +95,7 @@ public class ApplicationManager {
     }
 
     private void mainGuiLoop() {
-        Display.setAppName("Movie Catalog System - v" + ApplicationManager.getVersion());
+        Display.setAppName("Movie Catalog System - v" + getVersion());
         Display display = Display.getDefault();
 
         mainForm.showForm();

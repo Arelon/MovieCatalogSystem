@@ -1,30 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="MCS" basedir="." default="zip" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <property name="ivy.install.version" value="2.2.0"/>
-    <property name="ivy.jar.dir" value="${basedir}/ivy"/>
-    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+    <property file="build.properties" />
 
     <condition property="ivy.home" value="${env.IVY_HOME}">
         <isset property="env.IVY_HOME"/>
     </condition>
-    <property name="ivy.home" value="${user.home}/.ant"/>
-
-    <property name="src.version" value="0.5"/>
-    <property name="build.version" value="203"/>
-
-    <property name="root.dir" value="."/>
-    <property name="src.dir" value="src"/>
-    <property name="ivy.resolved.libs.target.dir" value="build/lib"/>
-    <property name="explicit.lib.dir" value="lib"/>
-    <property name="restore.dir" value="build/restore"/>
-    <property name="export.dir" value="startup/export"/>
-    <property name="restore.dir" value="startup/restore"/>
-    <property name="startup.dir" value="startup"/>
-
-    <property name="compile.dir" value="build/compile"/>
-    <property name="distro.dir" value="build/distro"/>
-    <property name="zip.target.dir" value="build"/>
 
     <target name="download-ivy" unless="offline">
         <mkdir dir="${ivy.jar.dir}"/>
@@ -66,9 +47,6 @@
     <target name="compile" description="Copying compiled MCS files" depends="init">
         <mkdir dir="${compile.dir}"/>
 
-        <!--<javac srcdir="${src.dir}" classpathref="classpath" target="1.6" destdir="${compile.dir}" encoding="UTF-8">-->
-        <!--</javac>-->
-
 		<iajc destDir="${compile.dir}" source="1.6" sourceRootCopyFilter="**/*.java" inpathDirCopyFilter="**/*.java,**/*.class" encoding="UTF-8" showWeaveInfo="true">
 			<sourceroots>
 				<pathelement location="${src.dir}" />
@@ -85,17 +63,19 @@
 
     <target name="jar" description="JARs the MovieCatalogSystem" depends="compile">
         <mkdir dir="${distro.dir}"/>
+        <buildnumber file="src/net/milanaleksic/mcs/version.properties" />
+        <loadproperties srcfile="src/net/milanaleksic/mcs/version.properties" />
 
-        <jar destfile="${distro.dir}/mcs.jar">
+        <jar destfile="${distro.dir}/mcs-${src.version}.${build.number}.jar">
             <manifest>
                 <attribute name="Manifest-Version" value="1.0"/>
-                <attribute name="Main-Class" value="net.milanaleksic.mcs.Startup"/>
-                <attribute name="Implementation-Version" value="${src.version}.${build.version}"/>
+                <attribute name="Main-Class" value="${src.mainClass}"/>
+                <attribute name="Implementation-Version" value="${src.version}.${build.number}"/>
             </manifest>
             <fileset dir="${compile.dir}"/>
         </jar>
 
-        <copy todir="${ivy.resolved.libs.target.dir}" file="${distro.dir}/mcs.jar" overwrite="true"/>
+        <copy todir="${ivy.resolved.libs.target.dir}" file="${distro.dir}/mcs-${src.version}.${build.number}.jar" overwrite="true"/>
     </target>
 
     <target name="zip" description="ZIPs the whole distro" depends="jar">
@@ -103,7 +83,7 @@
 
         <delete>
             <fileset dir="">
-                <include name="${ant.project.name}-${src.version}.${build.version}-${DSTAMP}*.zip"/>
+                <include name="${ant.project.name}-${src.version}.${build.number}-${DSTAMP}*.zip"/>
             </fileset>
         </delete>
 
@@ -116,9 +96,9 @@
             </fileset>
         </copy>
 
-        <delete file="${ant.project.name}-${src.version}.${build.version}-*.zip" failonerror="false"/>
+        <delete file="${ant.project.name}-${src.version}.${build.number}-*.zip" failonerror="false"/>
 
-        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.version}-${DSTAMP}${TSTAMP}.zip">
+        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.number}-${DSTAMP}${TSTAMP}.zip">
             <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
                 <exclude name="mcs.jar" />
                 <exclude name="aspectjtools.jar" />
