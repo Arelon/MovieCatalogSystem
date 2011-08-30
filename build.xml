@@ -66,8 +66,8 @@
 
     <target name="jar" description="JARs the MovieCatalogSystem" depends="compile">
         <mkdir dir="${distro.dir}"/>
-        <buildnumber file="src/net/milanaleksic/mcs/version.properties" />
-        <loadproperties srcfile="src/net/milanaleksic/mcs/version.properties" />
+        <buildnumber file="${build.properties.file}" />
+        <property file="${build.properties.file}"  />
 
         <jar destfile="${distro.dir}/mcs-${src.version}.${build.number}.jar">
             <manifest>
