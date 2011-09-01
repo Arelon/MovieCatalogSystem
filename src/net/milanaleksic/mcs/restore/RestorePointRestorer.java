@@ -17,7 +17,8 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
-    private static final String SCRIPT_RESOURCE_ALTER = "alter/alter_script_%d.sql";
+    private String patternForSqlAlters;
+    private String patternForCodeAlters;
 
     public void restoreDatabaseIfNeeded() {
         Connection conn = null;
@@ -115,10 +116,10 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     private void runAltersForVersion(Connection conn, int alterVersion) throws IOException, SQLException {
         log.info("Running SQL DB alter "+ alterVersion);
         DBUtil.executeScriptOnConnection(getClass().getResourceAsStream(
-                String.format(SCRIPT_RESOURCE_ALTER, alterVersion)), conn);
+                String.format(patternForSqlAlters, alterVersion)), conn);
         try {
             AlterScript alterScript = (AlterScript) Class.forName(
-                    "net.milanaleksic.mcs.restore.alter.AlterScript"+ alterVersion).newInstance();
+                    String.format(patternForCodeAlters, alterVersion)).newInstance();
             log.info("Running application-driven DB alter "+ alterVersion);
             alterScript.executeAlterOnConnection(conn);
         } catch (ClassNotFoundException ignored) {
@@ -128,4 +129,11 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         catch (IllegalAccessException ignored) {}
     }
 
+    public void setPatternForSqlAlters(String patternForSqlAlters) {
+        this.patternForSqlAlters = patternForSqlAlters;
+    }
+
+    public void setPatternForCodeAlters(String patternForCodeAlters) {
+        this.patternForCodeAlters = patternForCodeAlters;
+    }
 }

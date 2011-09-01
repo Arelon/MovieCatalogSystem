@@ -60,7 +60,10 @@
           parent="abstractRestorePointService"/>
 
     <bean id="restorePointRestorer" class="net.milanaleksic.mcs.restore.RestorePointRestorer"
-          parent="abstractRestorePointService"/>
+          parent="abstractRestorePointService">
+        <property name="patternForSqlAlters" value="/net/milanaleksic/mcs/restore/alter/alter_script_%d.sql"/>
+        <property name="patternForCodeAlters" value="net.milanaleksic.mcs.restore.alter.AlterScript%d"/>
+    </bean>
 
     <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager"/>
 
