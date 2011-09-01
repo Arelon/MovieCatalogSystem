@@ -19,6 +19,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
     private String patternForSqlAlters;
     private String patternForCodeAlters;
+    private String versionScript;
 
     public void restoreDatabaseIfNeeded() {
         Connection conn = null;
@@ -37,7 +38,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         PreparedStatement st = null;
         try {
             log.info("Validating database");
-            st = conn.prepareStatement("SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'");
+            st = conn.prepareStatement(versionScript);
             rs = st.executeQuery();
             rs.next();
 
@@ -135,5 +136,9 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
     public void setPatternForCodeAlters(String patternForCodeAlters) {
         this.patternForCodeAlters = patternForCodeAlters;
+    }
+
+    public void setVersionScript(String versionScript) {
+        this.versionScript = versionScript;
     }
 }

@@ -63,6 +63,7 @@
           parent="abstractRestorePointService">
         <property name="patternForSqlAlters" value="/net/milanaleksic/mcs/restore/alter/alter_script_%d.sql"/>
         <property name="patternForCodeAlters" value="net.milanaleksic.mcs.restore.alter.AlterScript%d"/>
+        <property name="versionScript" value="SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'" />
     </bean>
 
     <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager"/>

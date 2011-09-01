@@ -32,7 +32,7 @@ public abstract class AbstractRestorePointService implements InitializingBean {
 
     protected ApplicationConfiguration.DatabaseConfiguration databaseConfiguration;
 
-    protected boolean useDB2StyleStringInScripts;
+    protected boolean useDB2StyleStringInScripts = false;
 
     public void setUseDB2StyleStringInScripts(boolean useDB2StyleStringInScripts) {
         this.useDB2StyleStringInScripts = useDB2StyleStringInScripts;
