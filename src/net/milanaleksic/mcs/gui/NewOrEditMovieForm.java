@@ -7,11 +7,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class NewOrEditMovieForm {
 	
@@ -53,7 +53,10 @@ public class NewOrEditMovieForm {
 		this.activeFilm  = film;
         this.parentRunner = runnable;
         createSShell();
-		logger.info("NewOrEditMovieForm: FILMID="+film.getIdfilm());
+        if (film == null)
+            logger.info("NewOrEditMovieForm: New movie mode");
+        else
+		    logger.info("NewOrEditMovieForm: FILMID="+film.getIdfilm());
 		sShell.setLocation(
 				new Point(
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
@@ -145,16 +148,15 @@ public class NewOrEditMovieForm {
         novFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
         novFilm.setKomentar(textKomentar.getText());
         Zanr zanr = sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex()));
-        zanr.addFilm(novFilm);
         Pozicija position = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
+        java.util.List<Medij> medijs = new ArrayList<Medij>();
         if (listDiskovi.getItemCount() != 0) {
             for (String medijName : listDiskovi.getItems()) {
                 Medij medij = sviDiskovi.get(medijName);
-                novFilm.addMedij(medij);
-                position.addMedij(medij);
+                medijs.add(medij);
             }
         }
-        filmRepository.saveFilm(novFilm);
+        filmRepository.saveFilm(novFilm, zanr, medijs, position);
         reReadData();
 	}
 	
@@ -209,7 +211,7 @@ public class NewOrEditMovieForm {
             activeFilm.removeMedij(medij);
         }
 
-        filmRepository.saveFilm(activeFilm);
+        filmRepository.updateFilm(activeFilm);
 
         reReadData();
 	}
