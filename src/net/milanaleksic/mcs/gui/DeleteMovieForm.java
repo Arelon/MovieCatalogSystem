@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.gui;
 
 import net.milanaleksic.mcs.domain.Film;
-
 import net.milanaleksic.mcs.domain.FilmRepository;
 import net.milanaleksic.mcs.util.ApplicationException;
 import org.apache.log4j.Logger;
@@ -11,7 +10,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.inject.Inject;
 
 public class DeleteMovieForm {
 
@@ -23,7 +23,7 @@ public class DeleteMovieForm {
     private Label labFilmNaziv = null;
     private Film film = null;
 
-    @Autowired
+    @Inject
     private FilmRepository filmRepository;
 
     public void open(Shell parent, Film film, Runnable runnable) {

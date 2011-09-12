@@ -5,7 +5,8 @@ import net.milanaleksic.mcs.event.LifecycleListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.inject.Inject;
 
 /**
  * User: Milan Aleksic
@@ -16,10 +17,10 @@ public class StatisticsManager implements LifecycleListener {
 
     private static final Log log = LogFactory.getLog(StatisticsManager.class);
 
-    @Autowired private ApplicationManager applicationManager;
+    @Inject private ApplicationManager applicationManager;
 
     @SuppressWarnings({"SpringJavaAutowiringInspection"})
-    @Autowired
+    @Inject
     private SessionFactory sessionFactory;
 
     @Override public void applicationStarted() {

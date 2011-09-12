@@ -11,10 +11,10 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import javax.inject.Inject;
 import java.util.List;
+import java.util.*;
 
 // do not allow java.awt.* to be added to import list because SWT's FileDialog
 // will not work in some cases(https://bugs.eclipse.org/bugs/show_bug.cgi?id=349387)
@@ -23,21 +23,21 @@ public class MainForm extends Observable {
 
 	private static final Logger log = Logger.getLogger(MainForm.class);
 
-    @Autowired private NewOrEditMovieForm newOrEditMovieForm;
+    @Inject private NewOrEditMovieForm newOrEditMovieForm;
 
-    @Autowired private SettingsForm settingsForm;
+    @Inject private SettingsForm settingsForm;
 
-    @Autowired private ApplicationManager applicationManager;
+    @Inject private ApplicationManager applicationManager;
 
-    @Autowired private ZanrRepository zanrRepository;
+    @Inject private ZanrRepository zanrRepository;
 
-    @Autowired private TipMedijaRepository tipMedijaRepository;
+    @Inject private TipMedijaRepository tipMedijaRepository;
 
-    @Autowired private PozicijaRepository pozicijaRepository;
+    @Inject private PozicijaRepository pozicijaRepository;
 
-    @Autowired private DeleteMovieForm deleteMovieForm;
+    @Inject private DeleteMovieForm deleteMovieForm;
 
-    @Autowired private FilmRepository filmRepository;
+    @Inject private FilmRepository filmRepository;
 
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 

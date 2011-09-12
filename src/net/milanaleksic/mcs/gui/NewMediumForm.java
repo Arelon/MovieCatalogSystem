@@ -8,11 +8,12 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.inject.Inject;
 
 public class NewMediumForm {
 
-    @Autowired private MedijRepository medijRepository;
+    @Inject private MedijRepository medijRepository;
 
 	private Shell sShell = null;
     private Button rbCD = null;

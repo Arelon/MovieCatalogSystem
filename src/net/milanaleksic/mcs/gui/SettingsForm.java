@@ -9,13 +9,14 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.inject.Inject;
 
 public class SettingsForm {
 
-    @Autowired private PozicijaRepository pozicijaRepository;
+    @Inject private PozicijaRepository pozicijaRepository;
 
-    @Autowired private ZanrRepository zanrRepository;
+    @Inject private ZanrRepository zanrRepository;
 
 	private Shell sShell = null;
 	private Shell parent = null;

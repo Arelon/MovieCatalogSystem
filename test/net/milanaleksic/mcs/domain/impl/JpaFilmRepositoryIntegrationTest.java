@@ -3,12 +3,14 @@ package net.milanaleksic.mcs.domain.impl;
 import net.milanaleksic.mcs.domain.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 /**
  * User: Milan Aleksic
@@ -19,10 +21,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:spring-beans.xml"})
 public class JpaFilmRepositoryIntegrationTest {
 
-    @Autowired
+    @Inject
     private FilmRepository filmRepository;
 
-    @Autowired
+    @Inject
     private ZanrRepository zanrRepository;
 
     @Before

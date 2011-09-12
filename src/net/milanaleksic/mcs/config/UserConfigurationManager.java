@@ -3,8 +3,8 @@ package net.milanaleksic.mcs.config;
 import net.milanaleksic.mcs.ApplicationManager;
 import net.milanaleksic.mcs.event.LifecycleListener;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.inject.Inject;
 import javax.xml.bind.*;
 import java.io.File;
 
@@ -19,7 +19,8 @@ public class UserConfigurationManager implements LifecycleListener {
 
     private static final Logger log = Logger.getLogger(UserConfigurationManager.class);
 
-    @Autowired private ApplicationManager applicationManager;
+    @Inject
+    private ApplicationManager applicationManager;
 
     @Override
     public void applicationStarted() {

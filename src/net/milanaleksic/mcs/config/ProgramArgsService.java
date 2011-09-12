@@ -6,7 +6,8 @@ import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.inject.Inject;
 
 /**
  * User: Milan Aleksic
@@ -17,7 +18,7 @@ public class ProgramArgsService implements InitializingBean {
 
     private static final Logger log = Logger.getLogger(ProgramArgsService.class);
 
-    @Autowired private ApplicationManager applicationManager;
+    @Inject private ApplicationManager applicationManager;
 
     @Override
     public void afterPropertiesSet() throws Exception {

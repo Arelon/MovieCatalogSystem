@@ -5,8 +5,8 @@ import net.milanaleksic.mcs.config.ApplicationConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,9 +24,9 @@ public abstract class AbstractRestorePointService implements InitializingBean {
 
     protected static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
 
-    @Autowired ApplicationManager applicationManager;
+    @Inject private ApplicationManager applicationManager;
 
-    @Autowired DataSource dataSource;
+    @Inject private DataSource dataSource;
 
     protected final Log log = LogFactory.getLog(this.getClass());
 

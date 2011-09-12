@@ -1,10 +1,10 @@
 package net.milanaleksic.mcs.domain.impl;
 
 import net.milanaleksic.mcs.domain.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -17,9 +17,10 @@ import java.util.List;
 @Transactional
 public class JpaMedijRepository extends AbstractRepository implements MedijRepository {
 
-    @Autowired private PozicijaRepository pozicijaRepository;
+    @Inject
+    private PozicijaRepository pozicijaRepository;
 
-    @Autowired private TipMedijaRepository tipMedijaRepository;
+    @Inject private TipMedijaRepository tipMedijaRepository;
 
     @Override
     public Medij getCompleteMedij(Medij rawMedij) {

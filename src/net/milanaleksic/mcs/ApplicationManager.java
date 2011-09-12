@@ -6,8 +6,8 @@ import net.milanaleksic.mcs.gui.MainForm;
 import net.milanaleksic.mcs.gui.SplashScreenManager;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -18,9 +18,9 @@ import java.util.Set;
  */
 public class ApplicationManager {
 
-    @Autowired private SplashScreenManager splashScreenManager;
+    @Inject private SplashScreenManager splashScreenManager;
 
-    @Autowired private MainForm mainForm;
+    @Inject private MainForm mainForm;
 
     private ApplicationConfiguration applicationConfiguration;
 

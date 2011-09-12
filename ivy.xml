@@ -115,6 +115,9 @@
         <dependency org="org.springframework" name="spring-tx" rev="3.0.6.RELEASE" transitive="false">
             <artifact name="spring-tx" type="jar"/>
         </dependency>
+        <dependency org="javax.inject" name="javax.inject" rev="1" transitive="false">
+            <artifact name="javax.inject" type="jar"/>
+        </dependency>
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
             <artifact name="dom4j" type="jar"/>
             <exclude org="xml-apis" name="xml-apis"/>

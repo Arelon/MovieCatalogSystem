@@ -7,25 +7,26 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.List;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NewOrEditMovieForm {
 	
 	private static final Logger logger = Logger.getLogger(NewOrEditMovieForm.class);
 
-    @Autowired private NewMediumForm newMediumForm;
+    @Inject
+    private NewMediumForm newMediumForm;
 
-    @Autowired private FilmRepository filmRepository;
+    @Inject private FilmRepository filmRepository;
 
-    @Autowired private ZanrRepository zanrRepository;
+    @Inject private ZanrRepository zanrRepository;
 
-    @Autowired private MedijRepository medijRepository;
+    @Inject private MedijRepository medijRepository;
 
-    @Autowired private PozicijaRepository pozicijaRepository;
+    @Inject private PozicijaRepository pozicijaRepository;
 
 	private Shell sShell = null;
 	private Composite composite = null;
