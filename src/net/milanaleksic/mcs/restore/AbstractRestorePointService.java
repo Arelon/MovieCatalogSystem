@@ -24,9 +24,9 @@ public abstract class AbstractRestorePointService implements InitializingBean {
 
     protected static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
 
-    @Inject private ApplicationManager applicationManager;
+    @Inject protected ApplicationManager applicationManager;
 
-    @Inject private DataSource dataSource;
+    @Inject protected DataSource dataSource;
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
