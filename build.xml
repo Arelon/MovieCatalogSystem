@@ -101,7 +101,8 @@
 
         <delete file="${ant.project.name}-${src.version}.${build.number}-*.zip" failonerror="false"/>
 
-        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.number}-${DSTAMP}${TSTAMP}.zip">
+        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.number}-${DSTAMP}${TSTAMP}.zip" duplicate="preserve">
+            <zipfileset dir="${build.overrides.dir}" prefix="" />
             <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
                 <exclude name="mcs.jar" />
                 <exclude name="aspectjtools.jar" />
