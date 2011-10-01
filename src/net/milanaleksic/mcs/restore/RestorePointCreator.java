@@ -42,8 +42,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             } else
                 throw new IllegalStateException("I could not fetch next ID for table " + tableName);
         } finally {
-            DBUtil.close(st);
             DBUtil.close(rs);
+            DBUtil.close(st);
         }
     }
 
@@ -117,8 +117,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 outputStatement(outputStream, generateInsertSqlForResultSet(resultSet, metaData, tableName, getListOfResultSetColumns(metaData)));
             }
         } finally {
-            DBUtil.close(preparedStatement);
             DBUtil.close(resultSet);
+            DBUtil.close(preparedStatement);
         }
 
     }

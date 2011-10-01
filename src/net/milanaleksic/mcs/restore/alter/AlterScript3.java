@@ -35,8 +35,8 @@ public class AlterScript3 implements AlterScript {
 
             log.info("Film Ids size: " + filmIds.size());
 
-            DBUtil.close(st);
             DBUtil.close(rs);
+            DBUtil.close(st);
 
             String defaultPosition = "присутан";
 
@@ -68,8 +68,8 @@ public class AlterScript3 implements AlterScript {
 
                 log.info("Setting medij list: "+medijList+" for movie "+idfilm);
 
-                DBUtil.close(st);
                 DBUtil.close(rs);
+                DBUtil.close(st);
 
                 st = conn.prepareStatement("update DB2ADMIN.Film set MEDIJ_LIST=?, POZICIJA=? where idfilm=?");
                 st.setString(1, medijList);
@@ -79,8 +79,8 @@ public class AlterScript3 implements AlterScript {
                 if (cntRows != 1)
                     log.warn("Could not update movie with id:" + idfilm);
 
-                DBUtil.close(st);
                 DBUtil.close(rs);
+                DBUtil.close(st);
             }
             conn.commit();
             conn.setAutoCommit(false);
