@@ -1,6 +1,6 @@
 <aspectj>
 	<aspects>
-		<aspect name="net.milanaleksic.mcs.util.MethodTimingAspect" />
+		<aspect name="net.milanaleksic.mcs.application.util.MethodTimingAspect" />
 	</aspects>
 	<weaver options="-1.5 -Xset:weaveJavaxPackages=true">
 		<include within="net.milanaleksic.mcs..*" />

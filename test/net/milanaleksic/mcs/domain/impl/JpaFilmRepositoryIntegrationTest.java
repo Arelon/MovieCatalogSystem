@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.domain.impl;
 
-import net.milanaleksic.mcs.domain.*;
+import net.milanaleksic.mcs.domain.model.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.*;
 import org.junit.runner.RunWith;

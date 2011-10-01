@@ -2,16 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="splashScreenManager" class="net.milanaleksic.mcs.gui.SplashScreenManager" />
+    <bean id="splashScreenManager" class="net.milanaleksic.mcs.application.gui.SplashScreenManager" />
 
-    <bean id="mainForm" class="net.milanaleksic.mcs.gui.MainForm" />
+    <bean id="mainForm" class="net.milanaleksic.mcs.application.gui.MainForm" />
 
-    <bean id="newMediumForm" class="net.milanaleksic.mcs.gui.NewMediumForm" />
+    <bean id="newMediumForm" class="net.milanaleksic.mcs.application.gui.NewMediumForm" />
 
-    <bean id="newOrEditMovieForm" class="net.milanaleksic.mcs.gui.NewOrEditMovieForm" />
+    <bean id="newOrEditMovieForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieForm" />
 
-    <bean id="settingsForm" class="net.milanaleksic.mcs.gui.SettingsForm" />
+    <bean id="settingsForm" class="net.milanaleksic.mcs.application.gui.SettingsForm" />
 
-    <bean id="deleteMovieForm" class="net.milanaleksic.mcs.gui.DeleteMovieForm" />
+    <bean id="deleteMovieForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieForm" />
 
 </beans>

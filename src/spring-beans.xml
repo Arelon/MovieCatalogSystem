@@ -10,14 +10,14 @@
 
     <import resource="spring-beans-db.xml" />
 
-    <bean id="programArgsManager" class="net.milanaleksic.mcs.config.ProgramArgsService" />
+    <bean id="programArgsManager" class="net.milanaleksic.mcs.application.config.ProgramArgsService" />
 
-	<bean id="applicationManager" class="net.milanaleksic.mcs.ApplicationManager">
+	<bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
         <property name="lifecycleListeners">
             <set>
                 <ref bean="splashScreenManager" />
-                <bean class="net.milanaleksic.mcs.config.UserConfigurationManager" />
-                <bean class="net.milanaleksic.mcs.util.StatisticsManager" />
+                <bean class="net.milanaleksic.mcs.application.config.UserConfigurationManager" />
+                <bean class="net.milanaleksic.mcs.application.util.StatisticsManager" />
                 <ref bean="restoreManager" />
             </set>
         </property>

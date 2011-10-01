@@ -6,7 +6,7 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <context:component-scan base-package="net.milanaleksic.mcs.domain"/>
+    <context:component-scan base-package="net.milanaleksic.mcs.infrastructure.persistence.jpa"/>
 
     <context:property-placeholder location="classpath:datasource.properties"/>
 
@@ -52,20 +52,20 @@
     <bean id="sessionFactory" factory-bean="entityManagerFactory" factory-method="getSessionFactory"/>
 
     <bean id="abstractRestorePointService" abstract="true"
-          class="net.milanaleksic.mcs.restore.AbstractRestorePointService">
+          class="net.milanaleksic.mcs.infrastructure.restore.AbstractRestorePointService">
         <property name="useDB2StyleStringInScripts" value="${hibernate.connection.isdb2}" />
     </bean>
 
-    <bean id="restorePointCreator" class="net.milanaleksic.mcs.restore.RestorePointCreator"
+    <bean id="restorePointCreator" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator"
           parent="abstractRestorePointService"/>
 
-    <bean id="restorePointRestorer" class="net.milanaleksic.mcs.restore.RestorePointRestorer"
+    <bean id="restorePointRestorer" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer"
           parent="abstractRestorePointService">
         <property name="patternForSqlAlters" value="/net/milanaleksic/mcs/restore/alter/alter_script_%d.sql"/>
-        <property name="patternForCodeAlters" value="net.milanaleksic.mcs.restore.alter.AlterScript%d"/>
+        <property name="patternForCodeAlters" value="net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript%d"/>
         <property name="versionScript" value="SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'" />
     </bean>
 
-    <bean id="restoreManager" class="net.milanaleksic.mcs.restore.RestoreManager"/>
+    <bean id="restoreManager" class="net.milanaleksic.mcs.application.restore.RestoreManager"/>
 
 </beans>
