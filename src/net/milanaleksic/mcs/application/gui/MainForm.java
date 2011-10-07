@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import org.apache.log4j.Logger;
@@ -594,7 +595,8 @@ public class MainForm extends Observable {
 	
 	// LOGIC
 	
-	
+
+    @MethodTiming
 	public void doFillMainTable() {
 		if (toolTicker != null) {
 			toolTicker.setVisible(true);
