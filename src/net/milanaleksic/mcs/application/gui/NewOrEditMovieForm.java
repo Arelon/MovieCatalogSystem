@@ -1,12 +1,18 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.gui.helper.OfferMovieList;
 import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
+import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -17,8 +23,7 @@ public class NewOrEditMovieForm {
 	
 	private static final Logger logger = Logger.getLogger(NewOrEditMovieForm.class);
 
-    @Inject
-    private NewMediumForm newMediumForm;
+    @Inject private NewMediumForm newMediumForm;
 
     @Inject private FilmRepository filmRepository;
 
@@ -28,26 +33,28 @@ public class NewOrEditMovieForm {
 
     @Inject private PozicijaRepository pozicijaRepository;
 
-	private Shell sShell = null;
-	private Composite composite = null;
-    private Text textNaziv = null;
-    private Text textPrevod = null;
+    @Inject OfferMovieList offerMovieList;
+
+    private Shell sShell = null;
+    private Shell parent;
+    private Composite composite = null;
+    private Composite composite2 = null;
     private Combo comboLokacija = null;
     private Combo comboZanr = null;
-    private Text textIMDBOcena = null;
-    private Composite composite2 = null;
-	private List listDiskovi = null;
     private Combo comboDisk = null;
-	
-	private HashMap<String, Zanr> sviZanrovi;
-	private HashMap<String, Pozicija> sveLokacije;
-	private HashMap<String, Medij> sviDiskovi;
-	
-	private Text textGodina = null;
-    private Shell parent;
-	private Runnable parentRunner = null;
+    private List listDiskovi = null;
+    private Combo comboNaziv = null;
+    private Text textPrevod = null;
+    private Text textIMDBOcena = null;
+    private Text textGodina = null;
     private Text textKomentar = null;
+
     private Film activeFilm = null;
+    private Runnable parentRunner = null;
+
+    private HashMap<String, Zanr> sviZanrovi;
+    private HashMap<String, Pozicija> sveLokacije;
+    private HashMap<String, Medij> sviDiskovi;
 
     public void open(Shell parent, Film film, Runnable runnable) {
 		this.parent = parent;
@@ -67,7 +74,7 @@ public class NewOrEditMovieForm {
 	}
 	
 	private void resetControls() {
-		textNaziv.setText("");
+		comboNaziv.setText("");
 		textPrevod.setText("<непознат>");
 		textIMDBOcena.setText("0.0");
 		textGodina.setText("0");
@@ -84,7 +91,7 @@ public class NewOrEditMovieForm {
 
         // preuzimanje podataka za film koji se azurira
         if (activeFilm != null) {
-            textNaziv.setText(activeFilm.getNazivfilma());
+            comboNaziv.setText(activeFilm.getNazivfilma());
             textPrevod.setText(activeFilm.getPrevodnazivafilma());
             textGodina.setText(String.valueOf(activeFilm.getGodina()));
             textIMDBOcena.setText(String.valueOf(activeFilm.getImdbrejting()));
@@ -143,7 +150,7 @@ public class NewOrEditMovieForm {
 	protected void dodajNoviFilm() {
         refillCombos();
         Film novFilm = new Film();
-        novFilm.setNazivfilma(textNaziv.getText().trim());
+        novFilm.setNazivfilma(comboNaziv.getText().trim());
         novFilm.setPrevodnazivafilma(textPrevod.getText().trim());
         novFilm.setGodina(Integer.parseInt(textGodina.getText()));
         novFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
@@ -162,7 +169,7 @@ public class NewOrEditMovieForm {
 	}
 	
 	private void izmeniFilm() {
-        activeFilm.setNazivfilma(textNaziv.getText().trim());
+        activeFilm.setNazivfilma(comboNaziv.getText().trim());
         activeFilm.setPrevodnazivafilma(textPrevod.getText().trim());
         activeFilm.setGodina(Integer.parseInt(textGodina.getText()));
         activeFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
@@ -232,6 +239,7 @@ public class NewOrEditMovieForm {
 		sShell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
 			public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
 				sShell.dispose();
+                offerMovieList.cleanup();
 			}
 		});
 		sShell.pack();
@@ -280,8 +288,22 @@ public class NewOrEditMovieForm {
         Label labNazivFilma = new Label(composite, SWT.RIGHT);
 		labNazivFilma.setText("Назив филма:");
 		labNazivFilma.setLayoutData(gridData5);
-		textNaziv = new Text(composite, SWT.BORDER);
-		textNaziv.setLayoutData(gridData2);
+		comboNaziv = new Combo(composite, SWT.DROP_DOWN);
+        comboNaziv.setVisibleItemCount(10);
+		comboNaziv.setLayoutData(gridData2);
+        comboNaziv.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = comboNaziv.getSelectionIndex();
+                if (index != -1) {
+                    Movie movie = (Movie)comboNaziv.getData(Integer.toString(index));
+                    textGodina.setText(movie.getReleasedYear());
+                    comboNaziv.setText(movie.getName());
+                    textIMDBOcena.setText(movie.getImdbId());
+                }
+            }
+        });
+        comboNaziv.addKeyListener(prepareOfferMovieListForCombo(comboNaziv));
         Label labPrevod = new Label(composite, SWT.NONE);
 		labPrevod.setText("Превод назива филма:");
 		labPrevod.setLayoutData(gridData4);
@@ -326,8 +348,13 @@ public class NewOrEditMovieForm {
 		labKomentar.setLayoutData(gridData20);
 		createComposite3();
 	}
-	
-	private void createComposite1() {
+
+    private OfferMovieList prepareOfferMovieListForCombo(Combo queryCombo) {
+        offerMovieList.setQueryField(queryCombo);
+        return offerMovieList;
+    }
+
+    private void createComposite1() {
 		GridLayout gridLayout2 = new GridLayout();
 		gridLayout2.numColumns = 2;
 		gridLayout2.verticalSpacing = 5;
@@ -349,9 +376,9 @@ public class NewOrEditMovieForm {
                 StringBuilder razlogOtkaza = new StringBuilder();
                 if (listDiskovi.getItemCount() == 0)
                     razlogOtkaza.append("\r\nМорате доделити барем један медијум");
-                if (textNaziv.getText().trim().equals(""))
+                if (comboNaziv.getText().trim().equals(""))
                     razlogOtkaza.append("\r\nМорате унети назив филма");
-                if (textNaziv.getText().trim().equals(""))
+                if (comboNaziv.getText().trim().equals(""))
                     razlogOtkaza.append("\r\nМорате унети превод назива филма");
                 if (comboZanr.getSelectionIndex() == -1)
                     razlogOtkaza.append("\r\nМорате изабрати неки жанр за филм");
@@ -483,9 +510,9 @@ public class NewOrEditMovieForm {
 
 	private void createComposite3() {
 		GridData gridData21 = new GridData();
-		gridData21.widthHint = 130;
+		gridData21.widthHint = 200;
 		gridData21.verticalSpan = 2;
-		gridData21.heightHint = 50;
+		gridData21.heightHint = 80;
 		GridLayout gridLayout4 = new GridLayout();
 		gridLayout4.numColumns = 2;
         Composite composite3 = new Composite(composite, SWT.NONE);
@@ -507,5 +534,27 @@ public class NewOrEditMovieForm {
             }
         });
 	}
+
+    @MethodTiming
+    public void setCurrentQueryItems(final String query, final String[] newItems, @Nullable final Movie[] newMovies) {
+        sShell.getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                if (query.equals(comboNaziv.getText())) {
+                    Point selection = comboNaziv.getSelection();
+                    comboNaziv.setItems(newItems);
+                    comboNaziv.setListVisible(false);
+                    comboNaziv.setListVisible(true);
+                    comboNaziv.setText(query);
+                    if (newMovies != null) {
+                        for (int i = 0; i < newMovies.length; i++)
+                            comboNaziv.setData("" + i, newMovies[i]);
+                    }
+                    comboNaziv.setSelection(selection);
+                }
+            }
+        });
+    }
 
 }

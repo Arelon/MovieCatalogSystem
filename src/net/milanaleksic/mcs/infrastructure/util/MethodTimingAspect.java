@@ -21,7 +21,8 @@ public class MethodTimingAspect {
     private AtomicBoolean thisIsFirstQuery = new AtomicBoolean(true);
 
     @Pointcut(value="execution(* net.milanaleksic.mcs.infrastructure.persistence.jpa.*Repository.*(..)) ||" +
-            "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * ())")
+            "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * ()) ||" +
+            "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * (*))")
     private void timedMethod() {}
 
 

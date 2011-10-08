@@ -8,6 +8,8 @@
 
     <bean id="newMediumForm" class="net.milanaleksic.mcs.application.gui.NewMediumForm" />
 
+    <bean id="offerMovieList" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList" />
+
     <bean id="newOrEditMovieForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieForm" />
 
     <bean id="settingsForm" class="net.milanaleksic.mcs.application.gui.SettingsForm" />

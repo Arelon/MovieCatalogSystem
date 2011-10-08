@@ -1,11 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.bean;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: Milan Aleksic
@@ -129,6 +127,10 @@ public class Movie {
 
     public String getReleased() {
         return released;
+    }
+
+    public String getReleasedYear() {
+        return released != null ? released.substring(0, 4) : "?";
     }
 
     public int getVersion() {
