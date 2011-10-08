@@ -46,9 +46,7 @@ public abstract class AbstractRequest {
         String value = "";
         try {
             HttpGet httpMethod = new HttpGet(url);
-            log.debug("Visiting TMDB API url: "+url);
             HttpResponse response = httpClient.execute(httpMethod);
-            log.debug("Returned from url: "+url);
             int statusLine = response.getStatusLine().getStatusCode();
             if (statusLine != 200)
                 throw new TmdbException("Invalid response: "+statusLine);

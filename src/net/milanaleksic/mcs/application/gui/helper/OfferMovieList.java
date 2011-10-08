@@ -86,7 +86,7 @@ public class OfferMovieList extends KeyAdapter {
                 : MIN_DELAY_BETWEEN_REQUESTS - timePassedSinceLastFire;
         currentQuery = query;
         if (executorService.getQueue().size() == 0) {
-            logger.info("Scheduling search in " + delay + "ms");
+            logger.debug("Scheduling search in " + delay + "ms");
             executorService.schedule(fetchItem, delay, TimeUnit.MILLISECONDS);
         }
     }
