@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.*;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class NewOrEditMovieForm {
 	
@@ -45,7 +45,7 @@ public class NewOrEditMovieForm {
     private List listDiskovi = null;
     private Combo comboNaziv = null;
     private Text textPrevod = null;
-    private Text textIMDBOcena = null;
+    private Text textImdbId = null;
     private Text textGodina = null;
     private Text textKomentar = null;
 
@@ -55,6 +55,7 @@ public class NewOrEditMovieForm {
     private HashMap<String, Zanr> sviZanrovi;
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
+    private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}");
 
     public void open(Shell parent, Film film, Runnable runnable) {
 		this.parent = parent;
@@ -76,7 +77,7 @@ public class NewOrEditMovieForm {
 	private void resetControls() {
 		comboNaziv.setText("");
 		textPrevod.setText("<непознат>");
-		textIMDBOcena.setText("0.0");
+		textImdbId.setText("");
 		textGodina.setText("0");
 		comboZanr.setItems(new String[] {});
 		comboLokacija.setItems(new String[] {});
@@ -94,7 +95,7 @@ public class NewOrEditMovieForm {
             comboNaziv.setText(activeFilm.getNazivfilma());
             textPrevod.setText(activeFilm.getPrevodnazivafilma());
             textGodina.setText(String.valueOf(activeFilm.getGodina()));
-            textIMDBOcena.setText(String.valueOf(activeFilm.getImdbrejting()));
+            textImdbId.setText(String.valueOf(activeFilm.getImdbId()));
             textKomentar.setText(activeFilm.getKomentar());
             comboZanr.select(comboZanr.indexOf(activeFilm.getZanr().getZanr()));
             listDiskovi.removeAll();
@@ -153,7 +154,7 @@ public class NewOrEditMovieForm {
         novFilm.setNazivfilma(comboNaziv.getText().trim());
         novFilm.setPrevodnazivafilma(textPrevod.getText().trim());
         novFilm.setGodina(Integer.parseInt(textGodina.getText()));
-        novFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
+        novFilm.setImdbId(textImdbId.getText().trim());
         novFilm.setKomentar(textKomentar.getText());
         Zanr zanr = sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex()));
         Pozicija position = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
@@ -172,7 +173,7 @@ public class NewOrEditMovieForm {
         activeFilm.setNazivfilma(comboNaziv.getText().trim());
         activeFilm.setPrevodnazivafilma(textPrevod.getText().trim());
         activeFilm.setGodina(Integer.parseInt(textGodina.getText()));
-        activeFilm.setImdbrejting(BigDecimal.valueOf(Double.parseDouble(textIMDBOcena.getText().trim())));
+        activeFilm.setImdbId(textImdbId.getText().trim());
         activeFilm.setKomentar(textKomentar.getText());
 
         // promena zanra po potrebi !
@@ -299,7 +300,8 @@ public class NewOrEditMovieForm {
                     Movie movie = (Movie)comboNaziv.getData(Integer.toString(index));
                     textGodina.setText(movie.getReleasedYear());
                     comboNaziv.setText(movie.getName());
-                    textIMDBOcena.setText(movie.getImdbId());
+                    textImdbId.setText(movie.getImdbId());
+                    textKomentar.setText(movie.getOverview());
                 }
             }
         });
@@ -310,17 +312,18 @@ public class NewOrEditMovieForm {
 		textPrevod = new Text(composite, SWT.BORDER);
 		textPrevod.setLayoutData(gridData3);
 		textPrevod.addFocusListener(new org.eclipse.swt.events.FocusListener() {
-			
-			public void focusLost(org.eclipse.swt.events.FocusEvent e) {    
-				if (textPrevod.getText().trim().equals(""))
-					textPrevod.setText("<непознат>");
-			}
-			public void focusGained(org.eclipse.swt.events.FocusEvent e) {
-				if (textPrevod.getText().trim().equals("<непознат>"))
-					textPrevod.setText("");
-			}
-		
-		});
+
+            public void focusLost(org.eclipse.swt.events.FocusEvent e) {
+                if (textPrevod.getText().trim().equals(""))
+                    textPrevod.setText("<непознат>");
+            }
+
+            public void focusGained(org.eclipse.swt.events.FocusEvent e) {
+                if (textPrevod.getText().trim().equals("<непознат>"))
+                    textPrevod.setText("");
+            }
+
+        });
         Label labZanr = new Label(composite, SWT.NONE);
 		labZanr.setText("Жанр:");
 		labZanr.setLayoutData(gridData6);
@@ -335,10 +338,10 @@ public class NewOrEditMovieForm {
 		labLokacija.setLayoutData(gridData7);
 		createComboLokacija();
         Label labIMDB = new Label(composite, SWT.NONE);
-		labIMDB.setText("IMDB оцена:");
+		labIMDB.setText("IMDB ID (формат tt???):");
 		labIMDB.setLayoutData(gridData10);
-		textIMDBOcena = new Text(composite, SWT.BORDER);
-		textIMDBOcena.setLayoutData(gridData11);
+		textImdbId = new Text(composite, SWT.BORDER);
+		textImdbId.setLayoutData(gridData11);
         Label label = new Label(composite, SWT.NONE);
 		label.setText("Дискови:");
 		label.setLayoutData(gridData13);
@@ -350,6 +353,7 @@ public class NewOrEditMovieForm {
 	}
 
     private OfferMovieList prepareOfferMovieListForCombo(Combo queryCombo) {
+        offerMovieList.startup();
         offerMovieList.setQueryField(queryCombo);
         return offerMovieList;
     }
@@ -389,13 +393,9 @@ public class NewOrEditMovieForm {
                 }
                 if (comboLokacija.getSelectionIndex() == -1)
                     razlogOtkaza.append("\r\nМорате изабрати неку локацију за диск");
-                if (textIMDBOcena.getText().trim().equals(""))
-                    razlogOtkaza.append("\r\nМорате унети неку вредност за оцену филма на IMDB-у");
-                try {
-                    Double.parseDouble(textIMDBOcena.getText());
-                } catch (Throwable t) {
-                    razlogOtkaza.append("\r\nФормат уноса (реални број) за оцену филма на IMDB-у није исправан");
-                }
+                if (!textImdbId.getText().isEmpty() &&
+                        !PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches())
+                    razlogOtkaza.append("\r\nФормат ИМДБ ИД-а није у реду. Мора бити или празан стринг или у формату ttXXXXXXX");
                 if (razlogOtkaza.length() != 0) {
                     MessageBox messageBox = new MessageBox(sShell, SWT.OK | SWT.ICON_WARNING);
                     messageBox.setText("Додавање није могуће");

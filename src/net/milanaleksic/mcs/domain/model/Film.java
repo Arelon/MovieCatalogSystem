@@ -37,8 +37,8 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(length = 1000)
 	private String komentar;
 
-    @Column(precision = 3, scale = 1, nullable = false)
-	private BigDecimal imdbrejting;
+    @Column(name = "IMDB_ID", length = 10)
+	private String imdbId;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -110,12 +110,12 @@ public class Film implements Serializable, Comparable<Film> {
 		this.komentar = komentar;
 	}
 
-	public BigDecimal getImdbrejting() {
-		return this.imdbrejting;
+	public String getImdbId() {
+		return this.imdbId;
 	}
 
-	public void setImdbrejting(BigDecimal imdbrejting) {
-		this.imdbrejting = imdbrejting;
+	public void setImdbId(String imdbId) {
+		this.imdbId = imdbId;
 	}
 
 	public Set<Medij> getMedijs() {
@@ -206,7 +206,6 @@ public class Film implements Serializable, Comparable<Film> {
         Film film = (Film) o;
 
         if (godina != film.godina) return false;
-        if (imdbrejting != null ? !imdbrejting.equals(film.imdbrejting) : film.imdbrejting != null) return false;
         if (komentar != null ? !komentar.equals(film.komentar) : film.komentar != null) return false;
         if (nazivfilma != null ? !nazivfilma.equals(film.nazivfilma) : film.nazivfilma != null) return false;
         if (prevodnazivafilma != null ? !prevodnazivafilma.equals(film.prevodnazivafilma) : film.prevodnazivafilma != null)
@@ -223,7 +222,6 @@ public class Film implements Serializable, Comparable<Film> {
         result = 31 * result + (prevodnazivafilma != null ? prevodnazivafilma.hashCode() : 0);
         result = 31 * result + godina;
         result = 31 * result + (komentar != null ? komentar.hashCode() : 0);
-        result = 31 * result + (imdbrejting != null ? imdbrejting.hashCode() : 0);
         return result;
     }
 

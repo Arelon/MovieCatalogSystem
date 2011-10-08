@@ -34,10 +34,6 @@ public class OfferMovieList extends KeyAdapter {
 
     private ScheduledThreadPoolExecutor executorService;
 
-    public OfferMovieList() {
-        executorService = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3);
-    }
-
     public void setQueryField(Combo queryField) {
         this.queryField = queryField;
     }
@@ -89,6 +85,10 @@ public class OfferMovieList extends KeyAdapter {
             logger.debug("Scheduling search in " + delay + "ms");
             executorService.schedule(fetchItem, delay, TimeUnit.MILLISECONDS);
         }
+    }
+
+    public void startup() {
+        executorService = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3);
     }
 
     public void cleanup() {
