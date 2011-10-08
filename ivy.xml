@@ -118,6 +118,15 @@
         <dependency org="javax.inject" name="javax.inject" rev="1" transitive="false">
             <artifact name="javax.inject" type="jar"/>
         </dependency>
+        <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.1.2">
+            <artifact name="httpclient" type="jar"/>
+        </dependency>
+        <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.0">
+            <artifact name="jackson-core-asl" type="jar"/>
+        </dependency>
+        <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="1.9.0">
+            <artifact name="jackson-mapper-asl" type="jar"/>
+        </dependency>
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
             <artifact name="dom4j" type="jar"/>
             <exclude org="xml-apis" name="xml-apis"/>

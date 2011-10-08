@@ -10,6 +10,8 @@
 
     <import resource="spring-beans-db.xml" />
 
+    <import resource="spring-beans-service.xml" />
+
     <bean id="programArgsManager" class="net.milanaleksic.mcs.application.config.ProgramArgsService" />
 
 	<bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
