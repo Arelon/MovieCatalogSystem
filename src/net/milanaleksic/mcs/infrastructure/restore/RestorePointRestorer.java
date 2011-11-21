@@ -27,7 +27,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             conn = getConnection();
             safeRestoreDatabaseIfNeeded(conn);
         } catch (Exception e) {
-            log.error("Failure while creating restore point", e);
+            log.error("Failure while restoring database", e);
         } finally {
             DBUtil.close(conn);
         }
@@ -115,13 +115,13 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     }
 
     private void runAltersForVersion(Connection conn, int alterVersion) throws IOException, SQLException {
-        log.info("Running SQL DB alter "+ alterVersion);
+        log.info("Running SQL DB alter "+ String.format(patternForSqlAlters, alterVersion));
         DBUtil.executeScriptOnConnection(getClass().getResourceAsStream(
                 String.format(patternForSqlAlters, alterVersion)), conn);
         try {
             AlterScript alterScript = (AlterScript) Class.forName(
                     String.format(patternForCodeAlters, alterVersion)).newInstance();
-            log.info("Running application-driven DB alter "+ alterVersion);
+            log.info("Running application-driven DB alter "+ String.format(patternForCodeAlters, alterVersion));
             alterScript.executeAlterOnConnection(conn);
         } catch (ClassNotFoundException ignored) {
             // if class has not been found, there is no app-driven alter... proceed
