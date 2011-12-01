@@ -298,6 +298,8 @@ public class NewOrEditMovieForm {
                 int index = comboNaziv.getSelectionIndex();
                 if (index != -1) {
                     Movie movie = (Movie)comboNaziv.getData(Integer.toString(index));
+                    if (movie == null)
+                        return;
                     textGodina.setText(movie.getReleasedYear());
                     comboNaziv.setText(movie.getName());
                     textImdbId.setText(movie.getImdbId());

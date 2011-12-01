@@ -31,7 +31,7 @@ public abstract class AbstractRequest {
 
     protected static HttpClient httpClient= new DefaultHttpClient(
             new ThreadSafeClientConnManager());
-;
+
     protected static ObjectMapper mapper = new ObjectMapper();
 
     protected abstract String getUrl();
