@@ -1,6 +1,8 @@
 package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.config.UserConfiguration;
+import net.milanaleksic.mcs.application.gui.helper.HandledModifyListener;
+import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;
@@ -30,6 +32,10 @@ public class SettingsForm {
     private List listZanrovi = null;
     private Text textNovZanr = null;
     private Text textElementsPerPage = null;
+    private Text textProxyServer = null;
+    private Text textProxyServerPort = null;
+    private Text textProxyServerUsername = null;
+    private Text textProxyServerPassword = null;
 
     private boolean changed=false;
     private UserConfiguration userConfiguration;
@@ -127,22 +133,17 @@ public class SettingsForm {
 	}
 
     private void createSettingsTabContents() {
-        GridData gridData = new GridData();
-		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData1 = new GridData();
-		gridData1.verticalSpan = 3;
-		gridData1.grabExcessHorizontalSpace = true;
-		gridData1.grabExcessVerticalSpace = true;
-		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 2;
         compositeSettings = new Composite(tabFolder, SWT.BORDER);
-		compositeSettings.setLayout(gridLayout);
-		compositeSettings.setLayoutData(gridData1);
-        Label label = new Label(compositeSettings, SWT.NONE);
+		compositeSettings.setLayout(new GridLayout(1, false));
+		compositeSettings.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, true));
+        
+        Composite compositeElementsPerPage = new Composite(compositeSettings, SWT.NONE);
+        compositeElementsPerPage.setLayout(new GridLayout(2, false));
+        compositeElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label label = new Label(compositeElementsPerPage, SWT.NONE);
         label.setText("Број елемената по страници\n (0 за приказ свих филмова одједном)");
-		textElementsPerPage = new Text(compositeSettings, SWT.BORDER);
-		textElementsPerPage.setLayoutData(gridData);
+		textElementsPerPage = new Text(compositeElementsPerPage, SWT.BORDER);
+		textElementsPerPage.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
 		textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
@@ -166,6 +167,51 @@ public class SettingsForm {
                 changed = true;
             }
         });
+
+        ModifyListener proxySettingsModifyListener = new HandledModifyListener(sShell) {
+            @Override
+            public void handledModifyText(ModifyEvent modifyEvent) {
+                UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+                proxyConfiguration.setServer(textProxyServer.getText());
+                if (!textProxyServerPort.getText().isEmpty())
+                    proxyConfiguration.setPort(Integer.parseInt(textProxyServerPort.getText()));
+                proxyConfiguration.setUsername(textProxyServerUsername.getText());
+                proxyConfiguration.setPassword(textProxyServerPassword.getText());
+            }
+        };
+        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+        Group groupProxyServer = new Group(compositeSettings, SWT.NONE);
+        groupProxyServer.setText("Прокси сервер");
+        groupProxyServer.setLayout(new GridLayout(2, false));
+        groupProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label labelServer = new Label(groupProxyServer, SWT.NONE);
+        labelServer.setText("Адреса прокси сервера: ");
+        labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        textProxyServer = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServer.setText(proxyConfiguration.getServer());
+        textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        textProxyServer.addModifyListener(proxySettingsModifyListener);
+        Label labelPort = new Label(groupProxyServer, SWT.NONE);
+        labelPort.setText("Порт прокси сервера: ");
+        labelPort.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        textProxyServerPort = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServerPort.setText(Integer.toString(proxyConfiguration.getPort()));
+        textProxyServerPort.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        textProxyServerPort.addModifyListener(proxySettingsModifyListener);
+        Label labelUsername = new Label(groupProxyServer, SWT.NONE);
+        labelUsername.setText("Корисничко име: ");
+        labelUsername.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        textProxyServerUsername = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServerUsername.setText(proxyConfiguration.getUsername());
+        textProxyServerUsername.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        textProxyServerUsername.addModifyListener(proxySettingsModifyListener);
+        Label labelPassword = new Label(groupProxyServer, SWT.NONE);
+        labelPassword.setText("Шифра: ");
+        labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServerPassword.setText(proxyConfiguration.getPassword());
+        textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        textProxyServerPassword.addModifyListener(proxySettingsModifyListener);
     }
 
     private void createLocationTabContents() {

@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.MedijRepository;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;

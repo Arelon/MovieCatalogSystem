@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.application.gui;
+package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;
@@ -27,8 +27,13 @@ public abstract class HandledSelectionAdapter extends org.eclipse.swt.events.Sel
             handledSelected(event);
         } catch(ApplicationException exc) {
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
-            box.setMessage("Error: " + exc.getMessage());
+            box.setMessage(String.format("Error (%s): %s", exc.getClass().getCanonicalName(), exc.getMessage()));
             box.setText("Error");
+            box.open();
+        } catch (Throwable t) {
+            MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
+            box.setMessage(String.format("Unexpected Error (%s): %s", t.getClass().getCanonicalName(), t.getMessage()));
+            box.setText("Unexpected Error");
             box.open();
         }
     }

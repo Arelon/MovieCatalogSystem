@@ -10,11 +10,63 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class UserConfiguration {
 
+    public static class ProxyConfiguration {
+        private String server;
+        private int port;
+        private String username;
+        private String password;
+
+        public String getServer() {
+            return server;
+        }
+
+        public void setServer(String server) {
+            this.server = server;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public void setPort(int port) {
+            this.port = port;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        @Override
+        public String toString() {
+            return "ProxyConfiguration{" +
+                    "server='" + server + '\'' +
+                    ", port=" + port +
+                    ", username='" + username + '\'' +
+                    ", password='" + password + '\'' +
+                    '}';
+        }
+    }
+
+    private ProxyConfiguration proxyConfiguration;
+
     private int elementsPerPage;
 
     @SuppressWarnings("unused")
     public UserConfiguration() {
         elementsPerPage = 30;
+        proxyConfiguration = new ProxyConfiguration();
     }
 
     public int getElementsPerPage() {
@@ -25,10 +77,19 @@ public class UserConfiguration {
         this.elementsPerPage = elementsPerPage;
     }
 
+    public ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
+    }
+
+    public void setProxyConfiguration(ProxyConfiguration proxyConfiguration) {
+        this.proxyConfiguration = proxyConfiguration;
+    }
+
     @Override
     public String toString() {
         return "UserConfiguration{" +
-                "elementsPerPage=" + elementsPerPage +
+                "proxyConfiguration=" + proxyConfiguration +
+                ", elementsPerPage=" + elementsPerPage +
                 '}';
     }
 }

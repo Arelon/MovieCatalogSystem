@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.request;
 
+import net.milanaleksic.mcs.application.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
@@ -16,8 +17,8 @@ public class MovieSearch extends AbstractRequest {
 
     private String searchFilter;
 
-    public MovieSearch(String apiKey, String searchFilter) {
-        super(apiKey);
+    public MovieSearch(UserConfiguration.ProxyConfiguration proxyConfiguration, String apiKey, String searchFilter) {
+        super(apiKey, proxyConfiguration);
         this.searchFilter = searchFilter;
     }
 

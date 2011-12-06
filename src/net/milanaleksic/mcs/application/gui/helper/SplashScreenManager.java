@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.application.gui;
+package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.LifecycleListener;

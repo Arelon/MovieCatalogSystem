@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.application;
 import net.milanaleksic.mcs.Startup;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
-import net.milanaleksic.mcs.application.gui.SplashScreenManager;
+import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
 

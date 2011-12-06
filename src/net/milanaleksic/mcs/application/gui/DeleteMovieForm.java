@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
 import net.milanaleksic.mcs.application.util.ApplicationException;

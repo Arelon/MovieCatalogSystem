@@ -1,12 +1,18 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.request;
 
+import net.milanaleksic.mcs.application.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.util.EntityUtils;
@@ -29,15 +35,26 @@ public abstract class AbstractRequest {
 
     protected String apiKey;
 
-    protected static HttpClient httpClient= new DefaultHttpClient(
-            new ThreadSafeClientConnManager());
+    protected HttpClient httpClient;
 
     protected static ObjectMapper mapper = new ObjectMapper();
 
     protected abstract String getUrl();
 
-    public AbstractRequest(String apiKey) {
+    public AbstractRequest(String apiKey, UserConfiguration.ProxyConfiguration proxyConfiguration) {
         this.apiKey = apiKey;
+        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
+        if (null != proxyConfiguration.getServer() && !proxyConfiguration.getServer().isEmpty()) {
+            String server = proxyConfiguration.getServer();
+            int port = proxyConfiguration.getPort() == 0 ? 80 : proxyConfiguration.getPort();
+            final HttpHost hcProxyHost = new HttpHost(server, port, "http");
+            if (null != proxyConfiguration.getUsername() && !proxyConfiguration.getUsername().isEmpty()
+                    && null != proxyConfiguration.getPassword() && !proxyConfiguration.getPassword().isEmpty())
+            ((DefaultHttpClient) httpClient).getCredentialsProvider().setCredentials(new AuthScope(server, port),
+                         new UsernamePasswordCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword()));
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, hcProxyHost);
+        }
+        httpClient.getParams().setParameter("http.connection.timeout", 2000);
     }
 
     @MethodTiming
