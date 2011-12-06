@@ -22,9 +22,9 @@ public class SettingsForm {
 	private Shell parent = null;
 	private Runnable parentRunner = null;
     private TabFolder tabFolder = null;
-	private Composite composite1 = null;
-	private Composite composite2 = null;
-    private Composite composite3 = null;
+	private Composite compositeLocations = null;
+	private Composite compositeGenres = null;
+    private Composite compositeSettings = null;
 	private List listLokacije = null;
     private Text textNovaLokacija = null;
     private List listZanrovi = null;
@@ -116,14 +116,14 @@ public class SettingsForm {
         createLocationTabContents();
         createGenresTabContents();
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-        TabItem tabItem2 = new TabItem(tabFolder, SWT.NONE);
-        tabItem2.setText("Основна подешавања");
-        tabItem2.setControl(composite3);
-        tabItem.setText("Локације");
-        tabItem.setControl(composite1);
+        tabItem.setText("Основна подешавања");
+        tabItem.setControl(compositeSettings);
         TabItem tabItem1 = new TabItem(tabFolder, SWT.NONE);
-        tabItem1.setText("Жанрови");
-        tabItem1.setControl(composite2);
+        tabItem1.setText("Локације");
+        tabItem1.setControl(compositeLocations);
+        TabItem tabItem2 = new TabItem(tabFolder, SWT.NONE);
+        tabItem2.setText("Жанрови");
+        tabItem2.setControl(compositeGenres);
 	}
 
     private void createSettingsTabContents() {
@@ -136,12 +136,12 @@ public class SettingsForm {
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
         GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 2;
-        composite3 = new Composite(tabFolder, SWT.BORDER);
-		composite3.setLayout(gridLayout);
-		composite3.setLayoutData(gridData1);
-        Label label = new Label(composite3, SWT.NONE);
+        compositeSettings = new Composite(tabFolder, SWT.BORDER);
+		compositeSettings.setLayout(gridLayout);
+		compositeSettings.setLayoutData(gridData1);
+        Label label = new Label(compositeSettings, SWT.NONE);
         label.setText("Број елемената по страници\n (0 за приказ свих филмова одједном)");
-		textElementsPerPage = new Text(composite3, SWT.BORDER);
+		textElementsPerPage = new Text(compositeSettings, SWT.BORDER);
 		textElementsPerPage.setLayoutData(gridData);
 		textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
@@ -178,14 +178,14 @@ public class SettingsForm {
 		gridData2.grabExcessVerticalSpace = true;
 		GridLayout gridLayout1 = new GridLayout();
 		gridLayout1.numColumns = 2;
-		composite1 = new Composite(tabFolder, SWT.NONE);
-		composite1.setLayout(gridLayout1);
-        Label label = new Label(composite1, SWT.NONE);
+		compositeLocations = new Composite(tabFolder, SWT.NONE);
+		compositeLocations.setLayout(gridLayout1);
+        Label label = new Label(compositeLocations, SWT.NONE);
 		label.setText("Тренутне локације:");
 		createAddLocationPanel();
-		listLokacije = new List(composite1, SWT.BORDER | SWT.V_SCROLL);
+		listLokacije = new List(compositeLocations, SWT.BORDER | SWT.V_SCROLL);
 		listLokacije.setLayoutData(gridData2);
-        Button btnIzbrisiLokaciju = new Button(composite1, SWT.NONE);
+        Button btnIzbrisiLokaciju = new Button(compositeLocations, SWT.NONE);
 		btnIzbrisiLokaciju.setText("Избриши");
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
 		btnIzbrisiLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell) {
@@ -210,14 +210,14 @@ public class SettingsForm {
 		gridData7.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridLayout gridLayout2 = new GridLayout();
 		gridLayout2.numColumns = 2;
-		composite2 = new Composite(tabFolder, SWT.NONE);
-		composite2.setLayout(gridLayout2);
-        Label label1 = new Label(composite2, SWT.NONE);
+		compositeGenres = new Composite(tabFolder, SWT.NONE);
+		compositeGenres.setLayout(gridLayout2);
+        Label label1 = new Label(compositeGenres, SWT.NONE);
 		label1.setText("Тренутни жанрови:");
 		createAddGenrePanel();
-		listZanrovi = new List(composite2, SWT.BORDER | SWT.V_SCROLL);
+		listZanrovi = new List(compositeGenres, SWT.BORDER | SWT.V_SCROLL);
 		listZanrovi.setLayoutData(gridData7);
-        Button btnIzbrisiZanr = new Button(composite2, SWT.NONE);
+        Button btnIzbrisiZanr = new Button(compositeGenres, SWT.NONE);
 		btnIzbrisiZanr.setText("Избриши");
 		btnIzbrisiZanr.setLayoutData(gridData8);
 		btnIzbrisiZanr.addSelectionListener(new HandledSelectionAdapter(sShell) {
@@ -240,7 +240,7 @@ public class SettingsForm {
 		gridData3.grabExcessHorizontalSpace = true;
 		gridData3.grabExcessVerticalSpace = true;
 		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        Composite composite3 = new Composite(composite1, SWT.BORDER);
+        Composite composite3 = new Composite(compositeLocations, SWT.BORDER);
 		composite3.setLayout(new GridLayout());
 		composite3.setLayoutData(gridData3);
 		textNovaLokacija = new Text(composite3, SWT.BORDER);
@@ -272,7 +272,7 @@ public class SettingsForm {
 		gridData6.grabExcessVerticalSpace = true;
 		gridData6.grabExcessHorizontalSpace = true;
 		gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        Composite composite4 = new Composite(composite2, SWT.BORDER);
+        Composite composite4 = new Composite(compositeGenres, SWT.BORDER);
 		composite4.setLayoutData(gridData6);
 		composite4.setLayout(gridLayout4);
 		textNovZanr = new Text(composite4, SWT.BORDER);
