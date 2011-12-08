@@ -137,13 +137,15 @@ public class SettingsForm {
 		compositeSettings.setLayout(new GridLayout(1, false));
 		compositeSettings.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, true));
         
-        Composite compositeElementsPerPage = new Composite(compositeSettings, SWT.NONE);
-        compositeElementsPerPage.setLayout(new GridLayout(2, false));
-        compositeElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        Label label = new Label(compositeElementsPerPage, SWT.NONE);
+        Group groupGlobal = new Group(compositeSettings, SWT.NONE);
+        groupGlobal.setText("Глобална подешавања");
+        groupGlobal.setLayout(new GridLayout(2, true));
+        groupGlobal.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label label = new Label(groupGlobal, SWT.NONE);
+        label.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         label.setText("Број елемената по страници\n (0 за приказ свих филмова одједном)");
-		textElementsPerPage = new Text(compositeElementsPerPage, SWT.BORDER);
-		textElementsPerPage.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
+		textElementsPerPage = new Text(groupGlobal, SWT.BORDER);
+		textElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
 		textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
