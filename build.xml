@@ -47,9 +47,16 @@
         <tstamp/>
     </target>
 
-    <target name="compile" description="Copying compiled MCS files" depends="init">
-        <mkdir dir="${compile.dir}"/>
+    <target name="generate-metamodel" description="Generate JPA 2 metamodel" depends="init">
+        <mkdir dir="${src.metamodel.dir}"/>
+        <javac destDir="${src.metamodel.dir}" source="1.6" encoding="UTF-8" srcdir="${src.dir}">
+            <classpath refid="classpath" />
+            <compilerarg value="-proc:only"/>
+        </javac>
+    </target>
 
+    <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
+        <mkdir dir="${compile.dir}"/>
 		<iajc destDir="${compile.dir}" source="1.6" sourceRootCopyFilter="**/*.java" inpathDirCopyFilter="**/*.java,**/*.class" encoding="UTF-8" showWeaveInfo="true">
 			<sourceroots>
 				<pathelement location="${src.dir}" />

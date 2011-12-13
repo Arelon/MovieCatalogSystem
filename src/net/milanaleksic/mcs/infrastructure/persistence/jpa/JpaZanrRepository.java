@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import net.milanaleksic.mcs.domain.model.Zanr;
 import net.milanaleksic.mcs.domain.model.ZanrRepository;
 import net.milanaleksic.mcs.application.util.ApplicationException;
+import net.milanaleksic.mcs.domain.model.Zanr_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
         Root<Zanr> from = cq.from(Zanr.class);
-        cq.orderBy(builder.asc(builder.lower(from.<String>get("zanr"))));
+        cq.orderBy(builder.asc(builder.lower(from.<String>get(Zanr_.zanr))));
         TypedQuery<Zanr> query = entityManager.createQuery(cq);
         query.setHint("org.hibernate.cacheable", true);
         return query.getResultList();
@@ -58,7 +59,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         CriteriaQuery<Zanr> cq = builder.createQuery(Zanr.class);
         Root<Zanr> from = cq.from(Zanr.class);
         ParameterExpression<String> genreNameParameter = builder.parameter(String.class, "genreName");
-        cq.where(builder.equal(from.<String>get("zanr"), genreNameParameter));
+        cq.where(builder.equal(from.<String>get(Zanr_.zanr), genreNameParameter));
         TypedQuery<Zanr> query = entityManager.createQuery(cq);
         query.setParameter(genreNameParameter, genreName);
         return query.getSingleResult();

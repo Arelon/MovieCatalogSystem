@@ -1,0 +1,6 @@
+Before you try to compile the project in you IDE you need to run the
+Ant "generate-metamodel" task which will add additional source root
+"src-generated-metamodel" directory in the project root with static
+JPA metamodel.
+
+Do not commit files in src-generated-metamodel directory to source control.

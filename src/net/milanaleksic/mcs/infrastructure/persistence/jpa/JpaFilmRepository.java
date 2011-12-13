@@ -69,20 +69,20 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (textFilter != null) {
             textFilterParameter = builder.parameter(String.class, "filter");
             predicates.add(builder.or(
-                    builder.like(builder.lower(film.<String>get("nazivfilma")), textFilterParameter),
-                    builder.like(builder.lower(film.<String>get("prevodnazivafilma")), textFilterParameter),
-                    builder.like(builder.lower(film.<String>get("komentar")), textFilterParameter)
+                    builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter),
+                    builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter),
+                    builder.like(builder.lower(film.<String>get(Film_.komentar)), textFilterParameter)
             ));
         }
         ParameterExpression<Zanr> zanrParameter = null;
         if (zanrFilter != null)
-            predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
+            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter = builder.parameter(Zanr.class, "zanr")));
         ParameterExpression<String> tipMedijaParameter = null;
         if (tipMedijaFilter != null)
-            predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
+            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
         ParameterExpression<String> pozicijaParameter = null;
         if (pozicijaFilter != null)
-            predicates.add(builder.equal(film.<String>get("pozicija"), pozicijaParameter = builder.parameter(String.class, "pozicija")));
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter = builder.parameter(String.class, "pozicija")));
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -116,28 +116,28 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (textFilter != null) {
             textFilterParameter = builder.parameter(String.class, "filter");
             predicates.add(builder.or(
-                    builder.like(builder.lower(film.<String>get("nazivfilma")), textFilterParameter),
-                    builder.like(builder.lower(film.<String>get("prevodnazivafilma")), textFilterParameter),
-                    builder.like(builder.lower(film.<String>get("komentar")), textFilterParameter)
+                    builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter),
+                    builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter),
+                    builder.like(builder.lower(film.<String>get(Film_.komentar)), textFilterParameter)
             ));
         }
         ParameterExpression<Zanr> zanrParameter = null;
         if (zanrFilter != null)
-            predicates.add(builder.equal(film.<String>get("zanr"), zanrParameter = builder.parameter(Zanr.class, "zanr")));
+            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter = builder.parameter(Zanr.class, "zanr")));
         ParameterExpression<String> tipMedijaParameter = null;
         if (tipMedijaFilter != null)
-            predicates.add(builder.like(film.<String>get("medijListAsString"), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
+            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
         ParameterExpression<String> pozicijaParameter = null;
         if (pozicijaFilter != null)
-            predicates.add(builder.equal(film.<String>get("pozicija"), pozicijaParameter = builder.parameter(String.class, "pozicija")));
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter = builder.parameter(String.class, "pozicija")));
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
         else if (predicates.size()>1)
             cq.where(builder.and(predicates.toArray(new Predicate[1])));
 
-        cq.orderBy(builder.asc(film.<String>get("medijListAsString")),
-                builder.asc(film.<String>get("nazivfilma")));
+        cq.orderBy(builder.asc(film.<String>get(Film_.medijListAsString)),
+                builder.asc(film.<String>get(Film_.nazivfilma)));
 
         TypedQuery<Film> query = entityManager.createQuery(cq);
         if (textFilter != null)
