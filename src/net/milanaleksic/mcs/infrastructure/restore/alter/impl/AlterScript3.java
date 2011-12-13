@@ -1,5 +1,6 @@
-package net.milanaleksic.mcs.infrastructure.restore.alter;
+package net.milanaleksic.mcs.infrastructure.restore.alter.impl;
 
+import net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
