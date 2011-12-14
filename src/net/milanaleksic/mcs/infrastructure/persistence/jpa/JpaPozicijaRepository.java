@@ -49,6 +49,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     @Override
     public void deletePozicijaByName(String pozicija) throws ApplicationException {
         Pozicija pozicijaToDelete = getByName(pozicija);
+        //TODO: move to named queries
         TypedQuery<Long> query = entityManager.createQuery("select count(*) from Medij where pozicija=:pozicija", Long.class);
         query.setParameter("pozicija", pozicijaToDelete);
         long count = query.getSingleResult();
