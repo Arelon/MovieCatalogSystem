@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.gui.helper.OfferMovieList;
 import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.domain.service.FilmService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.apache.log4j.Logger;
@@ -12,11 +13,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.List;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class NewOrEditMovieForm {
@@ -33,7 +34,9 @@ public class NewOrEditMovieForm {
 
     @Inject private PozicijaRepository pozicijaRepository;
 
-    @Inject OfferMovieList offerMovieList;
+    @Inject private OfferMovieList offerMovieList;
+
+    @Inject private FilmService filmService;
 
     private Shell sShell = null;
     private Shell parent;
@@ -176,51 +179,15 @@ public class NewOrEditMovieForm {
         activeFilm.setImdbId(textImdbId.getText().trim());
         activeFilm.setKomentar(textKomentar.getText());
 
-        // promena zanra po potrebi !
-        if (!sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())).equals(activeFilm.getZanr())) {
-            activeFilm.getZanr().removeFilm(activeFilm);    //TODO: check if this line is semantically correct
-            activeFilm.getZanr().addFilm(activeFilm);
+        Set<Medij> selectedMediums = new HashSet<Medij>();
+        for (String item : listDiskovi.getItems()) {
+            selectedMediums.add(sviDiskovi.get(item));
         }
 
-        // pocinjemo rad sa medijima - prvo da pokupimo stare
-        ArrayList<String> raniji = new ArrayList<String>();
-        for (Medij medij : activeFilm.getMedijs())
-            raniji.add(medij.toString());
-
-        // dodavanje i oduzimanje diskova po potrebi
-        if (listDiskovi.getItemCount() != 0) {
-            for (String item : listDiskovi.getItems()) {
-                //dohvatanje medija i pozicije
-                Medij medij = sviDiskovi.get(item);
-                Pozicija pozicija = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
-                if (raniji.contains(medij.toString())) {
-                    if (!medij.getPozicija().equals(sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())))) {
-                        medij.getPozicija().removeMedij(medij);
-                        pozicija = pozicijaRepository.getCompletePozicija(pozicija);
-                        pozicija.addMedij(medij);
-                    }
-                    raniji.remove(medij.toString());// vec postoji, nema potrebe nista da se radi...
-                }
-                else {
-                    medij = medijRepository.getCompleteMedij(medij);
-                    activeFilm.addMedij(medij);
-                    pozicija = pozicijaRepository.getCompletePozicija(pozicija);
-                    pozicija.addMedij(medij);
-                }
-            }
-        }
-
-        // mediji koji su ostali u kolekciji RANIJI su oni koji su za brisanje !
-        // iz nekog cudnog razloga ovde mora da se ponovo ucita disk ili obrada nece raditi
-        for (String medijOpis : raniji) {
-            logger.info("Brisem: "+medijOpis);
-            Medij medij = sviDiskovi.get(medijOpis);
-            medij = medijRepository.getCompleteMedij(medij);
-            medij.removeFilm(activeFilm);
-            activeFilm.removeMedij(medij);
-        }
-
-        filmRepository.updateFilm(activeFilm);
+        filmService.updateFilmWithChanges(activeFilm,
+                sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())),
+                sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
+                selectedMediums);
 
         reReadData();
 	}

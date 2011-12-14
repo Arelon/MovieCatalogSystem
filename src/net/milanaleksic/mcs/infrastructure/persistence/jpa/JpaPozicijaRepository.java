@@ -23,13 +23,6 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     private static final String DEFAULT_POZICIJA_NAME = "присутан";
 
     @Override
-    public Pozicija getCompletePozicija(Pozicija rawPozicija) {
-        rawPozicija = entityManager.merge(rawPozicija);
-        rawPozicija.getMedijs().size();
-        return rawPozicija;
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<Pozicija> getPozicijas() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();

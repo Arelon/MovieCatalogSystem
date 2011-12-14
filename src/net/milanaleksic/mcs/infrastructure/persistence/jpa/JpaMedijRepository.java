@@ -23,13 +23,6 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     @Inject private TipMedijaRepository tipMedijaRepository;
 
     @Override
-    public Medij getCompleteMedij(Medij rawMedij) {
-        rawMedij = entityManager.merge(rawMedij);
-        rawMedij.getFilms().size();
-        return rawMedij;
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public int getNextMedijIndeks(String mediumTypeName) {
         //TODO: move to named queries

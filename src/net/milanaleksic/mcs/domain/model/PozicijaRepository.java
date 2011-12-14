@@ -21,5 +21,4 @@ public interface PozicijaRepository {
 
     Pozicija getByName(String locationName);
 
-    Pozicija getCompletePozicija(Pozicija pozicija);
 }

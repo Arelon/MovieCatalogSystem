@@ -8,6 +8,8 @@
 
     <context:component-scan base-package="net.milanaleksic.mcs.infrastructure.persistence.jpa"/>
 
+    <bean id="filmService" class="net.milanaleksic.mcs.domain.service.impl.FilmServiceImpl" />
+
     <context:property-placeholder location="classpath:datasource.properties" ignore-unresolvable="true" />
 
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>

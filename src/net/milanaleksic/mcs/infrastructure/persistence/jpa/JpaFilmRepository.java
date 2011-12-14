@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     @Override
     public Film getCompleteFilm(Film rawFilm) {
         rawFilm = entityManager.merge(rawFilm);
-        rawFilm.getMedijs().size();
+        Hibernate.initialize(rawFilm.getMedijs());
         return rawFilm;
     }
 
