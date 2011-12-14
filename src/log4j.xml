@@ -15,7 +15,7 @@
     <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
         <param name="maxFileSize" value="128KB" />
         <param name="maxBackupIndex" value="1"/>
-        <param name="file" value="mcs.log"/>
+        <param name="file" value="log/mcs.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p (%30.30c) - %m%n"/>
         </layout>
