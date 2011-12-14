@@ -19,10 +19,10 @@
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="user" value="${hibernate.connection.username}"/>
-        <property name="password" value="${hibernate.connection.password}"/>
-        <property name="driverClass" value="${hibernate.connection.driver_class}"/>
-        <property name="jdbcUrl" value="${hibernate.connection.url}"/>
+        <property name="user" value="${javax.persistence.jdbc.user}"/>
+        <property name="password" value="${javax.persistence.jdbc.password}"/>
+        <property name="driverClass" value="${javax.persistence.jdbc.driver}"/>
+        <property name="jdbcUrl" value="${javax.persistence.jdbc.url}"/>
         <property name="initialPoolSize" value="2"/>
         <property name="maxPoolSize" value="5"/>
         <property name="minPoolSize" value="2"/>
@@ -53,7 +53,7 @@
 
     <bean id="abstractRestorePointService" abstract="true"
           class="net.milanaleksic.mcs.infrastructure.restore.AbstractRestorePointService">
-        <property name="useDB2StyleStringInScripts" value="${hibernate.connection.isdb2}" />
+        <property name="useDB2StyleStringInScripts" value="${mcs.connection.isdb2}" />
     </bean>
 
     <bean id="restorePointCreator" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator"
