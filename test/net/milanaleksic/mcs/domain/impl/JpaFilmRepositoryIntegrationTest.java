@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.domain.impl;
 
 import net.milanaleksic.mcs.domain.model.*;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.log4j.BasicConfigurator;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,7 +29,7 @@ public class JpaFilmRepositoryIntegrationTest {
 
     @Before
     public void prepare() {
-        DOMConfigurator.configure("log4j.xml");
+        BasicConfigurator.configure();
     }
 
     @Test
