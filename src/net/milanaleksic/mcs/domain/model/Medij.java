@@ -29,13 +29,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
     @Column(name = "INDEKS", nullable = false)
     private int indeks;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "ZAUZIMA",
-        schema = "DB2ADMIN",
-        joinColumns = { @JoinColumn(name = "IDMEDIJ") },
-        inverseJoinColumns = { @JoinColumn(name = "IDFILM") }
-    )
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "medijs")
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=3)
