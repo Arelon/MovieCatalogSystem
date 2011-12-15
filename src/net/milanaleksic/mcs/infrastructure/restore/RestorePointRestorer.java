@@ -37,13 +37,15 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         ResultSet rs = null;
         PreparedStatement st = null;
         try {
-            log.info("Validating database");
+            if (log.isInfoEnabled())
+                log.info("Validating database");
             st = conn.prepareStatement(versionScript);
             rs = st.executeQuery();
             rs.next();
 
             String dbVersion = rs.getString(1);
-            log.info("Expected DB version = " + getDbVersion() + ", DB version = " + dbVersion);
+            if (log.isInfoEnabled())
+                log.info("Expected DB version = " + getDbVersion() + ", DB version = " + dbVersion);
 
             return Integer.valueOf(dbVersion);
         } catch (Exception e) {
@@ -95,7 +97,8 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     }
 
     private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
-        log.debug(String.format("RunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
+        if (log.isDebugEnabled())
+            log.debug(String.format("RunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
         int startAlterVersion = dbVersionFromDatabase+1;
         if (dbVersionFromDatabase == 0) {
             int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
@@ -105,23 +108,27 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             startAlterVersion = ending+1;
 
             if (dbVersionFromRestorePoint != 0) {
-                log.info("Restoring content");
+                if (log.isInfoEnabled())
+                    log.info("Restoring content");
                 DBUtil.executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
             }
         }
         for (int i=startAlterVersion; i<=getDbVersion(); i++)
             runAltersForVersion(conn, i);
-        log.info("Restoration finished");
+        if (log.isInfoEnabled())
+            log.info("Restoration finished");
     }
 
     private void runAltersForVersion(Connection conn, int alterVersion) throws IOException, SQLException {
-        log.info("Running SQL DB alter "+ String.format(patternForSqlAlters, alterVersion));
+        if (log.isInfoEnabled())
+            log.info("Running SQL DB alter "+ String.format(patternForSqlAlters, alterVersion));
         DBUtil.executeScriptOnConnection(getClass().getResourceAsStream(
                 String.format(patternForSqlAlters, alterVersion)), conn);
         try {
             AlterScript alterScript = (AlterScript) Class.forName(
                     String.format(patternForCodeAlters, alterVersion)).newInstance();
-            log.info("Running application-driven DB alter "+ String.format(patternForCodeAlters, alterVersion));
+            if (log.isInfoEnabled())
+                log.info("Running application-driven DB alter "+ String.format(patternForCodeAlters, alterVersion));
             alterScript.executeAlterOnConnection(conn);
         } catch (ClassNotFoundException ignored) {
             // if class has not been found, there is no app-driven alter... proceed

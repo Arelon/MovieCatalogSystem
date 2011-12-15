@@ -23,6 +23,8 @@ public class Startup {
         FileLock lock = null;
         try {
             lock = getSingletonApplicationFileLock();
+            if (log.isInfoEnabled())
+                log.info("Welcome to Movie Catalog System v" + ApplicationManager.getVersion()+", booting application context...");
             ApplicationContext applicationContext = bootSpringContext();
             ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager"));
             applicationManager.entryPoint();
@@ -35,10 +37,10 @@ public class Startup {
     }
 
     private static ApplicationContext bootSpringContext() {
-        long begin = System.currentTimeMillis();
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
         context.registerShutdownHook();
-        log.debug(String.format("Spring booted in %dms", System.currentTimeMillis()-begin));
+        if (log.isDebugEnabled())
+            log.debug("Application context loaded");
         return context;
     }
 

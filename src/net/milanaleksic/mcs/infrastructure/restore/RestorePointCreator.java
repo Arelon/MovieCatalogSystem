@@ -61,7 +61,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             createRestoreDir();
 
             File restoreFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTORE);
-            log.debug("Renaming old restore script if there is one...");
+            if (log.isDebugEnabled())
+                log.debug("Renaming old restore script if there is one...");
             if (restoreFile.exists()) {
                 renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
             }
@@ -71,7 +72,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             if (renamedOldRestoreFile != null) {
                 eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
             }
-            log.info("Restore point creation process finished successfully!");
+            if (log.isInfoEnabled())
+                log.info("Restore point creation process finished successfully!");
         } catch (Exception e) {
             log.error("Failure during restore creation ", e);
         } finally {
@@ -103,7 +105,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
-        log.debug("Working on restore script "+source.getScript());
+        if (log.isDebugEnabled())
+            log.debug("Working on restore script "+source.getScript());
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
@@ -159,7 +162,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
 
     private void eraseOldBackupIfIdenticalToCurrent(File renamedOldRestoreFile, File restoreFile) {
         if (StreamUtil.returnMD5ForFile(renamedOldRestoreFile).equals(StreamUtil.returnMD5ForFile(restoreFile))) {
-            log.debug("Deleting current backup because it is identical to previous");
+            if (log.isDebugEnabled())
+                log.debug("Deleting current backup because it is identical to previous");
             File redundantZipFile = new File(renamedOldRestoreFile.getAbsolutePath() + ".zip");
             if (redundantZipFile.exists())
                 if (!redundantZipFile.delete())
@@ -186,7 +190,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private void compressPreviousRestoreFiles(File renamedOldRestoreFile) {
         ZipOutputStream zos = null;
         try {
-            log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
+            if (log.isDebugEnabled())
+                log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
             zos = new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"));
 
             StreamUtil.writeFileToZipStream(zos, renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
@@ -202,7 +207,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void appendRestartCountersScript(PrintStream outputStream, Connection conn) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
-        log.debug("Writing new Restart Counters script fragment...");
+        if (log.isDebugEnabled())
+            log.debug("Writing new Restart Counters script fragment...");
         outputStream.print(createRestartWithForTable("Param", "IdParam", conn));
         outputStream.print(createRestartWithForTable("Film", "IdFilm", conn));
         outputStream.print(createRestartWithForTable("Medij", "IdMedij", conn));

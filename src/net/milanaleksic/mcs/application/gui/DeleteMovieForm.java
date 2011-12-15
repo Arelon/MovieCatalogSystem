@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 public class DeleteMovieForm {
 
-	private static final Logger logger = Logger.getLogger(DeleteMovieForm.class);
+	private static final Logger log = Logger.getLogger(DeleteMovieForm.class);
 
 	private Shell sShell = null;
     private Shell parent = null;
@@ -31,7 +31,8 @@ public class DeleteMovieForm {
 		this.parent = parent;
         this.parentRunner = runnable;
 		createSShell();
-		logger.info("DeleteMovieForm: FILMID=" + film.getIdfilm());
+        if (log.isInfoEnabled())
+    		log.info("DeleteMovieForm: FILMID=" + film.getIdfilm());
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
 				+ Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
 		this.film = film;

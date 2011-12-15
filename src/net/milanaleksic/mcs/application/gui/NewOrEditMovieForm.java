@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 public class NewOrEditMovieForm {
 	
-	private static final Logger logger = Logger.getLogger(NewOrEditMovieForm.class);
+	private static final Logger log = Logger.getLogger(NewOrEditMovieForm.class);
 
     @Inject private NewMediumForm newMediumForm;
 
@@ -65,10 +65,12 @@ public class NewOrEditMovieForm {
 		this.activeFilm  = film;
         this.parentRunner = runnable;
         createSShell();
-        if (film == null)
-            logger.info("NewOrEditMovieForm: New movie mode");
-        else
-		    logger.info("NewOrEditMovieForm: FILMID="+film.getIdfilm());
+        if (log.isInfoEnabled()) {
+            if (film == null)
+                log.info("NewOrEditMovieForm: New movie mode");
+            else
+                log.info("NewOrEditMovieForm: FILMID="+film.getIdfilm());
+        }
 		sShell.setLocation(
 				new Point(
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 

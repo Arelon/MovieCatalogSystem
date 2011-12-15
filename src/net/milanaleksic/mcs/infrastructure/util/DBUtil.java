@@ -69,7 +69,8 @@ public final class DBUtil {
 
     public static void executeScriptOnConnection(String restartCountersScript, Connection conn) throws IOException, SQLException {
         File fileRestartCountersScript = new File(restartCountersScript);
-        log.info("Executing script file: " + fileRestartCountersScript.getName());
+        if (log.isInfoEnabled())
+            log.info("Executing script file: " + fileRestartCountersScript.getName());
         if (fileRestartCountersScript.exists()) {
             FileInputStream fis = new FileInputStream(fileRestartCountersScript);
             try {
@@ -89,7 +90,8 @@ public final class DBUtil {
     public static String getSQLStringForDB2(String input) {
         if (input == null)
             return "NULL";
-        //log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
+        //if (log.isDebugEnabled())
+        //  log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
         return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
     }
 

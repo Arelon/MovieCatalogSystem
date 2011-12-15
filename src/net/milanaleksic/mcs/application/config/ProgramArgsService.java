@@ -33,7 +33,8 @@ public class ProgramArgsService implements InitializingBean {
         CmdLineParser parser = new CmdLineParser(programArgs);
         try {
             parser.parseArgument(args);
-            log.info("Program arguments: " + programArgs);
+            if (log.isInfoEnabled())
+                log.info("Program arguments: " + programArgs);
         } catch (CmdLineException e) {
             log.error("Command line arguments could not have been read", e);
             parser.printUsage(System.err);

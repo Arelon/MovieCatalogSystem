@@ -31,7 +31,8 @@ public class UserConfigurationManager implements LifecycleListener {
                 JAXBContext jc = JAXBContext.newInstance(UserConfiguration.class);
                 Unmarshaller u = jc.createUnmarshaller();
                 userConfiguration = (UserConfiguration) u.unmarshal(configurationFile);
-                log.info("UserConfiguration read: "+ userConfiguration);
+                if (log.isInfoEnabled())
+                    log.info("UserConfiguration read: "+ userConfiguration);
             } catch (Throwable t) {
                 log.error("UserConfiguration could not have been read. Using default settings", t);
             }

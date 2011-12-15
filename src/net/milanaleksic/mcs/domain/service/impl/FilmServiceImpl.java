@@ -44,7 +44,8 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
         }
 
         for (Medij medij : raniji) {
-            log.info("Removing medium from the list of mediums: "+medij.toString());
+            if (log.isInfoEnabled())
+                log.info("Removing medium from the list of mediums: "+medij.toString());
             medij.removeFilm(movieToBeUpdated);
             movieToBeUpdated.removeMedij(medij);
         }

@@ -223,13 +223,14 @@ public class MainForm extends Observable {
 			if (targetFileForExport == null)
 				return;
 			String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.')+1);
-			log.debug("Odabrano eksportovanje u fajl \""+targetFileForExport+"\"");
+            if (log.isDebugEnabled())
+			    log.debug("Odabrano eksportovanje u fajl \""+targetFileForExport+"\"");
 			Exporter exporter = ExporterFactory.getInstance().getExporter(ext);
 			if (exporter == null) {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            final Film[] allFilms = getAllFilms(0).toArray(new Film[0]);
+            final Film[] allFilms = getAllFilms(0).toArray(new Film[1]);
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {

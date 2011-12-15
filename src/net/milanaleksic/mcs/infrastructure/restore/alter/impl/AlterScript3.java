@@ -34,7 +34,8 @@ public class AlterScript3 implements AlterScript {
                 filmIds.add(rs.getInt(1));
             }
 
-            log.info("Film Ids size: " + filmIds.size());
+            if (log.isInfoEnabled())
+                log.info("Film Ids size: " + filmIds.size());
 
             DBUtil.close(rs);
             DBUtil.close(st);
@@ -67,7 +68,8 @@ public class AlterScript3 implements AlterScript {
                 }
                 String medijList = builder.toString();
 
-                log.info("Setting medij list: "+medijList+" for movie "+idfilm);
+                if (log.isInfoEnabled())
+                    log.info("Setting medij list: "+medijList+" for movie "+idfilm);
 
                 DBUtil.close(rs);
                 DBUtil.close(st);

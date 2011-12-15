@@ -37,9 +37,11 @@ public class MethodTimingAspect {
         if (periodUs >= warningTime)
             log.warn("MethodTiming (long) [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
                     + periodAsString + "ms");
-        else
-            log.debug("MethodTiming [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
-                    + periodAsString + "ms");
+        else {
+            if (log.isDebugEnabled())
+                log.debug("MethodTiming [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
+                        + periodAsString + "ms");
+        }
         return result;
     }
 }

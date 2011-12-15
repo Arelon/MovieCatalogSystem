@@ -34,7 +34,8 @@ public final class StreamUtil {
             for (byte aCalcDigest : calcDigest)
                 hash.append(String.format("%1$02X", aCalcDigest));
 
-            log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash.toString());
+            if (log.isDebugEnabled())
+                log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash.toString());
 
         } catch (Exception e) {
             log.error("Failure while calculating MD5", e);

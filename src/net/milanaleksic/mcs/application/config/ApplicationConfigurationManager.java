@@ -23,7 +23,8 @@ public class ApplicationConfigurationManager {
             JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
             Unmarshaller u = jc.createUnmarshaller();
             applicationConfiguration = (ApplicationConfiguration) u.unmarshal(configurationFile);
-            log.info("ApplicationConfiguration read: "+ applicationConfiguration);
+            if (log.isInfoEnabled())
+                log.info("ApplicationConfiguration read: "+ applicationConfiguration);
         } catch (Throwable t) {
             log.error("ApplicationConfiguration could not have been read. Using default settings", t);
         }
