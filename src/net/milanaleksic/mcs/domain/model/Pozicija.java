@@ -11,6 +11,8 @@ import java.util.Set;
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Pozicija implements java.io.Serializable {
 
+    public static final String DEFAULT_POZICIJA_NAME = "присутан";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="IDPOZICIJA")

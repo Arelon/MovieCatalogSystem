@@ -102,7 +102,7 @@ public class DeleteMovieForm {
 		btnCancel.setText("\u041e\u0434\u0443\u0441\u0442\u0430\u043d\u0438");
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
-            @Override public void handledSelected(SelectionEvent event) throws ApplicationException {
+            @Override public void handledSelected() throws ApplicationException {
                 filmRepository.deleteFilm(film);
                 parentRunner.run();
                 sShell.close();

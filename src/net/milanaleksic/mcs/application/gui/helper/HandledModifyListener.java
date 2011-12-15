@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class HandledModifyListener implements ModifyListener {
 
-    private Shell parent;
+    private final Shell parent;
 
-    public abstract void handledModifyText(ModifyEvent event) throws ApplicationException;
+    public abstract void handledModifyText() throws ApplicationException;
 
     public HandledModifyListener(Shell parent) {
         this.parent = parent;
@@ -20,7 +20,7 @@ public abstract class HandledModifyListener implements ModifyListener {
     @Override
     public final void modifyText(ModifyEvent event) {
         try {
-            handledModifyText(event);
+            handledModifyText();
         } catch (ApplicationException exc) {
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
             box.setMessage(String.format("Error (%s): %s", exc.getClass().getCanonicalName(), exc.getMessage()));

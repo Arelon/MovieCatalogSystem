@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -27,5 +29,5 @@ public interface FilmRepository {
 
     void updateFilm(Film modifiedFilm);
 
-    FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String filterText);
+    FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, @Nullable Zanr zanrFilter, @Nullable TipMedija tipMedijaFilter, @Nullable Pozicija pozicijaFilter, @Nullable String filterText);
 }

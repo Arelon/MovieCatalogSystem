@@ -20,8 +20,6 @@ import java.util.List;
 @Transactional
 public class JpaPozicijaRepository extends AbstractRepository implements PozicijaRepository {
 
-    private static final String DEFAULT_POZICIJA_NAME = "присутан";
-
     @Override
     @Transactional(readOnly = true)
     public List<Pozicija> getPozicijas() {
@@ -58,7 +56,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
         Root<Pozicija> from = cq.from(Pozicija.class);
-        cq.where(builder.equal(from.<String>get(Pozicija_.pozicija), DEFAULT_POZICIJA_NAME));
+        cq.where(builder.equal(from.<String>get(Pozicija_.pozicija), Pozicija.DEFAULT_POZICIJA_NAME));
         return entityManager.createQuery(cq).getSingleResult();
     }
 

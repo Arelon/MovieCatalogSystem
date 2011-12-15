@@ -39,7 +39,6 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     @Override
     public void saveMedij(int index, String mediumTypeName) {
         Medij medij = new Medij();
-        medij.setFilms(null);
         medij.setIndeks(index);
 
         Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();

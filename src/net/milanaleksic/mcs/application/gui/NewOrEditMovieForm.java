@@ -60,7 +60,7 @@ public class NewOrEditMovieForm {
     private HashMap<String, Medij> sviDiskovi;
     private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}");
 
-    public void open(Shell parent, Film film, Runnable runnable) {
+    public void open(Shell parent, @Nullable Film film, Runnable runnable) {
 		this.parent = parent;
 		this.activeFilm  = film;
         this.parentRunner = runnable;
@@ -109,8 +109,8 @@ public class NewOrEditMovieForm {
             comboLokacija.select( comboLokacija.indexOf( activeFilm.getPozicija() ) );
         }
         else {
-            if (comboLokacija.indexOf("присутан") != -1)
-                comboLokacija.select(comboLokacija.indexOf("присутан"));
+            if (comboLokacija.indexOf(Pozicija.DEFAULT_POZICIJA_NAME) != -1)
+                comboLokacija.select(comboLokacija.indexOf(Pozicija.DEFAULT_POZICIJA_NAME));
             if (comboDisk.getItemCount() != 0)
                 comboDisk.select(comboDisk.getItemCount()-1);
         }

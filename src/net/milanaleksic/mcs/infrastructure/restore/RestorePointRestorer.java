@@ -96,7 +96,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         return 1;
     }
 
-    private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+    private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws SQLException, IOException {
         if (log.isDebugEnabled())
             log.debug(String.format("RunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
         int startAlterVersion = dbVersionFromDatabase+1;

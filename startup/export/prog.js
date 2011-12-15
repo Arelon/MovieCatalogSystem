@@ -37,11 +37,11 @@ function init() {
 	}
 }  
 
-function handleMouseOver(oEvent) {
+function handleMouseOver() {
 	this.parentNode.style.backgroundColor = "#d7e18a";
 }
 
-function handleMouseOut(oEvent) {
+function handleMouseOut() {
 	var parent = this.parentNode;
 	if (isElemSelected(parent)) {
 		parent.style.backgroundColor = "lightblue";

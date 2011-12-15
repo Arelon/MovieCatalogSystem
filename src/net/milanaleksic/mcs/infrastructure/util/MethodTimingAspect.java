@@ -18,8 +18,9 @@ public class MethodTimingAspect {
     protected final Logger log = Logger.getLogger(this.getClass());
     private static final long warningTime = 100;
 
-    private AtomicBoolean thisIsFirstQuery = new AtomicBoolean(true);
+    private final AtomicBoolean thisIsFirstQuery = new AtomicBoolean(true);
 
+    @SuppressWarnings({"EmptyMethod"})
     @Pointcut(value="execution(* net.milanaleksic.mcs.infrastructure.persistence.jpa.*Repository.*(..)) ||" +
             "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * ()) ||" +
             "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * (*))")

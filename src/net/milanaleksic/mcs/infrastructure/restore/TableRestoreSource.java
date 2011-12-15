@@ -7,7 +7,7 @@ package net.milanaleksic.mcs.infrastructure.restore;
  */
 public class TableRestoreSource implements RestoreSource {
 
-    private String script;
+    private final String script;
 
     public TableRestoreSource(String tableName) {
         script = String.format("SELECT * FROM %s", tableName);

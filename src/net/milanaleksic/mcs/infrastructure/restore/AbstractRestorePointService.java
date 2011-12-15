@@ -36,7 +36,7 @@ public abstract class AbstractRestorePointService {
         this.useDB2StyleStringInScripts = useDB2StyleStringInScripts;
     }
 
-    protected synchronized Connection getConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+    protected synchronized Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 

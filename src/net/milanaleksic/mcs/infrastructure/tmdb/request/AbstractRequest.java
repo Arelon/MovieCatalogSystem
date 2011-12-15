@@ -1,12 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.request;
 
 import net.milanaleksic.mcs.application.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
-import org.apache.http.HttpConnection;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
+import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
+import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -33,11 +30,11 @@ public abstract class AbstractRequest {
 
     protected final Logger log = Logger.getLogger(this.getClass());
 
-    protected String apiKey;
+    protected final String apiKey;
 
-    protected HttpClient httpClient;
+    protected final HttpClient httpClient;
 
-    protected static ObjectMapper mapper = new ObjectMapper();
+    protected static final ObjectMapper mapper = new ObjectMapper();
 
     protected abstract String getUrl();
 
@@ -60,7 +57,7 @@ public abstract class AbstractRequest {
     @MethodTiming
     protected <T> T processRequest(Class<T> clazz) throws TmdbException {
         String url = getUrl();
-        String value = "";
+        String value;
         try {
             HttpGet httpMethod = new HttpGet(url);
             HttpResponse response = httpClient.execute(httpMethod);

@@ -111,7 +111,7 @@ public class NewMediumForm {
 		btnOk.setText("Сними");
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
             @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
+            public void handledSelected() throws ApplicationException {
                 medijRepository.saveMedij(
                         Integer.parseInt(textID.getText()),
                         rbCD.getSelection() ? "CD" : "DVD");

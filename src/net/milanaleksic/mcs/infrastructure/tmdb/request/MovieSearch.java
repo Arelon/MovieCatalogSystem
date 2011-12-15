@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class MovieSearch extends AbstractRequest {
 
-    private String searchFilter;
+    private final String searchFilter;
 
     public MovieSearch(UserConfiguration.ProxyConfiguration proxyConfiguration, String apiKey, String searchFilter) {
         super(apiKey, proxyConfiguration);

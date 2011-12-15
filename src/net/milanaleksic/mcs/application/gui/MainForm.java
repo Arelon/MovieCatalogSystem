@@ -100,7 +100,7 @@ public class MainForm extends Observable {
     }
 	
 	private class MainTableKeyAdapter extends KeyAdapter {
-		
+
 		@Override public void keyPressed(KeyEvent e) {
 			String filterText = currentViewState.getFilterText();
 			switch (e.keyCode) {
@@ -391,7 +391,8 @@ public class MainForm extends Observable {
                 MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/database-64.png")));
     }
 
-	public boolean isDisposed() {
+	@SuppressWarnings({"BooleanMethodIsAlwaysInverted"})
+    public boolean isDisposed() {
 		return sShell.isDisposed();
 	}
 	

@@ -172,7 +172,7 @@ public class SettingsForm {
 
         ModifyListener proxySettingsModifyListener = new HandledModifyListener(sShell) {
             @Override
-            public void handledModifyText(ModifyEvent modifyEvent) {
+            public void handledModifyText() {
                 UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
                 proxyConfiguration.setServer(textProxyServer.getText());
                 if (!textProxyServerPort.getText().isEmpty())
@@ -238,7 +238,7 @@ public class SettingsForm {
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
 		btnIzbrisiLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell) {
             @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
+            public void handledSelected() throws ApplicationException {
                 if (listLokacije.getSelectionIndex() < 0)
                     return;
                 pozicijaRepository.deletePozicijaByName(listLokacije.getItem(listLokacije.getSelectionIndex()));
@@ -270,7 +270,7 @@ public class SettingsForm {
 		btnIzbrisiZanr.setLayoutData(gridData8);
 		btnIzbrisiZanr.addSelectionListener(new HandledSelectionAdapter(sShell) {
             @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
+            public void handledSelected() throws ApplicationException {
                 if (listZanrovi.getSelectionIndex() < 0)
                     return;
                 zanrRepository.deleteZanrByName(listZanrovi.getItem(listZanrovi.getSelectionIndex()));
@@ -297,7 +297,7 @@ public class SettingsForm {
 		btnDodajLokaciju.setText("Додај ову локацију");
 		btnDodajLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell) {
             @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
+            public void handledSelected() throws ApplicationException {
                 String newLokacija = textNovaLokacija.getText();
                 if (newLokacija == null || newLokacija.isEmpty())
                     throw new ApplicationException("Empty string not allowed");
@@ -330,7 +330,7 @@ public class SettingsForm {
 		btnDodajZanr.setLayoutData(gridData9);
 		btnDodajZanr.addSelectionListener(new HandledSelectionAdapter(sShell) {
             @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
+            public void handledSelected() throws ApplicationException {
                 String newZanr = textNovZanr.getText();
                 if (newZanr == null || newZanr.isEmpty())
                     throw new ApplicationException("Empty string not allowed");

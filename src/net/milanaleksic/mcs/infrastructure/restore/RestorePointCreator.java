@@ -206,7 +206,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
         }
     }
 
-    private void appendRestartCountersScript(PrintStream outputStream, Connection conn) throws UnsupportedEncodingException, FileNotFoundException, SQLException {
+    private void appendRestartCountersScript(PrintStream outputStream, Connection conn) throws SQLException {
         if (log.isDebugEnabled())
             log.debug("Writing new Restart Counters script fragment...");
         outputStream.print(createRestartWithForTable("Param", "IdParam", conn));

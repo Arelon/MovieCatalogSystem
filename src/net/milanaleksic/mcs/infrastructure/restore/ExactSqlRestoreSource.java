@@ -7,7 +7,7 @@ package net.milanaleksic.mcs.infrastructure.restore;
  */
 public class ExactSqlRestoreSource implements RestoreSource {
 
-    private String script;
+    private final String script;
 
     public ExactSqlRestoreSource(String script) {
         this.script = script;

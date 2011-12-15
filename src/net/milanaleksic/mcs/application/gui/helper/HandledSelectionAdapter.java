@@ -13,9 +13,9 @@ import org.eclipse.swt.widgets.Shell;
  */
 public abstract class HandledSelectionAdapter extends org.eclipse.swt.events.SelectionAdapter {
 
-    private Shell parent;
+    private final Shell parent;
 
-    public abstract void handledSelected(SelectionEvent event) throws ApplicationException;
+    public abstract void handledSelected() throws ApplicationException;
 
     public HandledSelectionAdapter(Shell parent) {
         this.parent = parent;
@@ -24,7 +24,7 @@ public abstract class HandledSelectionAdapter extends org.eclipse.swt.events.Sel
     @Override
     public final void widgetSelected(SelectionEvent event) {
         try {
-            handledSelected(event);
+            handledSelected();
         } catch(ApplicationException exc) {
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
             box.setMessage(String.format("Error (%s): %s", exc.getClass().getCanonicalName(), exc.getMessage()));

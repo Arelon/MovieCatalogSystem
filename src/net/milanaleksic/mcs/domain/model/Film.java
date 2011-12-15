@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -157,12 +156,12 @@ public class Film implements Serializable, Comparable<Film> {
 		// priprema informacija za narednu obradu (polje "prisutan")
 		int brojNeprisutnih = 0;
 		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().getPozicija().equals("присутан"))
+			if (!medij.getPozicija().getPozicija().equals(Pozicija.DEFAULT_POZICIJA_NAME))
 				brojNeprisutnih++;
 		}
 		
 		if (brojNeprisutnih==0)
-			pozicija = "присутан";
+			pozicija = Pozicija.DEFAULT_POZICIJA_NAME;
 		else {
             StringBuilder builder = new StringBuilder();
 			for (Medij medij : getMedijs()) {
@@ -171,7 +170,7 @@ public class Film implements Serializable, Comparable<Film> {
 			pozicija = builder.substring(0, builder.length()-2);
 		}						
 		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().getPozicija().equals("присутан"))
+			if (!medij.getPozicija().getPozicija().equals(Pozicija.DEFAULT_POZICIJA_NAME))
 				pozicija = medij.getPozicija().toString();
 		}
 	}

@@ -22,7 +22,7 @@ public class ApplicationManager {
 
     @Inject private MainForm mainForm;
 
-    private ApplicationConfiguration applicationConfiguration;
+    private final ApplicationConfiguration applicationConfiguration;
 
     private Set<LifecycleListener> lifecycleListeners;
 
