@@ -57,7 +57,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         return 0;
     }
 
-    private void safeRestoreDatabaseIfNeeded(Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+    private void safeRestoreDatabaseIfNeeded(Connection conn) throws SQLException, IOException {
         int activeMCSDBVersion = getDbVersion();
         int versionFromDatabase = getDatabaseVersionFromDatabase(conn);
         if (versionFromDatabase == activeMCSDBVersion)

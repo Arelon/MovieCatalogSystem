@@ -27,7 +27,5 @@ public interface FilmRepository {
 
     void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position);
 
-    void updateFilm(Film modifiedFilm);
-
     FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, @Nullable Zanr zanrFilter, @Nullable TipMedija tipMedijaFilter, @Nullable Pozicija pozicijaFilter, @Nullable String filterText);
 }
