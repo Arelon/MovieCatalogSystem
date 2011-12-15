@@ -16,12 +16,12 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
 	@Column(name="IDMEDIJ")
     private int idmedij;
 
-    @ManyToOne(targetEntity = TipMedija.class)
+    @ManyToOne
     @JoinColumn(name="IDTIP", nullable = false)
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
     private TipMedija tipMedija;
 
-    @ManyToOne(targetEntity = Pozicija.class)
+    @ManyToOne
     @JoinColumn(name="IDPOZICIJA", nullable = false)
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
     private Pozicija pozicija;
