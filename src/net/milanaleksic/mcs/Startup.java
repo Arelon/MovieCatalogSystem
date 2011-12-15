@@ -40,7 +40,7 @@ public class Startup {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
         context.registerShutdownHook();
         if (log.isDebugEnabled())
-            log.debug("Application context loaded");
+            log.debug("Application context booted");
         return context;
     }
 
