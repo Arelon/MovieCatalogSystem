@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="MCS" basedir="." default="zip" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <property file="build.properties" />
+    <property file="build.properties"/>
 
     <condition property="ivy.home" value="${env.IVY_HOME}">
         <isset property="env.IVY_HOME"/>
@@ -28,7 +28,7 @@
     </target>
 
     <target name="resolve" description="Retrieve dependencies with ivy" depends="init-ivy">
-        <ivy:retrieve file="ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]" />
+        <ivy:retrieve file="ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]"/>
         <copy todir="${ivy.resolved.libs.target.dir}" overwrite="true">
             <fileset dir="${explicit.lib.dir}">
                 <include name="**/*.jar"/>
@@ -40,29 +40,39 @@
         <fileset dir="${ivy.resolved.libs.target.dir}">
             <include name="*.*"/>
         </fileset>
+        <fileset dir="${findbugs.directory}/lib">
+            <include name="findbugs-ant.jar"/>
+        </fileset>
     </path>
 
     <target name="init" description="Init tasks" depends="resolve">
-        <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath" />
+        <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath"/>
         <tstamp/>
     </target>
 
     <target name="generate-metamodel" description="Generate JPA 2 metamodel" depends="init">
+        <mkdir dir="${compile.dir}"/>
         <mkdir dir="${src.metamodel.dir}"/>
-        <javac destDir="${src.metamodel.dir}" source="1.6" encoding="UTF-8" srcdir="${src.dir}">
-            <classpath refid="classpath" />
-            <compilerarg value="-proc:only"/>
+        <javac source="1.6" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}"
+               includeantruntime="false" includes="${src.metamodel.includes}" excludes="${src.metamodel.excludes}">
+            <classpath refid="classpath"/>
+            <compilerarg value="-processor"/>
+            <compilerarg value="org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor"/>
+            <compilerarg value="-s"/>
+            <compilerarg value="${src.metamodel.dir}" />
+            <compilerarg value="-proc:only" />
         </javac>
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
-        <mkdir dir="${compile.dir}"/>
-		<iajc destDir="${compile.dir}" source="1.6" sourceRootCopyFilter="**/*.java" inpathDirCopyFilter="**/*.java,**/*.class" encoding="UTF-8" showWeaveInfo="true">
-			<sourceroots>
-				<pathelement location="${src.dir}" />
-			</sourceroots>
-			<classpath refid="classpath" />
-		</iajc>
+        <iajc destDir="${compile.dir}" source="1.6" sourceRootCopyFilter="**/*.java"
+              inpathDirCopyFilter="**/*.java,**/*.class" encoding="UTF-8" showWeaveInfo="true">
+            <sourceroots>
+                <pathelement location="${src.dir}"/>
+                <pathelement location="${src.metamodel.dir}"/>
+            </sourceroots>
+            <classpath refid="classpath"/>
+        </iajc>
 
         <copy todir="${compile.dir}" overwrite="true">
             <fileset dir="${src.dir}">
@@ -73,8 +83,8 @@
 
     <target name="jar" description="JARs the MovieCatalogSystem" depends="compile">
         <mkdir dir="${distro.dir}"/>
-        <buildnumber file="${build.properties.file}" />
-        <property file="${build.properties.file}"  />
+        <buildnumber file="${build.properties.file}"/>
+        <property file="${build.properties.file}"/>
 
         <jar destfile="${distro.dir}/mcs-${src.version}.${build.number}.jar">
             <manifest>
@@ -85,7 +95,8 @@
             <fileset dir="${compile.dir}"/>
         </jar>
 
-        <copy todir="${ivy.resolved.libs.target.dir}" file="${distro.dir}/mcs-${src.version}.${build.number}.jar" overwrite="true"/>
+        <copy todir="${ivy.resolved.libs.target.dir}" file="${distro.dir}/mcs-${src.version}.${build.number}.jar"
+              overwrite="true"/>
     </target>
 
     <target name="zip" description="ZIPs the whole distro" depends="jar">
@@ -108,14 +119,15 @@
 
         <delete file="${ant.project.name}-${src.version}.${build.number}-*.zip" failonerror="false"/>
 
-        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.number}-${DSTAMP}${TSTAMP}.zip" duplicate="preserve">
-            <zipfileset dir="${build.overrides.dir}" prefix="" />
+        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.number}-${DSTAMP}${TSTAMP}.zip"
+             duplicate="preserve">
+            <zipfileset dir="${build.overrides.dir}" prefix=""/>
             <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
-                <exclude name="mcs.jar" />
-                <exclude name="aspectjtools.jar" />
-                <exclude name="aspectjweaver.jar" />
-                <exclude name="hamcrest*.jar" />
-                <exclude name="junit.jar" />
+                <exclude name="mcs.jar"/>
+                <exclude name="aspectjtools.jar"/>
+                <exclude name="aspectjweaver.jar"/>
+                <exclude name="hamcrest*.jar"/>
+                <exclude name="junit.jar"/>
             </zipfileset>
             <zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar"/>
             <zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar"/>
@@ -125,6 +137,21 @@
 
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
+    </target>
+
+    <target name="findbugs" description="FindBugs" depends="compile">
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath" />
+        <findbugs failonerror="true"
+                  home="${findbugs.directory}" output="html" outputFile="FindBugsAnalysis.html" jvmargs="-Xmx256m"
+                  reportlevel="low">
+            <auxclasspath>
+                <fileset dir="${ivy.resolved.libs.target.dir}">
+                    <include name="*.*"/>
+                </fileset>
+            </auxclasspath>
+            <sourcepath path="${src.dir}" />
+            <class location="${compile.dir}"/>
+        </findbugs>
     </target>
 
 
