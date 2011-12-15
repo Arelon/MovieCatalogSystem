@@ -36,7 +36,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
 	private Set<Film> films = new HashSet<Film>(0);
 	
 	@Transient
-    private String stringVal= null;
+    private String toStringValue = null;
 
 	public Medij() {
 	}
@@ -87,13 +87,13 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
 
 	@Override
 	public String toString() {
-		if (stringVal == null) {
+		if (toStringValue == null) {
 			String tmpId = String.valueOf(getIndeks());
 			while (tmpId.length()<3)
 				tmpId = '0'+tmpId;
-			stringVal = tipMedija.getNaziv()+tmpId;
+			toStringValue = tipMedija.getNaziv()+tmpId;
 		}
-		return stringVal;
+		return toStringValue;
 	}
 
 	@Override
