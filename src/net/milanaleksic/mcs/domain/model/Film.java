@@ -18,7 +18,7 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(name = "IDFILM")
 	private int idfilm;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE } )
+    @ManyToOne
     @JoinColumn(name="IDZANR", nullable=false)
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
 	private Zanr zanr;
