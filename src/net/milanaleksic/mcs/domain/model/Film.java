@@ -18,10 +18,9 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(name = "IDFILM")
 	private int idfilm;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE } )
     @JoinColumn(name="IDZANR", nullable=false)
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	private Zanr zanr;
 
     @Column(length = 100, nullable = false)
@@ -39,14 +38,13 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(name = "IMDB_ID", length = 10)
 	private String imdbId;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "ZAUZIMA",
         schema = "DB2ADMIN",
         joinColumns = { @JoinColumn(name = "IDFILM") },
         inverseJoinColumns = { @JoinColumn(name = "IDMEDIJ") }
     )
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=15)
