@@ -42,8 +42,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
     @Override
     public void deleteZanrByName(String zanr) throws ApplicationException {
         Zanr zanrToDelete = getZanrByName(zanr);
-        //TODO: move to named queries
-        TypedQuery<Long> query = entityManager.createQuery("select count(*) from Film where zanr=:zanr", Long.class);
+        TypedQuery<Long> query = entityManager.createNamedQuery("getCountOfFilmWithZanrByName", Long.class);
         query.setParameter("zanr", zanrToDelete);
         long count = query.getSingleResult();
         if (count > 0)

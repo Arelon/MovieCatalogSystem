@@ -25,9 +25,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     @Override
     @Transactional(readOnly = true)
     public int getNextMedijIndeks(String mediumTypeName) {
-        //TODO: move to named queries
-        TypedQuery<Integer> query = entityManager.createQuery(
-                "select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija", Integer.class);
+        TypedQuery<Integer> query = entityManager.createNamedQuery("getNextMedijIndeks", Integer.class);
         query.setParameter("tipMedija", mediumTypeName);
         Integer nextMedijIndeks = query.getSingleResult();
         if (nextMedijIndeks==null)
@@ -53,10 +51,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     @Override
     @Transactional(readOnly = true)
     public List<Medij> getMedijs() {
-        //TODO: move to named queries
-        TypedQuery<Medij> query = entityManager.createQuery(
-            "from Medij m order by m.tipMedija.naziv, indeks", Medij.class);
-        query.setHint("org.hibernate.cacheable", true);
+        TypedQuery<Medij> query = entityManager.createNamedQuery("getMedijsOrdered", Medij.class);
         return query.getResultList();
     }
 }
