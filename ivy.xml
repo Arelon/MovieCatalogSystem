@@ -133,6 +133,12 @@
         <dependency org="org.kohsuke.jetbrains" name="annotations" rev="9.0" transitive="false">
             <artifact name="annotations" type="jar"/>
         </dependency>
+        <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final">
+            <artifact name="hibernate-validator" type="jar"/>
+        </dependency>
+        <dependency org="javax.validation" name="validation-api" rev="1.0.0.GA">
+            <artifact name="validation-api" type="jar"/>
+        </dependency>
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
             <artifact name="dom4j" type="jar"/>
             <exclude org="xml-apis" name="xml-apis"/>

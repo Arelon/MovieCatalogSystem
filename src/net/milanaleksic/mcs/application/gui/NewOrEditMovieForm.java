@@ -348,6 +348,7 @@ public class NewOrEditMovieForm {
 		btnPrihvati.setText("Сними");
 		btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                //TODO: replace with Hibernate Validator (JSR 303 implementation)
                 StringBuilder razlogOtkaza = new StringBuilder();
                 if (listDiskovi.getItemCount() == 0)
                     razlogOtkaza.append("\r\nМорате доделити барем један медијум");
