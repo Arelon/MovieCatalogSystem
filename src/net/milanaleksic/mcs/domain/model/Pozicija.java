@@ -14,10 +14,9 @@ public class Pozicija implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="IDPOZICIJA")
 	private int idpozicija;
 
-    @Column(name="POZICIJA", length = 100, nullable = false)
+    @Column(length = 100, nullable = false)
 	private String pozicija;
 
 	@OneToMany(orphanRemoval=true, mappedBy = "pozicija", fetch = FetchType.LAZY)

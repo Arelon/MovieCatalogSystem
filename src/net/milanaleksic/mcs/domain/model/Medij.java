@@ -12,7 +12,6 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="IDMEDIJ")
     private int idmedij;
 
     @ManyToOne
@@ -25,7 +24,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SELECT)
     private Pozicija pozicija;
 
-    @Column(name = "INDEKS", nullable = false)
+    @Column(nullable = false)
     private int indeks;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "medijs")

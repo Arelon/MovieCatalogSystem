@@ -12,7 +12,6 @@ public class Film implements Serializable, Comparable<Film> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IDFILM")
 	private int idfilm;
 
     @ManyToOne
@@ -50,7 +49,7 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(name="MEDIJ_LIST")
     private String medijListAsString;
 
-    @Column(name="POZICIJA")
+    @Column
     private String pozicija;
 
 	public Film() {

@@ -12,10 +12,9 @@ public class Zanr implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="IDZANR")
 	private int idzanr;
 
-    @Column(name="ZANR", length = 100, nullable = false)
+    @Column(length = 100, nullable = false)
 	private String zanr;
 
     @OneToMany(orphanRemoval=true, mappedBy = "zanr", fetch = FetchType.LAZY)

@@ -12,10 +12,9 @@ public class TipMedija implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="IDTIP")
 	private int idtip;
 
-    @Column(name="NAZIV", length = 100, nullable = false)
+    @Column(length = 100, nullable = false)
 	private String naziv;
 
     @OneToMany(orphanRemoval=true, mappedBy = "tipMedija", fetch = FetchType.LAZY)
