@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="MEDIJ", schema="DB2ADMIN")
+@Table(name="MEDIJ")
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(name="FILM", schema="DB2ADMIN")
+@Table(name="FILM")
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
