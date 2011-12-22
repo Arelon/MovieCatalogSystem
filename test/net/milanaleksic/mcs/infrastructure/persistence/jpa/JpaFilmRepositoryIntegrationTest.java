@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.domain.impl;
+package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
 import org.apache.log4j.BasicConfigurator;

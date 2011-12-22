@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.domain.service.impl;
+package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.AbstractService;
