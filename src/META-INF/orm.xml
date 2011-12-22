@@ -3,19 +3,27 @@
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
 
     <named-query name="getCountOfMedijOnPozicijaByName">
-        <query>select count(*) from Medij where pozicija=:pozicija</query>
+        <query><![CDATA[
+            select count(*) from Medij where pozicija=:pozicija
+        ]]></query>
     </named-query>
 
     <named-query name="getCountOfFilmWithZanrByName">
-        <query>select count(*) from Film where zanr=:zanr</query>
+        <query><![CDATA[
+            select count(*) from Film where zanr=:zanr
+        ]]></query>
     </named-query>
 
     <named-query name="getNextMedijIndeks">
-        <query>select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija</query>
+        <query><![CDATA[
+            select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija
+        ]]></query>
     </named-query>
 
     <named-query name="getMedijsOrdered">
-        <query>from Medij m order by m.tipMedija.naziv, indeks</query>
+        <query><![CDATA[
+            from Medij m order by m.tipMedija.naziv, indeks
+        ]]></query>
         <hint name="org.hibernate.cacheable" value="true" />
     </named-query>
 </entity-mappings>
