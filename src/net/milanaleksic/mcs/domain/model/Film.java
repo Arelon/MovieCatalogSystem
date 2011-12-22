@@ -1,13 +1,10 @@
 package net.milanaleksic.mcs.domain.model;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(name="FILM")
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
