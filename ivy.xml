@@ -121,22 +121,25 @@
         <dependency org="javax.inject" name="javax.inject" rev="1" transitive="false">
             <artifact name="javax.inject" type="jar"/>
         </dependency>
-        <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.1.2">
-            <artifact name="httpclient" type="jar"/>
+        <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.1.2" transitive="false">
+            <artifact name="httpclient" type="jar" />
         </dependency>
-        <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.0">
+        <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.1.2" transitive="false">
+            <artifact name="httpcore" type="jar" />
+        </dependency>
+        <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.0" transitive="false">
             <artifact name="jackson-core-asl" type="jar"/>
         </dependency>
-        <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="1.9.0">
+        <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="1.9.0" transitive="false">
             <artifact name="jackson-mapper-asl" type="jar"/>
         </dependency>
         <dependency org="org.kohsuke.jetbrains" name="annotations" rev="9.0" transitive="false">
             <artifact name="annotations" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final">
+        <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final" transitive="false">
             <artifact name="hibernate-validator" type="jar"/>
         </dependency>
-        <dependency org="javax.validation" name="validation-api" rev="1.0.0.GA">
+        <dependency org="javax.validation" name="validation-api" rev="1.0.0.GA" transitive="false">
             <artifact name="validation-api" type="jar"/>
         </dependency>
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
