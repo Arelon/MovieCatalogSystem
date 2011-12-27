@@ -230,7 +230,8 @@ public class MainForm extends Observable {
 				log.error("Eksportovanje u zeljeni format nije podrzano");
 				return;
 			}
-            final Film[] allFilms = getAllFilms(0).toArray(new Film[1]);
+            List<Film> filmList = getAllFilms(0);
+            final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
 			exporter.export(new ExporterSource() {
 				
 				@Override public String getTargetFile() {

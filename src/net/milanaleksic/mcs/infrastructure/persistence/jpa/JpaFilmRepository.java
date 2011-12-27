@@ -82,8 +82,10 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
-        else if (predicates.size()>1)
-            cq.where(builder.and(predicates.toArray(new Predicate[1])));
+        else if (predicates.size()>1) {
+            Predicate[] predicateArray = new Predicate[predicates.size()];
+            cq.where(builder.and(predicates.toArray(predicateArray)));
+        }
 
         TypedQuery<Long> query = entityManager.createQuery(cq);
         if (textFilter != null)
@@ -129,8 +131,10 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
-        else if (predicates.size()>1)
-            cq.where(builder.and(predicates.toArray(new Predicate[1])));
+        else if (predicates.size()>1) {
+            Predicate[] predicateArray = new Predicate[predicates.size()];
+            cq.where(builder.and(predicates.toArray(predicateArray)));
+        }
 
         cq.orderBy(builder.asc(film.<String>get(Film_.medijListAsString)),
                 builder.asc(film.<String>get(Film_.nazivfilma)));
