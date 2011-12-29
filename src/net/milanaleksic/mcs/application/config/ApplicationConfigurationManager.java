@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.application.config;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.*;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -23,7 +24,8 @@ public class ApplicationConfigurationManager {
         try {
             JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
             Unmarshaller u = jc.createUnmarshaller();
-            applicationConfiguration = (ApplicationConfiguration) u.unmarshal(configurationFile);
+            StreamSource source = new StreamSource(configurationFile);
+            applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
             if (log.isInfoEnabled())
                 log.info("ApplicationConfiguration read: "+ applicationConfiguration);
         } catch (Throwable t) {
