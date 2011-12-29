@@ -5,6 +5,7 @@ ivy
 out
 src-generated-metamodel
 startup/db
+startup/log
 startup/restore
 *.iml
 *.log
