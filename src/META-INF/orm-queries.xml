@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
+
+    <named-query name="getCountOfMedijOnPozicijaByName">
+        <query><![CDATA[
+            select count(*) from Medij where pozicija=:pozicija
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
+    <named-query name="getCountOfFilmWithZanrByName">
+        <query><![CDATA[
+            select count(*) from Film where zanr=:zanr
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
+    <named-query name="getNextMedijIndeks">
+        <query><![CDATA[
+            select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija
+        ]]></query>
+    </named-query>
+
+    <named-query name="getMedijsOrdered">
+        <query><![CDATA[
+            from Medij m order by m.tipMedija.naziv, indeks
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+</entity-mappings>

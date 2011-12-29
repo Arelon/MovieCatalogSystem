@@ -8,30 +8,4 @@
         </persistence-unit-defaults>
     </persistence-unit-metadata>
 
-    <named-query name="getCountOfMedijOnPozicijaByName">
-        <query><![CDATA[
-            select count(*) from Medij where pozicija=:pozicija
-        ]]></query>
-        <hint name="org.hibernate.cacheable" value="true" />
-    </named-query>
-
-    <named-query name="getCountOfFilmWithZanrByName">
-        <query><![CDATA[
-            select count(*) from Film where zanr=:zanr
-        ]]></query>
-        <hint name="org.hibernate.cacheable" value="true" />
-    </named-query>
-
-    <named-query name="getNextMedijIndeks">
-        <query><![CDATA[
-            select max(indeks)+1 from Medij m where m.tipMedija.naziv=:tipMedija
-        ]]></query>
-    </named-query>
-
-    <named-query name="getMedijsOrdered">
-        <query><![CDATA[
-            from Medij m order by m.tipMedija.naziv, indeks
-        ]]></query>
-        <hint name="org.hibernate.cacheable" value="true" />
-    </named-query>
 </entity-mappings>
