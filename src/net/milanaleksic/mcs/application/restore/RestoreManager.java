@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.application.restore;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.LifecycleListener;
+import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.ClosingForm;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
@@ -17,20 +18,22 @@ public class RestoreManager implements LifecycleListener {
 
     @Inject private ApplicationManager applicationManager;
 
+    @Inject private ProgramArgsService programArgsService;
+
     @Inject private RestorePointCreator restorePointCreator;
 
     @Inject private RestorePointRestorer restorePointRestorer;
 
     @Override public void applicationStarted() {
-        if (applicationManager.getProgramArgs().isNoRestorationProcessing())
+        if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
-        restorePointCreator.setDbVersion(applicationManager.getApplicationConfiguration().getDatabaseConfiguration().getDBVersion());
-        restorePointRestorer.setDbVersion(applicationManager.getApplicationConfiguration().getDatabaseConfiguration().getDBVersion());
+        restorePointCreator.setDbVersion(applicationManager.getApplicationConfiguration().getDatabaseConfiguration().getDbVersion());
+        restorePointRestorer.setDbVersion(applicationManager.getApplicationConfiguration().getDatabaseConfiguration().getDbVersion());
         restorePointRestorer.restoreDatabaseIfNeeded();
     }
 
     @Override public void applicationShutdown() {
-        if (applicationManager.getProgramArgs().isNoRestorationProcessing())
+        if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
         if (applicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
             new ClosingForm();

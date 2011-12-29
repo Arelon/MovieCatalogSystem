@@ -8,10 +8,8 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author Milan 22 Sep 2007
@@ -24,10 +22,8 @@ public class ApplicationManager {
 
     private final ApplicationConfiguration applicationConfiguration;
 
-    private Set<LifecycleListener> lifecycleListeners;
-
+    private Set<LifecycleListener> lifecycleListeners = new HashSet<LifecycleListener>();
     private static String version = null;
-    private ProgramArgs programArgs;
     private UserConfiguration userConfiguration;
 
     public ApplicationManager() {
@@ -51,22 +47,22 @@ public class ApplicationManager {
     public static synchronized String getVersion() {
         if (version==null) {
             Properties properties = new Properties();
+            InputStream resourceAsStream = null;
             try {
-                properties.load(Startup.class.getResourceAsStream("version.properties"));
+                resourceAsStream = Startup.class.getResourceAsStream("version.properties");
+                properties.load(resourceAsStream);
                 version = properties.getProperty("src.version")+'.'+properties.getProperty("build.number");
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (resourceAsStream != null)
+                        resourceAsStream.close();
+                } catch (IOException ignored) {
+                }
             }
         }
         return version;
-    }
-
-    public void setProgramArgs(ProgramArgs programArgs) {
-        this.programArgs = programArgs;
-    }
-
-    public ProgramArgs getProgramArgs() {
-        return programArgs;
     }
 
     public void setUserConfiguration(UserConfiguration userConfiguration) {

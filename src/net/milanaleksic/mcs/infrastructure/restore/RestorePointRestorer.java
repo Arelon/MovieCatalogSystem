@@ -2,8 +2,6 @@ package net.milanaleksic.mcs.infrastructure.restore;
 
 import net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.sql.*;
@@ -14,8 +12,6 @@ import java.sql.*;
  * Time: 5:26 PM
  */
 public class RestorePointRestorer extends AbstractRestorePointService {
-
-    protected final Log log = LogFactory.getLog(this.getClass());
 
     private String patternForSqlAlters;
     private String patternForCodeAlters;
@@ -83,10 +79,11 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             return 0;
         LineNumberReader reader = null;
         try {
-            reader = new LineNumberReader(new FileReader(restoreFile));
+            reader = new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), "UTF-8"));
             String firstLine = reader.readLine();
-            if (firstLine.contains(MCS_VERSION_TAG))
-                return Integer.parseInt((firstLine.indexOf(MCS_VERSION_TAG) + firstLine.substring(MCS_VERSION_TAG.length())).trim());
+            if (firstLine != null)
+                if (firstLine.contains(MCS_VERSION_TAG))
+                    return Integer.parseInt((firstLine.indexOf(MCS_VERSION_TAG) + firstLine.substring(MCS_VERSION_TAG.length())).trim());
         } catch (IOException e) {
             log.error("IO Error while reading DB version from restore point", e);
         } finally {

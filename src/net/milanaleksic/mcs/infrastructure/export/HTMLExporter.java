@@ -53,7 +53,7 @@ public class HTMLExporter implements Exporter {
     private void writeTableContents(ExporterSource source, PrintWriter writer) {
         for (int i = 0; i< source.getItemCount(); i++) {
             String rest;
-            if (i % 2 == 1)
+            if (i % 2 != 0)
                 rest = " class=\"r1\"";
             else
                 rest = " class=\"r2\"";
@@ -117,8 +117,9 @@ public class HTMLExporter implements Exporter {
     private String dohvatiCss() {
         StringBuilder rez = new StringBuilder();
 		File css = new File("export/stilovi.css");
+        BufferedReader reader = null;
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(css), "UTF-8"));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(css), "UTF-8"));
 			String tmp;
 			while ((tmp = reader.readLine()) != null)
 				rez.append(tmp).append('\r').append('\n');
@@ -126,15 +127,22 @@ public class HTMLExporter implements Exporter {
 			logger.error("FileNotFoundException", e);
 		} catch (IOException e) {
 			logger.error("IOException", e);
-		}		
+		} finally {
+            if (reader != null)
+                try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+        }
 		return rez.toString().trim();
 	}
 
 	private String dohvatiJs() {
         StringBuilder rez = new StringBuilder();
 		File js = new File("export/prog.js");
+        BufferedReader reader = null;
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(js), "UTF-8"));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(js), "UTF-8"));
 			String tmp;
 			while ((tmp = reader.readLine()) != null) {
 				tmp = tmp.replace('\t', ' ');
@@ -149,7 +157,13 @@ public class HTMLExporter implements Exporter {
 			logger.error("FileNotFoundException", e);
 		} catch (IOException e) {
 			logger.error("IOException", e);
-		}		
+		} finally {
+            if (reader != null)
+                try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+        }
 		return rez.toString().trim();
 	}
 

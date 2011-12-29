@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
+import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -12,14 +13,8 @@ public class Startup {
 
     private static final Logger log = Logger.getLogger(Startup.class);
 
-    private static String[] programArgs;
-
-    public static String[] getProgramArgs() {
-        return programArgs;
-    }
-
     public static void main(String[] args) {
-        programArgs = args;
+        ProgramArgsService.setProgramArgs(args);
         FileLock lock = null;
         try {
             lock = getSingletonApplicationFileLock();

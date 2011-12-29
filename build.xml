@@ -143,7 +143,7 @@
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath" />
         <findbugs failonerror="true"
                   home="${findbugs.directory}" output="html" outputFile="FindBugsAnalysis.html" jvmargs="-Xmx256m"
-                  reportlevel="low">
+                  reportlevel="low" excludefilter="FindBugsExclusiveFilter.xml">
             <auxclasspath>
                 <fileset dir="${ivy.resolved.libs.target.dir}">
                     <include name="*.*"/>

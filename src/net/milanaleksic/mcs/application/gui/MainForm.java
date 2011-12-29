@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.export.*;
@@ -39,6 +40,8 @@ public class MainForm extends Observable {
     @Inject private DeleteMovieForm deleteMovieForm;
 
     @Inject private FilmRepository filmRepository;
+
+    @Inject private ProgramArgsService programArgsService;
 
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 
@@ -193,7 +196,7 @@ public class MainForm extends Observable {
 			
 		@Override public void shellActivated(ShellEvent e) {
 			sShell.removeShellListener(this);
-			if (applicationManager.getProgramArgs().isNoInitialMovieListLoading())
+			if (programArgsService.getProgramArgs().isNoInitialMovieListLoading())
                 return;
             doFillMainTable();
 		}
@@ -514,28 +517,28 @@ public class MainForm extends Observable {
 		toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
 		toolNew.setText("Нов филм ...");
-		toolNew.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/media.png")));
+		toolNew.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/media.png")));
 		ToolItem toolErase = new ToolItem(toolBar, SWT.PUSH);
 		toolErase.setText("Обриши филм");
-		toolErase.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png")));
+		toolErase.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png")));
 		ToolItem toolExport = new ToolItem(toolBar, SWT.PUSH);
-		toolExport.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/folder_outbox.png")));
+		toolExport.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/folder_outbox.png")));
 		toolExport.setText("Експортовање");
 		toolExport.addSelectionListener(new ToolExportSelectionAdapter());
 		toolErase.addSelectionListener(new ToolEraseSelectionAdapter());
 		ToolItem toolSettings = new ToolItem(toolBar, SWT.PUSH);
-		toolSettings.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/advancedsettings.png")));
+		toolSettings.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/advancedsettings.png")));
 		toolSettings.setWidth(90);
 		toolSettings.setText("Подешавања...");
 		toolSettings.addSelectionListener(new ToolSettingsSelectionAdapter());
 		new ToolItem(toolBar, SWT.SEPARATOR);
 		ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
 		toolAbout.setText("О програму ...");
-		toolAbout.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/jabber_protocol.png")));
+		toolAbout.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/jabber_protocol.png")));
 		new ToolItem(toolBar, SWT.SEPARATOR);
 		ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
 		toolExit.setText("Излаз");
-		toolExit.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/shutdown.png")));
+		toolExit.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/shutdown.png")));
 		toolExit.addSelectionListener(new ToolExitSelectionAdapter());
 		toolAbout.addSelectionListener(new ToolAboutSelectionAdapter());
 		toolNew.addSelectionListener(new ToolNewSelectionAdapter());
@@ -583,11 +586,11 @@ public class MainForm extends Observable {
 		toolTicker.setEnabled(true);
 		toolTicker.setLayoutData(gridData4);
 		ToolItem toolItem = new ToolItem(toolTicker, SWT.PUSH);
-		toolItem.setImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
-		toolItem.setDisabledImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
+		toolItem.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
+		toolItem.setDisabledImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
 		toolItem.setEnabled(false);
 		toolItem.setWidth(24);
-		toolItem.setHotImage(new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
+		toolItem.setHotImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
 	}
 	
 	

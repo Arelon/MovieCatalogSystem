@@ -54,14 +54,22 @@ public class AlterScript3 implements AlterScript {
 
     private void executeProcessing(Connection conn, Set<Integer> filmIds) throws SQLException {
         for (Integer idfilm : filmIds) {
-            PreparedStatement st = conn.prepareStatement("SELECT naziv, indeks, pozicija from DB2ADMIN.Zauzima z\n" +
+            processSingleMovie(conn, idfilm);
+        }
+    }
+
+    private ResultSet processSingleMovie(Connection conn, Integer idfilm) throws SQLException {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            st = conn.prepareStatement("SELECT naziv, indeks, pozicija from DB2ADMIN.Zauzima z\n" +
                     "inner join db2admin.medij m on z.idmedij=m.idmedij \n" +
                     "inner join db2admin.tipmedija t on t.idtip=m.idtip \n" +
                     "inner join db2admin.pozicija p on m.idpozicija=p.idpozicija \n" +
                     "where idfilm=?\n" +
                     "order by m.idtip, m.indeks");
             st.setInt(1, idfilm);
-            ResultSet rs = st.executeQuery();
+            rs = st.executeQuery();
 
             String filmPosition = Pozicija.DEFAULT_POZICIJA_NAME;
             StringBuilder builder = new StringBuilder();
@@ -95,6 +103,11 @@ public class AlterScript3 implements AlterScript {
 
             DBUtil.close(rs);
             DBUtil.close(st);
+            return rs;
+        } catch (SQLException e) {
+            DBUtil.close(rs);
+            DBUtil.close(st);
+            throw e;
         }
     }
 

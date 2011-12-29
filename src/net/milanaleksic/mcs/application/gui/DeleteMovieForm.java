@@ -27,6 +27,16 @@ public class DeleteMovieForm {
     @Inject
     private FilmRepository filmRepository;
 
+    private final static class AlertImagePainter implements PaintListener {
+
+        public void paintControl(PaintEvent e) {
+            GC gc = e.gc;
+            Image buffer = new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png"));
+            gc.drawImage(buffer, 0, 0);
+            buffer.dispose();
+        }
+    }
+
     public void open(Shell parent, Film film, Runnable runnable) {
 		this.parent = parent;
         this.parentRunner = runnable;
@@ -125,14 +135,7 @@ public class DeleteMovieForm {
 
 		Color bckg = canvas.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 		canvas.setBackground(bckg);
-		canvas.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent e) {
-                GC gc = e.gc;
-                Image buffer = new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png"));
-                gc.drawImage(buffer, 0, 0);
-                buffer.dispose();
-            }
-        });
+		canvas.addPaintListener(new AlertImagePainter());
 	}
 
 }

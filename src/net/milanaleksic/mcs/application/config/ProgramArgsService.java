@@ -1,29 +1,22 @@
 package net.milanaleksic.mcs.application.config;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.Startup;
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.springframework.beans.factory.InitializingBean;
-
-import javax.inject.Inject;
 
 /**
  * User: Milan Aleksic
  * Date: 8/6/11
  * Time: 7:54 PM
  */
-public class ProgramArgsService implements InitializingBean {
+public class ProgramArgsService {
 
     private static final Logger log = Logger.getLogger(ProgramArgsService.class);
 
-    @Inject private ApplicationManager applicationManager;
+    private static ProgramArgs programArgs;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        ProgramArgs programArgs = getApplicationArgs(Startup.getProgramArgs());
-        applicationManager.setProgramArgs(programArgs);
+    public static void setProgramArgs(String[] programArgs) {
+        ProgramArgsService.programArgs = getApplicationArgs(programArgs);
     }
 
     private static ProgramArgs getApplicationArgs(String[] args) {
@@ -43,4 +36,7 @@ public class ProgramArgsService implements InitializingBean {
         return programArgs;
     }
 
+    public ProgramArgs getProgramArgs() {
+        return programArgs;
+    }
 }

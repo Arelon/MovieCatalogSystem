@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<Match>
+        <Class name="~.*domain.model\.[^\_]*\_" />
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD,UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
+    </Match>
+
+    <Match>
+        <Class name="~.*domain.model.*" />
+        <Bug pattern="SE_NO_SERIALVERSIONID" />
+    </Match>
+
+    <Match>
+        <Class name="~.*domain.model.*" />
+        <Method name="~setId.*" />
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    </Match>
+
+    <Match>
+        <Class name="~.*infrastructure.tmdb.bean.*" />
+        <Bug pattern="UWF_UNWRITTEN_FIELD" />
+    </Match>
+
+    <Match>
+        <Class name="net.milanaleksic.mcs.infrastructure.util.MethodTimingAspect" />
+        <Method name="~timedMethod" />
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    </Match>
+
+</FindBugsFilter>

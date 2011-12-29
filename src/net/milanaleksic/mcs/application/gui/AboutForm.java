@@ -5,6 +5,7 @@ import java.net.URI;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,7 +23,47 @@ public class AboutForm {
 
 	private Shell sShell = null;
 	private Shell parent = null;
-	private Text textArea = null;
+    private Text textArea = null;
+    private static final SelectionAdapter emailSender = new SelectionAdapter() {
+        public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+            new Thread(new Runnable() {
+
+                public void run() {
+                    if (Desktop.isDesktopSupported()) {
+                        Desktop desktop = Desktop.getDesktop();
+                        if (desktop.isSupported(Desktop.Action.MAIL)) {
+                            try {
+                                desktop.mail(new URI("mailto:milan.aleksic@gmail.com"));
+                            } catch (Exception exc) {
+                                exc.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+            }).start();
+        }
+    };
+    private static final SelectionAdapter webSiteVisitor = new SelectionAdapter() {
+        public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+            new Thread(new Runnable() {
+
+                public void run() {
+                    if (Desktop.isDesktopSupported()) {
+                        Desktop desktop = Desktop.getDesktop();
+                        if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                            try {
+                                desktop.browse(URI.create("http://www.milanaleksic.net"));
+                            } catch (Exception exc) {
+                                exc.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+            }).start();
+        }
+    };
 
     public AboutForm(Shell parent) {
 		this.parent = parent;
@@ -79,26 +120,7 @@ public class AboutForm {
 		labEmail.setText("milan.aleksic@gmail.com");
         Button btnEmail = new Button(composite, SWT.NONE);
 		btnEmail.setText("пошаљи email");
-		btnEmail.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                new Thread(new Runnable() {
-
-                    public void run() {
-                        if (Desktop.isDesktopSupported()) {
-                            Desktop desktop = Desktop.getDesktop();
-                            if (desktop.isSupported(Desktop.Action.MAIL)) {
-                                try {
-                                    desktop.mail(new URI("mailto:milan.aleksic@gmail.com"));
-                                } catch (Exception exc) {
-                                    exc.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-
-                }).start();
-            }
-        });
+        btnEmail.addSelectionListener(emailSender);
 	}
 
 	private void createComposite1() {
@@ -114,26 +136,7 @@ public class AboutForm {
 		labSite.setText("www.milanaleksic.net  ");
         Button btnSite = new Button(composite1, SWT.NONE);
 		btnSite.setText("иди");
-		btnSite.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                new Thread(new Runnable() {
-
-                    public void run() {
-                        if (Desktop.isDesktopSupported()) {
-                            Desktop desktop = Desktop.getDesktop();
-                            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                                try {
-                                    desktop.browse(URI.create("http://www.milanaleksic.net"));
-                                } catch (Exception exc) {
-                                    exc.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-
-                }).start();
-            }
-        });
+		btnSite.addSelectionListener(webSiteVisitor);
 	}
 
 	private void createComposite2() {

@@ -12,7 +12,7 @@ public class ApplicationConfiguration {
 
     public static class DatabaseConfiguration {
 
-        private final int dbVersion = 5;
+        private static final int dbVersion = 5;
 
         private boolean databaseCreateRestore = true;
 
@@ -31,7 +31,7 @@ public class ApplicationConfiguration {
                     '}';
         }
 
-        public int getDBVersion() {
+        public int getDbVersion() {
             return dbVersion;
         }
     }

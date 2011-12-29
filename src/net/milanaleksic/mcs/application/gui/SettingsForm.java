@@ -38,7 +38,7 @@ public class SettingsForm {
     private Text textProxyServerPassword = null;
 
     private boolean changed=false;
-    private UserConfiguration userConfiguration;
+    private UserConfiguration userConfiguration = null;
 
     public void open(Shell parent, Runnable runnable, UserConfiguration userConfiguration) {
 		this.parent = parent;

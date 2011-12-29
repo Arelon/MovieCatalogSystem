@@ -1,24 +1,24 @@
 package net.milanaleksic.mcs.infrastructure.export;
 
+import java.util.Locale;
+
 /**
  * @author Milan Aleksic
  * 09.03.2008.
  */
 public class ExporterFactory {
 
-	private static ExporterFactory instance ;
+	private final static ExporterFactory instance = new ExporterFactory() ;
 	
 	private ExporterFactory() {
 	}
 	
 	public static ExporterFactory getInstance() {
-		if (instance==null)
-			instance = new ExporterFactory();
 		return instance;
 	}
 	
 	public Exporter getExporter(String ext) {
-		ext = ext.toLowerCase();
+		ext = ext.toLowerCase(Locale.ENGLISH);
 		if (ext.equals("htm") || ext.equals("html"))
 			return new HTMLExporter();
 		else

@@ -17,7 +17,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private static final String SCRIPT_KATALOG_RESTORE_WITH_TIMESTAMP = "KATALOG_RESTORE_%s.sql";
 
     private static final String RESTORE_SCRIPT_HEADER =
-            MCS_VERSION_TAG+"%d\n*/\n\nset schema DB2ADMIN;\n\n";
+            MCS_VERSION_TAG+"%d%n*/%n%nset schema DB2ADMIN;%n%n";
 
     private static final RestoreSource[] restoreSources = new RestoreSource[] {
             new TableRestoreSource("DB2ADMIN.TIPMEDIJA"),
@@ -36,7 +36,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
             st = conn.prepareStatement(new Formatter().format("SELECT COALESCE(MAX(%1s)+1,1) FROM DB2ADMIN.%2s", idName, tableName).toString());
             rs = st.executeQuery();
             if (rs.next()) {
-                return String.format("alter table %s alter COLUMN %s RESTART WITH %d %s\n\n",
+                return String.format("alter table %s alter COLUMN %s RESTART WITH %d %s%n%n",
                         tableName, idName, rs.getInt(1), STATEMENT_DELIMITER);
             } else
                 throw new IllegalStateException("I could not fetch next ID for table " + tableName);
@@ -53,8 +53,6 @@ public class RestorePointCreator extends AbstractRestorePointService {
 
     public void createRestorePoint() {
         Connection conn = null;
-        ResultSet rs = null;
-        PreparedStatement st = null;
         File renamedOldRestoreFile = null;
         try {
             conn = getConnection();
@@ -74,11 +72,11 @@ public class RestorePointCreator extends AbstractRestorePointService {
             }
             if (log.isInfoEnabled())
                 log.info("Restore point creation process finished successfully!");
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            log.error("Failure during restore creation ", e);
+        } catch (IOException e) {
             log.error("Failure during restore creation ", e);
         } finally {
-            DBUtil.close(rs);
-            DBUtil.close(st);
             DBUtil.close(conn);
         }
     }

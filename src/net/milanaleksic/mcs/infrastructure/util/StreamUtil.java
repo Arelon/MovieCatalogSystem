@@ -3,8 +3,7 @@ package net.milanaleksic.mcs.infrastructure.util;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
+import java.security.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -19,16 +18,16 @@ public final class StreamUtil {
 
     public static String returnMD5ForFile(File input) {
         StringBuilder hash = new StringBuilder("");
-        FileInputStream stream;
+        FileInputStream stream = null;
+        DigestInputStream digestStream = null;
         MessageDigest digestAlg;
         try {
             digestAlg = MessageDigest.getInstance("MD5");
             stream = new FileInputStream(input);
-            DigestInputStream digest = new DigestInputStream(stream, digestAlg);
-            while (digest.read() != -1) {
+            digestStream = new DigestInputStream(stream, digestAlg);
+            while (digestStream.read() != -1) {
                 // keep reading
             }
-            digest.close();
 
             byte[] calcDigest = digestAlg.digest();
             for (byte aCalcDigest : calcDigest)
@@ -37,8 +36,21 @@ public final class StreamUtil {
             if (log.isDebugEnabled())
                 log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash.toString());
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failure while calculating MD5", e);
+		} catch (NoSuchAlgorithmException e) {
+            log.error("Failure while calculating MD5", e);
+        } finally {
+            if (stream != null)
+                try {
+                    stream.close();
+                } catch (IOException ignored) {
+                }
+            if (digestStream != null)
+                try {
+                    digestStream.close();
+                } catch (IOException ignored) {
+                }
         }
         return hash.toString();
     }

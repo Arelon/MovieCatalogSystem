@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.application.config;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.*;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -27,6 +28,13 @@ public class ApplicationConfigurationManager {
                 log.info("ApplicationConfiguration read: "+ applicationConfiguration);
         } catch (Throwable t) {
             log.error("ApplicationConfiguration could not have been read. Using default settings", t);
+        } finally {
+            if (configurationFile != null) {
+                try {
+                    configurationFile.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
         return applicationConfiguration;
     }
