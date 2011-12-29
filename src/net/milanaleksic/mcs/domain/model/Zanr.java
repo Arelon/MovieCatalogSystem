@@ -17,7 +17,7 @@ public class Zanr implements java.io.Serializable {
     @Column(length = 100, nullable = false)
 	private String zanr;
 
-    @OneToMany(orphanRemoval=true, mappedBy = "zanr", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "zanr", fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=5)
