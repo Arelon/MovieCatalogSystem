@@ -40,7 +40,7 @@
         <fileset dir="${ivy.resolved.libs.target.dir}">
             <include name="*.*"/>
         </fileset>
-        <fileset dir="${findbugs.directory}/lib">
+        <fileset dir="${findbugs.directory}/lib" erroronmissingdir="false">
             <include name="findbugs-ant.jar"/>
         </fileset>
     </path>
