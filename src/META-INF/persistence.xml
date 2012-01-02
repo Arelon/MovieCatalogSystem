@@ -6,10 +6,6 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <mapping-file>META-INF/orm-queries.xml</mapping-file>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-        <properties>
-            <property name="hibernate.cache.region.factory_class"
-                      value="net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory"/>
-        </properties>
     </persistence-unit>
 
     <persistence-unit name="MovieCatalogSystemDBDevelopment" transaction-type="RESOURCE_LOCAL">
