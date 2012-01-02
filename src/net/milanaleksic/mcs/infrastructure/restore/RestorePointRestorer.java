@@ -1,7 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
+import com.google.common.base.Function;
 import net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
+import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 
 import java.io.*;
 import java.sql.*;
@@ -116,12 +118,26 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             log.info("Restoration finished");
     }
 
-    private void runAltersForVersion(Connection conn, int alterVersion) throws IOException, SQLException {
+    private void runAltersForVersion(final Connection conn, final int alterVersion) throws IOException, SQLException {
         if (log.isInfoEnabled())
             log.info("Running SQL DB alter "+ String.format(patternForSqlAlters, alterVersion));
-        DBUtil.executeScriptOnConnection(getClass().getResourceAsStream(
-                String.format(patternForSqlAlters, alterVersion)), conn);
         try {
+            StreamUtil.useClasspathResource(String.format(patternForSqlAlters, alterVersion), new Function<InputStream, Void>() {
+                @Override
+                public Void apply(InputStream inputStream) {
+                    try {
+                        if (inputStream != null)  {
+                            // file has not been found, there is SQL alter... proceed
+                            DBUtil.executeScriptOnConnection(inputStream, conn);
+                        }
+                    } catch (IOException e) {
+                        log.error("Unexpected exception occurred while running SQL alter for version "+alterVersion, e);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
             AlterScript alterScript = (AlterScript) Class.forName(
                     String.format(patternForCodeAlters, alterVersion)).newInstance();
             if (log.isInfoEnabled())

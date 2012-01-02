@@ -1,10 +1,11 @@
 package net.milanaleksic.mcs.application.config;
 
+import com.google.common.base.Function;
+import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.*;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -14,31 +15,34 @@ import java.io.InputStream;
  */
 public class ApplicationConfigurationManager {
 
-    private static final String CONFIGURATION_FILE = "application-configuration.xml";
+    private static final String CONFIGURATION_FILE = "/application-configuration.xml";
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
     public ApplicationConfiguration loadApplicationConfiguration() {
-        ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
-        InputStream configurationFile = ApplicationConfigurationManager.class.getResourceAsStream("/"+CONFIGURATION_FILE);
         try {
-            JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
-            Unmarshaller u = jc.createUnmarshaller();
-            StreamSource source = new StreamSource(configurationFile);
-            applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
-            if (log.isInfoEnabled())
-                log.info("ApplicationConfiguration read: "+ applicationConfiguration);
+            return StreamUtil.useClasspathResource(CONFIGURATION_FILE, new Function<InputStream, ApplicationConfiguration>() {
+                @Override
+                public ApplicationConfiguration apply(InputStream configurationFile) {
+                    try {
+                        JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
+                        Unmarshaller u = jc.createUnmarshaller();
+                        StreamSource source = new StreamSource(configurationFile);
+                        ApplicationConfiguration applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
+                        if (log.isInfoEnabled()) {
+                            log.info("ApplicationConfiguration read: "+ applicationConfiguration);
+                        }
+                        return applicationConfiguration;
+                    } catch (Throwable t) {
+                        log.error("ApplicationConfiguration could not have been read. Using default settings", t);
+                    }
+                    return new ApplicationConfiguration();
+                }
+            });
         } catch (Throwable t) {
             log.error("ApplicationConfiguration could not have been read. Using default settings", t);
-        } finally {
-            if (configurationFile != null) {
-                try {
-                    configurationFile.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
-        return applicationConfiguration;
+        return new ApplicationConfiguration();
     }
 
     public static void main(String[] args) {

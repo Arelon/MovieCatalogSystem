@@ -4,6 +4,7 @@ import net.milanaleksic.mcs.Startup;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
+import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
 
@@ -46,21 +47,13 @@ public class ApplicationManager {
 
     public static synchronized String getVersion() {
         if (version==null) {
-            Properties properties = new Properties();
-            InputStream resourceAsStream = null;
+            Properties properties;
             try {
-                resourceAsStream = Startup.class.getResourceAsStream("version.properties");
-                properties.load(resourceAsStream);
-                version = properties.getProperty("src.version")+'.'+properties.getProperty("build.number");
+                properties = StreamUtil.fetchPropertiesFromClasspath("/net/milanaleksic/mcs/version.properties");
             } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (resourceAsStream != null)
-                        resourceAsStream.close();
-                } catch (IOException ignored) {
-                }
+                throw new RuntimeException("Version properties files not found in resources");
             }
+            version = properties.getProperty("src.version")+'.'+properties.getProperty("build.number");
         }
         return version;
     }

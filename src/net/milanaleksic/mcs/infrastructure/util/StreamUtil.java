@@ -1,9 +1,11 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
+import com.google.common.base.Function;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.security.*;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -76,6 +78,38 @@ public final class StreamUtil {
         while ((bytesRead = input.read(buffer, 0, buffer.length)) > 0) {
             output.write(buffer, 0, bytesRead);
         }
+    }
+
+    public static Properties fetchPropertiesFromClasspath(String classpathEntry) throws IOException {
+        return useClasspathResource(classpathEntry, new Function<InputStream, Properties>() {
+            @Override
+            public Properties apply(InputStream inputStream) {
+                Properties props = new Properties();
+                try {
+                    props.load(inputStream);
+                } catch (IOException e) {
+                    AnyThrow.throwUncheked(e);
+                }
+                return props;
+            }
+        });
+    }
+
+    public static <T> T useClasspathResource(String classpathEntry, Function<InputStream, ? extends T> function) throws IOException {
+        InputStream stream = null;
+        T t = null;
+        try {
+            stream = StreamUtil.class.getResourceAsStream(classpathEntry);
+            if (stream == null)
+                throw new IOException("Resource not found: "+classpathEntry);
+            t = function.apply(stream);
+        } finally {
+            if (stream != null)
+                try {
+                    stream.close();
+                } catch (IOException ignored) {}
+        }
+        return t;
     }
 
 }
