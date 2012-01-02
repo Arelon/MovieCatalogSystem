@@ -37,19 +37,19 @@
         <dependency org="org.hamcrest" name="hamcrest-library" rev="1.2.1" transitive="false">
             <artifact name="hamcrest-library" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate" name="hibernate-core" rev="3.6.7.Final" transitive="false">
+        <dependency org="org.hibernate" name="hibernate-core" rev="4.0.0.Final" transitive="false">
             <artifact name="hibernate-core" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate" name="hibernate-c3p0" rev="3.6.7.Final" transitive="false">
+        <dependency org="org.hibernate" name="hibernate-c3p0" rev="4.0.0.Final" transitive="false">
             <artifact name="hibernate-c3p0" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate" name="hibernate-ehcache" rev="3.6.7.Final" transitive="false">
+        <dependency org="org.hibernate" name="hibernate-ehcache" rev="4.0.0.Final" transitive="false">
             <artifact name="hibernate-ehcache" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate" name="hibernate-entitymanager" rev="3.6.7.Final" transitive="false">
+        <dependency org="org.hibernate" name="hibernate-entitymanager" rev="4.0.0.Final" transitive="false">
             <artifact name="hibernate-entitymanager" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate" name="hibernate-commons-annotations" rev="3.2.0.Final" transitive="false">
+        <dependency org="org.hibernate.common" name="hibernate-commons-annotations" rev="4.0.1.Final">
             <artifact name="hibernate-commons-annotations" type="jar"/>
         </dependency>
         <dependency org="org.hibernate" name="hibernate-jpamodelgen" rev="1.1.1.Final" transitive="false">
@@ -85,47 +85,47 @@
         <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.2" transitive="false">
             <artifact name="slf4j-log4j12" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-aop" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-aop" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-aop" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-asm" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-asm" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-asm" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-aspects" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-aspects" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-aspects" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-beans" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-beans" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-beans" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-context" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-context" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-context" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-core" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-core" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-core" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-expression" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-expression" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-expression" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-jdbc" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-jdbc" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-jdbc" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-orm" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-orm" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-orm" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-test" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-test" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-test" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-tx" rev="3.0.6.RELEASE" transitive="false">
+        <dependency org="org.springframework" name="spring-tx" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-tx" type="jar"/>
         </dependency>
         <dependency org="javax.inject" name="javax.inject" rev="1" transitive="false">
             <artifact name="javax.inject" type="jar"/>
         </dependency>
         <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.1.2" transitive="false">
-            <artifact name="httpclient" type="jar" />
+            <artifact name="httpclient" type="jar"/>
         </dependency>
         <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.1.2" transitive="false">
-            <artifact name="httpcore" type="jar" />
+            <artifact name="httpcore" type="jar"/>
         </dependency>
         <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.0" transitive="false">
             <artifact name="jackson-core-asl" type="jar"/>

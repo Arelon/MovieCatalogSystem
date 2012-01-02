@@ -1,38 +1,36 @@
 <ehcache>
 
-    <diskStore path="java.io.tmpdir"/>
-
     <cache
         name="mcs"
         maxElementsInMemory="10000"
         eternal="false"
         timeToIdleSeconds="1800"
         timeToLiveSeconds="1800"
-        overflowToDisk="true"
+        overflowToDisk="false"
         diskPersistent="false"
         diskExpiryThreadIntervalSeconds="1800"
         memoryStoreEvictionPolicy="LRU"
         />
 
     <cache
-        name="org.hibernate.cache.UpdateTimestampsCache"
+        name="org.hibernate.cache.spi.UpdateTimestampsCache"
         maxElementsInMemory="10000"
         eternal="false"
         timeToIdleSeconds="1800"
         timeToLiveSeconds="1800"
-        overflowToDisk="true"
+        overflowToDisk="false"
         diskPersistent="false"
         diskExpiryThreadIntervalSeconds="1800"
         memoryStoreEvictionPolicy="LRU"
         />
 
     <cache
-        name="org.hibernate.cache.StandardQueryCache"
+        name="org.hibernate.cache.internal.StandardQueryCache"
         maxElementsInMemory="10000"
         eternal="false"
         timeToIdleSeconds="1800"
         timeToLiveSeconds="1800"
-        overflowToDisk="true"
+        overflowToDisk="false"
         diskPersistent="false"
         diskExpiryThreadIntervalSeconds="1800"
         memoryStoreEvictionPolicy="LRU"
@@ -43,7 +41,7 @@
         eternal="false"
         timeToIdleSeconds="1800"
         timeToLiveSeconds="1800"
-        overflowToDisk="true"
+        overflowToDisk="false"
         diskPersistent="false"
         diskExpiryThreadIntervalSeconds="1800"
         memoryStoreEvictionPolicy="LRU"
