@@ -26,6 +26,6 @@ with support for Derby/DB2/HSQLDB/H2 databases. Every time you close the program
 dump is created so you can import the database to some other DB of choice.
 MCS is a portable application (you can start it from USB or keep it in your Dropbox folder).
 
-The only precondition is **Windows** and **Java Runtime 1.6**.
+The only precondition is **Windows** and **Java Runtime 7**.
 
 (c) 2009-2011 by Milan Aleksic.
