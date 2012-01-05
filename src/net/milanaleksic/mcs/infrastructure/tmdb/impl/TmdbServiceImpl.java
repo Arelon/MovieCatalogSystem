@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.impl;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;

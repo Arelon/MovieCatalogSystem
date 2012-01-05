@@ -2,7 +2,8 @@ package net.milanaleksic.mcs.domain.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Set;
 
 @Entity
 @Cacheable
@@ -44,7 +45,7 @@ public class Film implements Serializable, Comparable<Film> {
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=15)
-	private Set<Medij> medijs = new HashSet<Medij>(0);
+	private Set<Medij> medijs = null;
 
     @Column(name="MEDIJ_LIST")
     private String medijListAsString;

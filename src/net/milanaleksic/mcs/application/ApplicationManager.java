@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.application;
 
-import net.milanaleksic.mcs.Startup;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
@@ -12,9 +11,6 @@ import javax.inject.Inject;
 import java.io.*;
 import java.util.*;
 
-/**
- * @author Milan 22 Sep 2007
- */
 public class ApplicationManager {
 
     @Inject private SplashScreenManager splashScreenManager;
@@ -23,7 +19,7 @@ public class ApplicationManager {
 
     private final ApplicationConfiguration applicationConfiguration;
 
-    private Set<LifecycleListener> lifecycleListeners = new HashSet<LifecycleListener>();
+    private Set<LifecycleListener> lifecycleListeners = new HashSet<>();
     private static String version = null;
     private UserConfiguration userConfiguration;
 

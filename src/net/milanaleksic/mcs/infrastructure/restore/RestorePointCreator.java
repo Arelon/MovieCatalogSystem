@@ -30,19 +30,14 @@ public class RestorePointCreator extends AbstractRestorePointService {
     };
 
     private String createRestartWithForTable(String tableName, String idName, Connection conn) throws SQLException {
-        ResultSet rs = null;
-        PreparedStatement st = null;
-        try {
-            st = conn.prepareStatement(new Formatter().format("SELECT COALESCE(MAX(%1s)+1,1) FROM DB2ADMIN.%2s", idName, tableName).toString());
-            rs = st.executeQuery();
-            if (rs.next()) {
-                return String.format("alter table %s alter COLUMN %s RESTART WITH %d %s%n%n",
-                        tableName, idName, rs.getInt(1), STATEMENT_DELIMITER);
-            } else
-                throw new IllegalStateException("I could not fetch next ID for table " + tableName);
-        } finally {
-            DBUtil.close(rs);
-            DBUtil.close(st);
+        try (PreparedStatement st = conn.prepareStatement(new Formatter().format("SELECT COALESCE(MAX(%1s)+1,1) FROM DB2ADMIN.%2s", idName, tableName).toString())) {
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return String.format("alter table %s alter COLUMN %s RESTART WITH %d %s%n%n",
+                            tableName, idName, rs.getInt(1), STATEMENT_DELIMITER);
+                } else
+                    throw new IllegalStateException("I could not fetch next ID for table " + tableName);
+            }
         }
     }
 
@@ -52,10 +47,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     public void createRestorePoint() {
-        Connection conn = null;
         File renamedOldRestoreFile = null;
-        try {
-            conn = getConnection();
+        try (Connection conn = getConnection()) {
             createRestoreDir();
 
             File restoreFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTORE);
@@ -72,12 +65,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             }
             if (log.isInfoEnabled())
                 log.info("Restore point creation process finished successfully!");
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             log.error("Failure during restore creation ", e);
-        } catch (IOException e) {
-            log.error("Failure during restore creation ", e);
-        } finally {
-            DBUtil.close(conn);
         }
     }
 
@@ -105,22 +94,18 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
         if (log.isDebugEnabled())
             log.debug("Working on restore script "+source.getScript());
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = conn.prepareStatement(source.getScript());
-            resultSet = preparedStatement.executeQuery();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            String tableName = metaData.getTableName(1);
+        try (PreparedStatement preparedStatement = conn.prepareStatement(source.getScript())) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                String tableName = metaData.getTableName(1);
 
-            while (resultSet.next()) {
-                outputStatement(outputStream, generateInsertSqlForResultSet(resultSet, metaData, tableName, getListOfResultSetColumns(metaData)));
+                while (resultSet.next()) {
+                    outputStatement(outputStream,
+                            generateInsertSqlForResultSet(resultSet, metaData, tableName,
+                                    getListOfResultSetColumns(metaData)));
+                }
             }
-        } finally {
-            DBUtil.close(resultSet);
-            DBUtil.close(preparedStatement);
         }
-
     }
 
     private String getListOfResultSetColumns(ResultSetMetaData metaData) throws SQLException {

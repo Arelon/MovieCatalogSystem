@@ -21,7 +21,7 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
             newZanr.addFilm(movieToBeUpdated);
         }
 
-        Set<Medij> raniji = new HashSet<Medij>();
+        Set<Medij> raniji = new HashSet<>();
         for (Medij medij : movieToBeUpdated.getMedijs())
             raniji.add(medij);
 

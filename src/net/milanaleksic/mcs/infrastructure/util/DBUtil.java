@@ -16,39 +16,6 @@ public final class DBUtil {
 
     private final static Logger log = Logger.getLogger(DBUtil.class);
 
-    public static void close(InputStream is) {
-        if (is != null) {
-            try { is.close(); } catch(IOException ignored) {}
-        }
-    }
-
-    public static void close(ResultSet rs) {
-        if (rs != null)
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing ResultSet", e);
-            }
-    }
-
-    public static void close(PreparedStatement ps) {
-        if (ps != null)
-            try {
-                ps.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing PreparedStatement", e);
-            }
-    }
-
-    public static void close(Connection conn) {
-        if (conn != null)
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                log.error("Failure while closing DB Connection", e);
-            }
-    }
-
     public static void executeScriptOnConnection(InputStream stream, Connection conn) throws IOException, SQLException {
         BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
         StringBuilder script = new StringBuilder();
@@ -57,13 +24,9 @@ public final class DBUtil {
             script.append(line).append("\r\n");
         }
 
-        PreparedStatement st = null;
-        try {
-            st = conn.prepareStatement(script.toString());
+        try (PreparedStatement st = conn.prepareStatement(script.toString())) {
             st.execute();
             conn.commit();
-        } finally {
-            DBUtil.close(st);
         }
     }
 
@@ -72,11 +35,8 @@ public final class DBUtil {
         if (log.isInfoEnabled())
             log.info("Executing script file: " + fileRestartCountersScript.getName());
         if (fileRestartCountersScript.exists()) {
-            FileInputStream fis = new FileInputStream(fileRestartCountersScript);
-            try {
+            try (FileInputStream fis = new FileInputStream(fileRestartCountersScript)) {
                 DBUtil.executeScriptOnConnection(fis, conn);
-            } finally {
-                DBUtil.close(fis);
             }
         }
     }

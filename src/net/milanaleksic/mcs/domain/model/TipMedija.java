@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.domain.model;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +20,7 @@ public class TipMedija implements java.io.Serializable {
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=15)
-	private Set<Medij> medijs = new HashSet<Medij>(0);
+	private Set<Medij> medijs = null;
 
 	public TipMedija() {
 	}

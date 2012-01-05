@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.domain.model;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +20,7 @@ public class Zanr implements java.io.Serializable {
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=5)
-	private Set<Film> films = new HashSet<Film>(0);
+	private Set<Film> films = null;
 
 	public Zanr() {
 	}

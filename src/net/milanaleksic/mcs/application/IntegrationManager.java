@@ -1,7 +1,5 @@
 package net.milanaleksic.mcs.application;
 
-import net.milanaleksic.mcs.application.LifecycleListener;
-
 /**
  * User: Milan Aleksic
  * Date: 8/4/11

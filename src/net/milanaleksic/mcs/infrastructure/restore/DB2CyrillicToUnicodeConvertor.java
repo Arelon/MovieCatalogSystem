@@ -13,7 +13,7 @@ public class DB2CyrillicToUnicodeConvertor {
 	private final static HashMap<Character, String> konverzionaTabela;
 	
 	static {
-		konverzionaTabela = new HashMap<Character, String>();
+		konverzionaTabela = new HashMap<>();
 		konverzionaTabela.put('а', "0430");
 		konverzionaTabela.put('б', "0431");
 		konverzionaTabela.put('в', "0432");

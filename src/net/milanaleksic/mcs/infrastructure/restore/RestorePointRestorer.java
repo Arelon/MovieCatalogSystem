@@ -20,37 +20,27 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     private String versionScript;
 
     public void restoreDatabaseIfNeeded() {
-        Connection conn = null;
-        try {
-            conn = getConnection();
+        try (Connection conn = getConnection()) {
             safeRestoreDatabaseIfNeeded(conn);
         } catch (Exception e) {
             log.error("Failure while restoring database", e);
-        } finally {
-            DBUtil.close(conn);
         }
     }
 
     public int getDatabaseVersionFromDatabase(Connection conn) {
-        ResultSet rs = null;
-        PreparedStatement st = null;
-        try {
-            if (log.isInfoEnabled())
-                log.info("Validating database");
-            st = conn.prepareStatement(versionScript);
-            rs = st.executeQuery();
-            rs.next();
+        if (log.isInfoEnabled())
+            log.info("Validating database");
+        try (PreparedStatement st = conn.prepareStatement(versionScript)) {
+            try (ResultSet rs = st.executeQuery()) {
+                rs.next();
+                String dbVersion = rs.getString(1);
+                if (log.isInfoEnabled())
+                    log.info("Expected DB version = " + getDbVersion() + ", DB version = " + dbVersion);
 
-            String dbVersion = rs.getString(1);
-            if (log.isInfoEnabled())
-                log.info("Expected DB version = " + getDbVersion() + ", DB version = " + dbVersion);
-
-            return Integer.valueOf(dbVersion);
+                return Integer.valueOf(dbVersion);
+            }
         } catch (Exception e) {
             log.error("Validation failed - " + e.getMessage());
-        } finally {
-            DBUtil.close(rs);
-            DBUtil.close(st);
         }
         return 0;
     }
@@ -143,11 +133,9 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             if (log.isInfoEnabled())
                 log.info("Running application-driven DB alter "+ String.format(patternForCodeAlters, alterVersion));
             alterScript.executeAlterOnConnection(conn);
-        } catch (ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ignored) {
             // if class has not been found, there is no app-driven alter... proceed
         }
-        catch (InstantiationException ignored) {}
-        catch (IllegalAccessException ignored) {}
     }
 
     public void setPatternForSqlAlters(String patternForSqlAlters) {

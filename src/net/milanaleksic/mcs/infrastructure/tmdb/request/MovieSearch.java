@@ -6,7 +6,6 @@ import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
 
 /**
  * User: Milan Aleksic

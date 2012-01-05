@@ -59,7 +59,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Root<Film> film = cq.from(Film.class);
         cq.select(builder.countDistinct(film));
 
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
 
         ParameterExpression<String> textFilterParameter = null;
         if (textFilter != null) {
@@ -108,7 +108,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Root<Film> film = cq.from(Film.class);
         cq.select(film);
 
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
 
         ParameterExpression<String> textFilterParameter = null;
         if (textFilter != null) {

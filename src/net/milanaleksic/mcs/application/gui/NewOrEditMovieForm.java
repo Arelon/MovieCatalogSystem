@@ -128,9 +128,9 @@ public class NewOrEditMovieForm {
 		if (comboDisk.getItemCount() != 0)
 			comboDisk.removeAll();
 
-		sviZanrovi = new HashMap<String, Zanr>();
-		sveLokacije = new HashMap<String, Pozicija>();
-		sviDiskovi = new HashMap<String, Medij>();
+		sviZanrovi = new HashMap<>();
+		sveLokacije = new HashMap<>();
+		sviDiskovi = new HashMap<>();
 
 		for (Zanr zanr : zanrRepository.getZanrs()) {
 			comboZanr.add(zanr.getZanr());
@@ -163,7 +163,7 @@ public class NewOrEditMovieForm {
         novFilm.setKomentar(textKomentar.getText());
         Zanr zanr = sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex()));
         Pozicija position = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
-        java.util.List<Medij> medijs = new ArrayList<Medij>();
+        java.util.List<Medij> medijs = new ArrayList<>();
         if (listDiskovi.getItemCount() != 0) {
             for (String medijName : listDiskovi.getItems()) {
                 Medij medij = sviDiskovi.get(medijName);
@@ -181,7 +181,7 @@ public class NewOrEditMovieForm {
         activeFilm.setImdbId(textImdbId.getText().trim());
         activeFilm.setKomentar(textKomentar.getText());
 
-        Set<Medij> selectedMediums = new HashSet<Medij>();
+        Set<Medij> selectedMediums = new HashSet<>();
         for (String item : listDiskovi.getItems()) {
             selectedMediums.add(sviDiskovi.get(item));
         }

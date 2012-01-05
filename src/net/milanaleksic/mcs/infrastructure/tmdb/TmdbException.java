@@ -1,7 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
-import org.apache.http.client.ClientProtocolException;
-
 /**
  * User: Milan Aleksic
  * Date: 10/7/11

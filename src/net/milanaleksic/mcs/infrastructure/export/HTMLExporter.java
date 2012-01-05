@@ -14,29 +14,21 @@ public class HTMLExporter implements Exporter {
 	@Override
 	public void export(ExporterSource source) {
 		File ekspFajl = new File(source.getTargetFile());
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(ekspFajl, "UTF-8");
+        try (PrintWriter writer = new PrintWriter(ekspFajl, "UTF-8")) {
             writeHtmlHead(writer);
 
-			writer.println("<body onload=\"javascript:init()\">");
-            writer.println("<h3>Списак филмова у MCS v"+ ApplicationManager.getVersion()+" бази</h3>");
-            writer.println("<small style=\"text-align:right\"><em>timestamp:</em> "+Calendar.getInstance().getTime().toString()+"</small>");
+            writer.println("<body onload=\"javascript:init()\">");
+            writer.println("<h3>Списак филмова у MCS v" + ApplicationManager.getVersion() + " бази</h3>");
+            writer.println("<small style=\"text-align:right\"><em>timestamp:</em> " + Calendar.getInstance().getTime().toString() + "</small>");
 
             writeTableHeader(source, writer);
             writeTableContents(source, writer);
             writeFooter(writer);
-			
-		} catch (FileNotFoundException e) {
-			logger.error("FileNotFoundException", e);
-		} catch (UnsupportedEncodingException e) {
-			logger.error("UnsupportedEncodingException", e);
-		}
-		finally {
-            if (writer != null) {
-                writer.close();
-            }
+
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            logger.error("Unexpected exception occurred", e);
         }
+
         openInDefaultBrowser(ekspFajl);
     }
 
