@@ -423,22 +423,22 @@ public class MainForm extends Observable {
 		mainTable.addKeyListener(new MainTableKeyAdapter());
 		mainTable.addMouseListener(new MainTableMouseListener());
 		tableColumn1.setWidth(100);
-		tableColumn1.setText("Медиј");
+		tableColumn1.setText(bundle.getString("main.medium"));
 		TableColumn tableColumn = new TableColumn(mainTable, SWT.NONE);
 		tableColumn.setWidth(200);
-		tableColumn.setText("Назив филма");
+		tableColumn.setText(bundle.getString("main.movieTitle"));
 		TableColumn tableColumn2 = new TableColumn(mainTable, SWT.NONE);
 		tableColumn2.setWidth(200);
-		tableColumn2.setText("Превод назива");
+		tableColumn2.setText(bundle.getString("main.movieTitleTranslation"));
 		TableColumn tableColumn21 = new TableColumn(mainTable, SWT.NONE);
 		tableColumn21.setWidth(95);
-		tableColumn21.setText("Жанр");
+		tableColumn21.setText(bundle.getString("main.genre"));
 		TableColumn tableColumn3 = new TableColumn(mainTable, SWT.NONE);
 		tableColumn3.setWidth(95);
-		tableColumn3.setText("Позиција");
+		tableColumn3.setText(bundle.getString("main.location"));
 		TableColumn tableColumn4 = new TableColumn(mainTable, SWT.NONE);
 		tableColumn4.setWidth(120);
-		tableColumn4.setText("Коментар");
+		tableColumn4.setText(bundle.getString("main.comment"));
 		
 		createStatusBar();
 		// dodajemo jedan listener za aktiviranje programa... 
