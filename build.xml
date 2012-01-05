@@ -28,6 +28,7 @@
     </target>
 
     <target name="resolve" description="Retrieve dependencies with ivy" depends="init-ivy">
+        <ivy:settings file="ivyconf.xml" />
         <ivy:retrieve file="ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]"/>
         <copy todir="${ivy.resolved.libs.target.dir}" overwrite="true">
             <fileset dir="${explicit.lib.dir}">
@@ -54,7 +55,7 @@
         <mkdir dir="${compile.dir}"/>
         <mkdir dir="${src.metamodel.dir}"/>
         <javac source="1.6" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}"
-               includeantruntime="false" includes="${src.metamodel.includes}" excludes="${src.metamodel.excludes}">
+               includeantruntime="false" includes="${src.metamodel.includes}">
             <classpath refid="classpath"/>
             <compilerarg value="-processor"/>
             <compilerarg value="org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor"/>
@@ -65,14 +66,12 @@
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
-        <iajc destDir="${compile.dir}" source="1.6" sourceRootCopyFilter="**/*.java"
-              inpathDirCopyFilter="**/*.java,**/*.class" encoding="UTF-8" showWeaveInfo="true">
-            <sourceroots>
-                <pathelement location="${src.dir}"/>
-                <pathelement location="${src.metamodel.dir}"/>
-            </sourceroots>
+        <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
+            <src path="${src.dir}" />
+            <src path="${src.metamodel.dir}" />
             <classpath refid="classpath"/>
-        </iajc>
+            <compilerarg value="-proc:none" />
+        </javac>
 
         <copy todir="${compile.dir}" overwrite="true">
             <fileset dir="${src.dir}">
@@ -125,7 +124,6 @@
             <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
                 <exclude name="mcs.jar"/>
                 <exclude name="aspectjtools.jar"/>
-                <exclude name="aspectjweaver.jar"/>
                 <exclude name="hamcrest*.jar"/>
                 <exclude name="junit.jar"/>
             </zipfileset>

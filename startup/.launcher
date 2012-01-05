@@ -2,4 +2,4 @@ executor = javaw
 mainClass = net.milanaleksic.mcs.Startup
 showSplash = true 
 programArgs = -c
-extra = -Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true -Xmn64m -Xmx256m -Xms128m -Xverify:none
+extra = -javaagent:../lib/aspectjweaver.jar -Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true -Xmn64m -Xmx256m -Xms128m -Xverify:none

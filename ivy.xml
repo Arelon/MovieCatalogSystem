@@ -13,15 +13,6 @@
         <dependency org="aopalliance" name="aopalliance" rev="1.0" transitive="false">
             <artifact name="aopalliance" type="jar"/>
         </dependency>
-        <dependency org="org.aspectj" name="aspectjweaver" rev="1.6.11" transitive="false">
-            <artifact name="aspectjweaver" type="jar"/>
-        </dependency>
-        <dependency org="org.aspectj" name="aspectjtools" rev="1.6.11" transitive="false">
-            <artifact name="aspectjtools" type="jar"/>
-        </dependency>
-        <dependency org="org.aspectj" name="aspectjrt" rev="1.6.11" transitive="false">
-            <artifact name="aspectjrt" type="jar"/>
-        </dependency>
         <dependency org="c3p0" name="c3p0" rev="0.9.1.2" transitive="false">
             <artifact name="c3p0" type="jar"/>
         </dependency>
@@ -148,6 +139,17 @@
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
             <artifact name="dom4j" type="jar"/>
             <exclude org="xml-apis" name="xml-apis"/>
+        </dependency>
+
+        <!-- Non-GA releases -->
+        <dependency org="org.aspectj" name="aspectjweaver" rev="1.7.0.M1" transitive="false">
+            <artifact name="aspectjweaver" type="jar"/>
+        </dependency>
+        <dependency org="org.aspectj" name="aspectjtools" rev="1.7.0.M1" transitive="false">
+            <artifact name="aspectjtools" type="jar"/>
+        </dependency>
+        <dependency org="org.aspectj" name="aspectjrt" rev="1.7.0.M1" transitive="false">
+            <artifact name="aspectjrt" type="jar"/>
         </dependency>
     </dependencies>
 
