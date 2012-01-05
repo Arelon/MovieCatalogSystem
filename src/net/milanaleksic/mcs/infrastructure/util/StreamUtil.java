@@ -20,13 +20,15 @@ public final class StreamUtil {
 
     public static String returnMD5ForFile(File input) {
         StringBuilder hash = new StringBuilder("");
-        FileInputStream stream = null;
-        DigestInputStream digestStream = null;
         MessageDigest digestAlg;
         try {
             digestAlg = MessageDigest.getInstance("MD5");
-            stream = new FileInputStream(input);
-            digestStream = new DigestInputStream(stream, digestAlg);
+        } catch (NoSuchAlgorithmException e) {
+            log.error("Failure while calculating MD5", e);
+            throw new IllegalStateException(e);
+        }
+        try (FileInputStream stream = new FileInputStream(input);
+             DigestInputStream digestStream = new DigestInputStream(stream, digestAlg)) {
             while (digestStream.read() != -1) {
                 // keep reading
             }
@@ -40,19 +42,7 @@ public final class StreamUtil {
 
         } catch (IOException e) {
             log.error("Failure while calculating MD5", e);
-		} catch (NoSuchAlgorithmException e) {
-            log.error("Failure while calculating MD5", e);
-        } finally {
-            if (stream != null)
-                try {
-                    stream.close();
-                } catch (IOException ignored) {
-                }
-            if (digestStream != null)
-                try {
-                    digestStream.close();
-                } catch (IOException ignored) {
-                }
+            throw new IllegalStateException(e);
         }
         return hash.toString();
     }
@@ -96,20 +86,11 @@ public final class StreamUtil {
     }
 
     public static <T> T useClasspathResource(String classpathEntry, Function<InputStream, ? extends T> function) throws IOException {
-        InputStream stream = null;
-        T t = null;
-        try {
-            stream = StreamUtil.class.getResourceAsStream(classpathEntry);
+        try (InputStream stream = StreamUtil.class.getResourceAsStream(classpathEntry)) {
             if (stream == null)
                 throw new IOException("Resource not found: "+classpathEntry);
-            t = function.apply(stream);
-        } finally {
-            if (stream != null)
-                try {
-                    stream.close();
-                } catch (IOException ignored) {}
+            return function.apply(stream);
         }
-        return t;
     }
 
 }
