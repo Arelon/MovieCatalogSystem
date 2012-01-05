@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.application;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
+import net.milanaleksic.mcs.application.util.UTF8ResourceBundleControl;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
@@ -83,7 +84,7 @@ public class ApplicationManager {
         Display.setAppName("Movie Catalog System - v" + getVersion());
         Display display = Display.getDefault();
 
-        mainForm.showForm();
+        mainForm.open();
 
         splashScreenManager.closeSplashScreen();
 
@@ -93,5 +94,13 @@ public class ApplicationManager {
         }
 
         display.dispose();
+    }
+
+    private static ResourceBundle messageBundle = null;
+    public synchronized ResourceBundle getMessagesBundle() {
+        if (messageBundle == null)
+            messageBundle = ResourceBundle.getBundle("messages",
+                    new Locale(getUserConfiguration().getLocaleLanguage()), new UTF8ResourceBundleControl());
+        return messageBundle;
     }
 }

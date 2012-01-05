@@ -7,6 +7,4 @@ package net.milanaleksic.mcs.application;
  */
 public interface IntegrationManager extends LifecycleListener {
 
-
-
 }

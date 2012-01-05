@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
@@ -13,6 +14,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
+import java.util.ResourceBundle;
 
 public class DeleteMovieForm {
 
@@ -24,8 +26,11 @@ public class DeleteMovieForm {
     private Label labFilmNaziv = null;
     private Film film = null;
 
-    @Inject
-    private FilmRepository filmRepository;
+    private ResourceBundle bundle = null;
+
+    @Inject private FilmRepository filmRepository;
+
+    @Inject private ApplicationManager applicationManager;
 
     private final static class AlertImagePainter implements PaintListener {
 
@@ -40,6 +45,7 @@ public class DeleteMovieForm {
     public void open(Shell parent, Film film, Runnable runnable) {
 		this.parent = parent;
         this.parentRunner = runnable;
+        this.bundle = applicationManager.getMessagesBundle();
 		createSShell();
         if (log.isInfoEnabled())
     		log.info("DeleteMovieForm: FILMID=" + film.getIdfilm());
@@ -111,7 +117,7 @@ public class DeleteMovieForm {
         Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText("\u041e\u0434\u0443\u0441\u0442\u0430\u043d\u0438");
 		btnCancel.setLayoutData(gridData12);
-		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
+		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override public void handledSelected() throws ApplicationException {
                 filmRepository.deleteFilm(film);
                 parentRunner.run();

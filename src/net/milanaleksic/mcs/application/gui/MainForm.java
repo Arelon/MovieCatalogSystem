@@ -43,6 +43,8 @@ public class MainForm extends Observable {
 
     @Inject private ProgramArgsService programArgsService;
 
+    private ResourceBundle bundle = null;
+
 	private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com";
 
 	private Shell sShell = null;
@@ -227,10 +229,10 @@ public class MainForm extends Observable {
 				return;
 			String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.')+1);
             if (log.isDebugEnabled())
-			    log.debug("Odabrano eksportovanje u fajl \""+targetFileForExport+"\"");
+			    log.debug("Exporting to file \""+targetFileForExport+"\"");
 			Exporter exporter = ExporterFactory.getInstance().getExporter(ext);
 			if (exporter == null) {
-				log.error("Eksportovanje u zeljeni format nije podrzano");
+				log.error("Exporting to the selected format is not supported");
 				return;
 			}
             List<Film> filmList = getAllFilms(0);
@@ -307,7 +309,7 @@ public class MainForm extends Observable {
 		private void resetZanrova() {
 			comboZanr.setItems(new String [] {});
 			List<Zanr> zanrovi = zanrRepository.getZanrs();
-			comboZanr.add("Сви жанрови");
+			comboZanr.add(bundle.getString("allGenres"));
 			comboZanr.add("-----------");
             int iter = 2;
 			for(Zanr zanr : zanrovi) {
@@ -380,7 +382,8 @@ public class MainForm extends Observable {
 		});
     }
 
-    public void showForm() {
+    public void open() {
+        bundle = applicationManager.getMessagesBundle();
         checkCreated();
 		sShell.open();
 		mainTable.setFocus();
@@ -449,7 +452,7 @@ public class MainForm extends Observable {
 		comboZanr.setVisibleItemCount(16);
 		comboZanr.addSelectionListener(new ComboRefreshAdapter());
 		List<Zanr> zanrovi = zanrRepository.getZanrs();
-		comboZanr.add("Сви жанрови");
+		comboZanr.add(bundle.getString("allGenres"));
 		comboZanr.add("-----------");
         int iter = 2;
 		for(Zanr zanr : zanrovi) {
@@ -467,7 +470,7 @@ public class MainForm extends Observable {
 		comboTipMedija.setLayoutData(gridData1);
 		comboTipMedija.setVisibleItemCount(8);
 		comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
-		comboTipMedija.add("Сви медији");
+		comboTipMedija.add(bundle.getString("allMediums"));
 		comboTipMedija.add("-----------");
 		for(TipMedija tip : tipMedijaRepository.getTipMedijas()) {
             comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
@@ -489,7 +492,7 @@ public class MainForm extends Observable {
 
 	private void resetPozicije() {
 		comboPozicija.setItems(new String [] {});
-		comboPozicija.add("Било где");
+		comboPozicija.add(bundle.getString("anyLocation"));
 		comboPozicija.add("-----------");
 		for(Pozicija pozicija : pozicijaRepository.getPozicijas()) {
             comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
@@ -516,28 +519,28 @@ public class MainForm extends Observable {
 		toolBar.setBounds(new Rectangle(11, 50, 4, 50));
 		toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
-		toolNew.setText("Нов филм ...");
+		toolNew.setText(bundle.getString("newMovie"));
 		toolNew.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/media.png")));
 		ToolItem toolErase = new ToolItem(toolBar, SWT.PUSH);
-		toolErase.setText("Обриши филм");
+		toolErase.setText(bundle.getString("deleteMovie"));
 		toolErase.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png")));
 		ToolItem toolExport = new ToolItem(toolBar, SWT.PUSH);
 		toolExport.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/folder_outbox.png")));
-		toolExport.setText("Експортовање");
+		toolExport.setText(bundle.getString("exporting"));
 		toolExport.addSelectionListener(new ToolExportSelectionAdapter());
 		toolErase.addSelectionListener(new ToolEraseSelectionAdapter());
 		ToolItem toolSettings = new ToolItem(toolBar, SWT.PUSH);
 		toolSettings.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/advancedsettings.png")));
 		toolSettings.setWidth(90);
-		toolSettings.setText("Подешавања...");
+		toolSettings.setText(bundle.getString("settings"));
 		toolSettings.addSelectionListener(new ToolSettingsSelectionAdapter());
 		new ToolItem(toolBar, SWT.SEPARATOR);
 		ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
-		toolAbout.setText("О програму ...");
+		toolAbout.setText(bundle.getString("aboutProgram"));
 		toolAbout.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/jabber_protocol.png")));
 		new ToolItem(toolBar, SWT.SEPARATOR);
 		ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
-		toolExit.setText("Излаз");
+		toolExit.setText(bundle.getString("exit"));
 		toolExit.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/shutdown.png")));
 		toolExit.addSelectionListener(new ToolExitSelectionAdapter());
 		toolAbout.addSelectionListener(new ToolAboutSelectionAdapter());
@@ -565,12 +568,12 @@ public class MainForm extends Observable {
 		wrapperDataInfo.setLayout(gridLayout1);
 		
 		Label labelCurrentDesc = new Label(wrapperDataInfo, SWT.NONE);
-		labelCurrentDesc.setText("Филтер извукао: ");
+		labelCurrentDesc.setText(bundle.getString("filterExtracted"));
 		labelCurrent = new Label(wrapperDataInfo, SWT.NONE);
 		labelCurrent.setText("0");
 		labelCurrent.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 10, SWT.BOLD));
 		Label labelFilterDesc = new Label(wrapperDataInfo, SWT.NONE);
-		labelFilterDesc.setText("Активан филтер: ");
+		labelFilterDesc.setText(bundle.getString("activeFilter"));
 		labelFilter = new Label(wrapperDataInfo, SWT.NONE);
 		labelFilter.setText("");
 		labelFilter.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 10, SWT.BOLD));

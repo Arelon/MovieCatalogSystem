@@ -63,10 +63,20 @@ public class UserConfiguration {
 
     private int elementsPerPage;
 
+    private String localeLanguage;
+
     @SuppressWarnings("unused")
     public UserConfiguration() {
         elementsPerPage = 30;
         proxyConfiguration = new ProxyConfiguration();
+    }
+
+    public void setLocaleLanguage(String localeLanguage) {
+        this.localeLanguage = localeLanguage;
+    }
+
+    public String getLocaleLanguage() {
+        return localeLanguage;
     }
 
     public int getElementsPerPage() {
@@ -88,7 +98,8 @@ public class UserConfiguration {
     @Override
     public String toString() {
         return "UserConfiguration{" +
-                "proxyConfiguration=" + proxyConfiguration +
+                "localeLanguage='" + localeLanguage + '\'' +
+                ", proxyConfiguration=" + proxyConfiguration +
                 ", elementsPerPage=" + elementsPerPage +
                 '}';
     }

@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.MedijRepository;
 import net.milanaleksic.mcs.application.util.ApplicationException;
@@ -10,20 +11,25 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
+import java.util.ResourceBundle;
 
 public class NewMediumForm {
 
     @Inject private MedijRepository medijRepository;
+
+    @Inject private ApplicationManager applicationManager;
 
 	private Shell sShell = null;
     private Button rbCD = null;
     private Text textID = null;
     private Shell parent = null;
 	private Runnable parentRunner = null;
+    private ResourceBundle bundle = null;
 
     public void open(Shell parent, Runnable runnable) {
         this.parent = parent;
         this.parentRunner = runnable;
+        this.bundle = applicationManager.getMessagesBundle();
         createSShell();
 		sShell.setLocation(
 				new Point(
@@ -108,7 +114,7 @@ public class NewMediumForm {
 		composite.setLayoutData(gridData);
         Button btnOk = new Button(composite, SWT.NONE);
 		btnOk.setText("Сними");
-		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell) {
+		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
             public void handledSelected() throws ApplicationException {
                 medijRepository.saveMedij(
