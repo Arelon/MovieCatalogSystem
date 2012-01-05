@@ -15,9 +15,9 @@ public enum Language {
     public abstract String getName() ;
 
     public static int ordinalForName(String localeLanguage) {
-        if (SERBIAN.getName().equals(localeLanguage))
-            return SERBIAN.ordinal();
-        else
-            return ENGLISH.ordinal();
+        for (Language language : Language.values())
+            if (language.getName().equals(localeLanguage))
+                return language.ordinal();
+        return ENGLISH.ordinal();
     }
 }

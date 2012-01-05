@@ -1,11 +1,11 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.OfferMovieList;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
-import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 
 public class NewOrEditMovieForm {
 	
-	private static final Logger log = Logger.getLogger(NewOrEditMovieForm.class);
-
     @Inject private NewMediumForm newMediumForm;
 
     @Inject private FilmRepository filmRepository;
@@ -37,6 +35,8 @@ public class NewOrEditMovieForm {
     @Inject private OfferMovieList offerMovieList;
 
     @Inject private FilmService filmService;
+
+    @Inject private ApplicationManager applicationManager;
 
     private Shell sShell = null;
     private Shell parent;
@@ -59,18 +59,14 @@ public class NewOrEditMovieForm {
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
     private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}");
+    private ResourceBundle bundle;
 
     public void open(Shell parent, @Nullable Film film, Runnable runnable) {
 		this.parent = parent;
 		this.activeFilm  = film;
         this.parentRunner = runnable;
+        this.bundle = applicationManager.getMessagesBundle();
         createSShell();
-        if (log.isInfoEnabled()) {
-            if (film == null)
-                log.info("NewOrEditMovieForm: New movie mode");
-            else
-                log.info("NewOrEditMovieForm: FILMID="+film.getIdfilm());
-        }
 		sShell.setLocation(
 				new Point(
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
@@ -81,7 +77,7 @@ public class NewOrEditMovieForm {
 	
 	private void resetControls() {
 		comboNaziv.setText("");
-		textPrevod.setText("<непознат>");
+		textPrevod.setText(bundle.getString("newOrEdit.unkown"));
 		textImdbId.setText("");
 		textGodina.setText("0");
 		comboZanr.setItems(new String[] {});
@@ -202,7 +198,7 @@ public class NewOrEditMovieForm {
 			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		else
 			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText("Додавање или измена филма");
+		sShell.setText(bundle.getString("newOrEdit.addingOrModifyingMovie"));
 		createComposite();
 		createComposite1();
 		sShell.setLayout(gridLayout);
@@ -256,7 +252,7 @@ public class NewOrEditMovieForm {
 		composite.setLayoutData(gridData1);
 		composite.setLayout(gridLayout1);
         Label labNazivFilma = new Label(composite, SWT.RIGHT);
-		labNazivFilma.setText("Назив филма:");
+		labNazivFilma.setText(bundle.getString("newOrEdit.movieName"));
 		labNazivFilma.setLayoutData(gridData5);
 		comboNaziv = new Combo(composite, SWT.DROP_DOWN);
         comboNaziv.setVisibleItemCount(10);
@@ -278,7 +274,7 @@ public class NewOrEditMovieForm {
         });
         comboNaziv.addKeyListener(prepareOfferMovieListForCombo(comboNaziv));
         Label labPrevod = new Label(composite, SWT.NONE);
-		labPrevod.setText("Превод назива филма:");
+		labPrevod.setText(bundle.getString("newOrEdit.movieNameTranslated"));
 		labPrevod.setLayoutData(gridData4);
 		textPrevod = new Text(composite, SWT.BORDER);
 		textPrevod.setLayoutData(gridData3);
@@ -286,39 +282,39 @@ public class NewOrEditMovieForm {
 
             public void focusLost(org.eclipse.swt.events.FocusEvent e) {
                 if (textPrevod.getText().trim().equals(""))
-                    textPrevod.setText("<непознат>");
+                    textPrevod.setText(bundle.getString("newOrEdit.unkown"));
             }
 
             public void focusGained(org.eclipse.swt.events.FocusEvent e) {
-                if (textPrevod.getText().trim().equals("<непознат>"))
+                if (textPrevod.getText().trim().equals(bundle.getString("newOrEdit.unkown")))
                     textPrevod.setText("");
             }
 
         });
         Label labZanr = new Label(composite, SWT.NONE);
-		labZanr.setText("Жанр:");
+		labZanr.setText(bundle.getString("newOrEdit.genre"));
 		labZanr.setLayoutData(gridData6);
 		createComboZanr();
         Label labGodina = new Label(composite, SWT.NONE);
-		labGodina.setText("Година производње:");
+		labGodina.setText(bundle.getString("newOrEdit.yearPublished"));
 		labGodina.setLayoutData(gridData19);
 		textGodina = new Text(composite, SWT.BORDER);
 		textGodina.setLayoutData(gridData18);
         Label labLokacija = new Label(composite, SWT.NONE);
-		labLokacija.setText("Локација:");
+		labLokacija.setText(bundle.getString("newOrEdit.location"));
 		labLokacija.setLayoutData(gridData7);
 		createComboLokacija();
         Label labIMDB = new Label(composite, SWT.NONE);
-		labIMDB.setText("IMDB ID (формат tt???):");
+		labIMDB.setText(bundle.getString("newOrEdit.imdbIdFormat"));
 		labIMDB.setLayoutData(gridData10);
 		textImdbId = new Text(composite, SWT.BORDER);
 		textImdbId.setLayoutData(gridData11);
         Label label = new Label(composite, SWT.NONE);
-		label.setText("Дискови:");
+		label.setText(bundle.getString("newOrEdit.mediums"));
 		label.setLayoutData(gridData13);
 		createComposite2();
         Label labKomentar = new Label(composite, SWT.NONE);
-		labKomentar.setText("Коментар:");
+		labKomentar.setText(bundle.getString("newOrEdit.comment"));
 		labKomentar.setLayoutData(gridData20);
 		createComposite3();
 	}
@@ -345,33 +341,33 @@ public class NewOrEditMovieForm {
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(gridLayout2);
         Button btnPrihvati = new Button(composite1, SWT.NONE);
-		btnPrihvati.setText("Сними");
+		btnPrihvati.setText(bundle.getString("newOrEdit.save"));
 		btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 //TODO: replace with Hibernate Validator (JSR 303 implementation)
                 StringBuilder razlogOtkaza = new StringBuilder();
                 if (listDiskovi.getItemCount() == 0)
-                    razlogOtkaza.append("\r\nМорате доделити барем један медијум");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.atLeastOneMediumNeeded"));
                 if (comboNaziv.getText().trim().equals(""))
-                    razlogOtkaza.append("\r\nМорате унети назив филма");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveName"));
                 if (comboNaziv.getText().trim().equals(""))
-                    razlogOtkaza.append("\r\nМорате унети превод назива филма");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveNameTranslation"));
                 if (comboZanr.getSelectionIndex() == -1)
-                    razlogOtkaza.append("\r\nМорате изабрати неки жанр за филм");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.genreMustBeSelected"));
                 try {
                     Integer.parseInt(textGodina.getText());
                 } catch (Throwable t) {
-                    razlogOtkaza.append("\r\nФормат уноса (целобројна вредност) за годину производње није исправан");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.yearNotANumber"));
                 }
                 if (comboLokacija.getSelectionIndex() == -1)
-                    razlogOtkaza.append("\r\nМорате изабрати неку локацију за диск");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.locationMustBeSelected"));
                 if (!textImdbId.getText().isEmpty() &&
                         !PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches())
-                    razlogOtkaza.append("\r\nФормат ИМДБ ИД-а није у реду. Мора бити или празан стринг или у формату ttXXXXXXX");
+                    razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.imdbFormatNotOk"));
                 if (razlogOtkaza.length() != 0) {
                     MessageBox messageBox = new MessageBox(sShell, SWT.OK | SWT.ICON_WARNING);
-                    messageBox.setText("Додавање није могуће");
-                    messageBox.setMessage("Разлог отказа:\r\n----------" + razlogOtkaza.toString());
+                    messageBox.setText(bundle.getString("newOrEdit.movieCouldNotBeAdded"));
+                    messageBox.setMessage(bundle.getString("newOrEdit.cancellationCause") + "\r\n----------" + razlogOtkaza.toString());
                     messageBox.open();
                 } else {
                     if (activeFilm != null)
@@ -384,7 +380,7 @@ public class NewOrEditMovieForm {
             }
         });
         Button btnOdustani = new Button(composite1, SWT.NONE);
-		btnOdustani.setText("Одустани");
+		btnOdustani.setText(bundle.getString("global.cancel"));
 		btnOdustani.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 sShell.close();
@@ -427,7 +423,7 @@ public class NewOrEditMovieForm {
 		composite2.setLayout(gridLayout3);
 		createComboDiskovi();
         Button btnDodajDisk = new Button(composite2, SWT.NONE);
-		btnDodajDisk.setText("Додај диск");
+		btnDodajDisk.setText(bundle.getString("newOrEdit.addMedium"));
 		btnDodajDisk.setLayoutData(gridData15);
 		btnDodajDisk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
@@ -442,7 +438,7 @@ public class NewOrEditMovieForm {
 		listDiskovi = new List(composite2, SWT.NONE);
 		listDiskovi.setLayoutData(gridData17);
         Button btnOduzmi = new Button(composite2, SWT.NONE);
-		btnOduzmi.setText("Одузми диск");
+		btnOduzmi.setText(bundle.getString("newOrEdit.removeMedium"));
 		btnOduzmi.setLayoutData(gridData16);
 		btnOduzmi.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
@@ -451,10 +447,10 @@ public class NewOrEditMovieForm {
             }
         });
         Label label1 = new Label(composite2, SWT.NONE);
-		label1.setText("Додавање:");
+		label1.setText(bundle.getString("newOrEdit.add"));
 		label1.setLayoutData(gridData22);
         Button btnNovMedij = new Button(composite2, SWT.NONE);
-		btnNovMedij.setText("Нов диск ...");
+		btnNovMedij.setText(bundle.getString("newOrEdit.newMedium"));
 		btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 newMediumForm.open(sShell, new Runnable() {
@@ -492,17 +488,17 @@ public class NewOrEditMovieForm {
 		textKomentar = new Text(composite3, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		textKomentar.setLayoutData(gridData21);
         Button btnNeodgledano = new Button(composite3, SWT.NONE);
-		btnNeodgledano.setText("Нисам гледао");
+		btnNeodgledano.setText(bundle.getString("newOrEdit.iDidNotWatch"));
 		btnNeodgledano.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + "нисам гледао");
+                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + bundle.getString("newOrEdit.iDidNotWatch"));
             }
         });
         Button btnLos = new Button(composite3, SWT.NONE);
-		btnLos.setText("Лош (снимак)");
+		btnLos.setText(bundle.getString("newOrEdit.badRecording"));
 		btnLos.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + "лош");
+                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + bundle.getString("newOrEdit.badRecording"));
             }
         });
 	}

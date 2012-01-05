@@ -10,9 +10,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Combo;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import javax.inject.Inject;
 import java.util.ResourceBundle;
@@ -72,7 +69,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
                     Movie[] movies = tmdbService.searchForMovies(currentQuery);
                     if (movies == null || movies.length == 0) {
                         newItems = new String[] {
-                                bundle.getString("nothingFound")
+                                bundle.getString("offerList.nothingFound")
                         };
                     } else {
                         newItems = new String[movies.length <= 10 ? movies.length : 10];
@@ -83,7 +80,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
                     newOrEditMovieForm.setCurrentQueryItems(currentQuery, newItems, movies);
                 } catch (TmdbException e1) {
                     newOrEditMovieForm.setCurrentQueryItems(currentQuery, new String[] {
-                            bundle.getString("searchFailed")
+                            bundle.getString("offerList.searchFailed")
                     }, null);
                     logger.error("Error while fetching movie information", e1);
                 }

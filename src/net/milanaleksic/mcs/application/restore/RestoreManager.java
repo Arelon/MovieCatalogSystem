@@ -24,6 +24,8 @@ public class RestoreManager implements LifecycleListener {
 
     @Inject private RestorePointRestorer restorePointRestorer;
 
+    @Inject private ClosingForm closingForm;
+
     @Override public void applicationStarted() {
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
@@ -36,7 +38,7 @@ public class RestoreManager implements LifecycleListener {
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
         if (applicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
-            new ClosingForm();
+            closingForm.open();
             restorePointCreator.createRestorePoint();
         }
     }

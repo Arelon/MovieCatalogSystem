@@ -81,7 +81,7 @@ public class SettingsForm {
 			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		else
 			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText(bundle.getString("programSettings"));
+		sShell.setText(bundle.getString("settings.programSettings"));
 		createTabFolder();
 		sShell.setLayout(gridLayout3);
 		createComposite();
@@ -108,7 +108,7 @@ public class SettingsForm {
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(gridData);
         Button btnCancel = new Button(composite, SWT.NONE);
-		btnCancel.setText(bundle.getString("close"));
+		btnCancel.setText(bundle.getString("settings.close"));
 		btnCancel.setLayoutData(gridData12);
 		btnCancel.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
@@ -130,13 +130,13 @@ public class SettingsForm {
         createLocationTabContents();
         createGenresTabContents();
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-        tabItem.setText(bundle.getString("basicSettings"));
+        tabItem.setText(bundle.getString("settings.basicSettings"));
         tabItem.setControl(compositeSettings);
         TabItem tabItem1 = new TabItem(tabFolder, SWT.NONE);
-        tabItem1.setText(bundle.getString("locations"));
+        tabItem1.setText(bundle.getString("settings.locations"));
         tabItem1.setControl(compositeLocations);
         TabItem tabItem2 = new TabItem(tabFolder, SWT.NONE);
-        tabItem2.setText(bundle.getString("genres"));
+        tabItem2.setText(bundle.getString("settings.genres"));
         tabItem2.setControl(compositeGenres);
 	}
 
@@ -146,19 +146,18 @@ public class SettingsForm {
 		compositeSettings.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, true));
         
         Group groupGlobal = new Group(compositeSettings, SWT.NONE);
-        groupGlobal.setText(bundle.getString("globalSettings"));
+        groupGlobal.setText(bundle.getString("settings.globalSettings"));
         groupGlobal.setLayout(new GridLayout(2, true));
         groupGlobal.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
 
         // language
         Label labelLang = new Label(groupGlobal, SWT.NONE);
-        labelLang.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        labelLang.setText(bundle.getString("language"));
+        labelLang.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, true, false));
+        labelLang.setText(bundle.getString("settings.language"));
         comboLanguage = new Combo(groupGlobal, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
         comboLanguage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         for (Language language : Language.values())
             comboLanguage.add(bundle.getString("language.name."+language.getName()));
-
 		comboLanguage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
@@ -172,8 +171,8 @@ public class SettingsForm {
 
         //elementsPerPage
         Label label = new Label(groupGlobal, SWT.NONE);
-        label.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        label.setText(bundle.getString("numberOfElementsPerPage"));
+        label.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, true, false));
+        label.setText(bundle.getString("settings.numberOfElementsPerPage"));
 		textElementsPerPage = new Text(groupGlobal, SWT.BORDER);
 		textElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
 		textElementsPerPage.addModifyListener(new ModifyListener() {
@@ -213,32 +212,32 @@ public class SettingsForm {
         };
         UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
         Group groupProxyServer = new Group(compositeSettings, SWT.NONE);
-        groupProxyServer.setText(bundle.getString("proxyServer"));
+        groupProxyServer.setText(bundle.getString("settings.proxyServer"));
         groupProxyServer.setLayout(new GridLayout(2, false));
         groupProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         Label labelServer = new Label(groupProxyServer, SWT.NONE);
-        labelServer.setText(bundle.getString("proxyServerAddress"));
+        labelServer.setText(bundle.getString("settings.proxyServerAddress"));
         labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         textProxyServer = new Text(groupProxyServer, SWT.BORDER);
         textProxyServer.setText(proxyConfiguration.getServer());
         textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServer.addModifyListener(proxySettingsModifyListener);
         Label labelPort = new Label(groupProxyServer, SWT.NONE);
-        labelPort.setText(bundle.getString("proxyServerPort"));
+        labelPort.setText(bundle.getString("settings.proxyServerPort"));
         labelPort.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         textProxyServerPort = new Text(groupProxyServer, SWT.BORDER);
         textProxyServerPort.setText(Integer.toString(proxyConfiguration.getPort()));
         textProxyServerPort.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServerPort.addModifyListener(proxySettingsModifyListener);
         Label labelUsername = new Label(groupProxyServer, SWT.NONE);
-        labelUsername.setText(bundle.getString("username"));
+        labelUsername.setText(bundle.getString("settings.username"));
         labelUsername.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         textProxyServerUsername = new Text(groupProxyServer, SWT.BORDER);
         textProxyServerUsername.setText(proxyConfiguration.getUsername());
         textProxyServerUsername.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServerUsername.addModifyListener(proxySettingsModifyListener);
         Label labelPassword = new Label(groupProxyServer, SWT.NONE);
-        labelPassword.setText(bundle.getString("password"));
+        labelPassword.setText(bundle.getString("settings.password"));
         labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER);
         textProxyServerPassword.setText(proxyConfiguration.getPassword());
@@ -259,12 +258,12 @@ public class SettingsForm {
 		compositeLocations = new Composite(tabFolder, SWT.NONE);
 		compositeLocations.setLayout(gridLayout1);
         Label label = new Label(compositeLocations, SWT.NONE);
-		label.setText(bundle.getString("availableLocations"));
+		label.setText(bundle.getString("settings.availableLocations"));
 		createAddLocationPanel();
 		listLokacije = new List(compositeLocations, SWT.BORDER | SWT.V_SCROLL);
 		listLokacije.setLayoutData(gridData2);
         Button btnIzbrisiLokaciju = new Button(compositeLocations, SWT.NONE);
-		btnIzbrisiLokaciju.setText(bundle.getString("delete"));
+		btnIzbrisiLokaciju.setText(bundle.getString("settings.delete"));
 		btnIzbrisiLokaciju.setLayoutData(gridData5);
 		btnIzbrisiLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
@@ -291,12 +290,12 @@ public class SettingsForm {
 		compositeGenres = new Composite(tabFolder, SWT.NONE);
 		compositeGenres.setLayout(gridLayout2);
         Label label1 = new Label(compositeGenres, SWT.NONE);
-		label1.setText(bundle.getString("availableGenres"));
+		label1.setText(bundle.getString("settings.availableGenres"));
 		createAddGenrePanel();
 		listZanrovi = new List(compositeGenres, SWT.BORDER | SWT.V_SCROLL);
 		listZanrovi.setLayoutData(gridData7);
         Button btnIzbrisiZanr = new Button(compositeGenres, SWT.NONE);
-		btnIzbrisiZanr.setText(bundle.getString("delete"));
+		btnIzbrisiZanr.setText(bundle.getString("settings.delete"));
 		btnIzbrisiZanr.setLayoutData(gridData8);
 		btnIzbrisiZanr.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
@@ -324,7 +323,7 @@ public class SettingsForm {
 		textNovaLokacija = new Text(composite3, SWT.BORDER);
 		textNovaLokacija.setLayoutData(gridData4);
         Button btnDodajLokaciju = new Button(composite3, SWT.NONE);
-		btnDodajLokaciju.setText(bundle.getString("addThisLocation"));
+		btnDodajLokaciju.setText(bundle.getString("settings.addThisLocation"));
 		btnDodajLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
             public void handledSelected() throws ApplicationException {
@@ -356,7 +355,7 @@ public class SettingsForm {
 		textNovZanr = new Text(composite4, SWT.BORDER);
 		textNovZanr.setLayoutData(gridData10);
         Button btnDodajZanr = new Button(composite4, SWT.NONE);
-		btnDodajZanr.setText(bundle.getString("addThisGenre"));
+		btnDodajZanr.setText(bundle.getString("settings.addThisGenre"));
 		btnDodajZanr.setLayoutData(gridData9);
 		btnDodajZanr.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override

@@ -28,12 +28,12 @@ public abstract class HandledModifyListener implements ModifyListener {
             handledModifyText();
         } catch (ApplicationException exc) {
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
-            box.setMessage(String.format(bundle.getString("applicationError"), exc.getClass().getCanonicalName(), exc.getMessage()));
+            box.setMessage(String.format(bundle.getString("global.applicationError"), exc.getClass().getCanonicalName(), exc.getMessage()));
             box.setText("Error");
             box.open();
         } catch (Throwable t) {
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
-            box.setMessage(String.format(bundle.getString("unexpectedError"), t.getClass().getCanonicalName(), t.getMessage()));
+            box.setMessage(String.format(bundle.getString("global.unexpectedError"), t.getClass().getCanonicalName(), t.getMessage()));
             box.setText("Unexpected Error");
             box.open();
         }

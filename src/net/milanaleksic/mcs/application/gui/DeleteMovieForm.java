@@ -5,7 +5,6 @@ import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -17,8 +16,6 @@ import javax.inject.Inject;
 import java.util.ResourceBundle;
 
 public class DeleteMovieForm {
-
-	private static final Logger log = Logger.getLogger(DeleteMovieForm.class);
 
 	private Shell sShell = null;
     private Shell parent = null;
@@ -47,8 +44,6 @@ public class DeleteMovieForm {
         this.parentRunner = runnable;
         this.bundle = applicationManager.getMessagesBundle();
 		createSShell();
-        if (log.isInfoEnabled())
-    		log.info("DeleteMovieForm: FILMID=" + film.getIdfilm());
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
 				+ Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
 		this.film = film;
@@ -77,18 +72,17 @@ public class DeleteMovieForm {
 			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		else
 			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText("Брисање филма");
+		sShell.setText(bundle.getString("delete.deleteMovie"));
 		sShell.setLayout(gridLayout1);
 		createCanvas();
 		sShell.setSize(new Point(431, 154));
         Label labUpozorenje = new Label(sShell, SWT.NONE);
 		labFilmNaziv = new Label(sShell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
-		labUpozorenje.setText("Да ли заиста желите да избришете филм??");
+		labUpozorenje.setText(bundle.getString("delete.doYouReallyWishToDeleteMovie"));
 		labUpozorenje.setLayoutData(gridData);
 		labUpozorenje.setForeground(new Color(Display.getCurrent(), 255, 0, 0));
 		labUpozorenje.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
-		labFilmNaziv.setText("[ назив филма ]");
-		labFilmNaziv.setLayoutData(gridData2); 
+		labFilmNaziv.setLayoutData(gridData2);
 		labFilmNaziv.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
 		new Label(sShell, SWT.NONE);
 		createComposite();
@@ -113,9 +107,9 @@ public class DeleteMovieForm {
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(gridData1);
         Button btnOk = new Button(composite, SWT.NONE);
-		btnOk.setText("ОБРИШИ!");
+		btnOk.setText(bundle.getString("delete.confirmDeletion"));
         Button btnCancel = new Button(composite, SWT.NONE);
-		btnCancel.setText("\u041e\u0434\u0443\u0441\u0442\u0430\u043d\u0438");
+		btnCancel.setText(bundle.getString("global.cancel"));
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override public void handledSelected() throws ApplicationException {

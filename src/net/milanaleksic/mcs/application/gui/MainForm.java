@@ -29,6 +29,8 @@ public class MainForm extends Observable {
 
     @Inject private SettingsForm settingsForm;
 
+    @Inject private AboutForm aboutForm;
+
     @Inject private ApplicationManager applicationManager;
 
     @Inject private ZanrRepository zanrRepository;
@@ -309,7 +311,7 @@ public class MainForm extends Observable {
 		private void resetZanrova() {
 			comboZanr.setItems(new String [] {});
 			List<Zanr> zanrovi = zanrRepository.getZanrs();
-			comboZanr.add(bundle.getString("allGenres"));
+			comboZanr.add(bundle.getString("main.allGenres"));
 			comboZanr.add("-----------");
             int iter = 2;
 			for(Zanr zanr : zanrovi) {
@@ -332,7 +334,7 @@ public class MainForm extends Observable {
 	private class ToolAboutSelectionAdapter extends SelectionAdapter {
 		
 		@Override public void widgetSelected(SelectionEvent e) {
-			new AboutForm(sShell);
+			aboutForm.open(sShell);
 		}
 		
 	}
@@ -452,7 +454,7 @@ public class MainForm extends Observable {
 		comboZanr.setVisibleItemCount(16);
 		comboZanr.addSelectionListener(new ComboRefreshAdapter());
 		List<Zanr> zanrovi = zanrRepository.getZanrs();
-		comboZanr.add(bundle.getString("allGenres"));
+		comboZanr.add(bundle.getString("main.allGenres"));
 		comboZanr.add("-----------");
         int iter = 2;
 		for(Zanr zanr : zanrovi) {
@@ -470,7 +472,7 @@ public class MainForm extends Observable {
 		comboTipMedija.setLayoutData(gridData1);
 		comboTipMedija.setVisibleItemCount(8);
 		comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
-		comboTipMedija.add(bundle.getString("allMediums"));
+		comboTipMedija.add(bundle.getString("main.allMediums"));
 		comboTipMedija.add("-----------");
 		for(TipMedija tip : tipMedijaRepository.getTipMedijas()) {
             comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
@@ -492,7 +494,7 @@ public class MainForm extends Observable {
 
 	private void resetPozicije() {
 		comboPozicija.setItems(new String [] {});
-		comboPozicija.add(bundle.getString("anyLocation"));
+		comboPozicija.add(bundle.getString("main.anyLocation"));
 		comboPozicija.add("-----------");
 		for(Pozicija pozicija : pozicijaRepository.getPozicijas()) {
             comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
@@ -519,28 +521,28 @@ public class MainForm extends Observable {
 		toolBar.setBounds(new Rectangle(11, 50, 4, 50));
 		toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
-		toolNew.setText(bundle.getString("newMovie"));
+		toolNew.setText(bundle.getString("global.newMovie"));
 		toolNew.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/media.png")));
 		ToolItem toolErase = new ToolItem(toolBar, SWT.PUSH);
-		toolErase.setText(bundle.getString("deleteMovie"));
+		toolErase.setText(bundle.getString("global.deleteMovie"));
 		toolErase.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png")));
 		ToolItem toolExport = new ToolItem(toolBar, SWT.PUSH);
 		toolExport.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/folder_outbox.png")));
-		toolExport.setText(bundle.getString("exporting"));
+		toolExport.setText(bundle.getString("main.export"));
 		toolExport.addSelectionListener(new ToolExportSelectionAdapter());
 		toolErase.addSelectionListener(new ToolEraseSelectionAdapter());
 		ToolItem toolSettings = new ToolItem(toolBar, SWT.PUSH);
 		toolSettings.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/advancedsettings.png")));
 		toolSettings.setWidth(90);
-		toolSettings.setText(bundle.getString("settings"));
+		toolSettings.setText(bundle.getString("main.settings"));
 		toolSettings.addSelectionListener(new ToolSettingsSelectionAdapter());
 		new ToolItem(toolBar, SWT.SEPARATOR);
 		ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
-		toolAbout.setText(bundle.getString("aboutProgram"));
+		toolAbout.setText(bundle.getString("global.aboutProgram"));
 		toolAbout.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/jabber_protocol.png")));
 		new ToolItem(toolBar, SWT.SEPARATOR);
 		ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
-		toolExit.setText(bundle.getString("exit"));
+		toolExit.setText(bundle.getString("main.exit"));
 		toolExit.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/shutdown.png")));
 		toolExit.addSelectionListener(new ToolExitSelectionAdapter());
 		toolAbout.addSelectionListener(new ToolAboutSelectionAdapter());
@@ -568,12 +570,12 @@ public class MainForm extends Observable {
 		wrapperDataInfo.setLayout(gridLayout1);
 		
 		Label labelCurrentDesc = new Label(wrapperDataInfo, SWT.NONE);
-		labelCurrentDesc.setText(bundle.getString("filterExtracted"));
+		labelCurrentDesc.setText(bundle.getString("main.filterExtracted"));
 		labelCurrent = new Label(wrapperDataInfo, SWT.NONE);
 		labelCurrent.setText("0");
 		labelCurrent.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 10, SWT.BOLD));
 		Label labelFilterDesc = new Label(wrapperDataInfo, SWT.NONE);
-		labelFilterDesc.setText(bundle.getString("activeFilter"));
+		labelFilterDesc.setText(bundle.getString("main.activeFilter"));
 		labelFilter = new Label(wrapperDataInfo, SWT.NONE);
 		labelFilter.setText("");
 		labelFilter.setFont(new Font(Display.getDefault(), interfaceConfiguration.getTableFont(), 10, SWT.BOLD));

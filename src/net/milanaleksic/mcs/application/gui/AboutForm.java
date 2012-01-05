@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.application.gui;
 
 import java.awt.Desktop;
 import java.net.URI;
+import java.util.ResourceBundle;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import org.eclipse.swt.SWT;
@@ -11,19 +12,16 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
-public class AboutForm {
-	
-	private static final String dodatniTekst = 
-		"Верзија програма: " + ApplicationManager.getVersion() + "\n\n" +
-		"У развоју су коришћене следеће бесплатне технологије:\n"+
-		"Јава 6, Eclipse SWT 3.7, Spring 3.0.5, Hibernate 3.6, H2 1.3\n"+
-		"Args4J, DOM4J, Log4J, EhCache, C3P0 итд.\n\n"+
-		"Иконе су део \"Crystal Project\"-а, аутор је Евералдо Келхо.\n\n"+
-		"Програм је још увек у развоју, све грешке молим пријавите аутору програма";
+import javax.inject.Inject;
 
+public class AboutForm {
+
+    @Inject private ApplicationManager applicationManager;
+	
 	private Shell sShell = null;
 	private Shell parent = null;
     private Text textArea = null;
+
     private static final SelectionAdapter emailSender = new SelectionAdapter() {
         public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
             new Thread(new Runnable() {
@@ -64,15 +62,19 @@ public class AboutForm {
             }).start();
         }
     };
+    private ResourceBundle bundle;
 
-    public AboutForm(Shell parent) {
+    public void open(Shell parent) {
 		this.parent = parent;
-		createSShell();
+        bundle = applicationManager.getMessagesBundle();
+        createSShell();
 		sShell.setLocation(
-				new Point(
-						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
-						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
-		textArea.setText(textArea.getText() + "\n\n" + AboutForm.dodatniTekst);
+                new Point(
+                        parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
+                        parent.getLocation().y + Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
+		textArea.setText(textArea.getText() + "\n\n" +
+            bundle.getString("about.programVersion") + " " + ApplicationManager.getVersion() + "\n\n" +
+                bundle.getString("about.technologyDetails"));
 		sShell.open();
 	}
 	
@@ -91,7 +93,7 @@ public class AboutForm {
 			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		else
 			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText("О програму");
+		sShell.setText(bundle.getString("global.aboutProgram"));
 		sShell.setLayout(gridLayout);
 		sShell.setSize(new Point(412, 326));
 		createComposite2();
@@ -103,7 +105,7 @@ public class AboutForm {
 			}
 		});
 		textArea = new Text(sShell, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY | SWT.CENTER | SWT.BORDER);
-		textArea.setText("Copyright(C)2007-2011 by Milan Aleksic");
+		textArea.setText("Copyright 2007-2012 by Milan Aleksic");
 		textArea.setLayoutData(gridData1);
 	}
 
@@ -119,7 +121,7 @@ public class AboutForm {
 		labEmail.setForeground(new Color(Display.getCurrent(), 0, 0, 0));
 		labEmail.setText("milan.aleksic@gmail.com");
         Button btnEmail = new Button(composite, SWT.NONE);
-		btnEmail.setText("пошаљи email");
+		btnEmail.setText(bundle.getString("about.sendEmail"));
         btnEmail.addSelectionListener(emailSender);
 	}
 
@@ -135,7 +137,7 @@ public class AboutForm {
 		labSite.setForeground(new Color(Display.getCurrent(), 0, 0, 0));
 		labSite.setText("www.milanaleksic.net  ");
         Button btnSite = new Button(composite1, SWT.NONE);
-		btnSite.setText("иди");
+		btnSite.setText(bundle.getString("about.visit"));
 		btnSite.addSelectionListener(webSiteVisitor);
 	}
 
@@ -162,16 +164,9 @@ public class AboutForm {
 		label3.setLayoutData(gridData11);
 		label3.setForeground(new Color(Display.getCurrent(), 0, 0, 255));
         Label label = new Label(composite2, SWT.NONE);
-		label.setText("Аутор програма је Милан Алексић");
+		label.setText(bundle.getString("about.programAuthor"));
 		label.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
 		label.setLayoutData(gridData);
-        Label label1 = new Label(composite2, SWT.NONE);
-		label1.setText("дипл инг етх");
-		label1.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
-		label1.setLayoutData(gridData4);
-        Label label2 = new Label(composite2, SWT.NONE);
-		label2.setText("новембар 2007 - август 2011");
-		label2.setLayoutData(gridData6);
 	}
 
 }
