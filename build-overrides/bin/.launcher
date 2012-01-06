@@ -1,4 +1,4 @@
 executor = javaw
 mainClass = net.milanaleksic.mcs.Startup
 showSplash = true
-extra = -Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true -Xmn64m -Xmx256m -Xms128m -Xverify:none
+extra = -Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true -Xmn64m -Xmx256m -Xms128m -Xverify:none -XX:+UseG1GC
