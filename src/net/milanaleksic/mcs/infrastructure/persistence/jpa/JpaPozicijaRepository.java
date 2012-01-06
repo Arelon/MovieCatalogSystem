@@ -1,14 +1,12 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
+import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Pozicija;
 import net.milanaleksic.mcs.domain.model.PozicijaRepository;
-import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.domain.model.Pozicija_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
 import java.util.List;
 
 /**
@@ -23,11 +21,7 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     @Override
     @Transactional(readOnly = true)
     public List<Pozicija> getPozicijas() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
-        Root<Pozicija> from = cq.from(Pozicija.class);
-        cq.orderBy(builder.asc(builder.lower(from.<String>get(Pozicija_.pozicija))));
-        return entityManager.createQuery(cq).getResultList();
+        return entityManager.createNamedQuery("getPozicijasOrdered", Pozicija.class).getResultList();
     }
 
     @Override
@@ -52,24 +46,15 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     @Override
     @Transactional(readOnly = true)
     public Pozicija getDefaultPozicija() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
-        Root<Pozicija> from = cq.from(Pozicija.class);
-        cq.where(builder.equal(from.<String>get(Pozicija_.pozicija), Pozicija.DEFAULT_POZICIJA_NAME));
-        return entityManager.createQuery(cq).getSingleResult();
+        return getByName(Pozicija.DEFAULT_POZICIJA_NAME);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Pozicija getByName(String locationName) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Pozicija> cq = builder.createQuery(Pozicija.class);
-        Root<Pozicija> from = cq.from(Pozicija.class);
-        ParameterExpression<String> locationNameParameter = builder.parameter(String.class, "locationName");
-        cq.where(builder.equal(from.<String>get(Pozicija_.pozicija), locationNameParameter));
-        TypedQuery<Pozicija> query = entityManager.createQuery(cq);
-        query.setParameter(locationNameParameter, locationName);
-        return query.getSingleResult();
+        TypedQuery<Pozicija> pozicijaByName = entityManager.createNamedQuery("getPozicijaByName", Pozicija.class);
+        pozicijaByName.setParameter("locationName", locationName);
+        return pozicijaByName.getSingleResult();
     }
 
 }

@@ -2,12 +2,10 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.TipMedija;
 import net.milanaleksic.mcs.domain.model.TipMedijaRepository;
-import net.milanaleksic.mcs.domain.model.TipMedija_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
 import java.util.List;
 
 /**
@@ -22,23 +20,14 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
     @Override
     @Transactional(readOnly = true)
     public List<TipMedija> getTipMedijas() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);
-        Root<TipMedija> from = cq.from(TipMedija.class);
-        cq.orderBy(builder.asc(builder.lower(from.<String>get(TipMedija_.naziv))));
-        return entityManager.createQuery(cq).getResultList();
+        return entityManager.createNamedQuery("getTipMedijaOrdered", TipMedija.class).getResultList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public TipMedija getTipMedija(String mediumTypeName) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<TipMedija> cq = builder.createQuery(TipMedija.class);
-        Root<TipMedija> from = cq.from(TipMedija.class);
-        ParameterExpression<String> mediumTypeNameParameter = builder.parameter(String.class, "mediumTypeName");
-        cq.where(builder.equal(from.<String>get(TipMedija_.naziv), mediumTypeNameParameter));
-        TypedQuery<TipMedija> query = entityManager.createQuery(cq);
-        query.setParameter(mediumTypeNameParameter, mediumTypeName);
-        return query.getSingleResult();
+        TypedQuery<TipMedija> tipMedijaByName = entityManager.createNamedQuery("getTipMedijaByName", TipMedija.class);
+        tipMedijaByName.setParameter("mediumTypeName", mediumTypeName);
+        return tipMedijaByName.getSingleResult();
     }
 }
