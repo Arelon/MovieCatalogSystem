@@ -341,7 +341,7 @@ public class NewOrEditMovieForm {
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(gridLayout2);
         Button btnPrihvati = new Button(composite1, SWT.NONE);
-		btnPrihvati.setText(bundle.getString("newOrEdit.save"));
+		btnPrihvati.setText(bundle.getString("global.save"));
 		btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 //TODO: replace with Hibernate Validator (JSR 303 implementation)

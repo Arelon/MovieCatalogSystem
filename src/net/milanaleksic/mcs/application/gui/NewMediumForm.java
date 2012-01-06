@@ -51,15 +51,15 @@ public class NewMediumForm {
 			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		else
 			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText("Додавање новог медијума");
+		sShell.setText(bundle.getString("newMedium.addNewMedium"));
 		sShell.setSize(new Point(288, 189));
 		sShell.setLayout(gridLayout2);
         Label label2 = new Label(sShell, SWT.LEFT);
-		label2.setText("Тип медијума који додајете: ");
+		label2.setText(bundle.getString("newMedium.mediumType"));
 		label2.setLayoutData(gridData1);
 		createGroup();
         Label label3 = new Label(sShell, SWT.NONE);
-		label3.setText("Медијум ће имати следећи ID:");
+		label3.setText(bundle.getString("newMedium.mediumWillHaveFollowingId"));
 		label3.setLayoutData(gridData2);
 		textID = new Text(sShell, SWT.BORDER | SWT.READ_ONLY);
 		createComposite();
@@ -113,7 +113,7 @@ public class NewMediumForm {
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(gridData);
         Button btnOk = new Button(composite, SWT.NONE);
-		btnOk.setText("Сними");
+		btnOk.setText(bundle.getString("global.save"));
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
             public void handledSelected() throws ApplicationException {
@@ -125,7 +125,7 @@ public class NewMediumForm {
             }
         });
         Button btnCancel = new Button(composite, SWT.NONE);
-		btnCancel.setText("Одустани");
+		btnCancel.setText(bundle.getString("global.cancel"));
 		btnCancel.setLayoutData(gridData12);
 		btnCancel.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
