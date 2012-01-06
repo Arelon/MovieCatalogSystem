@@ -13,7 +13,6 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -27,8 +26,6 @@ import java.io.IOException;
 public abstract class AbstractRequest {
 
     protected static final String apiLocation = "http://api.themoviedb.org/2.1/";
-
-    protected final Logger log = Logger.getLogger(this.getClass());
 
     protected final String apiKey;
 

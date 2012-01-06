@@ -22,7 +22,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     public void restoreDatabaseIfNeeded() {
         try (Connection conn = getConnection()) {
             safeRestoreDatabaseIfNeeded(conn);
-        } catch (Exception e) {
+        } catch (SQLException | IOException e) {
             log.error("Failure while restoring database", e);
         }
     }

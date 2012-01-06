@@ -15,7 +15,7 @@ public class ClosingForm {
     @Inject private ApplicationManager applicationManager;
 
 	private Shell sShell = null;
-    private ResourceBundle bundle;
+    private ResourceBundle bundle = null;
 
     public ClosingForm() {
     }

@@ -96,7 +96,7 @@ public class ApplicationManager {
         display.dispose();
     }
 
-    private static ResourceBundle messageBundle = null;
+    private ResourceBundle messageBundle = null;
     public synchronized ResourceBundle getMessagesBundle() {
         if (messageBundle == null)
             messageBundle = ResourceBundle.getBundle("messages",

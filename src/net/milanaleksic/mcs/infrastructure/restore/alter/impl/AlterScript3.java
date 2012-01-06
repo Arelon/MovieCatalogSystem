@@ -42,8 +42,8 @@ public class AlterScript3 implements AlterScript {
 
             conn.commit();
             conn.setAutoCommit(false);
-        } catch (Exception e) {
-            log.error("Validation failed - " + e.getMessage());
+        } catch (SQLException e) {
+            log.error("SQL Exception occurred while executing alter", e);
         }
     }
 

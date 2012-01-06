@@ -19,26 +19,28 @@ public class ApplicationConfigurationManager {
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
+    private static class ApplicationConfigurationLoader implements Function<InputStream, ApplicationConfiguration> {
+        @Override
+        public ApplicationConfiguration apply(InputStream configurationFile) {
+            try {
+                JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
+                Unmarshaller u = jc.createUnmarshaller();
+                StreamSource source = new StreamSource(configurationFile);
+                ApplicationConfiguration applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
+                if (log.isInfoEnabled()) {
+                    log.info("ApplicationConfiguration read: "+ applicationConfiguration);
+                }
+                return applicationConfiguration;
+            } catch (Throwable t) {
+                log.error("ApplicationConfiguration could not have been read. Using default settings", t);
+            }
+            return new ApplicationConfiguration();
+        }
+    }
+
     public ApplicationConfiguration loadApplicationConfiguration() {
         try {
-            return StreamUtil.useClasspathResource(CONFIGURATION_FILE, new Function<InputStream, ApplicationConfiguration>() {
-                @Override
-                public ApplicationConfiguration apply(InputStream configurationFile) {
-                    try {
-                        JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
-                        Unmarshaller u = jc.createUnmarshaller();
-                        StreamSource source = new StreamSource(configurationFile);
-                        ApplicationConfiguration applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
-                        if (log.isInfoEnabled()) {
-                            log.info("ApplicationConfiguration read: "+ applicationConfiguration);
-                        }
-                        return applicationConfiguration;
-                    } catch (Throwable t) {
-                        log.error("ApplicationConfiguration could not have been read. Using default settings", t);
-                    }
-                    return new ApplicationConfiguration();
-                }
-            });
+            return StreamUtil.useClasspathResource(CONFIGURATION_FILE, new ApplicationConfigurationLoader());
         } catch (Throwable t) {
             log.error("ApplicationConfiguration could not have been read. Using default settings", t);
         }
@@ -56,5 +58,4 @@ public class ApplicationConfigurationManager {
             log.error("Settings could not have been saved!", t);
         }
     }
-
 }
