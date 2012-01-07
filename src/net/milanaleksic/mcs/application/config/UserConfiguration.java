@@ -69,6 +69,7 @@ public class UserConfiguration {
     public UserConfiguration() {
         elementsPerPage = 30;
         proxyConfiguration = new ProxyConfiguration();
+        localeLanguage = "en";
     }
 
     public void setLocaleLanguage(String localeLanguage) {

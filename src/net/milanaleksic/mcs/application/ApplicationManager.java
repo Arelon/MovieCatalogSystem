@@ -5,6 +5,7 @@ import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
 import net.milanaleksic.mcs.application.util.UTF8ResourceBundleControl;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
+import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.widgets.Display;
 
@@ -13,6 +14,8 @@ import java.io.*;
 import java.util.*;
 
 public class ApplicationManager {
+
+    private static final Logger log = Logger.getLogger(ApplicationManager.class);
 
     @Inject private SplashScreenManager splashScreenManager;
 
@@ -75,6 +78,8 @@ public class ApplicationManager {
         fireApplicationStarted();
         try {
             mainGuiLoop();
+        } catch(RuntimeException e) {
+            log.error("Runtime exception caught in main GUI loop", e);
         } finally {
             fireApplicationShutdown();
         }

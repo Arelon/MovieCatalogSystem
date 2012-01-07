@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <userConfiguration>
     <elementsPerPage>30</elementsPerPage>
+    <localeLanguage>en</localeLanguage>
+    <proxyConfiguration>
+        <port>0</port>
+    </proxyConfiguration>
 </userConfiguration>
