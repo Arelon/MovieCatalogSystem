@@ -19,12 +19,12 @@ public class ApplicationConfigurationManager {
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
-    private static class ApplicationConfigurationLoader implements Function<InputStream, ApplicationConfiguration> {
+    private class ApplicationConfigurationLoader implements Function<InputStream, ApplicationConfiguration> {
         @Override
         public ApplicationConfiguration apply(InputStream configurationFile) {
             try {
-                JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
-                Unmarshaller u = jc.createUnmarshaller();
+                JAXBContext jaxbContext = JAXBContext.newInstance(ApplicationConfiguration.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
                 StreamSource source = new StreamSource(configurationFile);
                 ApplicationConfiguration applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
                 if (log.isInfoEnabled()) {
@@ -50,8 +50,8 @@ public class ApplicationConfigurationManager {
     public static void main(String[] args) {
         try {
             System.out.println("Outputting default application configuration");
-            JAXBContext jc = JAXBContext.newInstance(ApplicationConfiguration.class);
-            Marshaller m = jc.createMarshaller();
+            JAXBContext jaxbContext = JAXBContext.newInstance(ApplicationConfiguration.class);
+            Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             m.marshal(new ApplicationConfiguration(), System.out);
         } catch (Throwable t) {

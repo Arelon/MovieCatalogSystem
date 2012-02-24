@@ -22,14 +22,16 @@ public class UserConfigurationManager implements LifecycleListener {
     @Inject
     private ApplicationManager applicationManager;
 
+    private JAXBContext jaxbContext = null;
+
     @Override
     public void applicationStarted() {
         UserConfiguration userConfiguration = new UserConfiguration();
         File configurationFile = new File(CONFIGURATION_FILE);
         if (configurationFile.exists()) {
             try {
-                JAXBContext jc = JAXBContext.newInstance(UserConfiguration.class);
-                Unmarshaller u = jc.createUnmarshaller();
+                jaxbContext = JAXBContext.newInstance(UserConfiguration.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
                 userConfiguration = (UserConfiguration) u.unmarshal(configurationFile);
                 if (log.isInfoEnabled())
                     log.info("UserConfiguration read: "+ userConfiguration);
@@ -43,8 +45,9 @@ public class UserConfigurationManager implements LifecycleListener {
     @Override
     public void applicationShutdown() {
         try {
-            JAXBContext jc = JAXBContext.newInstance(UserConfiguration.class);
-            Marshaller m = jc.createMarshaller();
+            if (jaxbContext == null)
+                return;
+            Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             m.marshal(applicationManager.getUserConfiguration(), new File(CONFIGURATION_FILE));
         } catch (Throwable t) {
