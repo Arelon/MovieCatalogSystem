@@ -1,6 +1,13 @@
-Before you try to compile the project in you IDE you need to run the
+1. Before you try to compile the project in you IDE you need to run the
 Ant "generate-metamodel" task which will add additional source root
 "src-generated-metamodel" directory in the project root with static
 JPA metamodel.
 
-Do not commit files in src-generated-metamodel directory to source control.
+2. Do not commit files in src-generated-metamodel directory to source control.
+
+3. Include SQL files in the "resources filter" (that is, SQL files must be included beside
+compiled Java files).
+
+4. if you have problems running ant/ivy take a look at screenshots besides this manual
+
+5. (for running) startup directory must be set as ${project.dir}/startup
