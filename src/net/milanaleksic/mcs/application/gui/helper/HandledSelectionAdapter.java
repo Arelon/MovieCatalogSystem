@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.util.ApplicationException;
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.MessageBox;
@@ -19,6 +20,8 @@ public abstract class HandledSelectionAdapter extends org.eclipse.swt.events.Sel
 
     private final Shell parent;
 
+    private static final Logger logger = Logger.getLogger(HandledSelectionAdapter.class);
+
     public abstract void handledSelected() throws ApplicationException;
 
     public HandledSelectionAdapter(Shell parent, ResourceBundle bundle) {
@@ -36,6 +39,7 @@ public abstract class HandledSelectionAdapter extends org.eclipse.swt.events.Sel
             box.setText("Error");
             box.open();
         } catch (Throwable t) {
+            logger.error("Unexpected error: "+t.getMessage(), t);
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
             box.setMessage(String.format(bundle.getString("global.unexpectedError"), t.getClass().getCanonicalName(), t.getMessage()));
             box.setText("Unexpected Error");

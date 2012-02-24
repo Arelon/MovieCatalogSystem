@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.util.ApplicationException;
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -14,6 +15,8 @@ public abstract class HandledModifyListener implements ModifyListener {
     private ResourceBundle bundle;
 
     private final Shell parent;
+
+    private static final Logger logger = Logger.getLogger(HandledModifyListener.class);
 
     public abstract void handledModifyText() throws ApplicationException;
 
@@ -32,6 +35,7 @@ public abstract class HandledModifyListener implements ModifyListener {
             box.setText("Error");
             box.open();
         } catch (Throwable t) {
+            logger.error("Unexpected error: "+t.getMessage(), t);
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
             box.setMessage(String.format(bundle.getString("global.unexpectedError"), t.getClass().getCanonicalName(), t.getMessage()));
             box.setText("Unexpected Error");
