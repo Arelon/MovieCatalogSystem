@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import net.milanaleksic.mcs.domain.model.TipMedija;
 import net.milanaleksic.mcs.domain.model.TipMedijaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
@@ -18,13 +19,13 @@ import java.util.List;
 public class JpaTipMedijaRepository extends AbstractRepository implements TipMedijaRepository {
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly = true)
     public List<TipMedija> getTipMedijas() {
         return entityManager.createNamedQuery("getTipMedijaOrdered", TipMedija.class).getResultList();
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public TipMedija getTipMedija(String mediumTypeName) {
         TypedQuery<TipMedija> tipMedijaByName = entityManager.createNamedQuery("getTipMedijaByName", TipMedija.class);
         tipMedijaByName.setParameter("mediumTypeName", mediumTypeName);

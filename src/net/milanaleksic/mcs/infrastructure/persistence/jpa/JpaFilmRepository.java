@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import net.milanaleksic.mcs.domain.model.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
@@ -45,7 +46,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter,
                                        Pozicija pozicijaFilter, String textFilter) {
         return new FilmsWithCount(

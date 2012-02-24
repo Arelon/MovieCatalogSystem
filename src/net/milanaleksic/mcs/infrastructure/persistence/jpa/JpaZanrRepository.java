@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
@@ -18,7 +19,7 @@ import java.util.List;
 public class JpaZanrRepository extends AbstractRepository implements ZanrRepository {
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly = true)
     public List<Zanr> getZanrs() {
         return entityManager.createNamedQuery("getZanrsOrdered", Zanr.class).getResultList();
     }
@@ -43,7 +44,7 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public Zanr getZanrByName(String genreName) {
         TypedQuery<Zanr> getZanrByName = entityManager.createNamedQuery("getZanrByName", Zanr.class);
         getZanrByName.setParameter("genreName", genreName);
