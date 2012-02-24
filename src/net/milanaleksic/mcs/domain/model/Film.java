@@ -2,8 +2,7 @@ package net.milanaleksic.mcs.domain.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Cacheable
@@ -128,6 +127,8 @@ public class Film implements Serializable, Comparable<Film> {
 	}
 	
 	public void addMedij(Medij m) {
+        if (medijs == null)
+            medijs = new HashSet<Medij>();
 		medijs.add(m);
 		m.getFilms().add(this);
         refreshDeNormalizedAttributes();
@@ -151,13 +152,11 @@ public class Film implements Serializable, Comparable<Film> {
 		// priprema informacija za narednu obradu (polje "prisutan")
 		int brojNeprisutnih = 0;
 		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().getPozicija().equals(Pozicija.DEFAULT_POZICIJA_NAME))
+			if (!medij.getPozicija().isDefault())
 				brojNeprisutnih++;
 		}
 		
-		if (brojNeprisutnih==0)
-			pozicija = Pozicija.DEFAULT_POZICIJA_NAME;
-		else {
+		if (brojNeprisutnih!=0) {
             StringBuilder builder = new StringBuilder();
 			for (Medij medij : getMedijs()) {
                 builder.append(medij.toString()).append("-").append(medij.getPozicija().toString()).append("; ");
@@ -165,7 +164,7 @@ public class Film implements Serializable, Comparable<Film> {
 			pozicija = builder.substring(0, builder.length()-2);
 		}						
 		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().getPozicija().equals(Pozicija.DEFAULT_POZICIJA_NAME))
+			if (!medij.getPozicija().isDefault())
 				pozicija = medij.getPozicija().toString();
 		}
 	}

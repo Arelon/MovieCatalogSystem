@@ -1,6 +1,10 @@
 package net.milanaleksic.mcs.domain.model;
 
+import org.hibernate.annotations.*;
+
 import javax.persistence.*;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
 import java.util.Set;
 
 @Entity
@@ -9,14 +13,14 @@ import java.util.Set;
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Pozicija implements java.io.Serializable {
 
-    public static final String DEFAULT_POZICIJA_NAME = "присутан";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idpozicija;
 
     @Column(length = 100, nullable = false)
 	private String pozicija;
+
+	private boolean defaultPosition;
 
 	@OneToMany(mappedBy = "pozicija", fetch = FetchType.LAZY)
     @org.hibernate.annotations.Cache(region="mcs",
@@ -80,6 +84,25 @@ public class Pozicija implements java.io.Serializable {
     public int hashCode() {
         int result = pozicija != null ? pozicija.hashCode() : 0;
         return result;
+    }
+
+    @Basic
+    @Column(nullable = false)
+    @Access(AccessType.PROPERTY)
+    public String getDefaultPosition() {
+        return defaultPosition ? "Y" : "N";
+    }
+
+    public void setDefaultPosition(String defaultPosition) {
+        this.defaultPosition = defaultPosition != null && "Y".equals(defaultPosition);
+    }
+
+    public boolean isDefault() {
+        return defaultPosition;
+    }
+
+    public void setDefault(boolean defaultPosition) {
+        this.defaultPosition = defaultPosition;
     }
 
 }

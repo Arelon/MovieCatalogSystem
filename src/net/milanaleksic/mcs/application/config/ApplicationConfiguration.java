@@ -12,7 +12,7 @@ public class ApplicationConfiguration {
 
     public static class DatabaseConfiguration {
 
-        private static final int dbVersion = 5;
+        private static final int dbVersion = 6;
 
         private boolean databaseCreateRestore = true;
 

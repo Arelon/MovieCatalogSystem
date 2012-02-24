@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -23,7 +24,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     @Inject private TipMedijaRepository tipMedijaRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public int getNextMedijIndeks(String mediumTypeName) {
         TypedQuery<Integer> query = entityManager.createNamedQuery("getNextMedijIndeks", Integer.class);
         query.setParameter("tipMedija", mediumTypeName);
@@ -35,21 +36,22 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     }
 
     @Override
-    public void saveMedij(int index, String mediumTypeName) {
+    public void saveMedij(int index, TipMedija tipMedija) {
         Medij medij = new Medij();
         medij.setIndeks(index);
 
         Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();
-        defaultPozicija.addMedij(medij);
+        if (defaultPozicija != null)
+            defaultPozicija.addMedij(medij);
 
-        TipMedija tipMedija = tipMedijaRepository.getTipMedija(mediumTypeName);
-        tipMedija.addMedij(medij);
+        TipMedija fullTipMedija = tipMedijaRepository.getTipMedija(tipMedija.getNaziv());
+        fullTipMedija.addMedij(medij);
 
         entityManager.persist(medij);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly = true)
     public List<Medij> getMedijs() {
         TypedQuery<Medij> query = entityManager.createNamedQuery("getMedijsOrdered", Medij.class);
         return query.getResultList();

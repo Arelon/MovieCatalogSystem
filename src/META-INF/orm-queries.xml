@@ -92,5 +92,22 @@
         <hint name="org.hibernate.cacheable" value="true" />
     </named-query>
 
+    <named-query name="getPozicijaDefault">
+        <query><![CDATA[
+            from Pozicija p
+            order by p.defaultPosition DESC, LOWER(p.pozicija) ASC
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
+    <named-query name="removeDefaultFlagIfOneExists">
+        <query><![CDATA[
+            update Pozicija p
+            set p.defaultPosition = 'N'
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="false" />
+    </named-query>
+
+
 
 </entity-mappings>

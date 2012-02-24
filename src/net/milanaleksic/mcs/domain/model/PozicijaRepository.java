@@ -13,7 +13,7 @@ public interface PozicijaRepository {
 
     List<Pozicija> getPozicijas();
 
-    void addPozicija(String newPozicija);
+    void addPozicija(Pozicija position);
 
     void deletePozicijaByName(String pozicija) throws ApplicationException;
 

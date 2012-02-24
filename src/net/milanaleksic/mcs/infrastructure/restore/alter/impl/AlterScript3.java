@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.restore.alter.impl;
 
-import net.milanaleksic.mcs.domain.model.Pozicija;
 import net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +19,8 @@ import java.util.Set;
 public class AlterScript3 implements AlterScript {
 
     protected final Log log = LogFactory.getLog(this.getClass());
+
+    private static String DEFAULT_POZICIJA_NAME = "присутан";
 
     @Override
     public void executeAlterOnConnection(Connection conn) {
@@ -61,7 +62,7 @@ public class AlterScript3 implements AlterScript {
                     "where idfilm=?\n" +
                     "order by m.idtip, m.indeks";
         String medijList;
-        String filmPosition = Pozicija.DEFAULT_POZICIJA_NAME;
+        String filmPosition = DEFAULT_POZICIJA_NAME;
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setInt(1, idfilm);
@@ -75,7 +76,7 @@ public class AlterScript3 implements AlterScript {
                         indeks = '0'+indeks;
                     builder.append(rs.getString(1)).append(indeks);
                     String position = rs.getString(3);
-                    if (!Pozicija.DEFAULT_POZICIJA_NAME.equals(position)) {
+                    if (!DEFAULT_POZICIJA_NAME.equals(position)) {
                         filmPosition = position;
                     }
                 }

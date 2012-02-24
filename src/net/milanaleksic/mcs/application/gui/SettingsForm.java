@@ -26,21 +26,13 @@ public class SettingsForm {
     @Inject private ApplicationManager applicationManager;
 
 	private Shell sShell = null;
-	private Shell parent = null;
 	private Runnable parentRunner = null;
-    private TabFolder tabFolder = null;
 	private Composite compositeLocations = null;
 	private Composite compositeGenres = null;
     private Composite compositeSettings = null;
 	private List listLokacije = null;
-    private Text textNovaLokacija = null;
     private List listZanrovi = null;
-    private Text textNovZanr = null;
     private Text textElementsPerPage = null;
-    private Text textProxyServer = null;
-    private Text textProxyServerPort = null;
-    private Text textProxyServerUsername = null;
-    private Text textProxyServerPassword = null;
 
     private boolean changed=false;
     private UserConfiguration userConfiguration = null;
@@ -48,11 +40,10 @@ public class SettingsForm {
     private Combo comboLanguage;
 
     public void open(Shell parent, Runnable runnable, UserConfiguration userConfiguration) {
-		this.parent = parent;
         this.userConfiguration = userConfiguration;
         this.parentRunner = runnable;
         bundle = applicationManager.getMessagesBundle();
-		createSShell();
+		createSShell(parent);
 		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
                 parent.getLocation().y + Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
 		reReadData();
@@ -60,13 +51,11 @@ public class SettingsForm {
 	}
 
 	private void reReadData() {
-		// preuzimanje svih pozicija
         listLokacije.setItems(new String[] {});
         for (Pozicija pozicija : pozicijaRepository.getPozicijas()) {
             listLokacije.add(pozicija.toString());
         }
 
-        // preuzimanje svih zanrova
         listZanrovi.setItems(new String[] {});
         for (Zanr zanr : zanrRepository.getZanrs()) {
             listZanrovi.add(zanr.toString());
@@ -75,7 +64,7 @@ public class SettingsForm {
         comboLanguage.select(Language.ordinalForName(userConfiguration.getLocaleLanguage()));
 	}
 
-	private void createSShell() {
+	private void createSShell(Shell parent) {
 		GridLayout gridLayout3 = new GridLayout();
 		gridLayout3.numColumns = 1;
 		if (parent == null)
@@ -97,8 +86,8 @@ public class SettingsForm {
 	private void createComposite() {
 		GridData gridData = new GridData();
 		gridData.grabExcessHorizontalSpace = true;
-		gridData.verticalAlignment = org.eclipse.swt.layout.GridData.END;
-		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+		gridData.verticalAlignment = GridData.END;
+		gridData.horizontalAlignment = GridData.CENTER;
 		GridData gridData12 = new GridData();
 		gridData12.horizontalAlignment = GridData.END;
 		gridData12.grabExcessVerticalSpace = true;
@@ -122,14 +111,14 @@ public class SettingsForm {
 
 	private void createTabFolder() {
 		GridData gridData1 = new GridData();
-		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData1.horizontalAlignment = GridData.FILL;
 		gridData1.grabExcessVerticalSpace = true;
-		gridData1.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		tabFolder = new TabFolder(sShell, SWT.NONE);
+		gridData1.verticalAlignment = GridData.FILL;
+		TabFolder tabFolder = new TabFolder(sShell, SWT.NONE);
         tabFolder.setLayoutData(gridData1);
-        createSettingsTabContents();
-        createLocationTabContents();
-        createGenresTabContents();
+        createSettingsTabContents(tabFolder);
+        createLocationTabContents(tabFolder);
+        createGenresTabContents(tabFolder);
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText(bundle.getString("settings.basicSettings"));
         tabItem.setControl(compositeSettings);
@@ -141,8 +130,8 @@ public class SettingsForm {
         tabItem2.setControl(compositeGenres);
 	}
 
-    private void createSettingsTabContents() {
-        compositeSettings = new Composite(tabFolder, SWT.BORDER);
+    private void createSettingsTabContents(TabFolder tabFolder) {
+        compositeSettings = new Composite(tabFolder, SWT.NONE);
 		compositeSettings.setLayout(new GridLayout(1, false));
 		compositeSettings.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, true));
         
@@ -200,6 +189,35 @@ public class SettingsForm {
             }
         });
 
+        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+        Group groupProxyServer = new Group(compositeSettings, SWT.NONE);
+        groupProxyServer.setText(bundle.getString("settings.proxyServer"));
+        groupProxyServer.setLayout(new GridLayout(2, false));
+        groupProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label labelServer = new Label(groupProxyServer, SWT.NONE);
+        labelServer.setText(bundle.getString("settings.proxyServerAddress"));
+        labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        final Text textProxyServer = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServer.setText(StringUtil.emptyIfNull(proxyConfiguration.getUsername()));
+        textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label labelPort = new Label(groupProxyServer, SWT.NONE);
+        labelPort.setText(bundle.getString("settings.proxyServerPort"));
+        labelPort.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        final Text textProxyServerPort = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServerPort.setText(StringUtil.emptyIfNullOtherwiseConvert(proxyConfiguration.getPort()));
+        textProxyServerPort.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label labelUsername = new Label(groupProxyServer, SWT.NONE);
+        labelUsername.setText(bundle.getString("settings.username"));
+        labelUsername.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        final Text textProxyServerUsername = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServerUsername.setText(StringUtil.emptyIfNull(proxyConfiguration.getUsername()));
+        textProxyServerUsername.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label labelPassword = new Label(groupProxyServer, SWT.NONE);
+        labelPassword.setText(bundle.getString("settings.password"));
+        labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        final Text textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER);
+        textProxyServerPassword.setText(StringUtil.emptyIfNull(proxyConfiguration.getPassword()));
+        textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         ModifyListener proxySettingsModifyListener = new HandledModifyListener(sShell, bundle) {
             @Override
             public void handledModifyText() {
@@ -211,47 +229,18 @@ public class SettingsForm {
                 proxyConfiguration.setPassword(textProxyServerPassword.getText());
             }
         };
-        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
-        Group groupProxyServer = new Group(compositeSettings, SWT.NONE);
-        groupProxyServer.setText(bundle.getString("settings.proxyServer"));
-        groupProxyServer.setLayout(new GridLayout(2, false));
-        groupProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        Label labelServer = new Label(groupProxyServer, SWT.NONE);
-        labelServer.setText(bundle.getString("settings.proxyServerAddress"));
-        labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        textProxyServer = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServer.setText(StringUtil.emptyIfNull(proxyConfiguration.getUsername()));
-        textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServer.addModifyListener(proxySettingsModifyListener);
-        Label labelPort = new Label(groupProxyServer, SWT.NONE);
-        labelPort.setText(bundle.getString("settings.proxyServerPort"));
-        labelPort.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        textProxyServerPort = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServerPort.setText(StringUtil.emptyIfNullOtherwiseConvert(proxyConfiguration.getPort()));
-        textProxyServerPort.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServerPort.addModifyListener(proxySettingsModifyListener);
-        Label labelUsername = new Label(groupProxyServer, SWT.NONE);
-        labelUsername.setText(bundle.getString("settings.username"));
-        labelUsername.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        textProxyServerUsername = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServerUsername.setText(StringUtil.emptyIfNull(proxyConfiguration.getUsername()));
-        textProxyServerUsername.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServerUsername.addModifyListener(proxySettingsModifyListener);
-        Label labelPassword = new Label(groupProxyServer, SWT.NONE);
-        labelPassword.setText(bundle.getString("settings.password"));
-        labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServerPassword.setText(StringUtil.emptyIfNull(proxyConfiguration.getPassword()));
-        textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         textProxyServerPassword.addModifyListener(proxySettingsModifyListener);
     }
 
-    private void createLocationTabContents() {
+    private void createLocationTabContents(TabFolder tabFolder) {
 		GridData gridData5 = new GridData();
-		gridData5.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+		gridData5.horizontalAlignment = GridData.CENTER;
 		GridData gridData2 = new GridData();
-		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		gridData2.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData2.horizontalAlignment = GridData.FILL;
+		gridData2.verticalAlignment = GridData.FILL;
 		gridData2.widthHint = 150;
 		gridData2.grabExcessVerticalSpace = true;
 		GridLayout gridLayout1 = new GridLayout();
@@ -278,14 +267,14 @@ public class SettingsForm {
         });
 	}
 
-	private void createGenresTabContents() {
+	private void createGenresTabContents(TabFolder tabFolder) {
 		GridData gridData8 = new GridData();
-		gridData8.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+		gridData8.horizontalAlignment = GridData.CENTER;
 		GridData gridData7 = new GridData();
-		gridData7.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData7.horizontalAlignment = GridData.FILL;
 		gridData7.widthHint = 150;
 		gridData7.grabExcessVerticalSpace = true;
-		gridData7.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData7.verticalAlignment = GridData.FILL;
 		GridLayout gridLayout2 = new GridLayout();
 		gridLayout2.numColumns = 2;
 		compositeGenres = new Composite(tabFolder, SWT.NONE);
@@ -312,17 +301,19 @@ public class SettingsForm {
 
 	private void createAddLocationPanel() {
 		GridData gridData4 = new GridData();
-		gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData4.horizontalAlignment = GridData.FILL;
 		GridData gridData3 = new GridData();
 		gridData3.verticalSpan = 3;
 		gridData3.grabExcessHorizontalSpace = true;
 		gridData3.grabExcessVerticalSpace = true;
-		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        Composite composite3 = new Composite(compositeLocations, SWT.BORDER);
+		gridData3.horizontalAlignment = GridData.BEGINNING;
+        Composite composite3 = new Composite(compositeLocations, SWT.NONE);
 		composite3.setLayout(new GridLayout());
 		composite3.setLayoutData(gridData3);
-		textNovaLokacija = new Text(composite3, SWT.BORDER);
+		final Text textNovaLokacija = new Text(composite3, SWT.BORDER);
 		textNovaLokacija.setLayoutData(gridData4);
+        final Button btnThisIsDefaultLocation = new Button(composite3, SWT.CHECK);
+        btnThisIsDefaultLocation.setText(bundle.getString("settings.thisIsDefaultLocation"));
         Button btnDodajLokaciju = new Button(composite3, SWT.NONE);
 		btnDodajLokaciju.setText(bundle.getString("settings.addThisLocation"));
 		btnDodajLokaciju.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
@@ -331,29 +322,34 @@ public class SettingsForm {
                 String newLokacija = textNovaLokacija.getText();
                 if (newLokacija == null || newLokacija.isEmpty())
                     throw new ApplicationException("Empty string not allowed");
-                pozicijaRepository.addPozicija(newLokacija);
+                Pozicija pozicija = new Pozicija();
+                pozicija.setPozicija(newLokacija);
+                pozicija.setDefault(btnThisIsDefaultLocation.getSelection());
+                pozicijaRepository.addPozicija(pozicija);
                 changed = true;
                 reReadData();
+                btnThisIsDefaultLocation.setSelection(false);
+                textNovaLokacija.setText("");
             }
         });
 	}
 
 	private void createAddGenrePanel() {
 		GridData gridData10 = new GridData();
-		gridData10.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData10.horizontalAlignment = GridData.FILL;
 		GridData gridData9 = new GridData();
-		gridData9.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+		gridData9.horizontalAlignment = GridData.CENTER;
 		GridLayout gridLayout4 = new GridLayout();
 		gridLayout4.numColumns = 1;
 		GridData gridData6 = new GridData();
 		gridData6.verticalSpan = 3;
 		gridData6.grabExcessVerticalSpace = true;
 		gridData6.grabExcessHorizontalSpace = true;
-		gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        Composite composite4 = new Composite(compositeGenres, SWT.BORDER);
+		gridData6.horizontalAlignment = GridData.BEGINNING;
+        Composite composite4 = new Composite(compositeGenres, SWT.NONE);
 		composite4.setLayoutData(gridData6);
 		composite4.setLayout(gridLayout4);
-		textNovZanr = new Text(composite4, SWT.BORDER);
+		final Text textNovZanr = new Text(composite4, SWT.BORDER);
 		textNovZanr.setLayoutData(gridData10);
         Button btnDodajZanr = new Button(composite4, SWT.NONE);
 		btnDodajZanr.setText(bundle.getString("settings.addThisGenre"));
@@ -367,6 +363,7 @@ public class SettingsForm {
                 zanrRepository.addZanr(newZanr);
                 changed = true;
                 reReadData();
+                textNovZanr.setText("");
             }
         });
 	}

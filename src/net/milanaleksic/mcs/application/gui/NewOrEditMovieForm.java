@@ -105,10 +105,14 @@ public class NewOrEditMovieForm {
             comboLokacija.select( comboLokacija.indexOf( activeFilm.getPozicija() ) );
         }
         else {
-            if (comboLokacija.indexOf(Pozicija.DEFAULT_POZICIJA_NAME) != -1)
-                comboLokacija.select(comboLokacija.indexOf(Pozicija.DEFAULT_POZICIJA_NAME));
-            if (comboDisk.getItemCount() != 0)
-                comboDisk.select(comboDisk.getItemCount()-1);
+            Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();
+            if (defaultPozicija != null) {
+                String nameOfDefaultPosition = defaultPozicija.getPozicija();
+                if (comboLokacija.indexOf(nameOfDefaultPosition) != -1)
+                    comboLokacija.select(comboLokacija.indexOf(nameOfDefaultPosition));
+                if (comboDisk.getItemCount() != 0)
+                    comboDisk.select(comboDisk.getItemCount()-1);
+            }
         }
 	}
 	

@@ -2,7 +2,7 @@ package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
-import net.milanaleksic.mcs.domain.model.MedijRepository;
+import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -11,20 +11,23 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.List;
 
 public class NewMediumForm {
+
+    @Inject private TipMedijaRepository tipMedijaRepository;
 
     @Inject private MedijRepository medijRepository;
 
     @Inject private ApplicationManager applicationManager;
 
 	private Shell sShell = null;
-    private Button rbCD = null;
     private Text textID = null;
     private Shell parent = null;
 	private Runnable parentRunner = null;
     private ResourceBundle bundle = null;
+    private TipMedija selectedMediumType = null;
 
     public void open(Shell parent, Runnable runnable) {
         this.parent = parent;
@@ -35,7 +38,6 @@ public class NewMediumForm {
 				new Point(
 						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2,
 						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
-        obradaIzbora();
 		sShell.open();
     }
 
@@ -75,26 +77,24 @@ public class NewMediumForm {
 		gridLayout1.numColumns = 1;
         Group group = new Group(sShell, SWT.NONE);
 		group.setLayout(gridLayout1);
-		rbCD = new Button(group, SWT.RADIO);
-		rbCD.setText("CD");
-		rbCD.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				obradaIzbora();
-			}
-		});
-        Button rbDVD = new Button(group, SWT.RADIO);
-		rbDVD.setText("DVD");
-		rbDVD.setSelection(true);
-		rbDVD.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                obradaIzbora();
-            }
-        });
+        List<TipMedija> tipMedijas = tipMedijaRepository.getTipMedijas();
+        for (TipMedija tipMedija : tipMedijas) {
+            Button mediumTypeBtn = new Button(group, SWT.RADIO);
+            mediumTypeBtn.setText(tipMedija.getNaziv());
+            mediumTypeBtn.setData(tipMedija);
+            mediumTypeBtn.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+                public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                    obradaIzbora(((Button) e.getSource()).getData());
+                }
+            });
+        }
 	}
 
-	public void obradaIzbora() {
-		Integer indeks = medijRepository.getNextMedijIndeks(rbCD.getSelection() ? "CD" : "DVD");
+	public void obradaIzbora(Object mediumTypeAsObject) {
+        TipMedija tipMedija = (TipMedija) mediumTypeAsObject;
+        Integer indeks = medijRepository.getNextMedijIndeks(tipMedija.getNaziv());
 		textID.setText(indeks.toString());
+        selectedMediumType = tipMedija;
 	}
 
 	private void createComposite() {
@@ -117,9 +117,14 @@ public class NewMediumForm {
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
             public void handledSelected() throws ApplicationException {
-                medijRepository.saveMedij(
-                        Integer.parseInt(textID.getText()),
-                        rbCD.getSelection() ? "CD" : "DVD");
+                if (selectedMediumType == null) {
+                    MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
+                    box.setMessage(bundle.getString("global.youHaveToSelectMediumType"));
+                    box.setText("Error");
+                    box.open();
+                    return;
+                }
+                medijRepository.saveMedij(Integer.parseInt(textID.getText()), selectedMediumType);
                 parentRunner.run();
                 sShell.close();
             }
