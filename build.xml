@@ -11,9 +11,19 @@
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
         <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
+        <condition property="ivy.should.not.download">
+            <or>
+                <resourceexists>
+                    <file file="${ivy.jar.file}"/>
+                </resourceexists>
+                <isset property="offline" />
+            </or>
+        </condition>
+
     </target>
 
-    <target name="download-ivy" unless="offline" depends="clean">
+    <target name="download-ivy" depends="clean" unless="ivy.should.not.download">
+        <echo message="Downloading Ivy since ivy.should.not.download=false"/>
         <mkdir dir="${ivy.jar.dir}"/>
         <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
              dest="${ivy.jar.file}" usetimestamp="true"/>
@@ -28,7 +38,7 @@
     </target>
 
     <target name="resolve" description="Retrieve dependencies with ivy" depends="init-ivy">
-        <ivy:settings file="ivyconf.xml" />
+        <ivy:settings file="ivyconf.xml"/>
         <ivy:retrieve file="ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]"/>
         <copy todir="${ivy.resolved.libs.target.dir}" overwrite="true">
             <fileset dir="${explicit.lib.dir}">
@@ -60,17 +70,17 @@
             <compilerarg value="-processor"/>
             <compilerarg value="org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor"/>
             <compilerarg value="-s"/>
-            <compilerarg value="${src.metamodel.dir}" />
-            <compilerarg value="-proc:only" />
+            <compilerarg value="${src.metamodel.dir}"/>
+            <compilerarg value="-proc:only"/>
         </javac>
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
         <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
-            <src path="${src.dir}" />
-            <src path="${src.metamodel.dir}" />
+            <src path="${src.dir}"/>
+            <src path="${src.metamodel.dir}"/>
             <classpath refid="classpath"/>
-            <compilerarg value="-proc:none" />
+            <compilerarg value="-proc:none"/>
         </javac>
 
         <copy todir="${compile.dir}" overwrite="true">
@@ -138,7 +148,7 @@
     </target>
 
     <target name="findbugs" description="FindBugs" depends="compile">
-        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath" />
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
         <findbugs failonerror="true"
                   home="${findbugs.directory}" output="html" outputFile="FindBugsAnalysis.html" jvmargs="-Xmx256m"
                   reportlevel="low" excludefilter="FindBugsExclusiveFilter.xml">
@@ -147,7 +157,7 @@
                     <include name="*.*"/>
                 </fileset>
             </auxclasspath>
-            <sourcepath path="${src.dir}" />
+            <sourcepath path="${src.dir}"/>
             <class location="${compile.dir}"/>
         </findbugs>
     </target>
