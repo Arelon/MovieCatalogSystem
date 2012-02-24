@@ -124,7 +124,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
             int columnType = metaData.getColumnType(colIter);
             if (columnType == Types.INTEGER)
                 currentRowContents.append(resultSet.getInt(colIter));
-            else if (columnType == Types.VARCHAR)
+            else if (columnType == Types.VARCHAR || columnType == Types.CHAR)
                 currentRowContents.append(getSQLString(resultSet.getString(colIter)));
             else if (columnType == Types.DECIMAL)
                 currentRowContents.append(resultSet.getDouble(colIter));
