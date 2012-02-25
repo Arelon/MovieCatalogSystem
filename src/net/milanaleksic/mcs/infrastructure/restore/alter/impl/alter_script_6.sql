@@ -1,8 +1,8 @@
 insert into DB2ADMIN.TipMedija(Naziv)
-values ('CD');
+(select 'CD' WHERE 1 NOT IN (SELECT 1 FROM DB2ADMIN.TipMedija WHERE Naziv='CD'));
 
 insert into DB2ADMIN.TipMedija(Naziv)
-values ('DVD');
+(select 'DVD' WHERE 1 NOT IN (SELECT 1 FROM DB2ADMIN.TipMedija WHERE Naziv='DVD'));
 
 alter table DB2ADMIN.POZICIJA add column defaultPosition CHAR(1) DEFAULT 'N';
 
