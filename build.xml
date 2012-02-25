@@ -64,7 +64,7 @@
     <target name="generate-metamodel" description="Generate JPA 2 metamodel" depends="init">
         <mkdir dir="${compile.dir}"/>
         <mkdir dir="${src.metamodel.dir}"/>
-        <javac source="1.6" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}"
+        <javac source="1.7" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}"
                includeantruntime="false" includes="${src.metamodel.includes}">
             <classpath refid="classpath"/>
             <compilerarg value="-processor"/>
