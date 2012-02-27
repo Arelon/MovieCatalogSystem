@@ -50,4 +50,9 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
         getZanrByName.setParameter("genreName", genreName);
         return getZanrByName.getSingleResult();
     }
+
+    @Override
+    public void updateZanr(Zanr zanr) {
+        entityManager.merge(zanr);
+    }
 }

@@ -21,8 +21,6 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     @Inject
     private PozicijaRepository pozicijaRepository;
 
-    @Inject private TipMedijaRepository tipMedijaRepository;
-
     @Override
     @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public int getNextMedijIndeks(String mediumTypeName) {
@@ -44,8 +42,8 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
         if (defaultPozicija != null)
             defaultPozicija.addMedij(medij);
 
-        TipMedija fullTipMedija = tipMedijaRepository.getTipMedija(tipMedija.getNaziv());
-        fullTipMedija.addMedij(medij);
+        tipMedija = entityManager.merge(tipMedija);
+        tipMedija.addMedij(medij);
 
         entityManager.persist(medij);
     }

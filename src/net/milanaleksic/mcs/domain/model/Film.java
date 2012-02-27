@@ -34,7 +34,7 @@ public class Film implements Serializable, Comparable<Film> {
     @Column(name = "IMDB_ID", length = 10)
 	private String imdbId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
         name = "ZAUZIMA",
         schema = "DB2ADMIN",
@@ -148,8 +148,14 @@ public class Film implements Serializable, Comparable<Film> {
         return pozicija;
     }
 
-    private void refreshFilmLocation() {
+    public void refreshFilmLocation() {
 		// priprema informacija za narednu obradu (polje "prisutan")
+        String defaultPozicija = null;
+        for (Medij medij : getMedijs()) {
+			if (medij.getPozicija().isDefault())
+				defaultPozicija = medij.getPozicija().toString();
+		}
+
 		int brojNeprisutnih = 0;
 		for (Medij medij : getMedijs()) {
 			if (!medij.getPozicija().isDefault())
@@ -161,12 +167,10 @@ public class Film implements Serializable, Comparable<Film> {
 			for (Medij medij : getMedijs()) {
                 builder.append(medij.toString()).append("-").append(medij.getPozicija().toString()).append("; ");
 			}
-			pozicija = builder.substring(0, builder.length()-2);
-		}						
-		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().isDefault())
-				pozicija = medij.getPozicija().toString();
-		}
+			this.pozicija = builder.substring(0, builder.length()-2);
+		} else {
+            this.pozicija = defaultPozicija;
+        }
 	}
 
     public String getMedijListAsString() {

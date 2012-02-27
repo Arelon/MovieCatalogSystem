@@ -112,7 +112,7 @@ public class DeleteMovieForm {
 		btnCancel.setText(bundle.getString("global.cancel"));
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
-            @Override public void handledSelected() throws ApplicationException {
+            @Override public void handledSelected(SelectionEvent event) throws ApplicationException {
                 filmRepository.deleteFilm(film);
                 parentRunner.run();
                 sShell.close();

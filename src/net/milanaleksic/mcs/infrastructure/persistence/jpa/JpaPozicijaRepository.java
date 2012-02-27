@@ -1,8 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.domain.model.Pozicija;
-import net.milanaleksic.mcs.domain.model.PozicijaRepository;
+import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +58,18 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
         TypedQuery<Pozicija> pozicijaByName = entityManager.createNamedQuery("getPozicijaByName", Pozicija.class);
         pozicijaByName.setParameter("locationName", locationName);
         return pozicijaByName.getSingleResult();
+    }
+
+    @Override
+    public void updatePozicija(Pozicija pozicija) {
+        if (pozicija.isDefault())
+            entityManager.createNamedQuery("removeDefaultFlagIfOneExists").executeUpdate();
+        pozicija = entityManager.merge(pozicija);
+        for (Medij medij : pozicija.getMedijs()) {
+            for (Film film : medij.getFilms()) {
+                film.refreshFilmLocation();
+            }
+        }
     }
 
 }

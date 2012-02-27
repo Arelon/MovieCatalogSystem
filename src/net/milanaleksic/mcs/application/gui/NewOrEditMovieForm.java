@@ -102,7 +102,9 @@ public class NewOrEditMovieForm {
             listDiskovi.removeAll();
             for (Medij medij : activeFilm.getMedijs())
                 listDiskovi.add(medij.toString());
-            comboLokacija.select( comboLokacija.indexOf( activeFilm.getPozicija() ) );
+            int indexOfPozicija = comboLokacija.indexOf(activeFilm.getPozicija());
+            if (indexOfPozicija >= 0)
+                comboLokacija.select(indexOfPozicija);
         }
         else {
             Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();

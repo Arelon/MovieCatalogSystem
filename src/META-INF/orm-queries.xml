@@ -40,6 +40,15 @@
         <hint name="org.hibernate.cacheable" value="true" />
     </named-query>
 
+    <named-query name="getCountOfMediumsWithMediumTypeByName">
+        <query><![CDATA[
+            select count(*)
+            from Medij
+            where tipMedija=:tipMedija
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
     <named-query name="getNextMedijIndeks">
         <query><![CDATA[
             select max(indeks)+1

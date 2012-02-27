@@ -18,4 +18,6 @@ public interface ZanrRepository {
     void deleteZanrByName(String zanr) throws ApplicationException;
 
     Zanr getZanrByName(String genreName);
+
+    void updateZanr(Zanr zanr);
 }

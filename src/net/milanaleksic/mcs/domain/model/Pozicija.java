@@ -1,7 +1,5 @@
 package net.milanaleksic.mcs.domain.model;
 
-import org.hibernate.annotations.*;
-
 import javax.persistence.*;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
@@ -31,7 +29,12 @@ public class Pozicija implements java.io.Serializable {
 	public Pozicija() {
 	}
 
-	public int getIdpozicija() {
+    public Pozicija(String pozicija, boolean isDefault) {
+        this.pozicija = pozicija;
+        defaultPosition = isDefault;
+    }
+
+    public int getIdpozicija() {
 		return this.idpozicija;
 	}
 

@@ -21,4 +21,5 @@ public interface PozicijaRepository {
 
     Pozicija getByName(String locationName);
 
+    void updatePozicija(Pozicija pozicija);
 }

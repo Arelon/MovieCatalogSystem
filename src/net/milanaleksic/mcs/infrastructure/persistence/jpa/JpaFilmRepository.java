@@ -39,8 +39,8 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         zanr.addFilm(newFilm);
         for (Medij medij : medijs) {
             medij = entityManager.find(Medij.class, medij.getIdmedij());
-            newFilm.addMedij(medij);
             position.addMedij(medij);
+            newFilm.addMedij(medij);
         }
         entityManager.persist(newFilm);
     }

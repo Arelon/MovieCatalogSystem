@@ -75,4 +75,5 @@ public class TipMedija implements java.io.Serializable {
         int result = naziv != null ? naziv.hashCode() : 0;
         return result;
     }
+
 }

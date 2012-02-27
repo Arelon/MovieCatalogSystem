@@ -302,6 +302,7 @@ public class MainForm extends Observable {
 				@Override public void run() {
 					resetPozicije();
 					resetZanrova();
+                    resetMedija();
 					doFillMainTable();
 				}
 				
@@ -472,13 +473,7 @@ public class MainForm extends Observable {
 		comboTipMedija.setLayoutData(gridData1);
 		comboTipMedija.setVisibleItemCount(8);
 		comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
-		comboTipMedija.add(bundle.getString("main.allMediums"));
-		comboTipMedija.add("-----------");
-		for(TipMedija tip : tipMedijaRepository.getTipMedijas()) {
-            comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
-			comboTipMedija.add(tip.toString());
-        }
-		comboTipMedija.select(0);
+		resetMedija();
 	}
 
 	private void createComboPozicija() {
@@ -501,6 +496,17 @@ public class MainForm extends Observable {
             comboPozicija.add(pozicija.toString());
         }
 		comboPozicija.select(0);
+	}
+
+    private void resetMedija() {
+		comboTipMedija.setItems(new String [] {});
+        comboTipMedija.add(bundle.getString("main.allMediums"));
+		comboTipMedija.add("-----------");
+		for(TipMedija tip : tipMedijaRepository.getTipMedijas()) {
+            comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
+			comboTipMedija.add(tip.toString());
+        }
+		comboTipMedija.select(0);
 	}
 
 	private void createPanCombos() {

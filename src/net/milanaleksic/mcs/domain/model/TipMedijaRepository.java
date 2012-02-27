@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import net.milanaleksic.mcs.application.util.ApplicationException;
+
 import java.util.List;
 
 /**
@@ -12,4 +14,10 @@ public interface TipMedijaRepository {
     List<TipMedija> getTipMedijas();
 
     TipMedija getTipMedija(String name);
+
+    void deleteMediumTypeByName(String mediumTypeName) throws ApplicationException;
+
+    void addTipMedija(String newMediumType);
+
+    void updateTipMedija(TipMedija tipMedija);
 }

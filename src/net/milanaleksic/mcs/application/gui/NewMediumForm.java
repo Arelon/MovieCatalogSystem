@@ -5,6 +5,7 @@ import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -116,7 +117,7 @@ public class NewMediumForm {
 		btnOk.setText(bundle.getString("global.save"));
 		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
             @Override
-            public void handledSelected() throws ApplicationException {
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (selectedMediumType == null) {
                     MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
                     box.setMessage(bundle.getString("global.youHaveToSelectMediumType"));
