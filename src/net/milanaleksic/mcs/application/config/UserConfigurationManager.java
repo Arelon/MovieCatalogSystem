@@ -54,4 +54,8 @@ public class UserConfigurationManager implements LifecycleListener {
             log.error("Settings could not have been saved!", t);
         }
     }
+
+    public void setApplicationManager(ApplicationManager applicationManager) {
+        this.applicationManager = applicationManager;
+    }
 }

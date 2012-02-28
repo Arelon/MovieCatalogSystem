@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.application.restore;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.LifecycleListener;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
-import net.milanaleksic.mcs.application.gui.ClosingForm;
+import net.milanaleksic.mcs.application.gui.ClosingDialogForm;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
 
@@ -24,7 +24,7 @@ public class RestoreManager implements LifecycleListener {
 
     @Inject private RestorePointRestorer restorePointRestorer;
 
-    @Inject private ClosingForm closingForm;
+    @Inject private ClosingDialogForm closingDialogForm;
 
     @Override public void applicationStarted() {
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
@@ -38,7 +38,7 @@ public class RestoreManager implements LifecycleListener {
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
         if (applicationManager.getApplicationConfiguration().getDatabaseConfiguration().isDatabaseCreateRestore()) {
-            closingForm.open();
+            closingDialogForm.open();
             restorePointCreator.createRestorePoint();
         }
     }

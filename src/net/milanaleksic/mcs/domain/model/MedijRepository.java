@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface MedijRepository {
 
-    int getNextMedijIndeks(String s) ;
-
     void saveMedij(int index, TipMedija tipMedija);
 
     List<Medij> getMedijs();
+
+    void deleteMediumType(Medij medij);
 }

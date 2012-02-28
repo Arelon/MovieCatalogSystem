@@ -1,10 +1,9 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
+import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -13,21 +12,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
-import java.util.ResourceBundle;
 
-public class DeleteMovieForm {
+public class DeleteMovieDialogForm extends AbstractDialogForm {
 
-	private Shell sShell = null;
-    private Shell parent = null;
-	private Runnable parentRunner = null;
     private Label labFilmNaziv = null;
     private Film film = null;
 
-    private ResourceBundle bundle = null;
-
     @Inject private FilmRepository filmRepository;
-
-    @Inject private ApplicationManager applicationManager;
 
     private final static class AlertImagePainter implements PaintListener {
 
@@ -40,16 +31,8 @@ public class DeleteMovieForm {
     }
 
     public void open(Shell parent, Film film, Runnable runnable) {
-		this.parent = parent;
-        this.parentRunner = runnable;
-        this.bundle = applicationManager.getMessagesBundle();
-		createSShell();
-		sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2, parent.getLocation().y
-				+ Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
-		this.film = film;
-		reReadData();
-		sShell.pack();
-		sShell.open();
+        this.film = film;
+        super.open(parent, runnable);
 	}
 
 	protected void reReadData() {
@@ -59,7 +42,7 @@ public class DeleteMovieForm {
         }
 	}
 
-	private void createSShell() {
+	@Override protected void onShellCreated() {
 		GridLayout gridLayout1 = new GridLayout();
 		gridLayout1.numColumns = 2;
 		GridData gridData2 = new GridData();
@@ -68,29 +51,24 @@ public class DeleteMovieForm {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
 		gridData.grabExcessHorizontalSpace = true;
-		if (parent == null)
-			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		else
-			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText(bundle.getString("delete.deleteMovie"));
-		sShell.setLayout(gridLayout1);
-		createCanvas();
-		sShell.setSize(new Point(431, 154));
-        Label labUpozorenje = new Label(sShell, SWT.NONE);
-		labFilmNaziv = new Label(sShell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
+		shell.setText(bundle.getString("delete.deleteMovie"));
+		shell.setLayout(gridLayout1);
+		shell.setSize(new Point(431, 154));
+        createCanvas();
+        Label labUpozorenje = new Label(shell, SWT.NONE);
 		labUpozorenje.setText(bundle.getString("delete.doYouReallyWishToDeleteMovie"));
-		labUpozorenje.setLayoutData(gridData);
-		labUpozorenje.setForeground(new Color(Display.getCurrent(), 255, 0, 0));
-		labUpozorenje.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
-		labFilmNaziv.setLayoutData(gridData2);
+        labUpozorenje.setLayoutData(gridData);
+        labUpozorenje.setForeground(new Color(Display.getCurrent(), 255, 0, 0));
+        labUpozorenje.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
+        labFilmNaziv = new Label(shell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
+        labFilmNaziv.setLayoutData(gridData2);
 		labFilmNaziv.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
-		new Label(sShell, SWT.NONE);
+		new Label(shell, SWT.NONE);
 		createComposite();
-		sShell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
-			public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
-				sShell.dispose();
-			}
-		});
+    }
+
+    @Override protected void onShellReady() {
+        reReadData();
 	}
 
 	private void createComposite() {
@@ -103,7 +81,7 @@ public class DeleteMovieForm {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.horizontalSpacing = 20;
-        Composite composite = new Composite(sShell, SWT.NONE);
+        Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(gridData1);
         Button btnOk = new Button(composite, SWT.NONE);
@@ -111,16 +89,16 @@ public class DeleteMovieForm {
         Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText(bundle.getString("global.cancel"));
 		btnCancel.setLayoutData(gridData12);
-		btnOk.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+		btnOk.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override public void handledSelected(SelectionEvent event) throws ApplicationException {
                 filmRepository.deleteFilm(film);
-                parentRunner.run();
-                sShell.close();
+                runnerWhenClosingShouldRun = true;
+                shell.close();
             }
         });
 		btnCancel.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                sShell.close();
+                shell.close();
             }
         });
 	}
@@ -130,7 +108,7 @@ public class DeleteMovieForm {
 		gridData3.verticalSpan = 2;
 		gridData3.heightHint = 64;
 		gridData3.widthHint = 64;
-        Canvas canvas = new Canvas(sShell, SWT.NONE);
+        Canvas canvas = new Canvas(shell, SWT.NONE);
 		canvas.setLayoutData(gridData3);
 
 		Color bckg = canvas.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);

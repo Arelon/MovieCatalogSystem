@@ -10,4 +10,9 @@
         <property name="apiKey" value="${tmdb.apikey}" />
     </bean>
 
+    <bean id="filmService" class="net.milanaleksic.mcs.infrastructure.persistence.jpa.service.FilmServiceImpl" />
+
+    <bean id="medijService" class="net.milanaleksic.mcs.infrastructure.persistence.jpa.service.MedijServiceImpl" />
+
+
 </beans>

@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.OfferMovieList;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
@@ -20,9 +19,9 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class NewOrEditMovieForm {
+public class NewOrEditMovieDialogForm extends AbstractDialogForm {
 	
-    @Inject private NewMediumForm newMediumForm;
+    @Inject private NewMediumDialogForm newMediumDialogForm;
 
     @Inject private FilmRepository filmRepository;
 
@@ -36,10 +35,6 @@ public class NewOrEditMovieForm {
 
     @Inject private FilmService filmService;
 
-    @Inject private ApplicationManager applicationManager;
-
-    private Shell sShell = null;
-    private Shell parent;
     private Composite composite = null;
     private Composite composite2 = null;
     private Combo comboLokacija = null;
@@ -53,40 +48,17 @@ public class NewOrEditMovieForm {
     private Text textKomentar = null;
 
     private Film activeFilm = null;
-    private Runnable parentRunner = null;
 
     private HashMap<String, Zanr> sviZanrovi;
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
     private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}");
-    private ResourceBundle bundle;
 
     public void open(Shell parent, @Nullable Film film, Runnable runnable) {
-		this.parent = parent;
 		this.activeFilm  = film;
-        this.parentRunner = runnable;
-        this.bundle = applicationManager.getMessagesBundle();
-        createSShell();
-		sShell.setLocation(
-				new Point(
-						parent.getLocation().x+Math.abs(parent.getSize().x-sShell.getSize().x) / 2, 
-						parent.getLocation().y+Math.abs(parent.getSize().y-sShell.getSize().y) / 2 ));
-		resetControls();
-        sShell.open();
+        super.open(parent, runnable);
 	}
 	
-	private void resetControls() {
-		comboNaziv.setText("");
-		textPrevod.setText(bundle.getString("newOrEdit.unkown"));
-		textImdbId.setText("");
-		textGodina.setText("0");
-		comboZanr.setItems(new String[] {});
-		comboLokacija.setItems(new String[] {});
-		comboDisk.setItems(new String[] {});
-		
-		reReadData();
-	}
-
 	protected void reReadData() {
         // preuzimanje svih podataka od interesa i upis u kombo boksove
         refillCombos();
@@ -197,24 +169,22 @@ public class NewOrEditMovieForm {
 	}
 	
 	
-	private void createSShell() {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		if (parent == null)
-			sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		else
-			sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		sShell.setText(bundle.getString("newOrEdit.addingOrModifyingMovie"));
-		createComposite();
-		createComposite1();
-		sShell.setLayout(gridLayout);
-		sShell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
+	@Override protected void onShellCreated() {
+        shell.setText(bundle.getString("newOrEdit.addingOrModifyingMovie"));
+        shell.setLayout(new GridLayout(1, false));
+		shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
 			public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
-				sShell.dispose();
-                offerMovieList.cleanup();
+                if (offerMovieList != null)
+                    offerMovieList.cleanup();
 			}
 		});
-		sShell.pack();
+        createComposite();
+        createComposite1();
+    }
+
+    @Override protected void onShellReady() {
+        comboNaziv.addKeyListener(prepareOfferMovieListForCombo(comboNaziv));
+        reReadData();
 	}
 
 	private void createComposite() {
@@ -254,7 +224,7 @@ public class NewOrEditMovieForm {
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData1.verticalAlignment = org.eclipse.swt.layout.GridData.BEGINNING;
 		gridData1.grabExcessHorizontalSpace = true;
-		composite = new Composite(sShell, SWT.NONE);
+		composite = new Composite(shell, SWT.NONE);
 		composite.setLayoutData(gridData1);
 		composite.setLayout(gridLayout1);
         Label labNazivFilma = new Label(composite, SWT.RIGHT);
@@ -278,7 +248,6 @@ public class NewOrEditMovieForm {
                 }
             }
         });
-        comboNaziv.addKeyListener(prepareOfferMovieListForCombo(comboNaziv));
         Label labPrevod = new Label(composite, SWT.NONE);
 		labPrevod.setText(bundle.getString("newOrEdit.movieNameTranslated"));
 		labPrevod.setLayoutData(gridData4);
@@ -343,7 +312,7 @@ public class NewOrEditMovieForm {
 		gridData.widthHint = -1;
 		gridData.horizontalIndent = 0;
 		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        Composite composite1 = new Composite(sShell, SWT.NONE);
+        Composite composite1 = new Composite(shell, SWT.NONE);
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(gridLayout2);
         Button btnPrihvati = new Button(composite1, SWT.NONE);
@@ -371,7 +340,7 @@ public class NewOrEditMovieForm {
                         !PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches())
                     razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.imdbFormatNotOk"));
                 if (razlogOtkaza.length() != 0) {
-                    MessageBox messageBox = new MessageBox(sShell, SWT.OK | SWT.ICON_WARNING);
+                    MessageBox messageBox = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
                     messageBox.setText(bundle.getString("newOrEdit.movieCouldNotBeAdded"));
                     messageBox.setMessage(bundle.getString("newOrEdit.cancellationCause") + "\r\n----------" + razlogOtkaza.toString());
                     messageBox.open();
@@ -380,8 +349,8 @@ public class NewOrEditMovieForm {
                         izmeniFilm();
                     else
                         dodajNoviFilm();
-                    parentRunner.run();
-                    sShell.close();
+                    runnerWhenClosingShouldRun = true;
+                    shell.close();
                 }
             }
         });
@@ -389,7 +358,7 @@ public class NewOrEditMovieForm {
 		btnOdustani.setText(bundle.getString("global.cancel"));
 		btnOdustani.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                sShell.close();
+                shell.close();
             }
         });
 	}
@@ -459,7 +428,7 @@ public class NewOrEditMovieForm {
 		btnNovMedij.setText(bundle.getString("newOrEdit.newMedium"));
 		btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                newMediumForm.open(sShell, new Runnable() {
+                newMediumDialogForm.open(shell, new Runnable() {
 
                     @Override
                     public void run() {
@@ -511,7 +480,7 @@ public class NewOrEditMovieForm {
 
     @MethodTiming
     public void setCurrentQueryItems(final String query, final String[] newItems, @Nullable final Movie[] newMovies) {
-        sShell.getDisplay().asyncExec(new Runnable() {
+        shell.getDisplay().asyncExec(new Runnable() {
 
             @Override
             public void run() {

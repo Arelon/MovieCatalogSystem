@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.domain.model.TipMedija;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.*;
@@ -69,6 +68,8 @@ public class EditableSingleColumnTableSelectionListener extends SelectionAdapter
                         break;
                     case SWT.TRAVERSE_ESCAPE:
                         editor.getEditor().dispose();
+                        break;
+                    default:
                         break;
                 }
             }

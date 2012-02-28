@@ -2,22 +2,31 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="splashScreenManager" class="net.milanaleksic.mcs.application.gui.helper.SplashScreenManager" />
-
     <bean id="mainForm" class="net.milanaleksic.mcs.application.gui.MainForm" />
 
-    <bean id="aboutForm" class="net.milanaleksic.mcs.application.gui.AboutForm" />
+    <!-- Dialogs -->
 
-    <bean id="newMediumForm" class="net.milanaleksic.mcs.application.gui.NewMediumForm" />
+    <bean id="aboutDialogForm" class="net.milanaleksic.mcs.application.gui.AboutDialogForm" />
+
+    <bean id="newMediumDialogForm" class="net.milanaleksic.mcs.application.gui.NewMediumDialogForm" />
+
+    <bean id="newOrEditMovieDialogForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieDialogForm" />
+
+    <bean id="settingsDialogForm" class="net.milanaleksic.mcs.application.gui.SettingsDialogForm" />
+
+    <bean id="deleteMovieDialogForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieDialogForm" />
+
+    <bean id="closingDialogForm" class="net.milanaleksic.mcs.application.gui.ClosingDialogForm" />
+
+    <bean id="unusedMediumsDialogForm" class="net.milanaleksic.mcs.application.gui.UnusedMediumsDialogForm" />
+
+    <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesDialogForm" />
+
+
+    <!-- GUI Helper classes -->
+
+    <bean id="splashScreenManager" class="net.milanaleksic.mcs.application.gui.helper.SplashScreenManager" />
 
     <bean id="offerMovieList" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList" />
-
-    <bean id="newOrEditMovieForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieForm" />
-
-    <bean id="settingsForm" class="net.milanaleksic.mcs.application.gui.SettingsForm" />
-
-    <bean id="deleteMovieForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieForm" />
-
-    <bean id="closingForm" class="net.milanaleksic.mcs.application.gui.ClosingForm" />
 
 </beans>

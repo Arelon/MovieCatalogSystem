@@ -1,12 +1,11 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
 import net.milanaleksic.mcs.domain.model.*;
-import net.milanaleksic.mcs.domain.service.AbstractService;
 import net.milanaleksic.mcs.domain.service.FilmService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.TypedQuery;
+import java.util.*;
 
 @Transactional(readOnly = false)
 public class FilmServiceImpl extends AbstractService implements FilmService {
@@ -48,6 +47,12 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
                 log.info("Removing medium from the list of mediums: "+medij.toString());
             movieToBeUpdated.removeMedij(medij);
         }
+    }
+
+    @Override
+    public List<Film> getListOfUnmatchedMovies() {
+        TypedQuery<Film> query = entityManager.createNamedQuery("getUnmatchedMovies", Film.class);
+        return query.getResultList();
     }
 
 }

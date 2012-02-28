@@ -2,6 +2,17 @@
 <entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
 
+    <!-- FILM -->
+
+    <named-query name="getUnmatchedMovies">
+        <query><![CDATA[
+            from Film f
+            where f.imdbId is null or length(f.imdbId)=0
+            order by LOWER(f.nazivfilma) ASC
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
     <!-- ZANR -->
 
     <named-query name="getZanrsOrdered">
@@ -60,6 +71,15 @@
     <named-query name="getMedijsOrdered">
         <query><![CDATA[
             from Medij m
+            order by m.tipMedija.naziv, indeks
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
+    <named-query name="getUnusedMediums">
+        <query><![CDATA[
+            from Medij m
+            where m.films.size=0
             order by m.tipMedija.naziv, indeks
         ]]></query>
         <hint name="org.hibernate.cacheable" value="true" />

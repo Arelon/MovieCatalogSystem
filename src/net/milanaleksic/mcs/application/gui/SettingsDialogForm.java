@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.UserConfiguration;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
@@ -15,9 +14,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
-import java.util.ResourceBundle;
 
-public class SettingsForm {
+public class SettingsDialogForm extends AbstractDialogForm {
 
     @Inject
     private PozicijaRepository pozicijaRepository;
@@ -28,43 +26,29 @@ public class SettingsForm {
     @Inject
     private TipMedijaRepository tipMedijaRepository;
 
-    @Inject
-    private ApplicationManager applicationManager;
-
     private SelectionAdapter pozicijaDefaultButtonSelected;
 
-    private Shell sShell = null;
-    private Runnable parentRunner = null;
     private Table listMediumTypes = null;
     private Table listLokacije = null;
     private Table listZanrovi = null;
     private Text textElementsPerPage = null;
 
-    private boolean changed = false;
     private UserConfiguration userConfiguration = null;
-    private ResourceBundle bundle = null;
     private Combo comboLanguage;
 
-    public void open(Shell parent, Runnable runnable, UserConfiguration userConfiguration) {
-        this.userConfiguration = userConfiguration;
-        this.parentRunner = runnable;
-        bundle = applicationManager.getMessagesBundle();
-        createSShell(parent);
-        sShell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - sShell.getSize().x) / 2,
-                parent.getLocation().y + Math.abs(parent.getSize().y - sShell.getSize().y) / 2));
-        createDefaultButtonSelectionListener();
-        reReadData();
-        sShell.open();
+    @Override public void open(Shell parent, Runnable runnable) {
+        this.userConfiguration = applicationManager.getUserConfiguration();
+        super.open(parent, runnable);
     }
 
     private void createDefaultButtonSelectionListener() {
-        pozicijaDefaultButtonSelected = new HandledSelectionAdapter(sShell, bundle) {
+        pozicijaDefaultButtonSelected = new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 Pozicija pozicija = (Pozicija) event.widget.getData();
                 pozicija.setDefault(true);
                 pozicijaRepository.updatePozicija(pozicija);
-                changed = true;
+                runnerWhenClosingShouldRun = true;
             }
         };
     }
@@ -107,45 +91,37 @@ public class SettingsForm {
         comboLanguage.select(Language.ordinalForName(userConfiguration.getLocaleLanguage()));
     }
 
-    private void createSShell(Shell parent) {
-        GridLayout gridLayout3 = new GridLayout();
-        gridLayout3.numColumns = 1;
-        if (parent == null)
-            sShell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-        else
-            sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-        sShell.setText(bundle.getString("settings.programSettings"));
+    @Override protected void onShellCreated() {
+        shell.setText(bundle.getString("settings.programSettings"));
+        shell.setLayout(new GridLayout(1, false));
+        shell.setSize(new Point(500, 350));
         createTabFolder();
-        sShell.setLayout(gridLayout3);
         createComposite();
-        sShell.setSize(new Point(500, 350));
-        sShell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
-            public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
-                if (changed)
-                    parentRunner.run();
-                sShell.dispose();
-            }
-        });
+        createDefaultButtonSelectionListener();
+    }
+
+    @Override protected void onShellReady() {
+        reReadData();
     }
 
     private void createComposite() {
         GridLayout gridLayout = new GridLayout(1, false);
         gridLayout.horizontalSpacing = 20;
-        Composite composite = new Composite(sShell, SWT.NONE);
+        Composite composite = new Composite(shell, SWT.NONE);
         composite.setLayout(gridLayout);
         composite.setLayoutData(new GridData(GridData.CENTER, GridData.END, true, false));
         Button btnCancel = new Button(composite, SWT.NONE);
-        btnCancel.setText(bundle.getString("settings.close"));
+        btnCancel.setText(bundle.getString("global.close"));
         btnCancel.setLayoutData(new GridData(GridData.END, GridData.CENTER, false, true));
         btnCancel.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                sShell.close();
+                shell.close();
             }
         });
     }
 
     private void createTabFolder() {
-        TabFolder tabFolder = new TabFolder(sShell, SWT.NONE);
+        TabFolder tabFolder = new TabFolder(shell, SWT.NONE);
         tabFolder.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, true));
 
         TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
@@ -186,7 +162,7 @@ public class SettingsForm {
                 int index = comboLanguage.getSelectionIndex();
                 if (index > -1 && index < Language.values().length) {
                     userConfiguration.setLocaleLanguage(Language.values()[index].getName());
-                    changed = true;
+                    runnerWhenClosingShouldRun = true;
                 }
             }
         });
@@ -217,7 +193,7 @@ public class SettingsForm {
                     return;
                 }
                 userConfiguration.setElementsPerPage(elementsPerPage);
-                changed = true;
+                runnerWhenClosingShouldRun = true;
             }
         });
 
@@ -250,7 +226,7 @@ public class SettingsForm {
         final Text textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER);
         textProxyServerPassword.setText(StringUtil.emptyIfNull(proxyConfiguration.getPassword()));
         textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        ModifyListener proxySettingsModifyListener = new HandledModifyListener(sShell, bundle) {
+        ModifyListener proxySettingsModifyListener = new HandledModifyListener(shell, bundle) {
             @Override
             public void handledModifyText() {
                 UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
@@ -279,10 +255,10 @@ public class SettingsForm {
         tableColumn.setWidth(370);
 
         listMediumTypes.addSelectionListener(new EditableSingleColumnTableSelectionListener(
-                listMediumTypes, sShell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
+                listMediumTypes, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
             public void contentEditingFinished(String finalContent, Object data) {
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 TipMedija tipMedija = (TipMedija) data;
                 tipMedija.setNaziv(finalContent);
                 tipMedijaRepository.updateTipMedija(tipMedija);
@@ -292,27 +268,27 @@ public class SettingsForm {
         Button btnAddMediumType = new Button(compositeGenres, SWT.NONE);
         btnAddMediumType.setText(bundle.getString("settings.add"));
         btnAddMediumType.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddMediumType.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+        btnAddMediumType.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listMediumTypes, SWT.NONE);
                 String newMediumTypeName = getNewEntityTemplateName(listMediumTypes.getItems(), bundle.getString("settings.newMediumType"));
                 tableItem.setText(newMediumTypeName);
                 tipMedijaRepository.addTipMedija(newMediumTypeName);
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 reReadData();
             }
         });
         Button btnDeleteMediumType = new Button(compositeGenres, SWT.NONE);
-        btnDeleteMediumType.setText(bundle.getString("settings.delete"));
+        btnDeleteMediumType.setText(bundle.getString("global.delete"));
         btnDeleteMediumType.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteMediumType.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+        btnDeleteMediumType.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listMediumTypes.getSelectionIndex() < 0)
                     return;
                 tipMedijaRepository.deleteMediumTypeByName(listMediumTypes.getItem(listMediumTypes.getSelectionIndex()).getText());
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 reReadData();
             }
         });
@@ -333,10 +309,10 @@ public class SettingsForm {
         tableColumn1.setWidth(50);
 
         listLokacije.addSelectionListener(new EditableSingleColumnTableSelectionListener(
-                listLokacije, sShell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
+                listLokacije, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
             public void contentEditingFinished(String finalContent, Object data) {
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 Pozicija pozicija = (Pozicija) data;
                 pozicija.setPozicija(finalContent);
                 pozicijaRepository.updatePozicija(pozicija);
@@ -346,27 +322,27 @@ public class SettingsForm {
         Button btnAddLocation = new Button(compositeLocations, SWT.NONE);
         btnAddLocation.setText(bundle.getString("settings.add"));
         btnAddLocation.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddLocation.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+        btnAddLocation.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
                 String newLocation = getNewEntityTemplateName(listLokacije.getItems(), bundle.getString("settings.newLocation"));
                 tableItem.setText(newLocation);
                 pozicijaRepository.addPozicija(new Pozicija(newLocation, false));
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 reReadData();
             }
         });
         Button btnDeleteLocation = new Button(compositeLocations, SWT.NONE);
-        btnDeleteLocation.setText(bundle.getString("settings.delete"));
+        btnDeleteLocation.setText(bundle.getString("global.delete"));
         btnDeleteLocation.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteLocation.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+        btnDeleteLocation.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listLokacije.getSelectionIndex() < 0)
                     return;
                 pozicijaRepository.deletePozicijaByName(listLokacije.getItem(listLokacije.getSelectionIndex()).getText());
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 reReadData();
             }
         });
@@ -384,10 +360,10 @@ public class SettingsForm {
         tableColumn.setWidth(370);
 
         listZanrovi.addSelectionListener(new EditableSingleColumnTableSelectionListener(
-                listZanrovi, sShell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
+                listZanrovi, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
             public void contentEditingFinished(String finalContent, Object data) {
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 Zanr zanr = (Zanr) data;
                 zanr.setZanr(finalContent);
                 zanrRepository.updateZanr(zanr);
@@ -397,27 +373,27 @@ public class SettingsForm {
         Button btnAddGenre = new Button(compositeGenres, SWT.NONE);
         btnAddGenre.setText(bundle.getString("settings.add"));
         btnAddGenre.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddGenre.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+        btnAddGenre.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listZanrovi, SWT.NONE);
                 String newGenre = getNewEntityTemplateName(listZanrovi.getItems(), bundle.getString("settings.newGenre"));
                 tableItem.setText(newGenre);
                 zanrRepository.addZanr(newGenre);
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 reReadData();
             }
         });
         Button btnDeleteGenre = new Button(compositeGenres, SWT.NONE);
-        btnDeleteGenre.setText(bundle.getString("settings.delete"));
+        btnDeleteGenre.setText(bundle.getString("global.delete"));
         btnDeleteGenre.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteGenre.addSelectionListener(new HandledSelectionAdapter(sShell, bundle) {
+        btnDeleteGenre.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listZanrovi.getSelectionIndex() < 0)
                     return;
                 zanrRepository.deleteZanrByName(listZanrovi.getItem(listZanrovi.getSelectionIndex()).getText());
-                changed = true;
+                runnerWhenClosingShouldRun = true;
                 reReadData();
             }
         });

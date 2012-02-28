@@ -22,18 +22,6 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     private PozicijaRepository pozicijaRepository;
 
     @Override
-    @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
-    public int getNextMedijIndeks(String mediumTypeName) {
-        TypedQuery<Integer> query = entityManager.createNamedQuery("getNextMedijIndeks", Integer.class);
-        query.setParameter("tipMedija", mediumTypeName);
-        Integer nextMedijIndeks = query.getSingleResult();
-        if (nextMedijIndeks==null)
-            return 1;
-        else
-            return nextMedijIndeks;
-    }
-
-    @Override
     public void saveMedij(int index, TipMedija tipMedija) {
         Medij medij = new Medij();
         medij.setIndeks(index);
@@ -53,5 +41,11 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     public List<Medij> getMedijs() {
         TypedQuery<Medij> query = entityManager.createNamedQuery("getMedijsOrdered", Medij.class);
         return query.getResultList();
+    }
+
+    @Override
+    public void deleteMediumType(Medij medij) {
+        medij = entityManager.merge(medij);
+        entityManager.remove(medij);
     }
 }

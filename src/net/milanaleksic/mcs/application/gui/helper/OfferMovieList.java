@@ -2,7 +2,7 @@ package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.IntegrationManager;
-import net.milanaleksic.mcs.application.gui.NewOrEditMovieForm;
+import net.milanaleksic.mcs.application.gui.NewOrEditMovieDialogForm;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
@@ -28,7 +28,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     @Inject private TmdbService tmdbService;
 
-    @Inject private NewOrEditMovieForm newOrEditMovieForm;
+    @Inject private NewOrEditMovieDialogForm newOrEditMovieDialogForm;
 
     @Inject private ApplicationManager applicationManager;
 
@@ -77,9 +77,9 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
                             newItems[i] = String.format("%s (%s)", movies[i].getName(), movies[i].getReleasedYear());
                         }
                     }
-                    newOrEditMovieForm.setCurrentQueryItems(currentQuery, newItems, movies);
+                    newOrEditMovieDialogForm.setCurrentQueryItems(currentQuery, newItems, movies);
                 } catch (TmdbException e1) {
-                    newOrEditMovieForm.setCurrentQueryItems(currentQuery, new String[] {
+                    newOrEditMovieDialogForm.setCurrentQueryItems(currentQuery, new String[] {
                             bundle.getString("offerList.searchFailed")
                     }, null);
                     logger.error("Error while fetching movie information", e1);

@@ -25,11 +25,11 @@ public class MainForm extends Observable {
 
 	private static final Logger log = Logger.getLogger(MainForm.class);
 
-    @Inject private NewOrEditMovieForm newOrEditMovieForm;
+    @Inject private NewOrEditMovieDialogForm newOrEditMovieDialogForm;
 
-    @Inject private SettingsForm settingsForm;
+    @Inject private SettingsDialogForm settingsDialogForm;
 
-    @Inject private AboutForm aboutForm;
+    @Inject private AboutDialogForm aboutDialogForm;
 
     @Inject private ApplicationManager applicationManager;
 
@@ -39,11 +39,15 @@ public class MainForm extends Observable {
 
     @Inject private PozicijaRepository pozicijaRepository;
 
-    @Inject private DeleteMovieForm deleteMovieForm;
+    @Inject private DeleteMovieDialogForm deleteMovieDialogForm;
 
     @Inject private FilmRepository filmRepository;
 
     @Inject private ProgramArgsService programArgsService;
+
+    @Inject private UnusedMediumsDialogForm unusedMediumsDialogForm;
+
+    @Inject private UnmatchedMoviesDialogForm unmatchedMoviesDialogForm;
 
     private ResourceBundle bundle = null;
 
@@ -59,6 +63,7 @@ public class MainForm extends Observable {
     private Label labelCurrent = null;
     private ToolBar toolTicker = null;
     private Composite wrapperDataInfo = null;
+    private Menu settingsPopupMenu = null;
 
     private CurrentViewState currentViewState = new CurrentViewState();
     private ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration;
@@ -105,7 +110,7 @@ public class MainForm extends Observable {
             return maxItemsPerPage;
         }
     }
-	
+
 	private class MainTableKeyAdapter extends KeyAdapter {
 
 		@Override public void keyPressed(KeyEvent e) {
@@ -143,7 +148,7 @@ public class MainForm extends Observable {
                     }
 					return;
 			}
-			
+
 			if (!Character.isLetterOrDigit(e.character))
 				return;
 			if (filterText == null)
@@ -154,7 +159,7 @@ public class MainForm extends Observable {
 		}
 
 	}
-	
+
 	private class NextPageSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
@@ -164,9 +169,9 @@ public class MainForm extends Observable {
 			currentViewState.setActivePage(currentViewState.getActivePage()+1);
 			doFillMainTable();
 		}
-		
+
 	}
-	
+
 	private class PreviousPageSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
@@ -175,15 +180,15 @@ public class MainForm extends Observable {
 			currentViewState.setActivePage(currentViewState.getActivePage()-1);
 			doFillMainTable();
 		}
-		
+
 	}
-	
+
 	private class MainTableMouseListener extends MouseAdapter {
-		
+
 		@Override public void mouseDoubleClick(MouseEvent mouseevent) {
 			if (mainTable.getSelectionIndex() != -1) {
                 Film rawFilm = (Film)mainTable.getSelection()[0].getData();
-                newOrEditMovieForm.open(sShell,
+                newOrEditMovieDialogForm.open(sShell,
                         filmRepository.getCompleteFilm(rawFilm),
                         new Runnable() {
 
@@ -195,20 +200,20 @@ public class MainForm extends Observable {
             }
 		}
 	}
-	
+
 	private class MainFormShellListener extends ShellAdapter {
-			
+
 		@Override public void shellActivated(ShellEvent e) {
 			sShell.removeShellListener(this);
 			if (programArgsService.getProgramArgs().isNoInitialMovieListLoading())
                 return;
             doFillMainTable();
 		}
-			
+
 	}
-	
+
 	private class ComboRefreshAdapter extends SelectionAdapter {
-	
+
 		public void widgetSelected(SelectionEvent e) {
 			Combo combo = (Combo)e.widget;
 			if (combo.getSelectionIndex()==1)
@@ -217,11 +222,11 @@ public class MainForm extends Observable {
 			doFillMainTable();
 			mainTable.setFocus();
 		}
-		
+
 	}
-	
+
 	private class ToolExportSelectionAdapter extends SelectionAdapter {
-		
+
 		@Override public void widgetSelected(SelectionEvent e) {
 			FileDialog dlg = new FileDialog(sShell, SWT.SAVE);
 			dlg.setFilterNames(new String[] {"HTML files (*.htm)"});
@@ -240,7 +245,7 @@ public class MainForm extends Observable {
             List<Film> filmList = getAllFilms(0);
             final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
 			exporter.export(new ExporterSource() {
-				
+
 				@Override public String getTargetFile() {
 					return targetFileForExport;
 				}
@@ -248,7 +253,7 @@ public class MainForm extends Observable {
 				@Override public int getItemCount() {
 					return allFilms.length;
 				}
-				
+
 				@Override public int getColumnCount() {
 					return 5;
 				}
@@ -271,94 +276,102 @@ public class MainForm extends Observable {
                             return "";
                     }
 				}
-				
+
 			});
 		}
 
 	}
-	
+
 	private class ToolEraseSelectionAdapter extends SelectionAdapter {
-		
+
 		@Override public void widgetSelected(SelectionEvent e) {
 			if (mainTable.getSelectionIndex() == -1)
 				return;
-			deleteMovieForm.open(sShell, (Film) mainTable.getSelection()[0].getData(),
+			deleteMovieDialogForm.open(sShell, (Film) mainTable.getSelection()[0].getData(),
 					new Runnable() {
 
 						@Override public void run() {
 							doFillMainTable();
 						}
-						
+
 					});
 		}
-		
+
 	}
-	
+
 	private class ToolSettingsSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
-			settingsForm.open(sShell, new Runnable() {
-
-				@Override public void run() {
-					resetPozicije();
-					resetZanrova();
-                    resetMedija();
-					doFillMainTable();
-				}
-				
-			}, applicationManager.getUserConfiguration());
-		}
-		
-		private void resetZanrova() {
-			comboZanr.setItems(new String [] {});
-			List<Zanr> zanrovi = zanrRepository.getZanrs();
-			comboZanr.add(bundle.getString("main.allGenres"));
-			comboZanr.add("-----------");
-            int iter = 2;
-			for(Zanr zanr : zanrovi) {
-				comboZanr.add(zanr.toString());
-                comboZanr.setData(Integer.toString(iter++), zanr);
+            if (e.detail == SWT.ARROW) {
+                ToolItem toolItem = (ToolItem)e.widget;
+                ToolBar toolBar = toolItem.getParent();
+                Rectangle rect = toolItem.getBounds();
+                Point pt = new Point(rect.x, rect.y + rect.height);
+                pt = toolBar.toDisplay(pt);
+                settingsPopupMenu.setLocation(pt.x, pt.y);
+                settingsPopupMenu.setVisible(true);
+            } else {
+                settingsDialogForm.open(sShell, new Runnable() {
+                    @Override public void run() {
+                        resetPozicije();
+                        resetZanrovi();
+                        resetMedija();
+                        doFillMainTable();
+                    }
+                });
             }
-			comboZanr.select(0);
 		}
 
 	}
-	
+
 	private class ToolExitSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
 			sShell.dispose();
 		}
-		
+
 	}
-	
+
 	private class ToolAboutSelectionAdapter extends SelectionAdapter {
-		
+
 		@Override public void widgetSelected(SelectionEvent e) {
-			aboutForm.open(sShell);
+			aboutDialogForm.open(sShell);
 		}
-		
+
 	}
-	
+
 	private class ToolNewSelectionAdapter extends SelectionAdapter {
 
 		@Override public void widgetSelected(SelectionEvent e) {
-			newOrEditMovieForm.open(sShell, null, new Runnable() {
+			newOrEditMovieDialogForm.open(sShell, null, new Runnable() {
 
 				@Override
 				public void run() {
 					doFillMainTable();
 				}
-				
+
 			});
 		}
 
 	}
 
-	
-	
-	
-	
+    private class ShowUnusedMediumsForm extends SelectionAdapter {
+
+        @Override public void widgetSelected(SelectionEvent selectionEvent) {
+            unusedMediumsDialogForm.open(sShell);
+        }
+    }
+
+    private class ShowUnmatchedMoviesForm extends SelectionAdapter {
+
+        @Override public void widgetSelected(SelectionEvent selectionEvent) {
+            unmatchedMoviesDialogForm.open(sShell);
+        }
+    }
+
+
+
+
 	// DESIGN
 
     public MainForm() {
@@ -405,7 +418,7 @@ public class MainForm extends Observable {
     public boolean isDisposed() {
 		return sShell.isDisposed();
 	}
-	
+
 	private void createSShell() {
 		sShell = new Shell();
 		sShell.setText(titleConst);
@@ -440,12 +453,26 @@ public class MainForm extends Observable {
 		TableColumn tableColumn4 = new TableColumn(mainTable, SWT.NONE);
 		tableColumn4.setWidth(120);
 		tableColumn4.setText(bundle.getString("main.comment"));
-		
+
 		createStatusBar();
-		// dodajemo jedan listener za aktiviranje programa... 
+        createSettingsPopupMenu();
+		// dodajemo jedan listener za aktiviranje programa...
 		sShell.addShellListener(new MainFormShellListener());
 	}
-	
+
+    private void createPanCombos() {
+        GridData gridData2 = new GridData();
+        gridData2.horizontalAlignment = GridData.END;
+        GridLayout gridLayout1 = new GridLayout();
+        gridLayout1.numColumns = 1;
+        panCombos = new Composite(sShell, SWT.NONE);
+        panCombos.setLayoutData(gridData2);
+        panCombos.setLayout(gridLayout1);
+        createComboTipMedija();
+        createComboPozicija();
+        createComboZanr();
+    }
+
 	private void createComboZanr() {
 		GridData gridData5 = new GridData();
 		gridData5.widthHint = 80;
@@ -454,18 +481,10 @@ public class MainForm extends Observable {
 		comboZanr.setLayoutData(gridData5);
 		comboZanr.setVisibleItemCount(16);
 		comboZanr.addSelectionListener(new ComboRefreshAdapter());
-		List<Zanr> zanrovi = zanrRepository.getZanrs();
-		comboZanr.add(bundle.getString("main.allGenres"));
-		comboZanr.add("-----------");
-        int iter = 2;
-		for(Zanr zanr : zanrovi) {
-            comboZanr.setData(Integer.toString(iter++), zanr);
-            comboZanr.add(zanr.toString());
-        }
-		comboZanr.select(0);
+		resetZanrovi();
 	}
-	
-	private void createComboTipMedija() {
+
+    private void createComboTipMedija() {
 		GridData gridData1 = new GridData();
 		gridData1.widthHint = 80;
 		comboTipMedija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
@@ -486,6 +505,18 @@ public class MainForm extends Observable {
 		comboPozicija.addSelectionListener(new ComboRefreshAdapter());
 		resetPozicije();
 	}
+
+    private void resetZanrovi() {
+        comboZanr.setItems(new String [] {});
+        comboZanr.add(bundle.getString("main.allGenres"));
+        comboZanr.add("-----------");
+        int iter = 2;
+        for (Zanr zanr : zanrRepository.getZanrs()) {
+            comboZanr.setData(Integer.toString(iter++), zanr);
+            comboZanr.add(zanr.toString());
+        }
+        comboZanr.select(0);
+    }
 
 	private void resetPozicije() {
 		comboPozicija.setItems(new String [] {});
@@ -509,21 +540,8 @@ public class MainForm extends Observable {
 		comboTipMedija.select(0);
 	}
 
-	private void createPanCombos() {
-		GridData gridData2 = new GridData();
-		gridData2.horizontalAlignment = GridData.END;
-		GridLayout gridLayout1 = new GridLayout();
-		gridLayout1.numColumns = 1;
-		panCombos = new Composite(sShell, SWT.NONE);
-		panCombos.setLayoutData(gridData2);
-		panCombos.setLayout(gridLayout1);
-		createComboTipMedija();
-		createComboPozicija();
-		createComboZanr();
-	}
-	
 	private void createToolBar() {
-		ToolBar toolBar = new ToolBar(sShell, SWT.FLAT);
+		final ToolBar toolBar = new ToolBar(sShell, SWT.FLAT);
 		toolBar.setBounds(new Rectangle(11, 50, 4, 50));
 		toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
@@ -535,26 +553,27 @@ public class MainForm extends Observable {
 		ToolItem toolExport = new ToolItem(toolBar, SWT.PUSH);
 		toolExport.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/folder_outbox.png")));
 		toolExport.setText(bundle.getString("main.export"));
-		toolExport.addSelectionListener(new ToolExportSelectionAdapter());
-		toolErase.addSelectionListener(new ToolEraseSelectionAdapter());
-		ToolItem toolSettings = new ToolItem(toolBar, SWT.PUSH);
-		toolSettings.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/advancedsettings.png")));
-		toolSettings.setWidth(90);
-		toolSettings.setText(bundle.getString("main.settings"));
-		toolSettings.addSelectionListener(new ToolSettingsSelectionAdapter());
-		new ToolItem(toolBar, SWT.SEPARATOR);
-		ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
-		toolAbout.setText(bundle.getString("global.aboutProgram"));
-		toolAbout.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/jabber_protocol.png")));
-		new ToolItem(toolBar, SWT.SEPARATOR);
-		ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
-		toolExit.setText(bundle.getString("main.exit"));
-		toolExit.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/shutdown.png")));
-		toolExit.addSelectionListener(new ToolExitSelectionAdapter());
-		toolAbout.addSelectionListener(new ToolAboutSelectionAdapter());
-		toolNew.addSelectionListener(new ToolNewSelectionAdapter());
-	}
-	
+        final ToolItem toolSettings = new ToolItem(toolBar, SWT.DROP_DOWN);
+        toolSettings.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/advancedsettings.png")));
+        toolSettings.setWidth(90);
+        toolSettings.setText(bundle.getString("main.settings"));
+        new ToolItem(toolBar, SWT.SEPARATOR);
+        ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
+        toolAbout.setText(bundle.getString("global.aboutProgram"));
+        toolAbout.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/jabber_protocol.png")));
+        new ToolItem(toolBar, SWT.SEPARATOR);
+        ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
+        toolExit.setText(bundle.getString("main.exit"));
+        toolExit.setImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/shutdown.png")));
+
+        toolNew.addSelectionListener(new ToolNewSelectionAdapter());
+        toolErase.addSelectionListener(new ToolEraseSelectionAdapter());
+        toolExport.addSelectionListener(new ToolExportSelectionAdapter());
+        toolSettings.addSelectionListener(new ToolSettingsSelectionAdapter());
+        toolAbout.addSelectionListener(new ToolAboutSelectionAdapter());
+        toolExit.addSelectionListener(new ToolExitSelectionAdapter());
+    }
+
 	private void createStatusBar() {
 		ToolBar statusBar = new ToolBar(sShell, SWT.NONE);
 		statusBar.setLayoutData(new GridData(GridData.BEGINNING, GridData.FILL, false, false, 1, 1));
@@ -564,7 +583,7 @@ public class MainForm extends Observable {
 		ToolItem toolNextPage = new ToolItem(statusBar, SWT.PUSH);
 		toolNextPage.setText(">>");
 		toolNextPage.addSelectionListener(new NextPageSelectionAdapter());
-		
+
 		GridData gridData2 = new GridData();
 		gridData2.horizontalAlignment = GridData.FILL;
 		gridData2.grabExcessHorizontalSpace = true;
@@ -574,7 +593,7 @@ public class MainForm extends Observable {
 		wrapperDataInfo = new Composite(sShell, SWT.NONE);
 		wrapperDataInfo.setLayoutData(gridData2);
 		wrapperDataInfo.setLayout(gridLayout1);
-		
+
 		Label labelCurrentDesc = new Label(wrapperDataInfo, SWT.NONE);
 		labelCurrentDesc.setText(bundle.getString("main.filterExtracted"));
 		labelCurrent = new Label(wrapperDataInfo, SWT.NONE);
@@ -603,15 +622,29 @@ public class MainForm extends Observable {
 		toolItem.setWidth(24);
 		toolItem.setHotImage(new Image(Display.getCurrent(), MainForm.class.getResourceAsStream("/net/milanaleksic/mcs/application/res/db_find.png")));
 	}
-	
-	
-	
-	
-	
-	
-	
+
+    private void createSettingsPopupMenu() {
+        settingsPopupMenu = new Menu(sShell, SWT.POP_UP);
+        MenuItem settingsMenuItem = new MenuItem(settingsPopupMenu, SWT.PUSH);
+        settingsMenuItem.setText(bundle.getString("main.settings"));
+        settingsMenuItem.addSelectionListener(new ToolSettingsSelectionAdapter());
+        settingsPopupMenu.setDefaultItem(settingsMenuItem);
+        MenuItem findUnusedMediums = new MenuItem(settingsPopupMenu, SWT.PUSH);
+        findUnusedMediums.setText(bundle.getString("main.findUnusedMediums"));
+        findUnusedMediums.addSelectionListener(new ShowUnusedMediumsForm());
+        MenuItem findUmatchedImdbMovies = new MenuItem(settingsPopupMenu, SWT.PUSH);
+        findUmatchedImdbMovies.setText(bundle.getString("main.findUmatchedImdbMovies"));
+        findUmatchedImdbMovies.addSelectionListener(new ShowUnmatchedMoviesForm());
+    }
+
+
+
+
+
+
+
 	// LOGIC
-	
+
 
     @MethodTiming
 	public void doFillMainTable() {
@@ -621,7 +654,7 @@ public class MainForm extends Observable {
 		}
 		List<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
 		int i=0;
-		
+
 		if (sviFilmovi.size() < mainTable.getTopIndex())
 			mainTable.setTopIndex(0);
 		for (Object filmObj : sviFilmovi) {
@@ -643,13 +676,13 @@ public class MainForm extends Observable {
             item.setData(film);
 		}
 		// brisemo preostale (visak) elemente od poslednjeg u tabeli
-		// pa sve do poslednjeg unetog 
+		// pa sve do poslednjeg unetog
 		for (int j=mainTable.getItemCount()-1; j>=i ; j--)
 			mainTable.remove(j);
 
 		setChanged();
 		super.notifyObservers();
-		
+
 		if (toolTicker != null)
 			toolTicker.setVisible(false);
 	}
@@ -673,5 +706,5 @@ public class MainForm extends Observable {
 
         return filmsWithCount.films;
     }
-	
+
 }

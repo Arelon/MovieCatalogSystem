@@ -19,7 +19,7 @@ public class ApplicationConfigurationManager {
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
-    private class ApplicationConfigurationLoader implements Function<InputStream, ApplicationConfiguration> {
+    private static class ApplicationConfigurationLoader implements Function<InputStream, ApplicationConfiguration> {
         @Override
         public ApplicationConfiguration apply(InputStream configurationFile) {
             try {

@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.domain.service;
+package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
 import org.apache.log4j.Logger;
 
