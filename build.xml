@@ -3,6 +3,8 @@
 
     <property file="build.properties"/>
 
+    <property environment="env"/>
+
     <condition property="ivy.home" value="${env.IVY_HOME}">
         <isset property="env.IVY_HOME"/>
     </condition>
@@ -51,7 +53,7 @@
         <fileset dir="${ivy.resolved.libs.target.dir}">
             <include name="*.*"/>
         </fileset>
-        <fileset dir="${findbugs.directory}/lib" erroronmissingdir="false">
+        <fileset dir="${env.FINDBUGS_HOME}/lib" erroronmissingdir="true">
             <include name="findbugs-ant.jar"/>
         </fileset>
     </path>
@@ -123,6 +125,7 @@
                 <include name=".launcher"/>
                 <include name="*.xml"/>
                 <include name="*.jpg"/>
+                <include name="MD5.dll"/>
             </fileset>
         </copy>
 
@@ -150,7 +153,7 @@
     <target name="findbugs" description="FindBugs" depends="compile">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
         <findbugs failonerror="true"
-                  home="${findbugs.directory}" output="html" outputFile="FindBugsAnalysis.html" jvmargs="-Xmx256m"
+                  home="${env.FINDBUGS_HOME}" output="html" outputFile="FindBugsAnalysis.html" jvmargs="-Xmx256m"
                   reportlevel="low" excludefilter="FindBugsExclusiveFilter.xml">
             <auxclasspath>
                 <fileset dir="${ivy.resolved.libs.target.dir}">

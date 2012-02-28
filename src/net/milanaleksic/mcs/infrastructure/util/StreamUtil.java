@@ -1,10 +1,10 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
 import com.google.common.base.Function;
+import com.twmacinta.util.MD5;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.security.*;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -18,33 +18,24 @@ public final class StreamUtil {
 
     private final static Logger log = Logger.getLogger(StreamUtil.class);
 
+    private static boolean triedToInitNativeMD5 = false;
+
     public static String returnMD5ForFile(File input) {
-        StringBuilder hash = new StringBuilder("");
-        MessageDigest digestAlg;
-        try {
-            digestAlg = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            log.error("Failure while calculating MD5", e);
-            throw new IllegalStateException(e);
-        }
-        try (FileInputStream stream = new FileInputStream(input);
-             DigestInputStream digestStream = new DigestInputStream(stream, digestAlg)) {
-            while (digestStream.read() != -1) {
-                // keep reading
+        synchronized(StreamUtil.class) {
+            if (!triedToInitNativeMD5) {
+                boolean success = MD5.initNativeLibrary();
+                log.debug("Native MD5 implementation library initialization success: "+success);
             }
-
-            byte[] calcDigest = digestAlg.digest();
-            for (byte aCalcDigest : calcDigest)
-                hash.append(String.format("%1$02X", aCalcDigest));
-
+        }
+        try {
+            String hash = MD5.asHex(MD5.getHash(input));
             if (log.isDebugEnabled())
-                log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash.toString());
-
+                log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash);
+            return hash;
         } catch (IOException e) {
             log.error("Failure while calculating MD5", e);
             throw new IllegalStateException(e);
         }
-        return hash.toString();
     }
 
     public static void writeFileToZipStream(ZipOutputStream zos, String fileName, String entryName) throws IOException {
