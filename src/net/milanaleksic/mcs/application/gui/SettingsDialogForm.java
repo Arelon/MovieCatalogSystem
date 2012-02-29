@@ -73,6 +73,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
             button.setSelection(pozicija.isDefault());
             button.addSelectionListener(pozicijaDefaultButtonSelected);
             button.setData(pozicija);
+            button.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
             button.pack();
             editor.minimumWidth = button.getSize().x;
             editor.horizontalAlignment = SWT.LEFT;
@@ -86,9 +87,6 @@ public class SettingsDialogForm extends AbstractDialogForm {
             tableItem.setText(zanr.getZanr());
             tableItem.setData(zanr);
         }
-
-        textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
-        comboLanguage.select(Language.ordinalForName(userConfiguration.getLocaleLanguage()));
     }
 
     @Override protected void onShellCreated() {
@@ -156,6 +154,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         comboLanguage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         for (Language language : Language.values())
             comboLanguage.add(bundle.getString("language.name." + language.getName()));
+        comboLanguage.select(Language.ordinalForName(userConfiguration.getLocaleLanguage()));
         comboLanguage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
@@ -173,6 +172,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         label.setText(bundle.getString("settings.numberOfElementsPerPage"));
         textElementsPerPage = new Text(groupGlobal, SWT.BORDER);
         textElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
         textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
@@ -206,7 +206,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         labelServer.setText(bundle.getString("settings.proxyServerAddress"));
         labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         final Text textProxyServer = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServer.setText(StringUtil.emptyIfNull(proxyConfiguration.getUsername()));
+        textProxyServer.setText(StringUtil.emptyIfNull(proxyConfiguration.getServer()));
         textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         Label labelPort = new Label(groupProxyServer, SWT.NONE);
         labelPort.setText(bundle.getString("settings.proxyServerPort"));
@@ -223,7 +223,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         Label labelPassword = new Label(groupProxyServer, SWT.NONE);
         labelPassword.setText(bundle.getString("settings.password"));
         labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        final Text textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER);
+        final Text textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER | SWT.PASSWORD);
         textProxyServerPassword.setText(StringUtil.emptyIfNull(proxyConfiguration.getPassword()));
         textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         ModifyListener proxySettingsModifyListener = new HandledModifyListener(shell, bundle) {
@@ -241,6 +241,20 @@ public class SettingsDialogForm extends AbstractDialogForm {
         textProxyServerPort.addModifyListener(proxySettingsModifyListener);
         textProxyServerUsername.addModifyListener(proxySettingsModifyListener);
         textProxyServerPassword.addModifyListener(proxySettingsModifyListener);
+
+        Label labelSpacer = new Label(groupProxyServer, SWT.NONE);
+        labelSpacer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
+        final Button chkProxyServerUsesNtlm = new Button(groupProxyServer, SWT.CHECK);
+        chkProxyServerUsesNtlm.setText(bundle.getString("settings.proxyUsesNtlm"));
+        chkProxyServerUsesNtlm.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false));
+        chkProxyServerUsesNtlm.setSelection(proxyConfiguration.isNtlm());
+        chkProxyServerUsesNtlm.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+                proxyConfiguration.setNtlm(chkProxyServerUsesNtlm.getSelection());
+            }
+        });
         return compositeSettings;
     }
 
@@ -249,7 +263,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
         compositeGenres.setLayout(new GridLayout(2, false));
         listMediumTypes = new Table(compositeGenres, SWT.BORDER | SWT.FULL_SELECTION);
         listMediumTypes.setHeaderVisible(true);
-        listMediumTypes.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3));
+        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
+        listGridData.heightHint = 180;
+        listMediumTypes.setLayoutData(listGridData);
         TableColumn tableColumn = new TableColumn(listMediumTypes, SWT.LEFT | SWT.FLAT);
         tableColumn.setText(bundle.getString("settings.mediumTypeName"));
         tableColumn.setWidth(370);
@@ -300,7 +316,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
         compositeLocations.setLayout(new GridLayout(2, false));
         listLokacije = new Table(compositeLocations, SWT.BORDER | SWT.FULL_SELECTION);
         listLokacije.setHeaderVisible(true);
-        listLokacije.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3));
+        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
+        listGridData.heightHint = 180;
+        listLokacije.setLayoutData(listGridData);
         TableColumn tableColumn = new TableColumn(listLokacije, SWT.LEFT);
         tableColumn.setText(bundle.getString("settings.locationName"));
         tableColumn.setWidth(320);
@@ -354,7 +372,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
         compositeGenres.setLayout(new GridLayout(2, false));
         listZanrovi = new Table(compositeGenres, SWT.BORDER | SWT.FULL_SELECTION);
         listZanrovi.setHeaderVisible(true);
-        listZanrovi.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3));
+        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
+        listGridData.heightHint = 180;
+        listZanrovi.setLayoutData(listGridData);
         TableColumn tableColumn = new TableColumn(listZanrovi, SWT.LEFT | SWT.FLAT);
         tableColumn.setText(bundle.getString("settings.genreName"));
         tableColumn.setWidth(370);

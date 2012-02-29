@@ -1,8 +1,7 @@
-package net.milanaleksic.mcs.infrastructure.tmdb.request;
+package net.milanaleksic.mcs.infrastructure.tmdb;
 
-import net.milanaleksic.mcs.application.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
+import net.milanaleksic.mcs.infrastructure.tmdb.impl.AbstractServiceAwareRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -12,19 +11,19 @@ import java.net.URLEncoder;
  * Date: 10/7/11
  * Time: 11:31 PM
  */
-public class MovieSearch extends AbstractRequest {
+public class MovieSearch extends AbstractServiceAwareRequest {
 
     private final String searchFilter;
 
-    public MovieSearch(UserConfiguration.ProxyConfiguration proxyConfiguration, String apiKey, String searchFilter) {
-        super(apiKey, proxyConfiguration);
+    public MovieSearch(TmdbService tmdbService, String searchFilter) {
+        super(tmdbService);
         this.searchFilter = searchFilter;
     }
 
     @Override
     protected String getUrl() {
         try {
-            return apiLocation + "Movie.search/en/json/" + apiKey + "/" +
+            return apiLocation + "Movie.search/en/json/" + getApiKey() + "/" +
                     URLEncoder.encode(searchFilter, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("UTF-8 is not supported in this system? WTF?");
@@ -34,4 +33,5 @@ public class MovieSearch extends AbstractRequest {
     public Movie[] getSearchResult() throws TmdbException {
         return processRequest(Movie[].class);
     }
+
 }

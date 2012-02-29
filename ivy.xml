@@ -112,11 +112,15 @@
         <dependency org="javax.inject" name="javax.inject" rev="1" transitive="false">
             <artifact name="javax.inject" type="jar"/>
         </dependency>
-        <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.1.2" transitive="false">
+        <!-- remember: if you move to HttpClient 4.1 you'll not be able to go through NTLM-powered proxies -->
+        <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.0.3" transitive="false">
             <artifact name="httpclient" type="jar"/>
         </dependency>
-        <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.1.2" transitive="false">
+        <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.0.1" transitive="false">
             <artifact name="httpcore" type="jar"/>
+        </dependency>
+        <dependency org="org.samba.jcifs" name="jcifs" rev="1.3.14-kohsuke-1">
+            <artifact name="jcifs" type="jar"/>
         </dependency>
         <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.0" transitive="false">
             <artifact name="jackson-core-asl" type="jar"/>
@@ -135,6 +139,9 @@
         </dependency>
         <dependency org="com.google.guava" name="guava" rev="11.0" transitive="false">
             <artifact name="guava" type="jar"/>
+        </dependency>
+        <dependency org="commons-codec" name="commons-codec" rev="1.6">
+            <artifact name="commons-codec" type="jar"/>
         </dependency>
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
             <artifact name="dom4j" type="jar"/>

@@ -15,6 +15,15 @@ public class UserConfiguration {
         private int port;
         private String username;
         private String password;
+        private boolean ntlm;
+
+        public boolean isNtlm() {
+            return ntlm;
+        }
+
+        public void setNtlm(boolean ntlm) {
+            this.ntlm = ntlm;
+        }
 
         public String getServer() {
             return server;
@@ -55,6 +64,7 @@ public class UserConfiguration {
                     ", port=" + port +
                     ", username='" + username + '\'' +
                     ", password='" + password + '\'' +
+                    ", ntlm=" + ntlm +
                     '}';
         }
     }

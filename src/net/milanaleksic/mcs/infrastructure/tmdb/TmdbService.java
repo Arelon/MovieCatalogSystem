@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
+import net.milanaleksic.mcs.application.IntegrationManager;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
 /**
@@ -7,7 +8,7 @@ import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
  * Date: 10/8/11
  * Time: 11:39 AM
  */
-public interface TmdbService {
+public interface TmdbService extends IntegrationManager {
 
     public void setApiKey(String apiKey) ;
 
