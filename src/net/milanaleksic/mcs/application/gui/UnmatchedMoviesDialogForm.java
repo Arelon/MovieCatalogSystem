@@ -182,6 +182,8 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                     try {
                         setStatusOnItem(item, bundle.getString("unmatchedMoviesTable.status.processing"));
                         Movie[] movies = tmdbService.searchForMovies(data.getNazivfilma());
+                        if (movieMatchesMap == null)
+                            return;
                         movieMatchesMap.put(data, movies);
                         setStatusOnItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
                                 +" ("+(movies==null?0:movies.length)+")");
