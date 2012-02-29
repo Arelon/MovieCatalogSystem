@@ -3,6 +3,7 @@
     <elementsPerPage>30</elementsPerPage>
     <localeLanguage>en</localeLanguage>
     <proxyConfiguration>
+        <ntlm>false</ntlm>
         <port>0</port>
     </proxyConfiguration>
 </userConfiguration>
