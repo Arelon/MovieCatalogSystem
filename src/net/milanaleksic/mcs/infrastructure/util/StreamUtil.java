@@ -25,6 +25,7 @@ public final class StreamUtil {
             if (!triedToInitNativeMD5) {
                 boolean success = MD5.initNativeLibrary();
                 log.debug("Native MD5 implementation library initialization success: "+success);
+                triedToInitNativeMD5 = true;
             }
         }
         try {

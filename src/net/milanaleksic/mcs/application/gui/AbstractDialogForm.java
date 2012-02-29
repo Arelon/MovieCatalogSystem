@@ -3,8 +3,10 @@ package net.milanaleksic.mcs.application.gui;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
@@ -14,10 +16,11 @@ public abstract class AbstractDialogForm {
 
     protected final Logger logger = Logger.getLogger(this.getClass());
 
-    @Inject protected ApplicationManager applicationManager;
+    @Inject
+    protected ApplicationManager applicationManager;
 
     protected Shell shell = null;
-	protected Shell parent = null;
+    protected Shell parent = null;
 
     private Runnable runWhenClosing = null;
 
@@ -31,7 +34,16 @@ public abstract class AbstractDialogForm {
     /**
      * This method should be inherited in case you wish to handle moment after all UI creation has finished
      */
-    protected void onShellReady() { }
+    protected void onShellReady() {
+    }
+
+    /**
+     * This method should be inherited in case you wish to handle moment before shell gets disposed
+     * @return true if shell should be allowed to close
+     */
+    protected boolean onShouldShellClose() {
+        return true;
+    }
 
     public void open() {
         open(null, null);
@@ -47,18 +59,23 @@ public abstract class AbstractDialogForm {
         this.runnerWhenClosingShouldRun = false;
         bundle = applicationManager.getMessagesBundle();
         createShell(parent);
-        shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
-			public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
+        shell.addShellListener(new ShellAdapter() {
+            public void shellClosed(ShellEvent e) {
+                if (!onShouldShellClose()) {
+                    e.doit = false;
+                    return;
+                }
                 if (runnerWhenClosingShouldRun) {
                     if (AbstractDialogForm.this.runWhenClosing == null)
                         throw new IllegalStateException("Value runnerWhenClosingShouldRun set to true, but no valid runner registered!");
                     AbstractDialogForm.this.runWhenClosing.run();
                 }
-				shell.dispose();
-			}
-		});
+                shell.dispose();
+            }
+        });
 
         onShellCreated();
+
         if (!noReadyEvent)
             onShellReady();
 

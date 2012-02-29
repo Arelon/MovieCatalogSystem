@@ -79,10 +79,12 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
                     }
                     newOrEditMovieDialogForm.setCurrentQueryItems(currentQuery, newItems, movies);
                 } catch (TmdbException e1) {
+                    logger.error("Error while fetching movie information", e1);
                     newOrEditMovieDialogForm.setCurrentQueryItems(currentQuery, new String[] {
                             bundle.getString("offerList.searchFailed")
                     }, null);
-                    logger.error("Error while fetching movie information", e1);
+                } catch (Exception e) {
+                    logger.error("Unexpected error while fetching movie information", e);
                 }
             }
         };

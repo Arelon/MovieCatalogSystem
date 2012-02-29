@@ -48,23 +48,37 @@ public class UnusedMediumsDialogForm extends AbstractDialogForm {
         composite.setLayout(new GridLayout(2, false));
         unusedMediumTable = new Table(composite, SWT.BORDER | SWT.FULL_SELECTION);
         unusedMediumTable.setHeaderVisible(true);
-        GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
-        gridData.heightHint = 100;
+        GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 2);
+        gridData.heightHint = 180;
         unusedMediumTable.setLayoutData(gridData);
         TableColumn tableColumn = new TableColumn(unusedMediumTable, SWT.LEFT | SWT.FLAT);
         tableColumn.setText(bundle.getString("unusedMediums.columnName"));
         tableColumn.setWidth(370);
-        Button btnDeleteMediumType = new Button(composite, SWT.NONE);
-        btnDeleteMediumType.setText(bundle.getString("global.delete"));
-        btnDeleteMediumType.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        btnDeleteMediumType.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        Button btnDeleteUnusedMedium = new Button(composite, SWT.NONE);
+        btnDeleteUnusedMedium.setText(bundle.getString("global.delete"));
+        btnDeleteUnusedMedium.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        btnDeleteUnusedMedium.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (unusedMediumTable.getSelectionIndex() < 0)
                     return;
-                Medij medij = (Medij)unusedMediumTable.getItem(unusedMediumTable.getSelectionIndex()).getData();
+                Medij medij = (Medij) unusedMediumTable.getItem(unusedMediumTable.getSelectionIndex()).getData();
                 logger.warn("Deleting medium: " + medij);
                 medijRepository.deleteMediumType(medij);
+                readData();
+            }
+        });
+        Button btnDeleteAllUnusedMediums = new Button(composite, SWT.NONE);
+        btnDeleteAllUnusedMediums.setText(bundle.getString("global.deleteAll"));
+        btnDeleteAllUnusedMediums.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        btnDeleteAllUnusedMediums.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                for (int i = 0; i < unusedMediumTable.getItemCount(); i++) {
+                    Medij medij = (Medij) unusedMediumTable.getItem(i).getData();
+                    logger.warn("Deleting medium: " + medij);
+                    medijRepository.deleteMediumType(medij);
+                }
                 readData();
             }
         });

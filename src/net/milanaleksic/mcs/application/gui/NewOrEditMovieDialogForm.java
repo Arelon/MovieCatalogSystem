@@ -257,11 +257,11 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
 
             public void focusLost(org.eclipse.swt.events.FocusEvent e) {
                 if (textPrevod.getText().trim().equals(""))
-                    textPrevod.setText(bundle.getString("newOrEdit.unkown"));
+                    textPrevod.setText(bundle.getString("newOrEdit.unknown"));
             }
 
             public void focusGained(org.eclipse.swt.events.FocusEvent e) {
-                if (textPrevod.getText().trim().equals(bundle.getString("newOrEdit.unkown")))
+                if (textPrevod.getText().trim().equals(bundle.getString("newOrEdit.unknown")))
                     textPrevod.setText("");
             }
 
@@ -480,6 +480,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
 
     @MethodTiming
     public void setCurrentQueryItems(final String query, final String[] newItems, @Nullable final Movie[] newMovies) {
+        if (shell.isDisposed())
+            return;
         shell.getDisplay().asyncExec(new Runnable() {
 
             @Override
