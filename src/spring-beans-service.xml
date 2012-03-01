@@ -14,5 +14,6 @@
 
     <bean id="medijService" class="net.milanaleksic.mcs.infrastructure.persistence.jpa.service.MedijServiceImpl" />
 
+    <bean id="httpClientFactoryService" class="net.milanaleksic.mcs.infrastructure.network.impl.HttpClientFactoryServiceImpl" />
 
 </beans>

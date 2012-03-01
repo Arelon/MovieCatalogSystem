@@ -18,7 +18,9 @@ public class ClosingDialogForm extends AbstractDialogForm {
 		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
 		gridData.grabExcessHorizontalSpace = true;
 		shell.setText(bundle.getString("closing.savingRestoreSQL"));
-		shell.setForeground(new Color(Display.getCurrent(), 0, 0, 0));
+        Color color = new Color(Display.getCurrent(), 0, 0, 0);
+        shell.setForeground(color);
+        color.dispose();
 		shell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GRAY));
 		shell.setSize(new Point(180, 30));
 		shell.setLayout(new GridLayout());

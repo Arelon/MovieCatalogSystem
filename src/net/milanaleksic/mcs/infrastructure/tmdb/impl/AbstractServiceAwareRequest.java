@@ -22,7 +22,7 @@ public abstract class AbstractServiceAwareRequest extends AbstractRequest {
     }
 
     protected HttpResponse executeHttpMethod(HttpGet httpMethod) throws IOException {
-        return ((TmdbServiceImpl)tmdbService).executeHttpMethod(httpMethod);
+        return ((TmdbServiceImpl)tmdbService).getPersistentHttpContext().execute(httpMethod);
     }
 
     protected String getApiKey() {

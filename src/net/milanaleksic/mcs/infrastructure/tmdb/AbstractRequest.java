@@ -5,8 +5,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -25,8 +23,6 @@ public abstract class AbstractRequest {
     protected static final ObjectMapper mapper = new ObjectMapper();
 
     protected abstract String getUrl();
-
-    private static HttpContext context = new BasicHttpContext();
 
     @MethodTiming
     protected <T> T processRequest(Class<T> clazz) throws TmdbException {

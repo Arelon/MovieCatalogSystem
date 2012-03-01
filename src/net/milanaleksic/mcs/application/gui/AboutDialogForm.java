@@ -83,7 +83,9 @@ public class AboutDialogForm extends AbstractDialogForm {
         composite.setLayout(gridLayout1);
         composite.setLayoutData(gridData3);
         Label labEmail = new Label(composite, SWT.NONE);
-        labEmail.setForeground(new Color(Display.getCurrent(), 0, 0, 0));
+        Color color = new Color(Display.getCurrent(), 0, 0, 0);
+        labEmail.setForeground(color);
+        color.dispose();
         labEmail.setText("milan.aleksic@gmail.com");
         Button btnEmail = new Button(composite, SWT.NONE);
         btnEmail.setText(bundle.getString("about.sendEmail"));
@@ -99,7 +101,9 @@ public class AboutDialogForm extends AbstractDialogForm {
         composite1.setLayout(gridLayout2);
         composite1.setLayoutData(gridData2);
         Label labSite = new Label(composite1, SWT.NONE);
-        labSite.setForeground(new Color(Display.getCurrent(), 0, 0, 0));
+        Color color = new Color(Display.getCurrent(), 0, 0, 0);
+        labSite.setForeground(color);
+        color.dispose();
         labSite.setText("www.milanaleksic.net  ");
         Button btnSite = new Button(composite1, SWT.NONE);
         btnSite.setText(bundle.getString("about.visit"));
@@ -127,7 +131,9 @@ public class AboutDialogForm extends AbstractDialogForm {
         label3.setText("Movie Catalog System");
         label3.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
         label3.setLayoutData(gridData11);
-        label3.setForeground(new Color(Display.getCurrent(), 0, 0, 255));
+        Color color = new Color(Display.getCurrent(), 0, 0, 255);
+        label3.setForeground(color);
+        color.dispose();
         Label label = new Label(composite2, SWT.NONE);
         label.setText(bundle.getString("about.programAuthor"));
         label.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));

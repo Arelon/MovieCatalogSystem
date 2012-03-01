@@ -1,9 +1,11 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Function;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
+import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -11,6 +13,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 public class DeleteMovieDialogForm extends AbstractDialogForm {
@@ -22,11 +25,14 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
 
     private final static class AlertImagePainter implements PaintListener {
 
-        public void paintControl(PaintEvent e) {
-            GC gc = e.gc;
-            Image buffer = new Image(Display.getCurrent(), getClass().getResourceAsStream("/net/milanaleksic/mcs/application/res/alert.png"));
-            gc.drawImage(buffer, 0, 0);
-            buffer.dispose();
+        public void paintControl(final PaintEvent e) {
+            SWTUtil.useImageAndThenDispose("/net/milanaleksic/mcs/application/res/alert.png", new Function<Image, Void>() {
+                @Override
+                public Void apply(@Nullable Image image) {
+                    e.gc.drawImage(image, 0, 0);
+                    return null;
+                }
+            });
         }
     }
 
@@ -58,7 +64,9 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
         Label labUpozorenje = new Label(shell, SWT.NONE);
 		labUpozorenje.setText(bundle.getString("delete.doYouReallyWishToDeleteMovie"));
         labUpozorenje.setLayoutData(gridData);
-        labUpozorenje.setForeground(new Color(Display.getCurrent(), 255, 0, 0));
+        Color color = new Color(Display.getCurrent(), 255, 0, 0);
+        labUpozorenje.setForeground(color);
+        color.dispose();
         labUpozorenje.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
         labFilmNaziv = new Label(shell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
         labFilmNaziv.setLayoutData(gridData2);

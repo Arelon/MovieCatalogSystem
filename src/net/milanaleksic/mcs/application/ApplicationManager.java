@@ -88,17 +88,18 @@ public class ApplicationManager {
     private void mainGuiLoop() {
         Display.setAppName("Movie Catalog System - v" + getVersion());
         Display display = Display.getDefault();
+        try {
+            mainForm.open();
 
-        mainForm.open();
+            splashScreenManager.closeSplashScreen();
 
-        splashScreenManager.closeSplashScreen();
-
-        while (!mainForm.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
+            while (!mainForm.isDisposed()) {
+                if (!display.readAndDispatch())
+                    display.sleep();
+            }
+        } finally {
+            display.dispose();
         }
-
-        display.dispose();
     }
 
     private ResourceBundle messageBundle = null;

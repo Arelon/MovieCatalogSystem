@@ -7,8 +7,8 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ResourceBundle;
 

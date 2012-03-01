@@ -2,9 +2,12 @@ package net.milanaleksic.mcs.infrastructure.util;
 
 import com.google.common.base.Function;
 import com.twmacinta.util.MD5;
+import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.net.URI;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -24,7 +27,8 @@ public final class StreamUtil {
         synchronized(StreamUtil.class) {
             if (!triedToInitNativeMD5) {
                 boolean success = MD5.initNativeLibrary();
-                log.debug("Native MD5 implementation library initialization success: "+success);
+                if (log.isDebugEnabled())
+                    log.debug("Native MD5 implementation library initialization success: "+success);
                 triedToInitNativeMD5 = true;
             }
         }
@@ -81,6 +85,12 @@ public final class StreamUtil {
         try (InputStream stream = StreamUtil.class.getResourceAsStream(classpathEntry)) {
             if (stream == null)
                 throw new IOException("Resource not found: "+classpathEntry);
+            return function.apply(stream);
+        }
+    }
+
+    public static <T> T useURIResource(URI uri, PersistentHttpContext persistentHttpContext, Function<InputStream, ? extends T> function) throws IOException {
+        try (InputStream stream = new BufferedInputStream(persistentHttpContext.execute(new HttpGet(uri)).getEntity().getContent())) {
             return function.apply(stream);
         }
     }
