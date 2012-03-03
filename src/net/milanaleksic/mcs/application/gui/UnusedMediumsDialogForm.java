@@ -65,6 +65,7 @@ public class UnusedMediumsDialogForm extends AbstractDialogForm {
                 Medij medij = (Medij) unusedMediumTable.getItem(unusedMediumTable.getSelectionIndex()).getData();
                 logger.warn("Deleting medium: " + medij);
                 medijRepository.deleteMediumType(medij);
+                UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
                 readData();
             }
         });
@@ -78,6 +79,7 @@ public class UnusedMediumsDialogForm extends AbstractDialogForm {
                     Medij medij = (Medij) unusedMediumTable.getItem(i).getData();
                     logger.warn("Deleting medium: " + medij);
                     medijRepository.deleteMediumType(medij);
+                    UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
                 }
                 readData();
             }

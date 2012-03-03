@@ -11,6 +11,11 @@ import java.util.*;
 public class FilmServiceImpl extends AbstractService implements FilmService {
 
     @Override
+    public void updateFilmWithChanges(Film movie) {
+        entityManager.merge(movie);
+    }
+
+    @Override
     public void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Pozicija newPozicija, Set<Medij> newMediums) {
         movieToBeUpdated = entityManager.merge(movieToBeUpdated);
 

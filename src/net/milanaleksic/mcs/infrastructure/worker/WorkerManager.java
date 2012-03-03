@@ -14,4 +14,8 @@ public interface WorkerManager {
 
     Future<?> submitWorker(Runnable runnable);
 
+    <T> Future<T> submitIoBoundWorker(Callable<T> worker) ;
+
+    Future<?> submitIoBoundWorker(Runnable runnable);
+
 }

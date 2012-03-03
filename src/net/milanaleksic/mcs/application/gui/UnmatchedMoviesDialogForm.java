@@ -11,8 +11,7 @@ import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
-import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
-import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -23,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Event;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -31,8 +31,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
 
@@ -57,14 +56,17 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     private LinkedList<Future<?>> listOfQueuedWorkers;
     private Map<Film, Integer> failureCountMap;
     private Map<Film, Movie[]> movieMatchesMap;
+    private CountDownLatch processingCounterLatch;
 
     private ShowImageComposite matchImage;
     private Text matchDescription;
+    private Button btnAcceptThisMatch;
+    private Button btnStartMatching;
 
-    private HandledSelectionAdapter unmatchedMovieTableItemSelected = new HandledSelectionAdapter(shell, bundle) {
+    private HandledSelectionAdapter unmatchedMovieSelectedHandler = new HandledSelectionAdapter(shell, bundle) {
         @Override
         public void handledSelected(SelectionEvent event) throws ApplicationException {
-            possibleMatchesTable.removeAll();
+            removeMatchDetails();
             int selectionIndex = unmatchedMoviesTable.getSelectionIndex();
             if (selectionIndex < 0)
                 return;
@@ -76,6 +78,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             for (final Movie movie : movies) {
                 createItemForMovieMatch(movie);
             }
+            explicitlySelectItemInTable(possibleMatchesTable, 0);
         }
 
         private void createItemForMovieMatch(final Movie movie) {
@@ -113,16 +116,18 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         }
     };
 
-    private HandledSelectionAdapter possibleMatchesTableItemSelected = new HandledSelectionAdapter(shell, bundle) {
+    private HandledSelectionAdapter possibleMatchesSelectedHandler = new HandledSelectionAdapter(shell, bundle) {
         @Override
         public void handledSelected(SelectionEvent event) throws ApplicationException {
             int selectionIndex = possibleMatchesTable.getSelectionIndex();
-            if (selectionIndex < 0)
+            if (selectionIndex < 0) {
+                removeMatchDetails();
                 return;
+            }
             TableItem item = possibleMatchesTable.getItem(selectionIndex);
             Movie movie = (Movie) item.getData();
             String appropriateImageUrl = getAppropriateImageUrl(movie);
-            matchDescription.setText(movie.getOverview());
+            matchDescription.setText(movie.getOverview() == null ? "" : movie.getOverview());
             if (appropriateImageUrl == null)
                 setStatusAndImage("unmatchedMoviesTable.noImageFound", null);
             else
@@ -130,7 +135,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         }
 
         private void schedulePosterDownload(final String appropriateImageUrl) {
-            listOfQueuedWorkers.add(workerManager.submitWorker(new HandledRunnable(shell, bundle) {
+            HandledRunnable task = new HandledRunnable(shell, bundle) {
                 @Override
                 public void handledRun() {
                     setStatusAndImage("unmatchedMoviesTable.downloadingImage", null);
@@ -145,7 +150,12 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                             }
                     );
                 }
-            }));
+            };
+            // in case we already have some tasks enqueued let's run download as independent task
+            if (processingCounterLatch.getCount() > 0)
+                new Thread(task).start();
+            else
+                listOfQueuedWorkers.add(workerManager.submitIoBoundWorker(task));
         }
 
         private String getAppropriateImageUrl(Movie movie) {
@@ -160,13 +170,49 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             shell.getDisplay().asyncExec(new Runnable() {
                 @Override
                 public void run() {
-                    if (resourceId != null)
-                        matchImage.setStatus(bundle.getString(resourceId));
                     matchImage.setImage(image);
+                    if (resourceId != null) {
+                        matchImage.setStatus(bundle.getString(resourceId));
+                        btnAcceptThisMatch.setEnabled(true);
+                    }
                 }
             });
         }
     };
+
+    private HandledSelectionAdapter acceptMatchHandler = new HandledSelectionAdapter(shell, bundle) {
+        @Override
+        public void handledSelected(SelectionEvent event) throws ApplicationException {
+            int unmatchedMovieIndex = unmatchedMoviesTable.getSelectionIndex();
+            if (unmatchedMovieIndex < 0)
+                throw new ApplicationException("No item has been selected in unmatched movies table");
+            int possibleMatchIndex = possibleMatchesTable.getSelectionIndex();
+            if (possibleMatchIndex < 0)
+                throw new ApplicationException("No item has been selected in possible matches table");
+
+            Film film = (Film) unmatchedMoviesTable.getItem(unmatchedMovieIndex).getData();
+            Movie match = (Movie) possibleMatchesTable.getItem(possibleMatchIndex).getData();
+            film.copyFromMovie(match);
+            filmService.updateFilmWithChanges(film);
+            unmatchedMoviesTable.remove(unmatchedMovieIndex);
+            UnmatchedMoviesDialogForm.super.runnerWhenClosingShouldRun = true;
+            removeMatchDetails();
+            selectNextMovieWithMatches(unmatchedMovieIndex);
+        }
+    };
+
+    private void selectNextMovieWithMatches(int startFromIndex) {
+        int i = startFromIndex;
+        while (i < unmatchedMoviesTable.getItemCount()) {
+            TableItem item = unmatchedMoviesTable.getItem(i);
+            Film film = (Film)item.getData();
+            if (movieMatchesMap.get(film).length>0) {
+                explicitlySelectItemInTable(unmatchedMoviesTable, i);
+                return;
+            }
+            i++;
+        }
+    }
 
     @Override
     protected void onShellCreated() {
@@ -185,7 +231,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
 
     private void readData() {
         java.util.List<Film> filmovi = filmService.getListOfUnmatchedMovies();
-        unmatchedMoviesTable.removeAll();
+        removeMatchDetails();
         for (Film film : filmovi) {
             TableItem tableItem = new TableItem(unmatchedMoviesTable, SWT.NONE);
             tableItem.setText(new String[]{film.toString(), bundle.getString("unmatchedMoviesTable.status.awaiting")});
@@ -194,6 +240,14 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         movieMatchesMap = new ConcurrentHashMap<>();
         listOfQueuedWorkers = new LinkedList<>();
         failureCountMap = new ConcurrentHashMap<>();
+    }
+
+    private void removeMatchDetails() {
+        matchImage.setImage(null);
+        matchImage.setStatus(null);
+        matchDescription.setText("");
+        btnAcceptThisMatch.setEnabled(false);
+        possibleMatchesTable.removeAll();
     }
 
     private void createContent() {
@@ -225,7 +279,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     }
 
     private void createBtnStartProcess(Composite composite) {
-        final Button btnStartMatching = new Button(composite, SWT.NONE);
+        btnStartMatching = new Button(composite, SWT.NONE);
         btnStartMatching.setText(bundle.getString("unmatchedMoviesTable.start"));
         btnStartMatching.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         btnStartMatching.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
@@ -261,18 +315,10 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         tabDescription.setText(bundle.getString("unmatchedMoviesTable.tab.description"));
         tabDescription.setControl(matchDescription);
 
-        final Button btnAcceptThisMatch = new Button(matcherPanel, SWT.NONE);
+        btnAcceptThisMatch = new Button(matcherPanel, SWT.NONE);
         btnAcceptThisMatch.setText(bundle.getString("unmatchedMoviesTable.acceptMatch"));
         btnAcceptThisMatch.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        btnAcceptThisMatch.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                //TODO: finalize the matching process
-                MessageBox messageBox = new MessageBox(shell, SWT.NONE);
-                messageBox.setMessage("NYI");
-                messageBox.open();
-            }
-        });
+        btnAcceptThisMatch.addSelectionListener(acceptMatchHandler);
     }
 
     private void createPossibleMatchesTable(Composite composite) {
@@ -281,7 +327,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 2);
         gridData.heightHint = 200;
         possibleMatchesTable.setLayoutData(gridData);
-        possibleMatchesTable.addSelectionListener(possibleMatchesTableItemSelected);
+        possibleMatchesTable.addSelectionListener(possibleMatchesSelectedHandler);
         TableColumn firstColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
         firstColumn.setText(bundle.getString("unmatchedMoviesTable.matches.nameColumn"));
         firstColumn.setWidth(300);
@@ -305,39 +351,75 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         TableColumn processingColumn = new TableColumn(unmatchedMoviesTable, SWT.LEFT | SWT.FLAT);
         processingColumn.setText(bundle.getString("unmatchedMoviesTable.processingColumnName"));
         processingColumn.setWidth(120);
-        unmatchedMoviesTable.addSelectionListener(unmatchedMovieTableItemSelected);
+        unmatchedMoviesTable.addSelectionListener(unmatchedMovieSelectedHandler);
     }
 
     private synchronized void startProcess() {
-        //TODO: remove boundaries
-        int limitedMaxNumber = unmatchedMoviesTable.getItemCount();
-        if (limitedMaxNumber > 10)
-            limitedMaxNumber = 10;
-        for (int i = 0; i < limitedMaxNumber; i++) {
+        final long begin = System.currentTimeMillis();
+        int maxCount = unmatchedMoviesTable.getItemCount();
+        processingCounterLatch = new CountDownLatch(maxCount);
+        for (int i = 0; i < maxCount; i++) {
             final TableItem item = unmatchedMoviesTable.getItem(i);
-            item.setText(1, bundle.getString("unmatchedMoviesTable.status.enqueued"));
+            setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.enqueued"));
             addProcessingWorker(item, (Film) item.getData());
         }
+        Thread infoThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Awaiting completion of all work items");
+                    processingCounterLatch.await();
+                    final String timeSpent = StringUtil.showMillisIntervalAsString(System.currentTimeMillis() - begin);
+                    shell.getDisplay().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION);
+                            messageBox.setMessage(String.format(bundle.getString("unmatchedMoviesTable.matchingCompleteIn"), timeSpent));
+                            messageBox.setText(bundle.getString("global.infoDialogTitle"));
+                            messageBox.open();
+                            btnStartMatching.setEnabled(true);
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    logger.warn("Waiting for all processes to be finished just got interrupted.");
+                    Thread.currentThread().interrupt();
+                } catch (Throwable t) {
+                    logger.error("Unexpected exception while waiting for matching process to complete", t);
+                }
+            }
+        }, "InfoWhenAllMoviesMatchedThread");
+        infoThread.setDaemon(true);
+        infoThread.start();
     }
 
     private void addProcessingWorker(final TableItem item, final Film film) {
-        listOfQueuedWorkers.add(workerManager.submitWorker(new HandledRunnable(shell, bundle) {
+        listOfQueuedWorkers.add(workerManager.submitIoBoundWorker(new HandledRunnable(shell, bundle) {
             @Override
             public void handledRun() {
+                boolean success = true;
                 try {
                     Integer failureCount = failureCountMap.get(film);
-                    if (failureCount != null && failureCount >= 3)
-                        setStatusOnItem(item, bundle.getString("unmatchedMoviesTable.status.gaveUp"));
-                    setStatusOnItem(item, bundle.getString("unmatchedMoviesTable.status.processing"));
+                    if (failureCount != null && failureCount >= 3) {
+                        setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.gaveUp"));
+                        return;
+                    }
+                    setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processing"));
                     Movie[] movies = tmdbService.searchForMovies(film.getNazivfilma());
                     if (movieMatchesMap == null)
                         return;
                     movieMatchesMap.put(film, movies);
-                    setStatusOnItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
+                    setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
                             + " (" + (movies == null ? 0 : movies.length) + ")");
+                    if (logger.isDebugEnabled())
+                        logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (movies == null ? "NULL" : movies.length) + " items");
                 } catch (TmdbException e) {
                     logger.error("Application error while processing movie: " + film.getNazivfilma(), e);
                     retryForMovie(item, film);
+                    success = false;
+                } finally {
+                    if (success)
+                        processingCounterLatch.countDown();
                 }
             }
 
@@ -349,7 +431,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         }));
     }
 
-    private void setStatusOnItem(final TableItem item, final String status) {
+    private void setStatusOnUnmatchedMoviesTableItem(final TableItem item, final String status) {
         shell.getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -370,6 +452,15 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         }
         clearProcessingData();
         return true;
+    }
+
+    private void explicitlySelectItemInTable(Table table, int itemIndex) {
+        if (table.getItemCount() <= itemIndex || itemIndex < 0)
+            return;
+        table.select(itemIndex);
+        Event e = new Event();
+        e.item = table.getItem(itemIndex);
+        table.notifyListeners(SWT.Selection, e);
     }
 
     private void clearProcessingData() {

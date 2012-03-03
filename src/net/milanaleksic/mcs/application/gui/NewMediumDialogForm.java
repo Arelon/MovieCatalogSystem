@@ -27,23 +27,17 @@ public class NewMediumDialogForm extends AbstractDialogForm {
     private Group group = null;
 
 	@Override protected void onShellCreated() {
-		GridData gridData2 = new GridData();
-		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		gridData2.grabExcessHorizontalSpace = true;
-		GridData gridData1 = new GridData();
-		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridLayout gridLayout2 = new GridLayout();
-		gridLayout2.numColumns = 2;
 		shell.setText(bundle.getString("newMedium.addNewMedium"));
 		shell.setSize(new Point(288, 189));
-		shell.setLayout(gridLayout2);
+		shell.setLayout(new GridLayout(2, false));
         Label label2 = new Label(shell, SWT.LEFT);
 		label2.setText(bundle.getString("newMedium.mediumType"));
-		label2.setLayoutData(gridData1);
-		createGroup();
+		label2.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+		group = new Group(shell, SWT.NONE);
+		group.setLayout(new GridLayout(1, false));
         Label label3 = new Label(shell, SWT.NONE);
 		label3.setText(bundle.getString("newMedium.mediumWillHaveFollowingId"));
-		label3.setLayoutData(gridData2);
+		label3.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
 		textID = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
 		createComposite();
 	}
@@ -63,13 +57,6 @@ public class NewMediumDialogForm extends AbstractDialogForm {
         }
     }
 
-    private void createGroup() {
-		GridLayout gridLayout1 = new GridLayout();
-		gridLayout1.numColumns = 1;
-        group = new Group(shell, SWT.NONE);
-		group.setLayout(gridLayout1);
- 	}
-
 	public void obradaIzbora(Object mediumTypeAsObject) {
         TipMedija tipMedija = (TipMedija) mediumTypeAsObject;
         Integer indeks = medijService.getNextMedijIndeks(tipMedija.getNaziv());
@@ -78,20 +65,11 @@ public class NewMediumDialogForm extends AbstractDialogForm {
 	}
 
 	private void createComposite() {
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
+		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 20;
-		GridData gridData12 = new GridData();
-		gridData12.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		gridData12.grabExcessVerticalSpace = true;
         Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(gridLayout);
-		composite.setLayoutData(gridData);
+		composite.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, true, 2, 1));
         Button btnOk = new Button(composite, SWT.NONE);
 		btnOk.setText(bundle.getString("global.save"));
 		btnOk.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
@@ -111,7 +89,7 @@ public class NewMediumDialogForm extends AbstractDialogForm {
         });
         Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setText(bundle.getString("global.cancel"));
-		btnCancel.setLayoutData(gridData12);
+		btnCancel.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, false, true));
 		btnCancel.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 shell.close();

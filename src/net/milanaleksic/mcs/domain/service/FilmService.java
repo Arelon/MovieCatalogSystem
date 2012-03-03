@@ -7,8 +7,9 @@ import java.util.Set;
 
 public interface FilmService {
 
-    public void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Pozicija newPozicija, Set<Medij> newMediums);
+    void updateFilmWithChanges(Film film);
+
+    void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Pozicija newPozicija, Set<Medij> newMediums);
 
     List<Film> getListOfUnmatchedMovies();
-
 }

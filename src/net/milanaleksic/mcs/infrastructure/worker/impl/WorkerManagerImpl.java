@@ -21,12 +21,22 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
 
     private ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
+    private ExecutorService ioBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
+
     @Override public <T> Future<T> submitWorker(Callable<T> worker) {
         return pool.submit(worker);
     }
 
     @Override public Future<?> submitWorker(Runnable runnable) {
         return pool.submit(runnable);
+    }
+
+    @Override public <T> Future<T> submitIoBoundWorker(Callable<T> worker) {
+        return ioBoundPool.submit(worker);
+    }
+
+    @Override public Future<?> submitIoBoundWorker(Runnable runnable) {
+        return ioBoundPool.submit(runnable);
     }
 
     @Override public void applicationStarted() { }
@@ -38,13 +48,15 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
                 try {
                     Thread.sleep(timeAllowedForThreadPoolToLiveAfterShutdown);
                     logger.warn("Allowed time to live time has passed. Proceeding with immediate pool shutdown.");
-                    pool.shutdownNow();
+                    try { pool.shutdownNow(); } catch(Exception ignored) {}
+                    try { ioBoundPool.shutdownNow(); } catch(Exception ignored) {}
                 } catch (InterruptedException ignored) { }
             }
         });
         lateShutdown.setDaemon(true);
         lateShutdown.start();
-        pool.shutdown();
+        try { pool.shutdown(); } catch(Exception ignored) {}
+        try { ioBoundPool.shutdown(); } catch(Exception ignored) {}
     }
 
     public void setTimeAllowedForThreadPoolToLiveAfterShutdown(int timeAllowedForThreadPoolToLiveAfterShutdown) {

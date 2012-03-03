@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -222,4 +224,14 @@ public class Film implements Serializable, Comparable<Film> {
         return result;
     }
 
+    public void copyFromMovie(Movie movie) {
+        this.setKomentar(movie.getOverview());
+        try {
+            this.setGodina(Integer.parseInt(movie.getReleasedYear()));
+        } catch (NumberFormatException e) {
+            this.setGodina(0);
+        }
+        this.setImdbId(movie.getImdbId());
+        this.setNazivfilma(movie.getName());
+    }
 }

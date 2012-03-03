@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Display;
  */
 public class FormTester {
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         String clazzName = args[0];
         Display display = new Display();
@@ -22,8 +21,8 @@ public class FormTester {
         userConfigurationManager.setApplicationManager(applicationManager);
         userConfigurationManager.applicationStarted();
 
-        Class<AbstractDialogForm> clazz = (Class<AbstractDialogForm>) Class.forName(clazzName);
-        AbstractDialogForm form = clazz.newInstance();
+        Class<?> clazz = (Class<?>) Class.forName(clazzName);
+        AbstractDialogForm form = (AbstractDialogForm) clazz.newInstance();
         form.setApplicationManager(applicationManager);
         form.setNoReadyEvent(true);
         form.open();

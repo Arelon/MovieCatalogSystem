@@ -359,14 +359,28 @@ public class MainForm extends Observable {
     private class ShowUnusedMediumsForm extends SelectionAdapter {
 
         @Override public void widgetSelected(SelectionEvent selectionEvent) {
-            unusedMediumsDialogForm.open(sShell);
+            unusedMediumsDialogForm.open(sShell, new Runnable() {
+
+				@Override
+				public void run() {
+					doFillMainTable();
+				}
+
+			});
         }
     }
 
     private class ShowUnmatchedMoviesForm extends SelectionAdapter {
 
         @Override public void widgetSelected(SelectionEvent selectionEvent) {
-            unmatchedMoviesDialogForm.open(sShell);
+            unmatchedMoviesDialogForm.open(sShell, new Runnable() {
+
+				@Override
+				public void run() {
+					doFillMainTable();
+				}
+
+			});
         }
     }
 

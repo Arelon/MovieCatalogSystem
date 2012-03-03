@@ -80,7 +80,7 @@ public class ShowImageComposite extends Composite implements PaintListener {
         super.dispose();
     }
 
-    public void setStatus(String status) {
+    public void setStatus(@Nullable String status) {
         this.status = status;
         redraw();
     }

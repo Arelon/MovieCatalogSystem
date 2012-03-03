@@ -39,6 +39,7 @@ public abstract class AbstractDialogForm {
 
     /**
      * This method should be inherited in case you wish to handle moment before shell gets disposed
+     *
      * @return true if shell should be allowed to close
      */
     protected boolean onShouldShellClose() {
@@ -59,6 +60,19 @@ public abstract class AbstractDialogForm {
         this.runnerWhenClosingShouldRun = false;
         bundle = applicationManager.getMessagesBundle();
         createShell(parent);
+    }
+
+    public void setApplicationManager(ApplicationManager applicationManager) {
+        this.applicationManager = applicationManager;
+    }
+
+    protected void createShell(Shell parent) {
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+        onShellCreated();
+
+        if (!noReadyEvent)
+            onShellReady();
+
         shell.addShellListener(new ShellAdapter() {
             public void shellClosed(ShellEvent e) {
                 if (!onShouldShellClose()) {
@@ -74,27 +88,14 @@ public abstract class AbstractDialogForm {
             }
         });
 
-        onShellCreated();
-
-        if (!noReadyEvent)
-            onShellReady();
-
         shell.pack();
-        shell.open();
-    }
-
-    public void setApplicationManager(ApplicationManager applicationManager) {
-        this.applicationManager = applicationManager;
-    }
-
-    protected void createShell(Shell parent) {
-        if (parent == null)
-            shell = new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-        else {
-            shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-            shell.setLocation(new Point(parent.getLocation().x + Math.abs(parent.getSize().x - shell.getSize().x) / 2, parent.getLocation().y
-                    + Math.abs(parent.getSize().y - shell.getSize().y) / 2));
+        if (parent != null) {
+            shell.setLocation(new Point(
+                    parent.getLocation().x + Math.abs(parent.getSize().x - shell.getSize().x) / 2,
+                    parent.getLocation().y + Math.abs(parent.getSize().y - shell.getSize().y) / 2)
+            );
         }
+        shell.open();
     }
 
     public boolean isDisposed() {

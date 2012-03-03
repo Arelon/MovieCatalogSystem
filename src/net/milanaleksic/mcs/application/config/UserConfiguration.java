@@ -75,7 +75,6 @@ public class UserConfiguration {
 
     private String localeLanguage;
 
-    @SuppressWarnings("unused")
     public UserConfiguration() {
         elementsPerPage = 30;
         proxyConfiguration = new ProxyConfiguration();

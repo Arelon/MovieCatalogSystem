@@ -1,42 +1,54 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.application.gui.helper.OfferMovieList;
+import net.milanaleksic.mcs.application.gui.helper.*;
+import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
-import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
+import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class NewOrEditMovieDialogForm extends AbstractDialogForm {
-	
-    @Inject private NewMediumDialogForm newMediumDialogForm;
 
-    @Inject private FilmRepository filmRepository;
+    @Inject
+    private NewMediumDialogForm newMediumDialogForm;
 
-    @Inject private ZanrRepository zanrRepository;
+    @Inject
+    private FilmRepository filmRepository;
 
-    @Inject private MedijRepository medijRepository;
+    @Inject
+    private ZanrRepository zanrRepository;
 
-    @Inject private PozicijaRepository pozicijaRepository;
+    @Inject
+    private MedijRepository medijRepository;
 
-    @Inject private OfferMovieList offerMovieList;
+    @Inject
+    private PozicijaRepository pozicijaRepository;
 
-    @Inject private FilmService filmService;
+    @Inject
+    private OfferMovieList offerMovieList;
 
-    private Composite composite = null;
-    private Composite composite2 = null;
+    @Inject
+    private FilmService filmService;
+
+    private Composite mainPanel = null;
     private Combo comboLokacija = null;
     private Combo comboZanr = null;
     private Combo comboDisk = null;
@@ -52,23 +64,21 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
     private HashMap<String, Zanr> sviZanrovi;
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
+
     private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}");
 
     public void open(Shell parent, @Nullable Film film, Runnable runnable) {
-		this.activeFilm  = film;
+        this.activeFilm = film;
         super.open(parent, runnable);
-	}
-	
-	protected void reReadData() {
-        // preuzimanje svih podataka od interesa i upis u kombo boksove
-        refillCombos();
+    }
 
-        // preuzimanje podataka za film koji se azurira
+    protected void reReadData() {
+        refillCombos();
         if (activeFilm != null) {
             comboNaziv.setText(activeFilm.getNazivfilma());
             textPrevod.setText(activeFilm.getPrevodnazivafilma());
             textGodina.setText(String.valueOf(activeFilm.getGodina()));
-            textImdbId.setText(String.valueOf(activeFilm.getImdbId()));
+            textImdbId.setText(activeFilm.getImdbId());
             textKomentar.setText(activeFilm.getKomentar());
             comboZanr.select(comboZanr.indexOf(activeFilm.getZanr().getZanr()));
             listDiskovi.removeAll();
@@ -77,57 +87,55 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
             int indexOfPozicija = comboLokacija.indexOf(activeFilm.getPozicija());
             if (indexOfPozicija >= 0)
                 comboLokacija.select(indexOfPozicija);
-        }
-        else {
+        } else {
             Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();
             if (defaultPozicija != null) {
                 String nameOfDefaultPosition = defaultPozicija.getPozicija();
                 if (comboLokacija.indexOf(nameOfDefaultPosition) != -1)
                     comboLokacija.select(comboLokacija.indexOf(nameOfDefaultPosition));
                 if (comboDisk.getItemCount() != 0)
-                    comboDisk.select(comboDisk.getItemCount()-1);
+                    comboDisk.select(comboDisk.getItemCount() - 1);
             }
         }
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected void refillCombos() {
-		String previousZanr = comboZanr.getText();
-		String previousLokacija = comboLokacija.getText();
-		String previousDisk = comboDisk.getText();
-		if (comboZanr.getItemCount() != 0)
-			comboZanr.removeAll();
-		if (comboLokacija.getItemCount() != 0)
-			comboLokacija.removeAll();
-		if (comboDisk.getItemCount() != 0)
-			comboDisk.removeAll();
+    }
 
-		sviZanrovi = new HashMap<>();
-		sveLokacije = new HashMap<>();
-		sviDiskovi = new HashMap<>();
+    protected void refillCombos() {
+        String previousZanr = comboZanr.getText();
+        String previousLokacija = comboLokacija.getText();
+        String previousDisk = comboDisk.getText();
+        if (comboZanr.getItemCount() != 0)
+            comboZanr.removeAll();
+        if (comboLokacija.getItemCount() != 0)
+            comboLokacija.removeAll();
+        if (comboDisk.getItemCount() != 0)
+            comboDisk.removeAll();
 
-		for (Zanr zanr : zanrRepository.getZanrs()) {
-			comboZanr.add(zanr.getZanr());
-			sviZanrovi.put(zanr.getZanr(), zanr);
-		}
-		for (Pozicija pozicija : pozicijaRepository.getPozicijas()) {
-			comboLokacija.add(pozicija.getPozicija());
-			sveLokacije.put(pozicija.getPozicija(), pozicija);
-		}
+        sviZanrovi = new HashMap<>();
+        sveLokacije = new HashMap<>();
+        sviDiskovi = new HashMap<>();
 
-		for (Medij medij : medijRepository.getMedijs()) {
-			comboDisk.add(medij.toString());
-			sviDiskovi.put(medij.toString(), medij);
-		}
-		if (previousZanr != null && previousZanr.length()>0 && comboZanr.indexOf(previousZanr)!=-1)
-			comboZanr.select(comboZanr.indexOf(previousZanr));
-		if (previousLokacija != null && previousLokacija.length()>0 && comboLokacija.indexOf(previousLokacija)!=-1)
-			comboLokacija.select(comboLokacija.indexOf(previousLokacija));
-		if (previousDisk != null && previousDisk.length()>0 && comboDisk.indexOf(previousDisk)!=-1)
-			comboDisk.select(comboDisk.indexOf(previousDisk));
-	}
+        for (Zanr zanr : zanrRepository.getZanrs()) {
+            comboZanr.add(zanr.getZanr());
+            sviZanrovi.put(zanr.getZanr(), zanr);
+        }
+        for (Pozicija pozicija : pozicijaRepository.getPozicijas()) {
+            comboLokacija.add(pozicija.getPozicija());
+            sveLokacije.put(pozicija.getPozicija(), pozicija);
+        }
 
-	protected void dodajNoviFilm() {
+        for (Medij medij : medijRepository.getMedijs()) {
+            comboDisk.add(medij.toString());
+            sviDiskovi.put(medij.toString(), medij);
+        }
+        if (previousZanr != null && previousZanr.length() > 0 && comboZanr.indexOf(previousZanr) != -1)
+            comboZanr.select(comboZanr.indexOf(previousZanr));
+        if (previousLokacija != null && previousLokacija.length() > 0 && comboLokacija.indexOf(previousLokacija) != -1)
+            comboLokacija.select(comboLokacija.indexOf(previousLokacija));
+        if (previousDisk != null && previousDisk.length() > 0 && comboDisk.indexOf(previousDisk) != -1)
+            comboDisk.select(comboDisk.indexOf(previousDisk));
+    }
+
+    protected void dodajNoviFilm() {
         refillCombos();
         Film novFilm = new Film();
         novFilm.setNazivfilma(comboNaziv.getText().trim());
@@ -146,9 +154,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         }
         filmRepository.saveFilm(novFilm, zanr, medijs, position);
         reReadData();
-	}
-	
-	private void izmeniFilm() {
+    }
+
+    private void izmeniFilm() {
         activeFilm.setNazivfilma(comboNaziv.getText().trim());
         activeFilm.setPrevodnazivafilma(textPrevod.getText().trim());
         activeFilm.setGodina(Integer.parseInt(textGodina.getText()));
@@ -166,79 +174,48 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                 selectedMediums);
 
         reReadData();
-	}
-	
-	
-	@Override protected void onShellCreated() {
-        shell.setText(bundle.getString("newOrEdit.addingOrModifyingMovie"));
-        shell.setLayout(new GridLayout(1, false));
-		shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
-			public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
-                if (offerMovieList != null)
-                    offerMovieList.cleanup();
-			}
-		});
-        createComposite();
-        createComposite1();
     }
 
-    @Override protected void onShellReady() {
+
+    @Override
+    protected void onShellCreated() {
+        shell.setText(bundle.getString("newOrEdit.addingOrModifyingMovie"));
+        shell.setLayout(new GridLayout(1, false));
+        shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
+            public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
+                if (offerMovieList != null)
+                    offerMovieList.cleanup();
+            }
+        });
+        createMainPanel();
+        createFooterPanel();
+    }
+
+    @Override
+    protected void onShellReady() {
         comboNaziv.addKeyListener(prepareOfferMovieListForCombo(comboNaziv));
         reReadData();
-	}
+    }
 
-	private void createComposite() {
-		GridData gridData20 = new GridData();
-		gridData20.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData19 = new GridData();
-		gridData19.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData18 = new GridData();
-		gridData18.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData13 = new GridData();
-		gridData13.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData11 = new GridData();
-		gridData11.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData10 = new GridData();
-		gridData10.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData7 = new GridData();
-		gridData7.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData6 = new GridData();
-		gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData5 = new GridData();
-		gridData5.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData4 = new GridData();
-		gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData3 = new GridData();
-		gridData3.grabExcessHorizontalSpace = true;
-		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData2 = new GridData();
-		gridData2.grabExcessHorizontalSpace = true;
-		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridLayout gridLayout1 = new GridLayout();
-		gridLayout1.numColumns = 2;
-		gridLayout1.horizontalSpacing = 10;
-		gridLayout1.makeColumnsEqualWidth = false;
-		GridData gridData1 = new GridData();
-		gridData1.grabExcessVerticalSpace = true;
-		gridData1.heightHint = -1;
-		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		gridData1.verticalAlignment = org.eclipse.swt.layout.GridData.BEGINNING;
-		gridData1.grabExcessHorizontalSpace = true;
-		composite = new Composite(shell, SWT.NONE);
-		composite.setLayoutData(gridData1);
-		composite.setLayout(gridLayout1);
-        Label labNazivFilma = new Label(composite, SWT.RIGHT);
-		labNazivFilma.setText(bundle.getString("newOrEdit.movieName"));
-		labNazivFilma.setLayoutData(gridData5);
-		comboNaziv = new Combo(composite, SWT.DROP_DOWN);
+    private void createMainPanel() {
+        GridLayout gridLayout1 = new GridLayout(2, false);
+        gridLayout1.horizontalSpacing = 10;
+        GridData gridData1 = new GridData(GridData.FILL, GridData.BEGINNING, true, true);
+        mainPanel = new Composite(shell, SWT.NONE);
+        mainPanel.setLayoutData(gridData1);
+        mainPanel.setLayout(gridLayout1);
+        Label labNazivFilma = new Label(mainPanel, SWT.RIGHT);
+        labNazivFilma.setText(bundle.getString("newOrEdit.movieName"));
+        labNazivFilma.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        comboNaziv = new Combo(mainPanel, SWT.DROP_DOWN);
         comboNaziv.setVisibleItemCount(10);
-		comboNaziv.setLayoutData(gridData2);
+        comboNaziv.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         comboNaziv.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = comboNaziv.getSelectionIndex();
                 if (index != -1) {
-                    Movie movie = (Movie)comboNaziv.getData(Integer.toString(index));
+                    Movie movie = (Movie) comboNaziv.getData(Integer.toString(index));
                     if (movie == null)
                         return;
                     textGodina.setText(movie.getReleasedYear());
@@ -248,12 +225,12 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                 }
             }
         });
-        Label labPrevod = new Label(composite, SWT.NONE);
-		labPrevod.setText(bundle.getString("newOrEdit.movieNameTranslated"));
-		labPrevod.setLayoutData(gridData4);
-		textPrevod = new Text(composite, SWT.BORDER);
-		textPrevod.setLayoutData(gridData3);
-		textPrevod.addFocusListener(new org.eclipse.swt.events.FocusListener() {
+        Label labPrevod = new Label(mainPanel, SWT.NONE);
+        labPrevod.setText(bundle.getString("newOrEdit.movieNameTranslated"));
+        labPrevod.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        textPrevod = new Text(mainPanel, SWT.BORDER);
+        textPrevod.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        textPrevod.addFocusListener(new org.eclipse.swt.events.FocusListener() {
 
             public void focusLost(org.eclipse.swt.events.FocusEvent e) {
                 if (textPrevod.getText().trim().equals(""))
@@ -266,33 +243,56 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
             }
 
         });
-        Label labZanr = new Label(composite, SWT.NONE);
-		labZanr.setText(bundle.getString("newOrEdit.genre"));
-		labZanr.setLayoutData(gridData6);
-		createComboZanr();
-        Label labGodina = new Label(composite, SWT.NONE);
-		labGodina.setText(bundle.getString("newOrEdit.yearPublished"));
-		labGodina.setLayoutData(gridData19);
-		textGodina = new Text(composite, SWT.BORDER);
-		textGodina.setLayoutData(gridData18);
-        Label labLokacija = new Label(composite, SWT.NONE);
-		labLokacija.setText(bundle.getString("newOrEdit.location"));
-		labLokacija.setLayoutData(gridData7);
-		createComboLokacija();
-        Label labIMDB = new Label(composite, SWT.NONE);
-		labIMDB.setText(bundle.getString("newOrEdit.imdbIdFormat"));
-		labIMDB.setLayoutData(gridData10);
-		textImdbId = new Text(composite, SWT.BORDER);
-		textImdbId.setLayoutData(gridData11);
-        Label label = new Label(composite, SWT.NONE);
-		label.setText(bundle.getString("newOrEdit.mediums"));
-		label.setLayoutData(gridData13);
-		createComposite2();
-        Label labKomentar = new Label(composite, SWT.NONE);
-		labKomentar.setText(bundle.getString("newOrEdit.comment"));
-		labKomentar.setLayoutData(gridData20);
-		createComposite3();
-	}
+        Label labZanr = new Label(mainPanel, SWT.NONE);
+        labZanr.setText(bundle.getString("newOrEdit.genre"));
+        labZanr.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        createComboZanr();
+        Label labGodina = new Label(mainPanel, SWT.NONE);
+        labGodina.setText(bundle.getString("newOrEdit.yearPublished"));
+        labGodina.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        textGodina = new Text(mainPanel, SWT.BORDER);
+        textGodina.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        Label labLokacija = new Label(mainPanel, SWT.NONE);
+        labLokacija.setText(bundle.getString("newOrEdit.location"));
+        labLokacija.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        createComboLokacija();
+        Label labIMDB = new Label(mainPanel, SWT.NONE);
+        labIMDB.setText(bundle.getString("newOrEdit.imdbIdFormat"));
+        labIMDB.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        createImdbIdPanel(mainPanel);
+        new Label(mainPanel, SWT.NONE);
+        createCommentaryGroup();
+        new Label(mainPanel, SWT.NONE);
+        createMediumsGroup();
+    }
+
+    private void createImdbIdPanel(Composite parent) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        panel.setLayout(new GridLayout(2, false));
+        textImdbId = new Text(panel, SWT.BORDER);
+        textImdbId.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        final Link link = new Link(panel, SWT.NONE);
+        link.setText(String.format("<a>%s</a>", bundle.getString("newOrEdit.goToImdbPage")));
+        link.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        link.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                try {
+                    Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(textImdbId.getText()));
+                } catch (IOException e) {
+                    throw new ApplicationException("IO Exception when trying to browse to IMDB page", e);
+                }
+            }
+        });
+        link.setEnabled(false);
+        textImdbId.addModifyListener(new HandledModifyListener(shell, bundle) {
+            @Override
+            public void handledModifyText() throws ApplicationException {
+                link.setEnabled(PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches());
+            }
+        });
+    }
 
     private OfferMovieList prepareOfferMovieListForCombo(Combo queryCombo) {
         offerMovieList.startup();
@@ -300,24 +300,21 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         return offerMovieList;
     }
 
-    private void createComposite1() {
-		GridLayout gridLayout2 = new GridLayout();
-		gridLayout2.numColumns = 2;
-		gridLayout2.verticalSpacing = 5;
-		gridLayout2.marginWidth = 5;
-		gridLayout2.marginHeight = 10;
-		gridLayout2.horizontalSpacing = 40;
-		GridData gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.widthHint = -1;
-		gridData.horizontalIndent = 0;
-		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        Composite composite1 = new Composite(shell, SWT.NONE);
-		composite1.setLayoutData(gridData);
-		composite1.setLayout(gridLayout2);
-        Button btnPrihvati = new Button(composite1, SWT.NONE);
-		btnPrihvati.setText(bundle.getString("global.save"));
-		btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+    private void createFooterPanel() {
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.verticalSpacing = 5;
+        gridLayout.marginWidth = 5;
+        gridLayout.marginHeight = 10;
+        gridLayout.horizontalSpacing = 40;
+        GridData gridData = new GridData(GridData.CENTER, GridData.CENTER, true, false);
+        gridData.widthHint = -1;
+        gridData.horizontalIndent = 0;
+        Composite composite = new Composite(shell, SWT.NONE);
+        composite.setLayoutData(gridData);
+        composite.setLayout(gridLayout);
+        Button btnPrihvati = new Button(composite, SWT.NONE);
+        btnPrihvati.setText(bundle.getString("global.save"));
+        btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 //TODO: replace with Hibernate Validator (JSR 303 implementation)
                 StringBuilder razlogOtkaza = new StringBuilder();
@@ -354,53 +351,45 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                 }
             }
         });
-        Button btnOdustani = new Button(composite1, SWT.NONE);
-		btnOdustani.setText(bundle.getString("global.cancel"));
-		btnOdustani.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+        Button btnOdustani = new Button(composite, SWT.NONE);
+        btnOdustani.setText(bundle.getString("global.cancel"));
+        btnOdustani.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 shell.close();
             }
         });
-	}
+    }
 
-	private void createComboLokacija() {
-		GridData gridData9 = new GridData();
-		gridData9.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		comboLokacija = new Combo(composite, SWT.READ_ONLY);
-		comboLokacija.setVisibleItemCount(10);
-		comboLokacija.setLayoutData(gridData9);
-	}
+    private void createComboLokacija() {
+        GridData gridData9 = new GridData();
+        gridData9.horizontalAlignment = GridData.FILL;
+        comboLokacija = new Combo(mainPanel, SWT.READ_ONLY);
+        comboLokacija.setVisibleItemCount(10);
+        comboLokacija.setLayoutData(gridData9);
+    }
 
-	private void createComboZanr() {
-		GridData gridData8 = new GridData();
-		gridData8.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		comboZanr = new Combo(composite, SWT.READ_ONLY);
-		comboZanr.setVisibleItemCount(10);
-		comboZanr.setLayoutData(gridData8);
-	}
+    private void createComboZanr() {
+        GridData gridData8 = new GridData();
+        gridData8.horizontalAlignment = GridData.FILL;
+        comboZanr = new Combo(mainPanel, SWT.READ_ONLY);
+        comboZanr.setVisibleItemCount(10);
+        comboZanr.setLayoutData(gridData8);
+    }
 
-	private void createComposite2() {
-		GridData gridData22 = new GridData();
-		gridData22.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
-		GridData gridData15 = new GridData();
-		gridData15.horizontalAlignment = org.eclipse.swt.layout.GridData.BEGINNING;
-		GridData gridData17 = new GridData();
-		gridData17.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		gridData17.heightHint = 50;
-		GridData gridData16 = new GridData();
-		gridData16.horizontalAlignment = org.eclipse.swt.layout.GridData.BEGINNING;
-		GridLayout gridLayout3 = new GridLayout();
-		gridLayout3.numColumns = 2;
-		GridData gridData12 = new GridData();
-		gridData12.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		composite2 = new Composite(composite, SWT.NONE);
-		composite2.setLayoutData(gridData12);
-		composite2.setLayout(gridLayout3);
-		createComboDiskovi();
-        Button btnDodajDisk = new Button(composite2, SWT.NONE);
-		btnDodajDisk.setText(bundle.getString("newOrEdit.addMedium"));
-		btnDodajDisk.setLayoutData(gridData15);
-		btnDodajDisk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+    private void createMediumsGroup() {
+        Group groupMediums = new Group(mainPanel, SWT.NONE);
+        groupMediums.setText(bundle.getString("newOrEdit.mediums"));
+        groupMediums.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        groupMediums.setLayout(new GridLayout(3, false));
+
+        // 1st row
+        comboDisk = new Combo(groupMediums, SWT.READ_ONLY);
+        comboDisk.setVisibleItemCount(10);
+        comboDisk.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        Button btnDodajDisk = new Button(groupMediums, SWT.NONE);
+        btnDodajDisk.setText(bundle.getString("newOrEdit.addMedium"));
+        btnDodajDisk.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, false, false));
+        btnDodajDisk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 int index = comboDisk.getSelectionIndex();
                 if (index != -1) {
@@ -410,23 +399,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                 }
             }
         });
-		listDiskovi = new List(composite2, SWT.NONE);
-		listDiskovi.setLayoutData(gridData17);
-        Button btnOduzmi = new Button(composite2, SWT.NONE);
-		btnOduzmi.setText(bundle.getString("newOrEdit.removeMedium"));
-		btnOduzmi.setLayoutData(gridData16);
-		btnOduzmi.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                if (listDiskovi.getSelectionIndex() != -1)
-                    listDiskovi.remove(listDiskovi.getSelectionIndex());
-            }
-        });
-        Label label1 = new Label(composite2, SWT.NONE);
-		label1.setText(bundle.getString("newOrEdit.add"));
-		label1.setLayoutData(gridData22);
-        Button btnNovMedij = new Button(composite2, SWT.NONE);
-		btnNovMedij.setText(bundle.getString("newOrEdit.newMedium"));
-		btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+        Button btnNovMedij = new Button(groupMediums, SWT.NONE);
+        btnNovMedij.setText(bundle.getString("newOrEdit.newMedium"));
+        btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 newMediumDialogForm.open(shell, new Runnable() {
 
@@ -441,44 +416,50 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                 });
             }
         });
-	}
 
-	private void createComboDiskovi() {
-		GridData gridData14 = new GridData();
-		gridData14.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		comboDisk = new Combo(composite2, SWT.READ_ONLY);
-		comboDisk.setVisibleItemCount(10);
-		comboDisk.setLayoutData(gridData14);
-	}
+        // 2nd row
+        listDiskovi = new List(groupMediums, SWT.NONE);
+        GridData mediumListGridData = new GridData();
+        mediumListGridData.horizontalAlignment = GridData.FILL;
+        mediumListGridData.heightHint = 50;
+        listDiskovi.setLayoutData(mediumListGridData);
+        Button btnOduzmi = new Button(groupMediums, SWT.NONE);
+        btnOduzmi.setText(bundle.getString("newOrEdit.removeMedium"));
+        btnOduzmi.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 2, 1));
+        btnOduzmi.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                if (listDiskovi.getSelectionIndex() != -1)
+                    listDiskovi.remove(listDiskovi.getSelectionIndex());
+            }
+        });
+    }
 
-	private void createComposite3() {
-		GridData gridData21 = new GridData();
-		gridData21.widthHint = 200;
-		gridData21.verticalSpan = 2;
-		gridData21.heightHint = 80;
-		GridLayout gridLayout4 = new GridLayout();
-		gridLayout4.numColumns = 2;
-        Composite composite3 = new Composite(composite, SWT.NONE);
-		composite3.setLayout(gridLayout4);
-		textKomentar = new Text(composite3, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		textKomentar.setLayoutData(gridData21);
-        Button btnNeodgledano = new Button(composite3, SWT.NONE);
-		btnNeodgledano.setText(bundle.getString("newOrEdit.iDidNotWatch"));
-		btnNeodgledano.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+    private void createCommentaryGroup() {
+        GridData gridData = new GridData();
+        gridData.widthHint = 200;
+        gridData.verticalSpan = 2;
+        gridData.heightHint = 80;
+        Group group = new Group(mainPanel, SWT.NONE);
+        group.setLayout(new GridLayout(2, false));
+        group.setText(bundle.getString("newOrEdit.comment"));
+        textKomentar = new Text(group, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        textKomentar.setLayoutData(gridData);
+        Button btnNeodgledano = new Button(group, SWT.NONE);
+        btnNeodgledano.setText(bundle.getString("newOrEdit.iDidNotWatch"));
+        btnNeodgledano.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + bundle.getString("newOrEdit.iDidNotWatch"));
             }
         });
-        Button btnLos = new Button(composite3, SWT.NONE);
-		btnLos.setText(bundle.getString("newOrEdit.badRecording"));
-		btnLos.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+        Button btnLos = new Button(group, SWT.NONE);
+        btnLos.setText(bundle.getString("newOrEdit.badRecording"));
+        btnLos.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + bundle.getString("newOrEdit.badRecording"));
             }
         });
-	}
+    }
 
-    @MethodTiming
     public void setCurrentQueryItems(final String query, final String[] newItems, @Nullable final Movie[] newMovies) {
         if (shell.isDisposed())
             return;
