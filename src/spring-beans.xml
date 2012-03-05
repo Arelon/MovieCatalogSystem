@@ -22,9 +22,11 @@
                 <ref bean="splashScreenManager" />
                 <bean class="net.milanaleksic.mcs.application.config.UserConfigurationManager" />
                 <bean class="net.milanaleksic.mcs.application.util.StatisticsManager" />
+                <ref bean="thumbnailManager" />
                 <ref bean="restoreManager" />
                 <ref bean="workerManager" />
-                <ref bean="offerMovieList" />
+                <ref bean="offerMovieListForFindMovieDialogForm" />
+                <ref bean="offerMovieListForNewOrEditForm" />
                 <ref bean="tmdbService" />
             </set>
         </property>

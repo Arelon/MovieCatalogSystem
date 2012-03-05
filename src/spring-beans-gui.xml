@@ -22,11 +22,23 @@
 
     <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesDialogForm" />
 
+    <bean id="findMovieDialogForm" class="net.milanaleksic.mcs.application.gui.FindMovieDialogForm" />
+
 
     <!-- GUI Helper classes -->
 
     <bean id="splashScreenManager" class="net.milanaleksic.mcs.application.gui.helper.SplashScreenManager" />
 
-    <bean id="offerMovieList" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList" />
+    <bean id="offerMovieListForNewOrEditForm" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList">
+        <property name="receiver" ref="newOrEditMovieDialogForm" />
+    </bean>
+
+    <bean id="offerMovieListForFindMovieDialogForm" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList">
+        <property name="receiver" ref="findMovieDialogForm" />
+    </bean>
+
+    <bean id="thumbnailManager" class="net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager">
+        <property name="defaultImageResource" value="/net/milanaleksic/mcs/application/res/no_thumb.png" />
+    </bean>
 
 </beans>

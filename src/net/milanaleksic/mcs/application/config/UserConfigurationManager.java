@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.config;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;

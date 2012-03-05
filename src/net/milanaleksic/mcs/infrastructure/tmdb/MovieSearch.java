@@ -21,6 +21,7 @@ public class MovieSearch extends AbstractServiceAwareRequest {
     }
 
     @Override
+    @SuppressWarnings({"HardCodedStringLiteral"})
     protected String getUrl() {
         try {
             return apiLocation + "Movie.search/en/json/" + getApiKey() + "/" +

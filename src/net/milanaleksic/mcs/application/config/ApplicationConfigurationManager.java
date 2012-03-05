@@ -15,7 +15,7 @@ import java.io.InputStream;
  */
 public class ApplicationConfigurationManager {
 
-    private static final String CONFIGURATION_FILE = "/application-configuration.xml";
+    private static final String CONFIGURATION_FILE = "/application-configuration.xml"; //NON-NLS
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
@@ -28,11 +28,11 @@ public class ApplicationConfigurationManager {
                 StreamSource source = new StreamSource(configurationFile);
                 ApplicationConfiguration applicationConfiguration = (ApplicationConfiguration) u.unmarshal(source);
                 if (log.isInfoEnabled()) {
-                    log.info("ApplicationConfiguration read: "+ applicationConfiguration);
+                    log.info("ApplicationConfiguration read: "+ applicationConfiguration); //NON-NLS
                 }
                 return applicationConfiguration;
             } catch (Throwable t) {
-                log.error("ApplicationConfiguration could not have been read. Using default settings", t);
+                log.error("ApplicationConfiguration could not have been read. Using default settings", t); //NON-NLS
             }
             return new ApplicationConfiguration();
         }
@@ -42,20 +42,20 @@ public class ApplicationConfigurationManager {
         try {
             return StreamUtil.useClasspathResource(CONFIGURATION_FILE, new ApplicationConfigurationLoader());
         } catch (Throwable t) {
-            log.error("ApplicationConfiguration could not have been read. Using default settings", t);
+            log.error("ApplicationConfiguration could not have been read. Using default settings", t); //NON-NLS
         }
         return new ApplicationConfiguration();
     }
 
     public static void main(String[] args) {
         try {
-            System.out.println("Outputting default application configuration");
+            System.out.println("Outputting default application configuration"); //NON-NLS
             JAXBContext jaxbContext = JAXBContext.newInstance(ApplicationConfiguration.class);
             Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             m.marshal(new ApplicationConfiguration(), System.out);
         } catch (Throwable t) {
-            log.error("Settings could not have been saved!", t);
+            log.error("Settings could not have been saved!", t); //NON-NLS
         }
     }
 }

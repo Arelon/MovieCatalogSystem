@@ -1,10 +1,12 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Function;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 
@@ -22,7 +24,7 @@ public abstract class AbstractDialogForm {
     protected Shell shell = null;
     protected Shell parent = null;
 
-    private Runnable runWhenClosing = null;
+    private Function<AbstractDialogForm, Void> runWhenClosing = null;
 
     protected ResourceBundle bundle;
 
@@ -47,14 +49,25 @@ public abstract class AbstractDialogForm {
     }
 
     public void open() {
-        open(null, null);
+        open(null, (Function<AbstractDialogForm, Void>)null);
     }
 
     public void open(Shell parent) {
-        open(parent, null);
+        open(parent, (Function<AbstractDialogForm, Void>)null);
     }
 
-    public void open(@Nullable Shell parent, @Nullable Runnable runWhenClosing) {
+    public void open(@Nullable Shell parent, @Nullable final Runnable runWhenClosing) {
+        open(parent, new Function<AbstractDialogForm, Void>() {
+            @Override
+            public Void apply(@Nullable AbstractDialogForm abstractDialogForm) {
+                if (runWhenClosing != null)
+                    runWhenClosing.run();
+                return null;
+            }
+        });
+    }
+
+    public void open(@Nullable Shell parent, @Nullable Function<AbstractDialogForm, Void> runWhenClosing) {
         this.parent = parent;
         this.runWhenClosing = runWhenClosing;
         this.runnerWhenClosingShouldRun = false;
@@ -82,7 +95,7 @@ public abstract class AbstractDialogForm {
                 if (runnerWhenClosingShouldRun) {
                     if (AbstractDialogForm.this.runWhenClosing == null)
                         throw new IllegalStateException("Value runnerWhenClosingShouldRun set to true, but no valid runner registered!");
-                    AbstractDialogForm.this.runWhenClosing.run();
+                    AbstractDialogForm.this.runWhenClosing.apply(AbstractDialogForm.this);
                 }
                 shell.dispose();
             }

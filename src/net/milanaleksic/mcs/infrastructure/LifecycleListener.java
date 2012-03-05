@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.application;
+package net.milanaleksic.mcs.infrastructure;
 
 /**
  * User: Milan Aleksic

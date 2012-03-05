@@ -53,4 +53,17 @@ public class Image {
     public void setSize(String size) {
         this.size = size;
     }
+
+    @SuppressWarnings({"HardCodedStringLiteral"})
+    @Override
+    public String toString() {
+        return "Image{" +
+                "id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                ", url='" + url + '\'' +
+                ", size='" + size + '\'' +
+                ", height=" + height +
+                ", width=" + width +
+                '}';
+    }
 }

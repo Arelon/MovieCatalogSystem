@@ -20,12 +20,13 @@ import org.eclipse.swt.widgets.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class NewOrEditMovieDialogForm extends AbstractDialogForm {
+public class NewOrEditMovieDialogForm extends AbstractDialogForm implements OfferMovieList.Receiver {
 
     @Inject
     private NewMediumDialogForm newMediumDialogForm;
@@ -43,10 +44,14 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
     private PozicijaRepository pozicijaRepository;
 
     @Inject
-    private OfferMovieList offerMovieList;
+    @Named("offerMovieListForNewOrEditForm")
+    private OfferMovieList offerMovieListForNewOrEditForm;
 
     @Inject
     private FilmService filmService;
+
+    @Inject
+    FindMovieDialogForm findMovieDialogForm;
 
     private Composite mainPanel = null;
     private Combo comboLokacija = null;
@@ -65,11 +70,11 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
 
-    private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}");
+    private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}"); //NON-NLS
 
-    public void open(Shell parent, @Nullable Film film, Runnable runnable) {
+    public void open(Shell parent, @Nullable Film film, Runnable callback) {
         this.activeFilm = film;
-        super.open(parent, runnable);
+        super.open(parent, callback);
     }
 
     protected void reReadData() {
@@ -183,8 +188,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         shell.setLayout(new GridLayout(1, false));
         shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
             public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
-                if (offerMovieList != null)
-                    offerMovieList.cleanup();
+                if (offerMovieListForNewOrEditForm != null)
+                    offerMovieListForNewOrEditForm.cleanup();
             }
         });
         createMainPanel();
@@ -193,7 +198,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
 
     @Override
     protected void onShellReady() {
-        comboNaziv.addKeyListener(prepareOfferMovieListForCombo(comboNaziv));
+        offerMovieListForNewOrEditForm.prepareFor(comboNaziv);
         reReadData();
     }
 
@@ -204,27 +209,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         mainPanel = new Composite(shell, SWT.NONE);
         mainPanel.setLayoutData(gridData1);
         mainPanel.setLayout(gridLayout1);
-        Label labNazivFilma = new Label(mainPanel, SWT.RIGHT);
-        labNazivFilma.setText(bundle.getString("newOrEdit.movieName"));
-        labNazivFilma.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
-        comboNaziv = new Combo(mainPanel, SWT.DROP_DOWN);
-        comboNaziv.setVisibleItemCount(10);
-        comboNaziv.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        comboNaziv.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                int index = comboNaziv.getSelectionIndex();
-                if (index != -1) {
-                    Movie movie = (Movie) comboNaziv.getData(Integer.toString(index));
-                    if (movie == null)
-                        return;
-                    textGodina.setText(movie.getReleasedYear());
-                    comboNaziv.setText(movie.getName());
-                    textImdbId.setText(movie.getImdbId());
-                    textKomentar.setText(movie.getOverview());
-                }
-            }
-        });
+        createMovieNamePanel();
         Label labPrevod = new Label(mainPanel, SWT.NONE);
         labPrevod.setText(bundle.getString("newOrEdit.movieNameTranslated"));
         labPrevod.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
@@ -266,14 +251,68 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         createMediumsGroup();
     }
 
+    private void createMovieNamePanel() {
+        Label labNazivFilma = new Label(mainPanel, SWT.RIGHT);
+        labNazivFilma.setText(bundle.getString("newOrEdit.movieName"));
+        labNazivFilma.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
+        Composite movieNameComposite = new Composite(mainPanel, SWT.NONE);
+        movieNameComposite.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        GridLayout movieNameGridLayout = new GridLayout(2, false);
+        movieNameGridLayout.marginLeft = 0;
+        movieNameGridLayout.marginWidth = 0;
+        movieNameGridLayout.marginHeight = 0;
+        movieNameComposite.setLayout(movieNameGridLayout);
+        comboNaziv = new Combo(movieNameComposite, SWT.DROP_DOWN);
+        comboNaziv.setVisibleItemCount(10);
+        comboNaziv.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        comboNaziv.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = comboNaziv.getSelectionIndex();
+                if (index != -1) {
+                    readFromMovie((Movie) comboNaziv.getData(Integer.toString(index)));
+                }
+            }
+        });
+        Button btnSearchMovie = new Button(movieNameComposite, SWT.PUSH);
+        btnSearchMovie.setText(bundle.getString("global.search"));
+        btnSearchMovie.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                findMovieDialogForm.open(shell, new Runnable() {
+                    @Override
+                    public void run() {
+                        readFromMovie(findMovieDialogForm.getSelectedMovie());
+                    }
+                });
+            }
+        });
+    }
+
+    private void readFromMovie(Movie movie) {
+        if (movie == null)
+            return;
+        if ("?".equals(movie.getReleasedYear()))
+            textGodina.setText("");
+        else
+            textGodina.setText(movie.getReleasedYear());
+        comboNaziv.setText(movie.getName());
+        textImdbId.setText(movie.getImdbId());
+        textKomentar.setText(movie.getOverview());
+    }
+
     private void createImdbIdPanel(Composite parent) {
         Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-        panel.setLayout(new GridLayout(2, false));
+        GridLayout imdbIdComposite = new GridLayout(2, false);
+        imdbIdComposite.marginLeft = 0;
+        imdbIdComposite.marginWidth = 0;
+        imdbIdComposite.marginHeight = 0;
+        panel.setLayout(imdbIdComposite);
         textImdbId = new Text(panel, SWT.BORDER);
         textImdbId.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         final Link link = new Link(panel, SWT.NONE);
-        link.setText(String.format("<a>%s</a>", bundle.getString("newOrEdit.goToImdbPage")));
+        link.setText(String.format("<a>%s</a>", bundle.getString("newOrEdit.goToImdbPage"))); //NON-NLS
         link.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
         link.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
@@ -292,12 +331,6 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                 link.setEnabled(PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches());
             }
         });
-    }
-
-    private OfferMovieList prepareOfferMovieListForCombo(Combo queryCombo) {
-        offerMovieList.startup();
-        offerMovieList.setQueryField(queryCombo);
-        return offerMovieList;
     }
 
     private void createFooterPanel() {
@@ -404,7 +437,6 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         btnNovMedij.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 newMediumDialogForm.open(shell, new Runnable() {
-
                     @Override
                     public void run() {
                         // preuzimanje svih podataka od interesa i upis u kombo boksove
@@ -412,7 +444,6 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
                         if (comboDisk.getItemCount() > 0)
                             comboDisk.select(comboDisk.getItemCount() - 1);
                     }
-
                 });
             }
         });
@@ -460,7 +491,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
         });
     }
 
-    public void setCurrentQueryItems(final String query, final String[] newItems, @Nullable final Movie[] newMovies) {
+    @Override
+    public void setCurrentQueryItems(final String query, final String message, @Nullable final Movie[] movies) {
         if (shell.isDisposed())
             return;
         shell.getDisplay().asyncExec(new Runnable() {
@@ -469,14 +501,20 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm {
             public void run() {
                 if (query.equals(comboNaziv.getText())) {
                     Point selection = comboNaziv.getSelection();
-                    comboNaziv.setItems(newItems);
+                    if (message != null) {
+                        comboNaziv.setItems(new String[]{message});
+                    } else if (movies != null) {
+                        String[] newItems = new String[movies.length <= 10 ? movies.length : 10];
+                        for (int i = 0; i < newItems.length; i++) {
+                            newItems[i] = String.format("%s (%s)", movies[i].getName(), movies[i].getReleasedYear()); //NON-NLS
+                        }
+                        comboNaziv.setItems(newItems);
+                        for (int i = 0; i < movies.length; i++)
+                            comboNaziv.setData("" + i, movies[i]);
+                    }
                     comboNaziv.setListVisible(false);
                     comboNaziv.setListVisible(true);
                     comboNaziv.setText(query);
-                    if (newMovies != null) {
-                        for (int i = 0; i < newMovies.length; i++)
-                            comboNaziv.setData("" + i, newMovies[i]);
-                    }
                     comboNaziv.setSelection(selection);
                 }
             }

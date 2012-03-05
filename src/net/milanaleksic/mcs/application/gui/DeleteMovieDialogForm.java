@@ -36,9 +36,9 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
         }
     }
 
-    public void open(Shell parent, Film film, Runnable runnable) {
+    public void open(Shell parent, Film film, Runnable callback) {
         this.film = film;
-        super.open(parent, runnable);
+        super.open(parent, callback);
 	}
 
 	protected void reReadData() {

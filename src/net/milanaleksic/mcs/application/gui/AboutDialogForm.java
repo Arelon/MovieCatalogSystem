@@ -62,26 +62,22 @@ public class AboutDialogForm extends AbstractDialogForm {
         shell.setText(bundle.getString("global.aboutProgram"));
         shell.setLayout(gridLayout);
         shell.setSize(new Point(412, 326));
-        createComposite2();
-        createComposite();
-        createComposite1();
+        createHeader();
+        createHeaderEmailPanel();
+        createHeaderWebSitePanel();
         Text textArea = new Text(shell, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY | SWT.CENTER | SWT.BORDER);
         textArea.setText("Copyright 2007-2012 by Milan Aleksic");
-        textArea.setLayoutData(new GridData(org.eclipse.swt.layout.GridData.FILL, org.eclipse.swt.layout.GridData.FILL,
+        textArea.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
                 true, true));
         textArea.setText(textArea.getText() + "\n\n" +
                 bundle.getString("about.programVersion") + " " + ApplicationManager.getVersion() + "\n\n" +
                 bundle.getString("about.technologyDetails"));
     }
 
-    private void createComposite() {
-        GridData gridData3 = new GridData();
-        gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridLayout gridLayout1 = new GridLayout();
-        gridLayout1.numColumns = 2;
+    private void createHeaderEmailPanel() {
         Composite composite = new Composite(shell, SWT.BORDER);
-        composite.setLayout(gridLayout1);
-        composite.setLayoutData(gridData3);
+        composite.setLayout(new GridLayout(2, false));
+        composite.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
         Label labEmail = new Label(composite, SWT.NONE);
         Color color = new Color(Display.getCurrent(), 0, 0, 0);
         labEmail.setForeground(color);
@@ -92,14 +88,10 @@ public class AboutDialogForm extends AbstractDialogForm {
         btnEmail.addSelectionListener(emailSender);
     }
 
-    private void createComposite1() {
-        GridData gridData2 = new GridData();
-        gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridLayout gridLayout2 = new GridLayout();
-        gridLayout2.numColumns = 2;
+    private void createHeaderWebSitePanel() {
         Composite composite1 = new Composite(shell, SWT.BORDER);
-        composite1.setLayout(gridLayout2);
-        composite1.setLayoutData(gridData2);
+        composite1.setLayout(new GridLayout(2, false));
+        composite1.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
         Label labSite = new Label(composite1, SWT.NONE);
         Color color = new Color(Display.getCurrent(), 0, 0, 0);
         labSite.setForeground(color);
@@ -110,34 +102,21 @@ public class AboutDialogForm extends AbstractDialogForm {
         btnSite.addSelectionListener(webSiteVisitor);
     }
 
-    private void createComposite2() {
-        GridData gridData11 = new GridData();
-        gridData11.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridData gridData6 = new GridData();
-        gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridData gridData5 = new GridData();
-        gridData5.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        gridData5.grabExcessHorizontalSpace = true;
-        GridData gridData4 = new GridData();
-        gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridData gridData = new GridData();
-        gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        GridLayout gridLayout3 = new GridLayout();
-        gridLayout3.numColumns = 1;
-        Composite composite2 = new Composite(shell, SWT.NONE);
-        composite2.setLayout(gridLayout3);
-        composite2.setLayoutData(gridData5);
-        Label label3 = new Label(composite2, SWT.CENTER);
-        label3.setText("Movie Catalog System");
-        label3.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
-        label3.setLayoutData(gridData11);
+    private void createHeader() {
+        Composite footerPanel = new Composite(shell, SWT.NONE);
+        footerPanel.setLayout(new GridLayout(1, false));
+        footerPanel.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
+        Label labTitle = new Label(footerPanel, SWT.CENTER);
+        labTitle.setText("Movie Catalog System");
+        labTitle.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
+        labTitle.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
         Color color = new Color(Display.getCurrent(), 0, 0, 255);
-        label3.setForeground(color);
+        labTitle.setForeground(color);
         color.dispose();
-        Label label = new Label(composite2, SWT.NONE);
-        label.setText(bundle.getString("about.programAuthor"));
-        label.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
-        label.setLayoutData(gridData);
+        Label labAuthor = new Label(footerPanel, SWT.NONE);
+        labAuthor.setText(bundle.getString("about.programAuthor"));
+        labAuthor.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
+        labAuthor.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
     }
 
 }

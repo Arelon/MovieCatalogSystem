@@ -12,4 +12,12 @@ public class ImageInfo {
     public Image getImage() {
         return image;
     }
+
+    @SuppressWarnings({"HardCodedStringLiteral"})
+    @Override
+    public String toString() {
+        return "ImageInfo{" +
+                "image=" + image +
+                '}';
+    }
 }

@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 
 import java.awt.*;
 

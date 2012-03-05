@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.restore;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.ClosingDialogForm;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator;

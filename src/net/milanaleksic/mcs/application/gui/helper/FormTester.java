@@ -20,8 +20,9 @@ public class FormTester {
         UserConfigurationManager userConfigurationManager = new UserConfigurationManager();
         userConfigurationManager.setApplicationManager(applicationManager);
         userConfigurationManager.applicationStarted();
+        applicationManager.getUserConfiguration().setLocaleLanguage(args.length>1?args[1]:"en");
 
-        Class<?> clazz = (Class<?>) Class.forName(clazzName);
+        Class<?> clazz = Class.forName(clazzName);
         AbstractDialogForm form = (AbstractDialogForm) clazz.newInstance();
         form.setApplicationManager(applicationManager);
         form.setNoReadyEvent(true);

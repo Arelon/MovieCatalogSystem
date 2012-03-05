@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -18,7 +19,9 @@ import java.io.IOException;
  */
 public abstract class AbstractRequest {
 
-    protected static final String apiLocation = "http://api.themoviedb.org/2.1/";
+    protected final Logger logger = Logger.getLogger(this.getClass());
+
+    protected static final String apiLocation = "http://api.themoviedb.org/2.1/"; //NON-NLS
 
     protected static final ObjectMapper mapper = new ObjectMapper();
 
@@ -29,6 +32,8 @@ public abstract class AbstractRequest {
         String url = getUrl();
         String value;
         try {
+            if (logger.isDebugEnabled())
+                logger.debug("Creating TMDB request "+url); //NON-NLS
             HttpGet httpMethod = new HttpGet(url);
             HttpResponse response = executeHttpMethod(httpMethod);
             int statusLine = response.getStatusLine().getStatusCode();
@@ -38,7 +43,7 @@ public abstract class AbstractRequest {
             if (entity == null)
                 return null;
             value = EntityUtils.toString(entity);
-            if ("[\"Nothing found.\"]".equals(value))
+            if ("[\"Nothing found.\"]".equals(value)) //NON-NLS
                 return null;
             return mapper.readValue(value, clazz);
         } catch (ClientProtocolException e) {

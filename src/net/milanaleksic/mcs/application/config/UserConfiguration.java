@@ -58,6 +58,7 @@ public class UserConfiguration {
         }
 
         @Override
+        @SuppressWarnings({"HardCodedStringLiteral"})
         public String toString() {
             return "ProxyConfiguration{" +
                     "server='" + server + '\'' +
@@ -78,7 +79,7 @@ public class UserConfiguration {
     public UserConfiguration() {
         elementsPerPage = 30;
         proxyConfiguration = new ProxyConfiguration();
-        localeLanguage = "en";
+        localeLanguage = "en"; //NON-NLS
     }
 
     public void setLocaleLanguage(String localeLanguage) {
@@ -106,6 +107,7 @@ public class UserConfiguration {
     }
 
     @Override
+    @SuppressWarnings({"HardCodedStringLiteral"})
     public String toString() {
         return "UserConfiguration{" +
                 "localeLanguage='" + localeLanguage + '\'' +

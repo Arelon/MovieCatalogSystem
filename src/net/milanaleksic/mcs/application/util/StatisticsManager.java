@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.application.util;
 
-import net.milanaleksic.mcs.application.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

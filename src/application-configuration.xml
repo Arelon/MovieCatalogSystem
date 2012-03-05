@@ -5,6 +5,6 @@
         <databaseType>h2</databaseType>
     </databaseConfiguration>
     <interfaceConfiguration>
-        <tableFont>Calibri</tableFont>
+        <guiFont>Calibri</guiFont>
     </interfaceConfiguration>
 </applicationConfiguration>

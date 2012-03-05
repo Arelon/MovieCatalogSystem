@@ -25,6 +25,7 @@ public class ApplicationConfiguration {
         }
 
         @Override
+        @SuppressWarnings({"HardCodedStringLiteral"})
         public String toString() {
             return "DatabaseConfiguration{" +
                     "databaseCreateRestore=" + databaseCreateRestore +
@@ -36,29 +37,7 @@ public class ApplicationConfiguration {
         }
     }
 
-    public static class InterfaceConfiguration {
-
-        private String tableFont = "Calibri";
-
-        public String getTableFont() {
-            return tableFont;
-        }
-
-        public void setTableFont(String tableFont) {
-            this.tableFont = tableFont;
-        }
-
-        @Override
-        public String toString() {
-            return "InterfaceConfiguration{" +
-                    "tableFont='" + tableFont + '\'' +
-                    '}';
-        }
-    }
-
     private DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
-
-    private InterfaceConfiguration interfaceConfiguration = new InterfaceConfiguration();
 
     public DatabaseConfiguration getDatabaseConfiguration() {
         return databaseConfiguration;
@@ -68,19 +47,11 @@ public class ApplicationConfiguration {
         this.databaseConfiguration = databaseConfiguration;
     }
 
-    public InterfaceConfiguration getInterfaceConfiguration() {
-        return interfaceConfiguration;
-    }
-
-    public void setInterfaceConfiguration(InterfaceConfiguration interfaceConfiguration) {
-        this.interfaceConfiguration = interfaceConfiguration;
-    }
-
     @Override
+    @SuppressWarnings({"HardCodedStringLiteral"})
     public String toString() {
         return "ApplicationConfiguration{" +
                 "databaseConfiguration=" + databaseConfiguration +
-                ", interfaceConfiguration=" + interfaceConfiguration +
                 '}';
     }
 

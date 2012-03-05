@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Function;
 import net.milanaleksic.mcs.application.config.UserConfiguration;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
@@ -36,9 +37,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
     private UserConfiguration userConfiguration = null;
     private Combo comboLanguage;
 
-    @Override public void open(Shell parent, Runnable runnable) {
+    @Override public void open(Shell parent, Runnable callback) {
         this.userConfiguration = applicationManager.getUserConfiguration();
-        super.open(parent, runnable);
+        super.open(parent, callback);
     }
 
     private void createDefaultButtonSelectionListener() {

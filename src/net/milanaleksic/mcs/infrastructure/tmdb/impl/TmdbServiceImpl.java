@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.tmdb.impl;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.tmdb.*;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageSearchResult;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
 import javax.inject.Inject;
@@ -29,6 +30,11 @@ public class TmdbServiceImpl implements TmdbService {
         if (ofTheJedi == null)
             return new Movie[0];
         return ofTheJedi;
+    }
+
+    @Override
+    public ImageSearchResult getImagesForMovie(String imdbId) throws TmdbException {
+        return new ImageSearch(this, imdbId).getSearchResult();
     }
 
     PersistentHttpContext getPersistentHttpContext() {

@@ -14,7 +14,6 @@ import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.*;
@@ -26,8 +25,6 @@ import org.eclipse.swt.widgets.Event;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.awt.*;
-import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.Map;
@@ -89,30 +86,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                     ""}
             );
             matchItem.setData(movie);
-            TableEditor editor = new TableEditor(possibleMatchesTable);
-            final Link link = new Link(possibleMatchesTable, SWT.NONE);
-            link.setText("<A>" + bundle.getString("unmatchedMoviesTable.matches.url") + "</A>");
-            link.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-            link.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
-                @Override
-                public void handledSelected(SelectionEvent event) throws ApplicationException {
-                    try {
-                        Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(movie.getImdbId()));
-                    } catch (IOException e) {
-                        throw new ApplicationException("Unexpected IO exception when trying to open URL based on received IMDB link");
-                    }
-                }
-            });
-            link.pack();
-            editor.minimumWidth = link.getSize().x;
-            editor.horizontalAlignment = SWT.LEFT;
-            editor.setEditor(link, matchItem, 2);
-            matchItem.addDisposeListener(new DisposeListener() {
-                @Override
-                public void widgetDisposed(DisposeEvent disposeEvent) {
-                    link.dispose();
-                }
-            });
+            ImdbLinkColumnFactory.create(shell, 2, movie, bundle,  possibleMatchesTable, matchItem);
         }
     };
 
@@ -218,7 +192,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     protected void onShellCreated() {
         GridLayout gridLayout = new GridLayout(1, true);
         gridLayout.verticalSpacing = 10;
-        shell.setText(bundle.getString("global.unusedMediums"));
+        shell.setText(bundle.getString("global.unmatchedMoviesTable"));
         shell.setLayout(gridLayout);
         createContent();
     }
@@ -301,18 +275,16 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         GridData folderGroupData = new GridData(GridData.FILL, GridData.FILL, true, true);
         folderGroupData.widthHint = 200;
         folder.setLayoutData(folderGroupData);
-        matchImage = new ShowImageComposite(folder, SWT.NONE);
-        matchImage.setBundle(bundle);
+        matchImage = new ShowImageComposite(bundle, folder, SWT.NONE);
         matchImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        matchImage.setLayout(new FillLayout());
         matchDescription = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY);
         matchDescription.setText(bundle.getString("unmatchedMoviesTable.pickAMatch"));
 
         TabItem tabImage = new TabItem(folder, SWT.NONE);
-        tabImage.setText(bundle.getString("unmatchedMoviesTable.tab.image"));
+        tabImage.setText(bundle.getString("global.tabs.poster"));
         tabImage.setControl(matchImage);
         TabItem tabDescription = new TabItem(folder, SWT.NONE);
-        tabDescription.setText(bundle.getString("unmatchedMoviesTable.tab.description"));
+        tabDescription.setText(bundle.getString("global.tabs.movieDescription"));
         tabDescription.setControl(matchDescription);
 
         btnAcceptThisMatch = new Button(matcherPanel, SWT.NONE);
@@ -329,13 +301,13 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         possibleMatchesTable.setLayoutData(gridData);
         possibleMatchesTable.addSelectionListener(possibleMatchesSelectedHandler);
         TableColumn firstColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
-        firstColumn.setText(bundle.getString("unmatchedMoviesTable.matches.nameColumn"));
+        firstColumn.setText(bundle.getString("global.columns.matchedMovieName"));
         firstColumn.setWidth(300);
         TableColumn yearColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
-        yearColumn.setText(bundle.getString("unmatchedMoviesTable.matches.yearColumn"));
+        yearColumn.setText(bundle.getString("global.columns.movieYear"));
         yearColumn.setWidth(50);
         TableColumn linkColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
-        linkColumn.setText(bundle.getString("unmatchedMoviesTable.matches.imdbLink"));
+        linkColumn.setText(bundle.getString("global.columns.imdbUrl"));
         linkColumn.setWidth(50);
     }
 

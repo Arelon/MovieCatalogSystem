@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
-import net.milanaleksic.mcs.application.IntegrationManager;
+import net.milanaleksic.mcs.infrastructure.IntegrationManager;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageSearchResult;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
 /**
@@ -14,4 +15,5 @@ public interface TmdbService extends IntegrationManager {
 
     public Movie[] searchForMovies(String searchString) throws TmdbException ;
 
+    public ImageSearchResult getImagesForMovie(String imdbId) throws TmdbException;
 }
