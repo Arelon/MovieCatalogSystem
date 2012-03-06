@@ -42,6 +42,8 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
     @Named("offerMovieListForFindMovieDialogForm")
     private OfferMovieList offerMovieListForFindMovieDialogForm;
 
+    private String initialText;
+
     private HandledSelectionAdapter matchSelectionHandler = new HandledSelectionAdapter(shell, bundle) {
         @Override
         public void handledSelected(SelectionEvent event) throws ApplicationException {
@@ -104,6 +106,10 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
             });
         }
     };
+
+    public void setInitialText(@Nullable String initialText) {
+        this.initialText = initialText;
+    }
 
     Movie getSelectedMovie() {
         return selectedMovie;
@@ -212,6 +218,11 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
         matchImage.setImage(null);
         matchImage.setStatus(null);
         selectedMovie = null;
+        if (initialText != null) {
+            movieName.setText(initialText);
+            offerMovieListForFindMovieDialogForm.refreshRecommendations();
+            initialText = null;
+        }
     }
 
     @Override
@@ -229,7 +240,6 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
                 if (movies != null) {
                     for (Movie movie : movies) {
                         TableItem movieItem = new TableItem(mainTable, SWT.NONE);
-                        //TODO: URL should be wrapped in a Link SWT editor component
                         movieItem.setText(new String[]{movie.getName(), movie.getReleasedYear(), ""});
                         movieItem.setData(movie);
                         ImdbLinkColumnFactory.create(shell, 2, movie, bundle, mainTable, movieItem);
@@ -238,4 +248,5 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
             }
         });
     }
+
 }

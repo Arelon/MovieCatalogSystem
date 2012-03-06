@@ -53,17 +53,9 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        final String query = SWTUtil.getTextFrom(source);
-        if (query == null || query.length() == 0) {
-            receiver.setCurrentQueryItems(query, bundle.getString(bundle.getString("offerList.noSearchString")), null);
+        if (!Character.isLetterOrDigit(e.character) && java.awt.event.KeyEvent.VK_BACK_SPACE != e.keyCode)
             return;
-        }
-        if (query.length() < 3)
-            return;
-        if (!Character.isLetterOrDigit(e.character)
-                && java.awt.event.KeyEvent.VK_BACK_SPACE != e.keyCode)
-            return;
-        executeSearch(query);
+        refreshRecommendations();
     }
 
     private synchronized void executeSearch(String query) {
@@ -128,5 +120,14 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
         startup();
         this.source = movieName;
         movieName.addKeyListener(this);
+    }
+
+    public void refreshRecommendations() {
+        final String query = SWTUtil.getTextFrom(source);
+        if (query == null || query.length() == 0) {
+            receiver.setCurrentQueryItems(query, bundle.getString("offerList.noSearchString"), null);
+            return;
+        }
+        executeSearch(query);
     }
 }
