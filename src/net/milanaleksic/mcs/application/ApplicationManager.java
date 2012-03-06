@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.application;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
-import net.milanaleksic.mcs.application.util.UTF8ResourceBundleControl;
+import net.milanaleksic.mcs.infrastructure.util.UTF8ResourceBundleControl;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.Logger;
@@ -81,7 +81,7 @@ public class ApplicationManager {
     }
 
     public void entryPoint() {
-        setUncaughtExceptionHandlerForThisThread(Thread.currentThread());
+        setUncaughtExceptionHandler();
         fireApplicationStarted();
         try {
             mainGuiLoop();
@@ -89,13 +89,12 @@ public class ApplicationManager {
             String message = "Runtime exception caught in main GUI loop: " + e.getMessage(); //NON-NLS
             log.error(message, e);
             showTerribleErrorInGui(message);
-
         } finally {
             fireApplicationShutdown();
         }
     }
 
-    public void setUncaughtExceptionHandlerForThisThread(Thread currentThread) {
+    public void setUncaughtExceptionHandler() {
         Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -104,7 +103,6 @@ public class ApplicationManager {
                 showTerribleErrorInGui(message);
             }
         };
-        currentThread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
         Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
     }
 

@@ -11,6 +11,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 /**
  * User: Milan Aleksic
@@ -48,6 +49,10 @@ public abstract class AbstractRequest {
             return mapper.readValue(value, clazz);
         } catch (ClientProtocolException e) {
             throw new TmdbException("Client protocol exception occurred: ", e);
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("IO Interrupted, returning null as result from TMDB API request"); //NON-NLS
+            return null;
         } catch (IOException e) {
             throw new TmdbException("IO exception occurred: ", e);
         } catch (Throwable t) {

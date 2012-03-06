@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.application.util;
+package net.milanaleksic.mcs.infrastructure.util;
 
 import java.io.*;
 import java.net.URL;

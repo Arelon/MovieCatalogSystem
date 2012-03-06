@@ -1,11 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.worker.impl;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
 import java.util.concurrent.*;
 
 /**
@@ -14,9 +12,6 @@ import java.util.concurrent.*;
  * Time: 8:47 AM
  */
 public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
-
-    @Inject
-    private ApplicationManager applicationManager;
 
     protected final Logger logger = Logger.getLogger(this.getClass());
 
@@ -45,16 +40,8 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
     }
 
     @Override public void applicationStarted() {
-        ThreadFactory handledThreadFactory = new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread ofTheJedi = Executors.defaultThreadFactory().newThread(r);
-                applicationManager.setUncaughtExceptionHandlerForThisThread(ofTheJedi);
-                return ofTheJedi;
-            }
-        };
-        pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), handledThreadFactory);
-        ioBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2, handledThreadFactory);
+        pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ioBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
     }
 
     @Override public void applicationShutdown() {
