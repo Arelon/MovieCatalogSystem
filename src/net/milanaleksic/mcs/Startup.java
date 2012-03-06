@@ -19,12 +19,12 @@ public class Startup {
         try {
             lock = getSingletonApplicationFileLock();
             if (log.isInfoEnabled())
-                log.info("Welcome to Movie Catalog System v" + ApplicationManager.getVersion()+", booting application context...");
+                log.info("Welcome to Movie Catalog System v" + ApplicationManager.getVersion()+", booting application context..."); //NON-NLS
             ApplicationContext applicationContext = bootSpringContext();
-            ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager"));
+            ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager")); //NON-NLS
             applicationManager.entryPoint();
         } catch (Throwable t) {
-            log.error("Application error!", t);
+            log.error("Application error!", t); //NON-NLS
         } finally {
             if (lock != null)
                 closeSingletonApplicationLock(lock);
@@ -32,21 +32,21 @@ public class Startup {
     }
 
     private static ApplicationContext bootSpringContext() {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-beans.xml"); //NON-NLS
         context.registerShutdownHook();
         if (log.isDebugEnabled())
-            log.debug("Application context booted");
+            log.debug("Application context booted"); //NON-NLS
         return context;
     }
 
     private static FileLock getSingletonApplicationFileLock() {
-        final String lockFileName = ".launcher";
+        final String lockFileName = ".launcher"; //NON-NLS
         File locker = new File(lockFileName);
         FileLock lock;
         try {
             if (!locker.exists())
                 throw new IllegalStateException("Nisam mogao da pristupim lock fajlu!");
-            lock = new RandomAccessFile(lockFileName, "rw").getChannel().tryLock();
+            lock = new RandomAccessFile(lockFileName, "rw").getChannel().tryLock(); //NON-NLS
             if (lock == null) {
                 throw new IllegalStateException("Program je vec pokrenut, ne mozete pokrenuti novu instancu");
             }
