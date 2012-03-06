@@ -63,6 +63,8 @@ public class SWTUtil {
                 }
             });
 //        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
+            if (target.isDisposed())
+                return;
             target.setImage(image);
         } catch (IOException e) {
             throw new IllegalArgumentException("Unexpected exception while working with the image", e);

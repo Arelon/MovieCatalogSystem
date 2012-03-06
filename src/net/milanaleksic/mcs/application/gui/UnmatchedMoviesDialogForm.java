@@ -86,7 +86,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                     ""}
             );
             matchItem.setData(movie);
-            ImdbLinkColumnFactory.create(shell, 2, movie, bundle,  possibleMatchesTable, matchItem);
+            ImdbLinkColumnFactory.create(shell, 2, movie, bundle, possibleMatchesTable, matchItem);
         }
     };
 
@@ -180,7 +180,8 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         while (i < unmatchedMoviesTable.getItemCount()) {
             TableItem item = unmatchedMoviesTable.getItem(i);
             Film film = (Film)item.getData();
-            if (movieMatchesMap.get(film).length>0) {
+            Movie[] movies = movieMatchesMap.get(film);
+            if (movies != null && movies.length>0) {
                 explicitlySelectItemInTable(unmatchedMoviesTable, i);
                 return;
             }
@@ -396,6 +397,8 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             }
 
             private synchronized void retryForMovie(TableItem item, Film film) {
+                if (failureCountMap == null)
+                    return;
                 Integer failureCount = failureCountMap.get(film);
                 failureCountMap.put(film, failureCount == null ? 1 : failureCount + 1);
                 addProcessingWorker(item, film);
@@ -404,9 +407,13 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     }
 
     private void setStatusOnUnmatchedMoviesTableItem(final TableItem item, final String status) {
+        if (shell.isDisposed())
+            return;
         shell.getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
+                if (item.isDisposed())
+                    return;
                 item.setText(1, status);
             }
         });
