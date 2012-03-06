@@ -39,6 +39,8 @@
 
     <bean id="thumbnailManager" class="net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager">
         <property name="defaultImageResource" value="/net/milanaleksic/mcs/application/res/no_thumb.png" />
+        <property name="thumbnailWidth" value="92" />
+        <property name="thumbnailHeight" value="138" />
     </bean>
 
 </beans>

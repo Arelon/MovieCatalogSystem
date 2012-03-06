@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.network;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
@@ -16,11 +17,15 @@ public final class PersistentHttpContext {
 
     private final HttpClient httpClient;
 
-    private final HttpContext httpContext;
+    private static ThreadLocal<HttpContext> httpContextThreadLocal = new ThreadLocal<HttpContext>() {
+        @Override
+        protected HttpContext initialValue() {
+            return new BasicHttpContext();
+        }
+    };
 
-    public PersistentHttpContext(HttpClient httpClient, HttpContext httpContext) {
+    public PersistentHttpContext(HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.httpContext = httpContext;
     }
 
     public HttpClient getHttpClient() {
@@ -28,10 +33,10 @@ public final class PersistentHttpContext {
     }
 
     public HttpContext getHttpContext() {
-        return httpContext;
+        return httpContextThreadLocal.get();
     }
 
     public HttpResponse execute(HttpUriRequest method) throws IOException {
-        return httpClient.execute(method, httpContext);
+        return httpClient.execute(method, httpContextThreadLocal.get());
     }
 }

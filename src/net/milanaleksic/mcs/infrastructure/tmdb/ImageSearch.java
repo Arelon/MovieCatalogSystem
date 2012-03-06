@@ -23,8 +23,8 @@ public class ImageSearch extends AbstractServiceAwareRequest {
         return apiLocation + "Movie.getImages/en/json/" + getApiKey() + "/" + imdbId;
     }
 
-    public ImageSearchResult getSearchResult() throws TmdbException {
-        return processRequest(ImageSearchResult.class);
+    public ImageSearchResult[] getSearchResult() throws TmdbException {
+        return processRequest(ImageSearchResult[].class);
     }
 
 }

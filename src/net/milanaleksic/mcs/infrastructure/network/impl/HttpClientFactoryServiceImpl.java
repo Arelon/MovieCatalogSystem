@@ -14,7 +14,6 @@ import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import javax.inject.Inject;
@@ -61,7 +60,7 @@ public class HttpClientFactoryServiceImpl implements HttpClientFactoryService {
             }
         });
         httpClient.getParams().setParameter("http.connection.timeout", 2000);
-        return new PersistentHttpContext(httpClient, new BasicHttpContext());
+        return new PersistentHttpContext(httpClient);
     }
 
 }

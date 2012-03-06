@@ -37,7 +37,39 @@ public class ApplicationConfiguration {
         }
     }
 
+    public static class CacheConfiguration {
+
+        private String location = "./cache";
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
+        @Override
+        @SuppressWarnings({"HardCodedStringLiteral"})
+        public String toString() {
+            return "CacheConfiguration{" +
+                    "location='" + location +
+                    '}';
+        }
+
+    }
+
     private DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
+
+    private CacheConfiguration cacheConfiguration = new CacheConfiguration();
+
+    public CacheConfiguration getCacheConfiguration() {
+        return cacheConfiguration;
+    }
+
+    public void setCacheConfiguration(CacheConfiguration cacheConfiguration) {
+        this.cacheConfiguration = cacheConfiguration;
+    }
 
     public DatabaseConfiguration getDatabaseConfiguration() {
         return databaseConfiguration;
@@ -52,6 +84,7 @@ public class ApplicationConfiguration {
     public String toString() {
         return "ApplicationConfiguration{" +
                 "databaseConfiguration=" + databaseConfiguration +
+                ", cacheConfiguration=" + cacheConfiguration +
                 '}';
     }
 

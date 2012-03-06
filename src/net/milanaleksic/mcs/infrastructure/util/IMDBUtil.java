@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
 import java.net.URI;
+import java.util.regex.Pattern;
 
 /**
  * User: Milan Aleksic
@@ -9,12 +10,19 @@ import java.net.URI;
  */
 public class IMDBUtil {
 
+    private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}"); //NON-NLS
+
+    private static final String IMDB_URL_TITLE = "http://www.imdb.com/title/%s/"; //NON-NLS
+
     public static String createUrlBasedOnId(String id) {
-        return "http://www.imdb.com/title/"+id+"/";
+        return String.format(IMDB_URL_TITLE, id);
     }
 
     public static URI createUriBasedOnId(String id) {
-        return URI.create("http://www.imdb.com/title/" + id + "/");
+        return URI.create(createUrlBasedOnId(id));
     }
 
+    public static boolean isValidImdbId(String imdbId) {
+        return PATTERN_IMDB_ID.matcher(imdbId).matches();
+    }
 }

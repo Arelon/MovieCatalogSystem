@@ -34,7 +34,12 @@ public class TmdbServiceImpl implements TmdbService {
 
     @Override
     public ImageSearchResult getImagesForMovie(String imdbId) throws TmdbException {
-        return new ImageSearch(this, imdbId).getSearchResult();
+        ImageSearchResult[] ofTheJedi = new ImageSearch(this, imdbId).getSearchResult();
+        if (ofTheJedi == null)
+            return null;
+        if (ofTheJedi.length>1)
+            throw new TmdbException("Non-unique search for Images on TMDB API");
+        return ofTheJedi[0];
     }
 
     PersistentHttpContext getPersistentHttpContext() {

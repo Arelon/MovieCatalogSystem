@@ -24,7 +24,6 @@ import javax.inject.Named;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class NewOrEditMovieDialogForm extends AbstractDialogForm implements OfferMovieList.Receiver {
 
@@ -69,8 +68,6 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     private HashMap<String, Zanr> sviZanrovi;
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
-
-    private static final Pattern PATTERN_IMDB_ID = Pattern.compile("tt\\d{7}"); //NON-NLS
 
     public void open(Shell parent, @Nullable Film film, Runnable callback) {
         this.activeFilm = film;
@@ -279,12 +276,14 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         btnSearchMovie.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
+                findMovieDialogForm.setInitialText(comboNaziv.getText());
                 findMovieDialogForm.open(shell, new Runnable() {
                     @Override
                     public void run() {
                         readFromMovie(findMovieDialogForm.getSelectedMovie());
                     }
                 });
+                findMovieDialogForm.setInitialText(null);
             }
         });
     }
@@ -328,7 +327,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         textImdbId.addModifyListener(new HandledModifyListener(shell, bundle) {
             @Override
             public void handledModifyText() throws ApplicationException {
-                link.setEnabled(PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches());
+                link.setEnabled(IMDBUtil.isValidImdbId(textImdbId.getText()));
             }
         });
     }
@@ -366,8 +365,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                 }
                 if (comboLokacija.getSelectionIndex() == -1)
                     razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.locationMustBeSelected"));
-                if (!textImdbId.getText().isEmpty() &&
-                        !PATTERN_IMDB_ID.matcher(textImdbId.getText()).matches())
+                if (!textImdbId.getText().isEmpty() && !IMDBUtil.isValidImdbId(textImdbId.getText()))
                     razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.imdbFormatNotOk"));
                 if (razlogOtkaza.length() != 0) {
                     MessageBox messageBox = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
