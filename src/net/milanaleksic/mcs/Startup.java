@@ -2,6 +2,7 @@ package net.milanaleksic.mcs;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
+import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -19,7 +20,7 @@ public class Startup {
         try {
             lock = getSingletonApplicationFileLock();
             if (log.isInfoEnabled())
-                log.info("Welcome to Movie Catalog System v" + ApplicationManager.getVersion()+", booting application context..."); //NON-NLS
+                log.info("Welcome to Movie Catalog System v" + VersionInformation.getVersion()+", booting application context..."); //NON-NLS
             ApplicationContext applicationContext = bootSpringContext();
             ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager")); //NON-NLS
             applicationManager.entryPoint();

@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.config;
 
 import com.google.common.base.Function;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.Logger;
 

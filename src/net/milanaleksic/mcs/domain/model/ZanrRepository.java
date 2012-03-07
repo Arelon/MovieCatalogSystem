@@ -1,7 +1,5 @@
 package net.milanaleksic.mcs.domain.model;
 
-import net.milanaleksic.mcs.application.util.ApplicationException;
-
 import java.util.List;
 
 /**
@@ -15,7 +13,7 @@ public interface ZanrRepository {
 
     void addZanr(String newZanr);
 
-    void deleteZanrByName(String zanr) throws ApplicationException;
+    void deleteZanrByName(String zanr);
 
     Zanr getZanrByName(String genreName);
 

@@ -7,6 +7,7 @@ src-generated-metamodel
 startup/db
 startup/log
 startup/restore
+startup/cache
 *.iml
 *.log
 FindBugsAnalysis.html

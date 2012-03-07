@@ -3,19 +3,23 @@ package net.milanaleksic.mcs.application;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
-import net.milanaleksic.mcs.infrastructure.util.UTF8ResourceBundleControl;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
-import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.inject.Inject;
 import java.io.*;
 import java.util.*;
 
-public class ApplicationManager {
+public class ApplicationManager implements ApplicationContextAware {
 
     private static final Logger log = Logger.getLogger(ApplicationManager.class);
 
@@ -27,20 +31,24 @@ public class ApplicationManager {
     @Inject
     private MainForm mainForm;
 
-    private final ApplicationConfiguration applicationConfiguration;
+    @Inject
+    private UserConfigurationManager userConfigurationManager;
 
-    private Set<LifecycleListener> lifecycleListeners = new HashSet<>();
-    private static String version = null;
+    private ApplicationConfiguration applicationConfiguration;
+
     private UserConfiguration userConfiguration;
 
+    private Set<LifecycleListener> lifecycleListeners = new HashSet<>();
+
     public ApplicationManager() {
-        if (new File(LOG4J_XML).exists())
-            DOMConfigurator.configure(LOG4J_XML);
-        applicationConfiguration = new ApplicationConfigurationManager().loadApplicationConfiguration();
+        this(false);
     }
 
-    public ApplicationConfiguration getApplicationConfiguration() {
-        return applicationConfiguration;
+    public ApplicationManager(boolean explicitReadConfigurationsNow) {
+        if (new File(LOG4J_XML).exists())
+            DOMConfigurator.configure(LOG4J_XML);
+        if (explicitReadConfigurationsNow)
+            readConfigurationsWithExplicitReadConfiguration();
     }
 
     public void setLifecycleListeners(Set<LifecycleListener> lifecycleListeners) {
@@ -51,32 +59,15 @@ public class ApplicationManager {
         return userConfiguration;
     }
 
-    public static synchronized String getVersion() {
-        if (version == null) {
-            Properties properties;
-            try {
-                properties = StreamUtil.fetchPropertiesFromClasspath("/net/milanaleksic/mcs/version.properties"); //NON-NLS
-            } catch (IOException e) {
-                throw new RuntimeException("Version properties files not found in resources");
-            }
-            version = properties.getProperty("src.version") + '.' + properties.getProperty("build.number");
-        }
-        return version;
-    }
-
-    public void setUserConfiguration(UserConfiguration userConfiguration) {
-        this.userConfiguration = userConfiguration;
-    }
-
     private void fireApplicationStarted() {
         for (LifecycleListener listener : lifecycleListeners) {
-            listener.applicationStarted();
+            listener.applicationStarted(applicationConfiguration, userConfiguration);
         }
     }
 
     private void fireApplicationShutdown() {
         for (LifecycleListener listener : lifecycleListeners) {
-            listener.applicationShutdown();
+            listener.applicationShutdown(applicationConfiguration, userConfiguration);
         }
     }
 
@@ -117,7 +108,7 @@ public class ApplicationManager {
     }
 
     private void mainGuiLoop() {
-        Display.setAppName("Movie Catalog System - v" + getVersion()); //NON-NLS
+        Display.setAppName("Movie Catalog System - v" + VersionInformation.getVersion()); //NON-NLS
         Display display = Display.getDefault();
         try {
             mainForm.open();
@@ -140,5 +131,20 @@ public class ApplicationManager {
             messageBundle = ResourceBundle.getBundle("messages", //NON-NLS
                     new Locale(getUserConfiguration().getLocaleLanguage()), new UTF8ResourceBundleControl());
         return messageBundle;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        readConfigurations();
+    }
+
+    private void readConfigurations() {
+        applicationConfiguration = new ApplicationConfigurationManager().loadApplicationConfiguration();
+        userConfiguration = userConfigurationManager.loadUserConfiguration();
+    }
+
+    private void readConfigurationsWithExplicitReadConfiguration() {
+        applicationConfiguration = new ApplicationConfigurationManager().loadApplicationConfiguration();
+        userConfiguration = new UserConfigurationManager().loadUserConfiguration();
     }
 }

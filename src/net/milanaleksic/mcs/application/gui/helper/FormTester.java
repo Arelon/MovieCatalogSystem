@@ -16,10 +16,7 @@ public class FormTester {
         String clazzName = args[0];
         Display display = new Display();
 
-        ApplicationManager applicationManager = new ApplicationManager();
-        UserConfigurationManager userConfigurationManager = new UserConfigurationManager();
-        userConfigurationManager.setApplicationManager(applicationManager);
-        userConfigurationManager.applicationStarted();
+        ApplicationManager applicationManager = new ApplicationManager(true);
         applicationManager.getUserConfiguration().setLocaleLanguage(args.length>1?args[1]:"en");
 
         Class<?> clazz = Class.forName(clazzName);

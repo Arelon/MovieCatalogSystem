@@ -694,7 +694,7 @@ public class MainForm extends Observable {
                     film.getKomentar()
             });
             item.setData(film);
-            thumbnailManager.setThumbnailForItem(item, film.getImdbId());
+            thumbnailManager.setThumbnailForItem(item);
         }
         // removing remaining items from the table which can't be recycled
         for (int j = mainTable.getItemCount() - 1; j >= i; j--)

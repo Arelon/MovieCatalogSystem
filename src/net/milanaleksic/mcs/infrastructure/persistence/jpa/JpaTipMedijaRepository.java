@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,13 +32,13 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
     }
 
     @Override
-    public void deleteMediumTypeByName(String mediumTypeName) throws ApplicationException {
+    public void deleteMediumTypeByName(String mediumTypeName) {
         TipMedija mediumTypeToDelete = getTipMedija(mediumTypeName);
         TypedQuery<Long> query = entityManager.createNamedQuery("getCountOfMediumsWithMediumTypeByName", Long.class);
         query.setParameter("tipMedija", mediumTypeToDelete);
         long count = query.getSingleResult();
         if (count > 0)
-            throw new ApplicationException("You can't delete this medium type since "+count+" mediums are referencing it");
+            throw new RuntimeException("You can't delete this medium type since "+count+" mediums are referencing it");
         entityManager.remove(mediumTypeToDelete);
     }
 

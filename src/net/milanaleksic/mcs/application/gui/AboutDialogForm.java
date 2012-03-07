@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.application.gui;
 import java.awt.Desktop;
 import java.net.URI;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
+import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.*;
@@ -70,7 +70,7 @@ public class AboutDialogForm extends AbstractDialogForm {
         textArea.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
                 true, true));
         textArea.setText(textArea.getText() + "\n\n" +
-                bundle.getString("about.programVersion") + " " + ApplicationManager.getVersion() + "\n\n" +
+                bundle.getString("about.programVersion") + " " + VersionInformation.getVersion() + "\n\n" +
                 bundle.getString("about.technologyDetails"));
     }
 

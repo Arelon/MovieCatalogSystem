@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,13 +31,13 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
     }
 
     @Override
-    public void deleteZanrByName(String zanr) throws ApplicationException {
+    public void deleteZanrByName(String zanr) {
         Zanr zanrToDelete = getZanrByName(zanr);
         TypedQuery<Long> query = entityManager.createNamedQuery("getCountOfFilmWithZanrByName", Long.class);
         query.setParameter("zanr", zanrToDelete);
         long count = query.getSingleResult();
         if (count > 0)
-            throw new ApplicationException("You can't delete this Genre since "+count+" movies are referencing it");
+            throw new RuntimeException("You can't delete this Genre since "+count+" movies are referencing it");
 
         entityManager.remove(zanrToDelete);
     }

@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.application.config;
+package net.milanaleksic.mcs.infrastructure.config;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

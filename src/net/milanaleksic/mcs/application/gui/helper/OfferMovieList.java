@@ -1,7 +1,9 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.IntegrationManager;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
@@ -101,12 +103,12 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
     }
 
     @Override
-    public void applicationStarted() {
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
         this.bundle = applicationManager.getMessagesBundle();
     }
 
     @Override
-    public void applicationShutdown() {
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         cleanup();
     }
 

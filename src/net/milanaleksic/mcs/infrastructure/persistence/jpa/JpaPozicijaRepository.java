@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,13 +31,13 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     }
 
     @Override
-    public void deletePozicijaByName(String pozicija) throws ApplicationException {
+    public void deletePozicijaByName(String pozicija) {
         Pozicija pozicijaToDelete = getByName(pozicija);
         TypedQuery<Long> query = entityManager.createNamedQuery("getCountOfMedijOnPozicijaByName", Long.class);
         query.setParameter("pozicija", pozicijaToDelete);
         long count = query.getSingleResult();
         if (count > 0)
-            throw new ApplicationException("You can't delete this Position since "+count+" mediums are referencing it");
+            throw new RuntimeException("You can't delete this Position since "+count+" mediums are referencing it");
 
         entityManager.remove(pozicijaToDelete);
     }

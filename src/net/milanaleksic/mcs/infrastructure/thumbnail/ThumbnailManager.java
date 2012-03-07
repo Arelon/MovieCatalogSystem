@@ -1,22 +1,24 @@
 package net.milanaleksic.mcs.infrastructure.thumbnail;
 
 import com.google.common.base.Function;
-import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.domain.model.Film;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageSearchResult;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TableItem;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -41,9 +43,6 @@ public class ThumbnailManager implements LifecycleListener {
     @Inject
     private HttpClientFactoryService httpClientFactoryService;
 
-    @Inject
-    private ApplicationManager applicationManager;
-
     private String defaultImageResource;
 
     private PersistentHttpContext persistentHttpContext;
@@ -67,7 +66,8 @@ public class ThumbnailManager implements LifecycleListener {
         this.defaultImageResource = defaultImageResource;
     }
 
-    public void setThumbnailForItem(TableItem item, String imdbId) {
+    public void setThumbnailForItem(TableItem item) {
+        String imdbId = getFilmFromItem(item).getImdbId();
         String absoluteFileLocation = locallyCachedImages.get(imdbId);
         if (absoluteFileLocation != null) {
             SWTUtil.setImageOnTargetFromExternalFile(item, absoluteFileLocation);
@@ -77,6 +77,10 @@ public class ThumbnailManager implements LifecycleListener {
         if (imdbId == null || !IMDBUtil.isValidImdbId(imdbId))
             return;
         startDownloadingWorkerForItem(item, imdbId);
+    }
+
+    private Film getFilmFromItem(TableItem item) {
+        return (Film) item.getData();
     }
 
     private void startDownloadingWorkerForItem(final TableItem targetItem, final String imdbId) {
@@ -99,10 +103,7 @@ public class ThumbnailManager implements LifecycleListener {
 
                                 @Override
                                 public void run() {
-                                    if (targetItem.isDisposed())
-                                        return;
-                                    //TODO: test if the target item has data of the same movie as this image
-                                    targetItem.setImage(image);
+                                    setImageOnItemIfNotTooLate(targetItem, image, imdbId);
                                 }
 
                             });
@@ -115,6 +116,18 @@ public class ThumbnailManager implements LifecycleListener {
                 }
             }
         });
+    }
+
+    private void setImageOnItemIfNotTooLate(TableItem targetItem, Image image, String imdbId) {
+        if (targetItem.isDisposed())
+            return;
+        Film film = getFilmFromItem(targetItem);
+        if (film == null)
+            return;
+        String targetImdbId = film.getImdbId();
+        if (targetImdbId == null || !targetImdbId.equals(imdbId))
+            return;
+        targetItem.setImage(image);
     }
 
     private String findAppropriateThumbnailImage(ImageSearchResult imagesForMovie) {
@@ -143,14 +156,14 @@ public class ThumbnailManager implements LifecycleListener {
     }
 
     @Override
-    public void applicationStarted() {
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
         persistentHttpContext = httpClientFactoryService.createPersistentHttpContext();
-        prepareLocallyCachedImages();
+        prepareLocallyCachedImages(configuration);
     }
 
-    private void prepareLocallyCachedImages() {
+    private void prepareLocallyCachedImages(ApplicationConfiguration configuration) {
         locallyCachedImages = new HashMap<>();
-        ApplicationConfiguration.CacheConfiguration cacheConfiguration = applicationManager.getApplicationConfiguration().getCacheConfiguration();
+        ApplicationConfiguration.CacheConfiguration cacheConfiguration = configuration.getCacheConfiguration();
         File location = new File(cacheConfiguration.getLocation());
         if ((!location.exists() && !location.mkdir()) || !location.canWrite()) {
             cacheDirectory = null;
@@ -171,7 +184,7 @@ public class ThumbnailManager implements LifecycleListener {
     }
 
     @Override
-    public void applicationShutdown() {
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
     }
 
 }

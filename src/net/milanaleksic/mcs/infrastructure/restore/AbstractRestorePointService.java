@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,8 +22,6 @@ public abstract class AbstractRestorePointService {
     protected static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
 
     private int dbVersion;
-
-    @Inject protected ApplicationManager applicationManager;
 
     @Inject protected DataSource dataSource;
 

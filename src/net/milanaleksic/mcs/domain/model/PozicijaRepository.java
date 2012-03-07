@@ -1,7 +1,5 @@
 package net.milanaleksic.mcs.domain.model;
 
-import net.milanaleksic.mcs.application.util.ApplicationException;
-
 import java.util.List;
 
 /**
@@ -15,7 +13,7 @@ public interface PozicijaRepository {
 
     void addPozicija(Pozicija position);
 
-    void deletePozicijaByName(String pozicija) throws ApplicationException;
+    void deletePozicijaByName(String pozicija);
 
     Pozicija getDefaultPozicija();
 

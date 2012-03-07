@@ -1,7 +1,9 @@
 package net.milanaleksic.mcs.application.util;
 
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
@@ -19,17 +21,17 @@ public class StatisticsManager implements LifecycleListener {
 
     @Inject private ProgramArgsService programArgsService;
 
-    @SuppressWarnings({"SpringJavaAutowiringInspection"})
     @Inject
+    @SuppressWarnings({"SpringJavaAutowiringInspection"})
     private SessionFactory sessionFactory;
 
-    @Override public void applicationStarted() {
+    @Override public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
         if (programArgsService.getProgramArgs().isCollectStatistics()) {
             sessionFactory.getStatistics().setStatisticsEnabled(true);
         }
     }
 
-    @Override public void applicationShutdown() {
+    @Override public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         if (programArgsService.getProgramArgs().isCollectStatistics()) {
             if (log.isInfoEnabled())
                 log.info("Statistics information: " + sessionFactory.getStatistics());

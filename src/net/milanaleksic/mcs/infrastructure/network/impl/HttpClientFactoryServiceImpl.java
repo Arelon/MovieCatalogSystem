@@ -1,7 +1,8 @@
 package net.milanaleksic.mcs.infrastructure.network.impl;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.util.ntlm.NTLMSchemeFactory;
@@ -13,34 +14,38 @@ import org.apache.http.conn.scheme.*;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.*;
 import org.apache.http.protocol.HttpContext;
-
-import javax.inject.Inject;
 
 /**
  * User: Milan Aleksic
  * Date: 3/1/12
  * Time: 12:39 PM
  */
-public class HttpClientFactoryServiceImpl implements HttpClientFactoryService {
+public class HttpClientFactoryServiceImpl implements HttpClientFactoryService, LifecycleListener {
 
-    @Inject private ApplicationManager applicationManager;
+    public static final String AUTH_SCHEME_NTLM = "NTLM"; //NON-NLS
+    public static final String SCHEME_HTTP = "http"; //NON-NLS
+
+    public static final int INTERVAL_TIMEOUT = 2000;
+    public static final int INTERVAL_KEEP_ALIVE = 60000;
+
+    private UserConfiguration userConfiguration;
 
     @Override
     public PersistentHttpContext createPersistentHttpContext() {
         SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        UserConfiguration.ProxyConfiguration proxyConfiguration = applicationManager.getUserConfiguration().getProxyConfiguration();
+        registry.register(new Scheme(SCHEME_HTTP, PlainSocketFactory.getSocketFactory(), 80));
+        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
         DefaultHttpClient httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(new BasicHttpParams(), registry), new BasicHttpParams());
         if (null != proxyConfiguration.getServer() && !proxyConfiguration.getServer().isEmpty()) {
             String server = proxyConfiguration.getServer();
             int port = proxyConfiguration.getPort() == 0 ? 80 : proxyConfiguration.getPort();
-            final HttpHost hcProxyHost = new HttpHost(server, port, "http");
+            final HttpHost hcProxyHost = new HttpHost(server, port, SCHEME_HTTP);
             if (null != proxyConfiguration.getUsername() && !proxyConfiguration.getUsername().isEmpty()
                     && null != proxyConfiguration.getPassword() && !proxyConfiguration.getPassword().isEmpty()) {
                 Credentials credentials;
-                httpClient.getAuthSchemes().register("NTLM", new NTLMSchemeFactory());
+                httpClient.getAuthSchemes().register(AUTH_SCHEME_NTLM, new NTLMSchemeFactory());
                 if (proxyConfiguration.isNtlm()) {
                     credentials = new NTCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword(), "", "");
                 } else
@@ -54,13 +59,22 @@ public class HttpClientFactoryServiceImpl implements HttpClientFactoryService {
             public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
                 long keepAlive = super.getKeepAliveDuration(response, context);
                 if (keepAlive == -1) {
-                    keepAlive = 60000;
+                    keepAlive = INTERVAL_KEEP_ALIVE;
                 }
                 return keepAlive;
             }
         });
-        httpClient.getParams().setParameter("http.connection.timeout", 2000);
+        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), INTERVAL_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpClient.getParams(), INTERVAL_TIMEOUT);
         return new PersistentHttpContext(httpClient);
     }
 
+    @Override
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
+        this.userConfiguration = userConfiguration;
+    }
+
+    @Override
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
+    }
 }

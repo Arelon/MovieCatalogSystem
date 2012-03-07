@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.impl;
 
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.tmdb.*;
@@ -51,11 +53,11 @@ public class TmdbServiceImpl implements TmdbService {
     }
 
     @Override
-    public void applicationStarted() {
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
         persistentHttpContext = httpClientFactoryService.createPersistentHttpContext();
     }
 
     @Override
-    public void applicationShutdown() { }
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) { }
 
 }

@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import net.milanaleksic.mcs.application.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;

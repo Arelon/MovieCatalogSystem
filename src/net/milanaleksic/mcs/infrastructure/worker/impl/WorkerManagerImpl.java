@@ -1,6 +1,8 @@
 package net.milanaleksic.mcs.infrastructure.worker.impl;
 
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 
@@ -39,12 +41,12 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
         return ioBoundPool.submit(runnable);
     }
 
-    @Override public void applicationStarted() {
+    @Override public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
         pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         ioBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
     }
 
-    @Override public void applicationShutdown() {
+    @Override public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         Thread lateShutdown = new Thread(new Runnable() {
             @Override
             public void run() {
