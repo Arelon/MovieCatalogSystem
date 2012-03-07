@@ -11,3 +11,5 @@ startup/cache
 *.iml
 *.log
 FindBugsAnalysis.html
+MCS.lnk
+*.sh
