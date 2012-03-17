@@ -4,8 +4,10 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
+import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
+import net.milanaleksic.mcs.infrastructure.util.StringUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,6 +31,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
 
     @Inject
     private NewMediumDialogForm newMediumDialogForm;
+
+    @Inject
+    private ThumbnailManager thumbnailManager;
 
     @Inject
     private FilmRepository filmRepository;
@@ -62,6 +67,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     private Text textImdbId = null;
     private Text textGodina = null;
     private Text textKomentar = null;
+    private ShowImageComposite posterImage;
 
     private Film activeFilm = null;
 
@@ -89,6 +95,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             int indexOfPozicija = comboLokacija.indexOf(activeFilm.getPozicija());
             if (indexOfPozicija >= 0)
                 comboLokacija.select(indexOfPozicija);
+            thumbnailManager.setThumbnailForShowImageComposite(posterImage, activeFilm.getImdbId());
         } else {
             Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();
             if (defaultPozicija != null) {
@@ -242,10 +249,17 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         labIMDB.setText(bundle.getString("newOrEdit.imdbIdFormat"));
         labIMDB.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
         createImdbIdPanel(mainPanel);
-        new Label(mainPanel, SWT.NONE);
+        createPostersPanel();
         createCommentaryGroup();
-        new Label(mainPanel, SWT.NONE);
         createMediumsGroup();
+    }
+
+    private void createPostersPanel() {
+        Composite detailsPane = new Composite(mainPanel, SWT.NONE);
+        detailsPane.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+        detailsPane.setLayout(new GridLayout(1, false));
+        posterImage = new ShowImageComposite(bundle, detailsPane, SWT.NONE);
+        posterImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
     }
 
     private void createMovieNamePanel() {
@@ -296,8 +310,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         else
             textGodina.setText(movie.getReleasedYear());
         comboNaziv.setText(movie.getName());
-        textImdbId.setText(movie.getImdbId());
         textKomentar.setText(movie.getOverview());
+        textImdbId.setText(StringUtil.emptyIfNull(movie.getImdbId()));
+        thumbnailManager.setThumbnailForShowImageComposite(posterImage, movie.getImdbId());
     }
 
     private void createImdbIdPanel(Composite parent) {

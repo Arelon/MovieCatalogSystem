@@ -279,7 +279,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         matchImage = new ShowImageComposite(bundle, folder, SWT.NONE);
         matchImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         matchDescription = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY);
-        matchDescription.setText(bundle.getString("unmatchedMoviesTable.pickAMatch"));
+        matchDescription.setText(bundle.getString("global.noImagePresent"));
 
         TabItem tabImage = new TabItem(folder, SWT.NONE);
         tabImage.setText(bundle.getString("global.tabs.poster"));

@@ -37,7 +37,7 @@
         <property name="receiver" ref="findMovieDialogForm" />
     </bean>
 
-    <bean id="thumbnailManager" class="net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager">
+    <bean id="thumbnailManager" class="net.milanaleksic.mcs.infrastructure.thumbnail.impl.ThumbnailManagerImpl">
         <property name="defaultImageResource" value="/net/milanaleksic/mcs/application/res/no_thumb.png" />
         <property name="thumbnailWidth" value="92" />
         <property name="thumbnailHeight" value="138" />

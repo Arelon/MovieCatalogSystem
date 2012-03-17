@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
 import com.google.common.base.Function;
+import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.events.*;
@@ -71,8 +72,20 @@ public class SWTUtil {
         }
     }
 
-    public static void setImageOnTargetFromExternalFile(Item target, String location) {
-        target.setImage(new Image(Display.getCurrent(), location));
+    public static void setImageOnTarget(ShowImageComposite target, String resourceLocation) {
+        Image image;
+        try {
+            image = StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
+                @Override
+                public Image apply(@Nullable InputStream inputStream) {
+                    return new Image(Display.getCurrent(), inputStream);
+                }
+            });
+//        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
+            target.setImage(image);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unexpected exception while working with the image", e);
+        }
     }
 
     public static void useImageAndThenDispose(String resourceLocation, Function<Image, Void> callback) {

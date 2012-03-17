@@ -53,7 +53,7 @@ public class ShowImageComposite extends Composite implements PaintListener {
         color.dispose();
 
         if (status == null)
-            status = bundle.getString("unmatchedMoviesTable.pickAMatch");
+            status = bundle.getString("global.noImagePresent");
         Point point = gc.textExtent(status);
         gc.drawText(status, (bounds.width - point.x) / 2, (bounds.height - point.y) / 2);
     }
