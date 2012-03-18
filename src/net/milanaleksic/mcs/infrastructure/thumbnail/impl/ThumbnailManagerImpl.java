@@ -30,9 +30,9 @@ import java.util.Map;
 
 public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener {
 
-    private Map<String, String> imdbIdToLocallyCachedImageMap;
-
     private static final Logger logger = Logger.getLogger(ThumbnailManagerImpl.class);
+
+    private Map<String, String> imdbIdToLocallyCachedImageMap;
 
     @Inject
     private WorkerManager workerManager;
@@ -104,16 +104,25 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
                     SWTUtil.createImageFromUrl(URI.create(url), persistentHttpContext, new Function<Image, Void>() {
 
                         @Override
-                        public Void apply(@Nullable final Image image) {
+                        public Void apply(@Nullable Image image) {
+                            final Image finalImage;
+                            if (image == null)
+                                finalImage = null;
+                            else if (image.getBounds().width != thumbnailWidth && image.getBounds().height != thumbnailHeight) {
+                                finalImage = SWTUtil.resize(image, thumbnailWidth, thumbnailHeight);
+                                image.dispose();
+                            }
+                            else
+                                finalImage = image;
                             Display.getDefault().asyncExec(new Runnable() {
 
                                 @Override
                                 public void run() {
-                                    target.safeSetImage(image, imdbId);
+                                    target.safeSetImage(finalImage, imdbId);
                                 }
 
                             });
-                            saveImageLocally(imdbId, image);
+                            saveImageLocally(finalImage, imdbId);
                             return null;
                         }
                     });
@@ -131,11 +140,15 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
             net.milanaleksic.mcs.infrastructure.tmdb.bean.Image image = imageInfo.getImage();
             if (image.getWidth() == thumbnailWidth && image.getHeight() == thumbnailHeight)
                 return image.getUrl();
+            // in case we don't have exact match, we need first with both dimensions larget than exact match
+            // for best rescaling we can get
+            if (image.getWidth() > thumbnailWidth && image.getHeight() > thumbnailHeight)
+                return image.getUrl();
         }
         return null;
     }
 
-    private void saveImageLocally(String imdbId, Image image) {
+    private void saveImageLocally(Image image, String imdbId) {
         if (cacheDirectory == null)
             return;
         String imageLocation = getLocalImageLocation(imdbId);

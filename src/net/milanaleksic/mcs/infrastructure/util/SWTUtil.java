@@ -4,8 +4,9 @@ import com.google.common.base.Function;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import org.apache.log4j.Logger;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nullable;
@@ -159,4 +160,32 @@ public class SWTUtil {
             }
         });
     }
+
+    public static Image resize(Image image, int canvasWidth, int canvasHeight) {
+        Image scaled = new Image(Display.getDefault(), canvasWidth, canvasHeight);
+        GC gc = new GC(scaled);
+        gc.setAntialias(SWT.ON);
+        gc.setInterpolation(SWT.HIGH);
+        double canvasRatio = 1.0 * canvasWidth / canvasHeight;
+        double imageRatio = 1.0 * image.getBounds().width / image.getBounds().height;
+        int width, height;
+        if (canvasRatio > imageRatio) {
+            width = (int) Math.round(imageRatio * canvasHeight);
+            height = canvasHeight;
+        } else if (canvasRatio < imageRatio) {
+            width = canvasWidth;
+            height = (int) Math.round(width / imageRatio);
+        } else {
+            width = canvasWidth;
+            height = canvasHeight;
+        }
+        gc.drawImage(image, 0, 0,
+                image.getBounds().width, image.getBounds().height,
+                (int) Math.round(1.0 * Math.abs(canvasWidth - width) / 2),
+                (int) Math.round(1.0 * Math.abs(canvasHeight - height) / 2),
+                width, height);
+        gc.dispose();
+        return scaled;
+    }
+
 }
