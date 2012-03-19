@@ -12,4 +12,8 @@ public interface ThumbnailManager {
 
     void setThumbnailOnWidget(ImageTargetWidget imageTargetWidget);
 
+    int getThumbnailHeight();
+
+    int getThumbnailWidth();
+
 }

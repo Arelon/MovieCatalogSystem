@@ -207,4 +207,13 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
     }
 
+    @Override
+    public int getThumbnailWidth() {
+        return thumbnailWidth;
+    }
+
+    @Override
+    public int getThumbnailHeight() {
+        return thumbnailHeight;
+    }
 }
