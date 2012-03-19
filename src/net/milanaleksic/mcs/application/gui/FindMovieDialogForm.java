@@ -54,6 +54,8 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
             }
             TableItem item = mainTable.getItem(selectionIndex);
             Movie movie = (Movie) item.getData();
+            if (movie == null)
+                return;
             String appropriateImageUrl = getAppropriateImageUrl(movie);
             matchDescription.setText(movie.getOverview() == null ? "" : movie.getOverview());
             if (appropriateImageUrl == null)
@@ -232,6 +234,8 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
         shell.getDisplay().asyncExec(new Runnable() {
             @Override
             public void run() {
+                if (mainTable.isDisposed())
+                    return;
                 mainTable.removeAll();
                 if (message != null) {
                     TableItem messageItem = new TableItem(mainTable, SWT.NONE);

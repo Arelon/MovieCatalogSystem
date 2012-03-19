@@ -23,6 +23,6 @@ public class IMDBUtil {
     }
 
     public static boolean isValidImdbId(String imdbId) {
-        return PATTERN_IMDB_ID.matcher(imdbId).matches();
+        return imdbId!=null && PATTERN_IMDB_ID.matcher(imdbId).matches();
     }
 }
