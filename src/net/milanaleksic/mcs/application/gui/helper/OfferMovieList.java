@@ -55,7 +55,12 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (!Character.isLetterOrDigit(e.character) && java.awt.event.KeyEvent.VK_BACK_SPACE != e.keyCode)
+        if (!Character.isLetterOrDigit(e.character)
+                && java.awt.event.KeyEvent.VK_BACK_SPACE != e.keyCode
+                && java.awt.event.KeyEvent.VK_DELETE != e.keyCode
+                && java.awt.event.KeyEvent.VK_SPACE != e.keyCode
+                && java.awt.event.KeyEvent.VK_PASTE != e.keyCode
+                && java.awt.event.KeyEvent.VK_CUT != e.keyCode)
             return;
         refreshRecommendations();
     }
