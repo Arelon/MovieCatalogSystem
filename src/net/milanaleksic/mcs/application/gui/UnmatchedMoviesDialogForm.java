@@ -179,9 +179,9 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         int i = startFromIndex;
         while (i < unmatchedMoviesTable.getItemCount()) {
             TableItem item = unmatchedMoviesTable.getItem(i);
-            Film film = (Film)item.getData();
+            Film film = (Film) item.getData();
             Movie[] movies = movieMatchesMap.get(film);
-            if (movies != null && movies.length>0) {
+            if (movies != null && movies.length > 0) {
                 explicitlySelectItemInTable(unmatchedMoviesTable, i);
                 return;
             }
@@ -341,7 +341,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             public void run() {
                 try {
                     if (logger.isDebugEnabled())
-                        logger.debug("Awaiting completion of all work items");
+                        logger.debug("Awaiting completion of all work items"); //NON-NLS
                     processingCounterLatch.await();
                     final String timeSpent = StringUtil.showMillisIntervalAsString(System.currentTimeMillis() - begin);
                     shell.getDisplay().asyncExec(new Runnable() {
@@ -355,13 +355,13 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                         }
                     });
                 } catch (InterruptedException e) {
-                    logger.warn("Waiting for all processes to be finished just got interrupted.");
+                    logger.warn("Waiting for all processes to be finished just got interrupted."); //NON-NLS
                     Thread.currentThread().interrupt();
                 } catch (Throwable t) {
-                    logger.error("Unexpected exception while waiting for matching process to complete", t);
+                    logger.error("Unexpected exception while waiting for matching process to complete", t); //NON-NLS
                 }
             }
-        }, "InfoWhenAllMoviesMatchedThread");
+        }, "InfoWhenAllMoviesMatchedThread"); //NON-NLS
         infoThread.setDaemon(true);
         infoThread.start();
     }
@@ -382,18 +382,33 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                     if (movieMatchesMap == null)
                         return;
                     movieMatchesMap.put(film, movies);
+                    if (movies == null || movies.length == 0) {
+                        deleteItem(item);
+                        return;
+                    }
                     setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
-                            + " (" + (movies == null ? 0 : movies.length) + ")");
+                            + " (" + (movies.length) + ")");
                     if (logger.isDebugEnabled())
-                        logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (movies == null ? "NULL" : movies.length) + " items");
+                        logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (movies == null ? "NULL" : movies.length) + " items"); //NON-NLS
                 } catch (TmdbException e) {
-                    logger.error("Application error while processing movie: " + film.getNazivfilma(), e);
+                    logger.error("Application error while processing movie: " + film.getNazivfilma(), e); //NON-NLS
                     retryForMovie(item, film);
                     success = false;
                 } finally {
                     if (success)
                         processingCounterLatch.countDown();
                 }
+            }
+
+            private void deleteItem(final TableItem item) {
+                shell.getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (item.isDisposed())
+                            return;
+                        item.dispose();
+                    }
+                });
             }
 
             private synchronized void retryForMovie(TableItem item, Film film) {

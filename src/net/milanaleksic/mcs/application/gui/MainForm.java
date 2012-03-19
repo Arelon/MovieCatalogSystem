@@ -2,12 +2,14 @@ package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
+import net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
@@ -81,6 +83,8 @@ public class MainForm extends Observable {
     private Menu settingsPopupMenu = null;
 
     private CurrentViewState currentViewState = new CurrentViewState();
+
+    private CoolMovieComposite newTable;
 
     // private classes
 
@@ -462,16 +466,25 @@ public class MainForm extends Observable {
         sShell = new Shell();
         sShell.setText(titleConst);
         sShell.setMaximized(false);
-        sShell.setBounds(20, 20, 950, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
+        sShell.setBounds(20, 20, 1000, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
         createToolTicker();
         createPanCombos();
         createToolBar();
         sShell.setLayout(new GridLayout(3, false));
-        mainTable = new Table(sShell, SWT.FULL_SELECTION);
+
+
+        SashForm sash = new SashForm(sShell, SWT.VERTICAL);
+        sash.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 3, 1));
+        newTable = new CoolMovieComposite(sash, SWT.NONE, thumbnailManager);
+        newTable.setLayout(new GridLayout(1, false));
+        newTable.setBackground(sShell.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+
+
+        mainTable = new Table(sash, SWT.FULL_SELECTION);
         mainTable.setHeaderVisible(true);
         //TODO: better alternative to a font hardcoded like this
         mainTable.setFont(new Font(Display.getDefault(), "Calibri", 12, SWT.NORMAL));
-        mainTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 3, 1));
+        mainTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         TableColumn tableColumn1 = new TableColumn(mainTable, SWT.RIGHT);
         mainTable.addKeyListener(new MainTableKeyAdapter());
         mainTable.addMouseListener(new MainTableMouseListener());
@@ -699,6 +712,10 @@ public class MainForm extends Observable {
         // removing remaining items from the table which can't be recycled
         for (int j = mainTable.getItemCount() - 1; j >= i; j--)
             mainTable.remove(j);
+
+
+        newTable.setMovies(sviFilmovi);
+
 
         setChanged();
         super.notifyObservers();

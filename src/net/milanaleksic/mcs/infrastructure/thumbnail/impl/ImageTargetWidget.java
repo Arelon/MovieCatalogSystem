@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 * Date: 3/17/12
 * Time: 1:58 PM
 */
-interface ImageTargetWidget {
+public interface ImageTargetWidget {
 
     public String getImdbId();
 

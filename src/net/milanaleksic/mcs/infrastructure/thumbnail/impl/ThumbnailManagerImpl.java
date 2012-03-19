@@ -53,6 +53,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
     private File cacheDirectory = null;
 
     private static final java.util.regex.Pattern PATTERN_CACHED_IMAGE = java.util.regex.Pattern.compile("tt\\d{7}\\.jpg"); //NON-NLS
+    private static final String MAGIC_VALUE_NON_EXISTING = "<nonexisting>"; //NON-NLS
 
     public void setThumbnailHeight(int thumbnailHeight) {
         this.thumbnailHeight = thumbnailHeight;
@@ -68,25 +69,30 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
 
     @Override
     public void setThumbnailForItem(TableItem item) {
-        doSetThumbnailOnWidget(ImageTargetWidgetFactory.createTableItemImageTarget(item));
+        setThumbnailOnWidget(ImageTargetWidgetFactory.createTableItemImageTarget(item));
     }
 
     @Override
     public void setThumbnailForShowImageComposite(ShowImageComposite composite, String imdbId) {
-        doSetThumbnailOnWidget(ImageTargetWidgetFactory.createCompositeImageTarget(composite, imdbId));
+        setThumbnailOnWidget(ImageTargetWidgetFactory.createCompositeImageTarget(composite, imdbId));
     }
 
-    private void doSetThumbnailOnWidget(ImageTargetWidget imageTargetWidget) {
+    @Override
+    public void setThumbnailOnWidget(ImageTargetWidget imageTargetWidget) {
         String imdbId = imageTargetWidget.getImdbId();
-        String absoluteFileLocation = imdbIdToLocallyCachedImageMap.get(imdbId);
-        if (absoluteFileLocation != null) {
-            imageTargetWidget.setImageFromExternalFile(absoluteFileLocation);
+        if (!IMDBUtil.isValidImdbId(imdbId)) {
+            imageTargetWidget.setImageFromResource(defaultImageResource);
             return;
         }
-        imageTargetWidget.setImageFromResource(defaultImageResource);
-        if (imdbId == null || !IMDBUtil.isValidImdbId(imdbId))
-            return;
-        startDownloadingWorker(imageTargetWidget, imdbId);
+        String absoluteFileLocation = imdbIdToLocallyCachedImageMap.get(imdbId);
+        if (absoluteFileLocation == null) {
+            imageTargetWidget.setImageFromResource(defaultImageResource);
+            startDownloadingWorker(imageTargetWidget, imdbId);
+        } else if (absoluteFileLocation.equals(MAGIC_VALUE_NON_EXISTING)) {
+            imageTargetWidget.setImageFromResource(defaultImageResource);
+        } else {
+            imageTargetWidget.setImageFromExternalFile(absoluteFileLocation);
+        }
     }
 
     private void startDownloadingWorker(final ImageTargetWidget target, final String imdbId) {
@@ -98,6 +104,9 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
                     imagesForMovie = tmdbService.getImagesForMovie(imdbId);
                     final String url = findAppropriateThumbnailImage(imagesForMovie);
                     if (url == null) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("No suitable poster found for movie: "+imdbId); //NON-NLS
+                        recordDummyResponseForMovie(imdbId);
                         target.setImageFromResource(defaultImageResource);
                         return;
                     }
@@ -131,6 +140,10 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
                 }
             }
         });
+    }
+
+    private void recordDummyResponseForMovie(String imdbId) {
+        imdbIdToLocallyCachedImageMap.put(imdbId, MAGIC_VALUE_NON_EXISTING);
     }
 
     private String findAppropriateThumbnailImage(ImageSearchResult imagesForMovie) {
