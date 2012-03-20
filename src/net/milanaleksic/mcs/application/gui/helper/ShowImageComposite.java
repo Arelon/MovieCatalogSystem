@@ -20,7 +20,7 @@ public class ShowImageComposite extends Composite implements PaintListener {
     private Image image;
     private String status;
 
-    public ShowImageComposite(ResourceBundle bundle, Composite parent, int style) {
+    public ShowImageComposite(Composite parent, int style, ResourceBundle bundle) {
         super(parent, style);
         this.bundle = bundle;
         addPaintListener(this);

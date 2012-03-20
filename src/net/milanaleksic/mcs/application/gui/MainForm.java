@@ -2,16 +2,22 @@ package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
-import net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite;
-import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
+import net.milanaleksic.mcs.application.gui.helper.*;
+import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionEvent;
+import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.export.*;
-import net.milanaleksic.mcs.infrastructure.util.*;
+import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
+import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
+import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
@@ -73,7 +79,6 @@ public class MainForm extends Observable {
     private Shell sShell = null;
     private Combo comboZanr = null;
     private Combo comboTipMedija = null;
-    private Table mainTable = null;
     private Combo comboPozicija = null;
     private Composite panCombos = null;
     private Label labelFilter = null;
@@ -84,7 +89,9 @@ public class MainForm extends Observable {
 
     private CurrentViewState currentViewState = new CurrentViewState();
 
-    private CoolMovieComposite newTable;
+    private CoolMovieComposite mainTable;
+
+    private MovieDetailsPanel movieDetailsPanel;
 
     // private classes
 
@@ -135,30 +142,17 @@ public class MainForm extends Observable {
         public void keyPressed(KeyEvent e) {
             String filterText = currentViewState.getFilterText();
             switch (e.keyCode) {
-                case SWT.ARROW_LEFT:
-                    new PreviousPageSelectionAdapter().widgetSelected(null);
+                case SWT.PAGE_UP:
+                    previousPage();
                     return;
-                case SWT.ARROW_RIGHT:
-                    new NextPageSelectionAdapter().widgetSelected(null);
+                case SWT.PAGE_DOWN:
+                    nextPage();
                     return;
                 case SWT.ESC:
-                    if ((filterText == null || filterText.length() == 0)
-                            && comboPozicija.getSelectionIndex() == 0
-                            && comboTipMedija.getSelectionIndex() == 0
-                            && comboZanr.getSelectionIndex() == 0) {
-                        // ako je pritisnut ESC, a pritom je svaki moguci filter vec
-                        // anuliran
-                        // izlazimo iz programa !
+                    if (allFiltersAreCleared())
                         sShell.dispose();
-                        return;
-                    } else {
-                        // ponistavamo potpuno sve kombo boksove, kao i filter
-                        comboPozicija.select(0);
-                        comboTipMedija.select(0);
-                        comboZanr.select(0);
-                        currentViewState.setFilterText("");
-                        doFillMainTable();
-                    }
+                    else
+                        clearAllFilters();
                     return;
                 case SWT.BS:
                     if (filterText != null && filterText.length() > 0) {
@@ -167,8 +161,7 @@ public class MainForm extends Observable {
                     }
                     return;
             }
-
-            if (!Character.isLetterOrDigit(e.character))
+            if (!Character.isLetterOrDigit(e.character) && e.keyCode != java.awt.event.KeyEvent.VK_SPACE)
                 return;
             if (filterText == null)
                 currentViewState.setFilterText("" + e.character);
@@ -177,17 +170,29 @@ public class MainForm extends Observable {
             doFillMainTable();
         }
 
+        private void clearAllFilters() {
+            comboPozicija.select(0);
+            comboTipMedija.select(0);
+            comboZanr.select(0);
+            currentViewState.setFilterText("");
+            doFillMainTable();
+        }
+
+        private boolean allFiltersAreCleared() {
+            String filterText = currentViewState.getFilterText();
+            return (filterText == null || filterText.length() == 0)
+                    && comboPozicija.getSelectionIndex() == 0
+                    && comboTipMedija.getSelectionIndex() == 0
+                    && comboZanr.getSelectionIndex() == 0;
+        }
+
     }
 
     private class NextPageSelectionAdapter extends SelectionAdapter {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            if (currentViewState.getMaxItemsPerPage() > 0)
-                if (currentViewState.getMaxItemsPerPage() * (currentViewState.getActivePage() + 1) > currentViewState.getShowableCount())
-                    return;
-            currentViewState.setActivePage(currentViewState.getActivePage() + 1);
-            doFillMainTable();
+            nextPage();
         }
 
     }
@@ -196,29 +201,9 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            if (currentViewState.getActivePage() == 0)
-                return;
-            currentViewState.setActivePage(currentViewState.getActivePage() - 1);
-            doFillMainTable();
+            previousPage();
         }
 
-    }
-
-    private class MainTableMouseListener extends MouseAdapter {
-
-        @Override
-        public void mouseDoubleClick(MouseEvent mouseevent) {
-            if (mainTable.getSelectionIndex() != -1) {
-                Film rawFilm = (Film) mainTable.getSelection()[0].getData();
-                newOrEditMovieDialogForm.open(sShell, filmRepository.getCompleteFilm(rawFilm),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                doFillMainTable();
-                            }
-                        });
-            }
-        }
     }
 
     private class MainFormShellListener extends ShellAdapter {
@@ -247,6 +232,19 @@ public class MainForm extends Observable {
     }
 
     private class ToolExportSelectionAdapter extends SelectionAdapter {
+
+        private String[] columnNames;
+
+        public ToolExportSelectionAdapter() {
+            columnNames = new String[]{
+                    bundle.getString("main.medium"),
+                    bundle.getString("main.movieTitle"),
+                    bundle.getString("main.movieTitleTranslation"),
+                    bundle.getString("main.genre"),
+                    bundle.getString("main.location"),
+                    bundle.getString("main.comment"),
+            };
+        }
 
         @Override
         public void widgetSelected(SelectionEvent e) {
@@ -286,7 +284,7 @@ public class MainForm extends Observable {
                 @Override
                 public String getData(int row, int column) {
                     if (row == -1)
-                        return mainTable.getColumn(column).getText();
+                        return columnNames[column];
                     switch (column) {
                         case 0:
                             return allFilms[row].getMedijListAsString();
@@ -312,9 +310,10 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            if (mainTable.getSelectionIndex() == -1)
+            Film selectedMovie = mainTable.getSelectedItem();
+            if (selectedMovie == null)
                 return;
-            deleteMovieDialogForm.open(sShell, (Film) mainTable.getSelection()[0].getData(),
+            deleteMovieDialogForm.open(sShell, selectedMovie,
                     new Runnable() {
 
                         @Override
@@ -466,49 +465,58 @@ public class MainForm extends Observable {
         sShell = new Shell();
         sShell.setText(titleConst);
         sShell.setMaximized(false);
-        sShell.setBounds(20, 20, 1000, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
+        sShell.setBounds(20, 20, 800, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
         createToolTicker();
         createPanCombos();
         createToolBar();
         sShell.setLayout(new GridLayout(3, false));
-
-
-        SashForm sash = new SashForm(sShell, SWT.VERTICAL);
-        sash.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 3, 1));
-        newTable = new CoolMovieComposite(sash, SWT.NONE, thumbnailManager);
-        newTable.setLayout(new GridLayout(1, false));
-        newTable.setBackground(sShell.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-
-
-        mainTable = new Table(sash, SWT.FULL_SELECTION);
-        mainTable.setHeaderVisible(true);
-        //TODO: better alternative to a font hardcoded like this
-        mainTable.setFont(new Font(Display.getDefault(), "Calibri", 12, SWT.NORMAL));
-        mainTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        TableColumn tableColumn1 = new TableColumn(mainTable, SWT.RIGHT);
-        mainTable.addKeyListener(new MainTableKeyAdapter());
-        mainTable.addMouseListener(new MainTableMouseListener());
-        tableColumn1.setWidth(200);
-        tableColumn1.setText(bundle.getString("main.medium"));
-        TableColumn tableColumn = new TableColumn(mainTable, SWT.NONE);
-        tableColumn.setWidth(200);
-        tableColumn.setText(bundle.getString("main.movieTitle"));
-        TableColumn tableColumn2 = new TableColumn(mainTable, SWT.NONE);
-        tableColumn2.setWidth(200);
-        tableColumn2.setText(bundle.getString("main.movieTitleTranslation"));
-        TableColumn tableColumn21 = new TableColumn(mainTable, SWT.NONE);
-        tableColumn21.setWidth(95);
-        tableColumn21.setText(bundle.getString("main.genre"));
-        TableColumn tableColumn3 = new TableColumn(mainTable, SWT.NONE);
-        tableColumn3.setWidth(95);
-        tableColumn3.setText(bundle.getString("main.location"));
-        TableColumn tableColumn4 = new TableColumn(mainTable, SWT.NONE);
-        tableColumn4.setWidth(120);
-        tableColumn4.setText(bundle.getString("main.comment"));
-
+        createCenterComposite();
         createStatusBar();
         createSettingsPopupMenu();
         sShell.addShellListener(new MainFormShellListener());
+    }
+
+    private void createCenterComposite() {
+        Composite centerComposite = new Composite(sShell, SWT.NONE);
+        centerComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 3, 1));
+        centerComposite.setLayout(new GridLayout(1, false));
+
+        ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL | SWT.NO);
+        mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
+        mainTable.addMovieSelectionListener(new MovieSelectionListener() {
+
+            @Override
+            public void movieSelected(MovieSelectionEvent e) {
+                if (e.film == null)
+                    movieDetailsPanel.clearData();
+                else
+                    movieDetailsPanel.showDataForMovie(e.film);
+            }
+
+            @Override
+            public void movieDetailsSelected(MovieSelectionEvent e) {
+                newOrEditMovieDialogForm.open(sShell, filmRepository.getCompleteFilm(e.film),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                doFillMainTable();
+                            }
+                        });
+            }
+
+        });
+        mainTable.addKeyListener(new MainTableKeyAdapter());
+        scrolledComposite.setContent(mainTable);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.getVerticalBar().setIncrement(10);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setBackground(sShell.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+
+        movieDetailsPanel = new MovieDetailsPanel(centerComposite, SWT.BORDER, bundle, thumbnailManager);
+        GridData layoutData = new GridData(SWT.FILL, SWT.END, true, false);
+        layoutData.heightHint = 150;
+        movieDetailsPanel.setLayoutData(layoutData);
     }
 
     private void createPanCombos() {
@@ -685,37 +693,7 @@ public class MainForm extends Observable {
             toolTicker.setVisible(true);
             toolTicker.update();
         }
-        List<Film> sviFilmovi = getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage());
-        int i = 0;
-
-        if (sviFilmovi.size() < mainTable.getTopIndex())
-            mainTable.setTopIndex(0);
-        for (Object filmObj : sviFilmovi) {
-            Film film = (Film) filmObj;
-            TableItem item;
-            if (i < mainTable.getItemCount())
-                item = mainTable.getItem(i);
-            else
-                item = new TableItem(mainTable, SWT.NONE);
-            i++;
-            item.setText(new String[]{
-                    film.getMedijListAsString(),
-                    film.getNazivfilma(),
-                    film.getPrevodnazivafilma(),
-                    film.getZanr().getZanr(),
-                    film.getPozicija(),
-                    film.getKomentar()
-            });
-            item.setData(film);
-            thumbnailManager.setThumbnailForItem(item);
-        }
-        // removing remaining items from the table which can't be recycled
-        for (int j = mainTable.getItemCount() - 1; j >= i; j--)
-            mainTable.remove(j);
-
-
-        newTable.setMovies(sviFilmovi);
-
+        mainTable.setMovies(getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage()));
 
         setChanged();
         super.notifyObservers();
@@ -724,13 +702,25 @@ public class MainForm extends Observable {
             toolTicker.setVisible(false);
     }
 
+    private void nextPage() {
+        if (currentViewState.getMaxItemsPerPage() > 0)
+            if (currentViewState.getMaxItemsPerPage() * (currentViewState.getActivePage() + 1) > currentViewState.getShowableCount())
+                return;
+        currentViewState.setActivePage(currentViewState.getActivePage() + 1);
+        doFillMainTable();
+    }
+
+    private void previousPage() {
+        if (currentViewState.getActivePage() == 0)
+            return;
+        currentViewState.setActivePage(currentViewState.getActivePage() - 1);
+        doFillMainTable();
+    }
+
     public List<Film> getAllFilms(int maxItems) {
-        Zanr zanrFilter = (Zanr) comboZanr.getData(
-                Integer.toString(comboZanr.getSelectionIndex()));
-        TipMedija tipMedijaFilter = (TipMedija) comboTipMedija.getData(
-                Integer.toString(comboTipMedija.getSelectionIndex()));
-        Pozicija pozicijaFilter = (Pozicija) comboPozicija.getData(
-                Integer.toString(comboPozicija.getSelectionIndex()));
+        Zanr zanrFilter = (Zanr) comboZanr.getData(Integer.toString(comboZanr.getSelectionIndex()));
+        TipMedija tipMedijaFilter = (TipMedija) comboTipMedija.getData(Integer.toString(comboTipMedija.getSelectionIndex()));
+        Pozicija pozicijaFilter = (Pozicija) comboPozicija.getData(Integer.toString(comboPozicija.getSelectionIndex()));
         String filterText = currentViewState.getFilterText() == null ?
                 null :
                 '%' + currentViewState.getFilterText() + '%';

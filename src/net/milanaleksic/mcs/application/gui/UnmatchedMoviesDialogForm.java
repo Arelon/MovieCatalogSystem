@@ -276,7 +276,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         GridData folderGroupData = new GridData(GridData.FILL, GridData.FILL, true, true);
         folderGroupData.widthHint = 200;
         folder.setLayoutData(folderGroupData);
-        matchImage = new ShowImageComposite(bundle, folder, SWT.NONE);
+        matchImage = new ShowImageComposite(folder, SWT.NONE, bundle);
         matchImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         matchDescription = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY);
         matchDescription.setText(bundle.getString("global.noImagePresent"));

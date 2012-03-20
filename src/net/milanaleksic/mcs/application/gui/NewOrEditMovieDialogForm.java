@@ -258,7 +258,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         Composite detailsPane = new Composite(mainPanel, SWT.NONE);
         detailsPane.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
         detailsPane.setLayout(new GridLayout(1, false));
-        posterImage = new ShowImageComposite(bundle, detailsPane, SWT.NONE);
+        posterImage = new ShowImageComposite(detailsPane, SWT.NONE, bundle);
         posterImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
     }
 
