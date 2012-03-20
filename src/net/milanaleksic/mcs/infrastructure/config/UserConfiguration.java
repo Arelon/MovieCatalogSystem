@@ -77,7 +77,7 @@ public class UserConfiguration {
     private String localeLanguage;
 
     public UserConfiguration() {
-        elementsPerPage = 30;
+        elementsPerPage = 28;
         proxyConfiguration = new ProxyConfiguration();
         localeLanguage = "en"; //NON-NLS
     }
