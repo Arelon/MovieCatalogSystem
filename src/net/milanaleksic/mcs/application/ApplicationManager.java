@@ -119,6 +119,8 @@ public class ApplicationManager implements ApplicationContextAware {
                 if (!display.readAndDispatch())
                     display.sleep();
             }
+        } catch (Exception e) {
+            log.error("Exception experienced in GUI thread", e);
         } finally {
             display.dispose();
         }
