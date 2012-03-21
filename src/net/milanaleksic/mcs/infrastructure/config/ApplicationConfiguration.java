@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.config;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -9,6 +10,39 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class ApplicationConfiguration {
+
+    public static class InterfaceConfiguration {
+
+        @Nullable
+        private Rectangle lastApplicationLocation;
+
+        private boolean maximized = false;
+
+        @Nullable
+        public Rectangle getLastApplicationLocation() {
+            return lastApplicationLocation;
+        }
+
+        public boolean isMaximized() {
+            return maximized;
+        }
+
+        public void setLastApplicationLocation(@Nullable Rectangle bounds) {
+            this.lastApplicationLocation = bounds;
+        }
+
+        public void setMaximized(boolean maximized) {
+            this.maximized = maximized;
+        }
+
+        @Override
+        public String toString() {
+            return "InterfaceConfiguration{" +
+                    "lastApplicationLocation=" + lastApplicationLocation +
+                    ", maximized=" + maximized +
+                    '}';
+        }
+    }
 
     public static class DatabaseConfiguration {
 
@@ -63,6 +97,8 @@ public class ApplicationConfiguration {
 
     private CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
+    private InterfaceConfiguration interfaceConfiguration = new InterfaceConfiguration();
+
     public CacheConfiguration getCacheConfiguration() {
         return cacheConfiguration;
     }
@@ -79,12 +115,20 @@ public class ApplicationConfiguration {
         this.databaseConfiguration = databaseConfiguration;
     }
 
+    public InterfaceConfiguration getInterfaceConfiguration() {
+        return interfaceConfiguration;
+    }
+
+    public void setInterfaceConfiguration(InterfaceConfiguration interfaceConfiguration) {
+        this.interfaceConfiguration = interfaceConfiguration;
+    }
+
     @Override
-    @SuppressWarnings({"HardCodedStringLiteral"})
     public String toString() {
         return "ApplicationConfiguration{" +
                 "databaseConfiguration=" + databaseConfiguration +
                 ", cacheConfiguration=" + cacheConfiguration +
+                ", interfaceConfiguration=" + interfaceConfiguration +
                 '}';
     }
 

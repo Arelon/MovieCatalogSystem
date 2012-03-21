@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<applicationConfiguration>
-    <cacheConfiguration>
-        <location>./cache</location>
-    </cacheConfiguration>
-    <databaseConfiguration>
-        <databaseCreateRestore>true</databaseCreateRestore>
-    </databaseConfiguration>
-</applicationConfiguration>

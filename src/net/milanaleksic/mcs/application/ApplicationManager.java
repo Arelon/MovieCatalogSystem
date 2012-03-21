@@ -32,6 +32,9 @@ public class ApplicationManager implements ApplicationContextAware {
     private MainForm mainForm;
 
     @Inject
+    private ApplicationConfigurationManager applicationConfigurationManager;
+
+    @Inject
     private UserConfigurationManager userConfigurationManager;
 
     private ApplicationConfiguration applicationConfiguration;
@@ -48,7 +51,7 @@ public class ApplicationManager implements ApplicationContextAware {
         if (new File(LOG4J_XML).exists())
             DOMConfigurator.configure(LOG4J_XML);
         if (explicitReadConfigurationsNow)
-            readConfigurationsWithExplicitReadConfiguration();
+            readConfigurationsWithoutDI();
     }
 
     public void setLifecycleListeners(Set<LifecycleListener> lifecycleListeners) {
@@ -57,6 +60,10 @@ public class ApplicationManager implements ApplicationContextAware {
 
     public UserConfiguration getUserConfiguration() {
         return userConfiguration;
+    }
+
+    public ApplicationConfiguration getApplicationConfiguration() {
+        return applicationConfiguration;
     }
 
     private void fireApplicationStarted() {
@@ -119,8 +126,8 @@ public class ApplicationManager implements ApplicationContextAware {
                 if (!display.readAndDispatch())
                     display.sleep();
             }
-        } catch (Exception e) {
-            log.error("Exception experienced in GUI thread", e);
+        } catch (Throwable t) {
+            log.error("Unhandled GUI thread exception - "+t.getMessage(), t); //NON-NLS
         } finally {
             display.dispose();
         }
@@ -141,11 +148,11 @@ public class ApplicationManager implements ApplicationContextAware {
     }
 
     private void readConfigurations() {
-        applicationConfiguration = new ApplicationConfigurationManager().loadApplicationConfiguration();
+        applicationConfiguration = applicationConfigurationManager.loadApplicationConfiguration();
         userConfiguration = userConfigurationManager.loadUserConfiguration();
     }
 
-    private void readConfigurationsWithExplicitReadConfiguration() {
+    private void readConfigurationsWithoutDI() {
         applicationConfiguration = new ApplicationConfigurationManager().loadApplicationConfiguration();
         userConfiguration = new UserConfigurationManager().loadUserConfiguration();
     }

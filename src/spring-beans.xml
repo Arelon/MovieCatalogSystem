@@ -16,12 +16,15 @@
 
     <bean id="workerManager" class="net.milanaleksic.mcs.infrastructure.worker.impl.WorkerManagerImpl" />
 
+    <bean id="applicationConfigurationManager" class="net.milanaleksic.mcs.application.config.ApplicationConfigurationManager" />
+
     <bean id="userConfigurationManager" class="net.milanaleksic.mcs.application.config.UserConfigurationManager" />
 
 	<bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
         <property name="lifecycleListeners">
             <set>
                 <ref bean="splashScreenManager" />
+                <ref bean="applicationConfigurationManager" />
                 <ref bean="userConfigurationManager" />
                 <bean class="net.milanaleksic.mcs.application.util.StatisticsManager" />
                 <ref bean="httpClientFactoryService" />
