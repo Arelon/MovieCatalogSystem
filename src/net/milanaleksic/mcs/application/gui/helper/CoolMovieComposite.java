@@ -13,13 +13,13 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 
 public class CoolMovieComposite extends Composite implements PaintListener {
 
@@ -37,6 +37,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private final int thumbnailWidth;
 
     private int selectedIndex = -1;
+    private boolean recalculateOfCellLocationsNeeded = false;
 
     public class MovieWrapper implements ImageTargetWidget {
 
@@ -49,14 +50,6 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
         public MovieWrapper(Film film) {
             this.film = film;
-        }
-
-        public void setX(int x) {
-            this.x = x;
-        }
-
-        public void setY(int y) {
-            this.y = y;
         }
 
         public Film getFilm() {
@@ -198,6 +191,12 @@ public class CoolMovieComposite extends Composite implements PaintListener {
                 }
             }
         });
+        addListener(SWT.Resize, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                recalculateOfCellLocationsNeeded = true;
+            }
+        });
     }
 
     private void clearMovies() {
@@ -225,16 +224,19 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         fireMovieSelectionEvent();
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public int getSelectedIndex() {
         return selectedIndex;
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public Film getSelectedItem() {
         if (movies == null || movies.size() < selectedIndex || selectedIndex == -1)
             return null;
         return movies.get(selectedIndex).getFilm();
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public Iterator<Film> iterator() {
         return Lists.transform(movies, new Function<MovieWrapper, Film>() {
             @Override
@@ -250,8 +252,10 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         clearMovies();
         List<MovieWrapper> wrappers = new ArrayList<>();
         for (Film film : sviFilmovi) {
-            wrappers.add(new MovieWrapper(film));
+            MovieWrapper movieWrapper = new MovieWrapper(film);
+            wrappers.add(movieWrapper);
         }
+        recalculateOfCellLocationsNeeded = true; // we can't do it now since SWT maybe can't give us dimensions
         movies = wrappers;
         redraw();
         fireMovieSelectionEvent();
@@ -287,56 +291,93 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     private void redrawItem(MovieWrapper movieWrapper) {
-        Rectangle rectangleForItem = getRectangleForItem(movieWrapper.x, movieWrapper.y);
+        Rectangle rectangleForItem = getRectangleForItem(movieWrapper);
         redraw(rectangleForItem.x, rectangleForItem.y, rectangleForItem.width, rectangleForItem.height, false);
+    }
+
+    private int getVerticalCellDistance() {
+        return thumbnailHeight + PADDING_BETWEEN_ROWS + PADDING_BETWEEN_ROWS_TEXT;
+    }
+
+    private Rectangle getRectangleForItem(MovieWrapper movieWrapper) {
+        return getRectangleForItemAtLocation(movieWrapper.x, movieWrapper.y);
+    }
+
+    private Rectangle getRectangleForItemAtLocation(int x, int y) {
+        return new Rectangle(x - PADDING_BETWEEN_COLUMNS / 2, y - PADDING_BETWEEN_ROWS / 2,
+                thumbnailWidth + PADDING_BETWEEN_COLUMNS,
+                thumbnailHeight + PADDING_BETWEEN_ROWS_TEXT * 3 / 2);
     }
 
     @Override
     public void paintControl(PaintEvent e) {
+        if (recalculateOfCellLocationsNeeded)
+            recalculateCellLocations();
         GC gc = e.gc;
         gc.setAdvanced(true);
         gc.setTextAntialias(SWT.ON);
-        // we explicitly paint our background since SWT handling is turned off
+
+        Region backgroundRegion = new Region(getDisplay());
+        backgroundRegion.add(new Rectangle(e.x, e.y, e.width, e.height));
+        for (MovieWrapper wrapper : movies) {
+            if ((wrapper.getImage() == null || wrapper.getImage().getImageData().alphaData == null))
+                backgroundRegion.subtract(wrapper.x, wrapper.y, thumbnailWidth, thumbnailHeight);
+            Point extent = gc.stringExtent(getVisibleMovieTitle(gc, wrapper));
+            backgroundRegion.subtract(new Rectangle(
+                wrapper.x + (thumbnailWidth - extent.x) / 2,
+                thumbnailHeight + wrapper.y,
+                extent.x, extent.y));
+        }
+        gc.setClipping(backgroundRegion);
         gc.fillRectangle(e.x, e.y, e.width, e.height);
 
-        int x = PADDING_BETWEEN_COLUMNS, y = PADDING_BETWEEN_ROWS;
-        for (int i = 0, moviesSize = movies.size(); i < moviesSize; i++) {
-            // only draw items we have to
-            Rectangle rectangleForItem = getRectangleForItem(x, y);
-            if (rectangleForItem.intersects(e.x, e.y, e.width, e.height)) {
-                MovieWrapper movieWrapper = movies.get(i);
-                movieWrapper.setX(x);
-                movieWrapper.setY(y);
+        gc.setClipping((Rectangle) null);
+        backgroundRegion.dispose();
 
+        for (int i = 0, moviesSize = movies.size(); i < moviesSize; i++) {
+            MovieWrapper wrapper = movies.get(i);
+            if (getRectangleForItem(wrapper).intersects(e.x, e.y, e.width, e.height)) {
                 boolean isSelected = selectedIndex == i;
                 if (isSelected)
-                    subPaintSelectionRectangle(gc, x, y);
-                subPaintMovieTitle(gc, x, y, movieWrapper, isSelected);
-                subPaintMovieThumbnail(gc, x, y, movieWrapper);
+                    subPaintSelectionRectangle(gc, wrapper);
+                subPaintMovieTitle(gc, wrapper, isSelected);
+                subPaintMovieThumbnail(gc, wrapper);
             }
+        }
+        setScrolledCompositeMinHeight();
+    }
 
+    private void recalculateCellLocations() {
+        int x = PADDING_BETWEEN_COLUMNS, y = PADDING_BETWEEN_ROWS;
+        for (MovieWrapper movieWrapper : movies) {
+            movieWrapper.x = x;
+            movieWrapper.y = y;
             x += thumbnailWidth + PADDING_BETWEEN_COLUMNS;
-            if (x + thumbnailWidth > getBounds().width) {
+            if (x + thumbnailWidth > getParent().getBounds().width) {
                 x = PADDING_BETWEEN_COLUMNS;
                 y += thumbnailHeight + PADDING_BETWEEN_ROWS + PADDING_BETWEEN_ROWS_TEXT;
             }
         }
-        setScrolledCompositeMinHeight(y);
+        recalculateOfCellLocationsNeeded = false;
     }
 
-    private void setScrolledCompositeMinHeight(int y) {
+    private void setScrolledCompositeMinHeight() {
         if (getParent() instanceof ScrolledComposite) {
+            if (movies.size() == 0)
+                return;
+            MovieWrapper movieWrapper = movies.get(movies.size() - 1);
+            int y = movieWrapper.y + getVerticalCellDistance();
             ScrolledComposite scrolledParent = (ScrolledComposite) getParent();
             if (getCellsPerRow() % movies.size() == 0)
-                y += thumbnailHeight + PADDING_BETWEEN_ROWS + PADDING_BETWEEN_ROWS_TEXT;
+                y += getVerticalCellDistance();
             scrolledParent.setMinHeight(y);
         }
     }
 
-    private void subPaintSelectionRectangle(GC gc, int x, int y) {
+    private void subPaintSelectionRectangle(GC gc, MovieWrapper movieWrapper) {
         Color previousBackground = gc.getBackground();
         gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
-        Rectangle rectangleWithoutBorders = getRectangleForItem(x, y);
+        Rectangle rectangleWithoutBorders = getRectangleForItem(movieWrapper);
         rectangleWithoutBorders.width--;
         rectangleWithoutBorders.height--;
         gc.fillRectangle(rectangleWithoutBorders);
@@ -353,37 +394,44 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         gc.setLineStyle(previousLineStyle);
     }
 
-    private void subPaintMovieThumbnail(GC gc, int x, int y, MovieWrapper movieWrapper) {
+    private void subPaintMovieThumbnail(GC gc, MovieWrapper movieWrapper) {
         if (movieWrapper.getImage() != null)
-            gc.drawImage(movieWrapper.getImage(), x, y);
+            gc.drawImage(movieWrapper.getImage(), movieWrapper.x, movieWrapper.y);
         else
             thumbnailManager.setThumbnailOnWidget(movieWrapper);
     }
 
-    private void subPaintMovieTitle(GC gc, int x, int y, MovieWrapper movieWrapper, boolean selected) {
+    private void subPaintMovieTitle(GC gc, MovieWrapper movieWrapper, boolean selected) {
         Color previousTextColor = gc.getForeground();
-        if (selected)
+        if (selected) {
             gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-        else
-            gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-        Point textExtent = gc.stringExtent(movieWrapper.getFilm().getNazivfilma());
-        if (textExtent.x < thumbnailWidth) {
-            gc.drawText(movieWrapper.getFilm().getNazivfilma(),
-                    x + (thumbnailWidth - textExtent.x) / 2,
-                    thumbnailHeight + y + 2, true);
-        } else {
-            int charCount = thumbnailWidth / gc.getFontMetrics().getAverageCharWidth();
-            String newText = movieWrapper.getFilm().getNazivfilma().substring(0, charCount) + "...";
-            textExtent = gc.stringExtent(newText);
-            gc.drawText(newText, x + (thumbnailWidth - textExtent.x) / 2, thumbnailHeight + y + 2, true);
+            gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
         }
+        else {
+            gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+            gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        }
+
+        String visibleMovieTitle = getVisibleMovieTitle(gc, movieWrapper);
+        Point textExtent = gc.stringExtent(visibleMovieTitle);
+        gc.drawText(visibleMovieTitle,
+                movieWrapper.x + (thumbnailWidth - textExtent.x) / 2,
+                thumbnailHeight + movieWrapper.y, false);
         gc.setForeground(previousTextColor);
     }
 
-    private Rectangle getRectangleForItem(int x, int y) {
-        return new Rectangle(x - PADDING_BETWEEN_COLUMNS / 2, y - PADDING_BETWEEN_ROWS / 2,
-                thumbnailWidth + PADDING_BETWEEN_COLUMNS,
-                thumbnailHeight + PADDING_BETWEEN_ROWS_TEXT * 3 / 2);
+    private String getVisibleMovieTitle(GC gc, MovieWrapper movieWrapper) {
+        String textToShow = movieWrapper.getFilm().getNazivfilma();
+        Point textExtent = gc.stringExtent(textToShow);
+        if (textExtent.x > thumbnailWidth) {
+            int len = movieWrapper.getFilm().getNazivfilma().length()-1;
+            textToShow = movieWrapper.getFilm().getNazivfilma().substring(0, len) + "...";
+            while (textExtent.x > thumbnailWidth) {
+                textExtent = gc.stringExtent(textToShow);
+                textToShow = movieWrapper.getFilm().getNazivfilma().substring(0, --len) + "...";
+            }
+        }
+        return textToShow;
     }
 
 }
