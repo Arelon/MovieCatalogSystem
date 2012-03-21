@@ -10,6 +10,8 @@ import javax.persistence.PersistenceContext;
  */
 public abstract class AbstractRepository {
 
+    protected static final String HIBERNATE_HINT_CACHEABLE = "org.hibernate.cacheable"; //NON-NLS
+
     @PersistenceContext(name = "MovieCatalogSystemDB")
     protected EntityManager entityManager;
 

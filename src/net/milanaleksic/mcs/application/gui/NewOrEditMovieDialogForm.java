@@ -361,6 +361,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         composite.setLayout(gridLayout);
         Button btnPrihvati = new Button(composite, SWT.NONE);
         btnPrihvati.setText(bundle.getString("global.save"));
+        GridData btnPrihvatiLayout = new GridData(SWT.NONE);
+        btnPrihvatiLayout.widthHint = 80;
+        btnPrihvati.setLayoutData(btnPrihvatiLayout);
         btnPrihvati.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 //TODO: replace with Hibernate Validator (JSR 303 implementation)
@@ -398,6 +401,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             }
         });
         Button btnOdustani = new Button(composite, SWT.NONE);
+        GridData btnOdustaniLayout = new GridData(SWT.NONE);
+        btnOdustaniLayout.widthHint = 80;
+        btnOdustani.setLayoutData(btnOdustaniLayout);
         btnOdustani.setText(bundle.getString("global.cancel"));
         btnOdustani.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {

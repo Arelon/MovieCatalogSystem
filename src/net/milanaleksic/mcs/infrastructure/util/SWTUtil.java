@@ -188,4 +188,8 @@ public class SWTUtil {
         return scaled;
     }
 
+    public static FontData getSystemFontData() {
+        return Display.getDefault().getSystemFont().getFontData()[0];
+    }
+
 }

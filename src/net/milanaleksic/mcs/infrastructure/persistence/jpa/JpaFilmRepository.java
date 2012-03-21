@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SingularAttribute;
 import java.util.*;
 
 /**
@@ -48,9 +49,10 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     @Override
     @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter,
-                                       Pozicija pozicijaFilter, String textFilter) {
+                                            Pozicija pozicijaFilter, String textFilter, SingularAttribute<Film,String>  orderByAttribute, boolean ascending) {
         return new FilmsWithCount(
-                doGetFilmsByCriteria(startFrom, maxItems, zanrFilter, tipMedijaFilter, pozicijaFilter, textFilter),
+                doGetFilmsByCriteria(startFrom, maxItems, zanrFilter, tipMedijaFilter, pozicijaFilter,
+                        textFilter, orderByAttribute, ascending),
                 doGetFilmCountByCriteria(zanrFilter, tipMedijaFilter, pozicijaFilter, textFilter));
     }
 
@@ -64,7 +66,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
         ParameterExpression<String> textFilterParameter = null;
         if (textFilter != null) {
-            textFilterParameter = builder.parameter(String.class, "filter");
+            textFilterParameter = builder.parameter(String.class, "filter"); //NON-NLS
             predicates.add(builder.or(
                     builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter),
                     builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter),
@@ -73,13 +75,13 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         }
         ParameterExpression<Zanr> zanrParameter = null;
         if (zanrFilter != null)
-            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter = builder.parameter(Zanr.class, "zanr")));
+            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter = builder.parameter(Zanr.class, "zanr"))); //NON-NLS
         ParameterExpression<String> tipMedijaParameter = null;
         if (tipMedijaFilter != null)
-            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
+            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter = builder.parameter(String.class, "medijListAsString"))); //NON-NLS
         ParameterExpression<String> pozicijaParameter = null;
         if (pozicijaFilter != null)
-            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter = builder.parameter(String.class, "pozicija")));
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter = builder.parameter(String.class, "pozicija"))); //NON-NLS
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -98,12 +100,13 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (pozicijaFilter != null)
             query.setParameter(pozicijaParameter, pozicijaFilter.getPozicija());
 
-        query.setHint("org.hibernate.cacheable", true);
+        query.setHint(HIBERNATE_HINT_CACHEABLE, true);
 
         return query.getSingleResult();
     }
 
-    private List<Film> doGetFilmsByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter, String textFilter) {
+    private List<Film> doGetFilmsByCriteria(int startFrom, int maxItems, Zanr zanrFilter, TipMedija tipMedijaFilter, Pozicija pozicijaFilter,
+                                            String textFilter, SingularAttribute<Film,String> orderByAttribute, boolean ascending) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Film> cq = builder.createQuery(Film.class);
         Root<Film> film = cq.from(Film.class);
@@ -113,7 +116,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
         ParameterExpression<String> textFilterParameter = null;
         if (textFilter != null) {
-            textFilterParameter = builder.parameter(String.class, "filter");
+            textFilterParameter = builder.parameter(String.class, "filter"); //NON-NLS
             predicates.add(builder.or(
                     builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter),
                     builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter),
@@ -122,13 +125,13 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         }
         ParameterExpression<Zanr> zanrParameter = null;
         if (zanrFilter != null)
-            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter = builder.parameter(Zanr.class, "zanr")));
+            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter = builder.parameter(Zanr.class, "zanr"))); //NON-NLS
         ParameterExpression<String> tipMedijaParameter = null;
         if (tipMedijaFilter != null)
-            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter = builder.parameter(String.class, "medijListAsString")));
+            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter = builder.parameter(String.class, "medijListAsString"))); //NON-NLS
         ParameterExpression<String> pozicijaParameter = null;
         if (pozicijaFilter != null)
-            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter = builder.parameter(String.class, "pozicija")));
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter = builder.parameter(String.class, "pozicija"))); //NON-NLS
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -137,8 +140,13 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             cq.where(builder.and(predicates.toArray(predicateArray)));
         }
 
-        cq.orderBy(builder.asc(film.<String>get(Film_.medijListAsString)),
+        if (ascending) {
+            cq.orderBy(builder.asc(film.<String>get(orderByAttribute)),
                 builder.asc(film.<String>get(Film_.nazivfilma)));
+        } else {
+            cq.orderBy(builder.desc(film.<String>get(orderByAttribute)),
+                builder.asc(film.<String>get(Film_.nazivfilma)));
+        }
 
         TypedQuery<Film> query = entityManager.createQuery(cq);
         if (textFilter != null)
@@ -154,7 +162,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             query.setMaxResults(maxItems);
         }
 
-        query.setHint("org.hibernate.cacheable", true);
+        query.setHint(HIBERNATE_HINT_CACHEABLE, true);
 
         return query.getResultList();
     }
