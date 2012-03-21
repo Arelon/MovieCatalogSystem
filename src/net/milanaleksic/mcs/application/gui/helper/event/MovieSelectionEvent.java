@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.application.gui.helper.event;
 
-import com.sun.xml.internal.ws.api.message.FilterMessageImpl;
 import net.milanaleksic.mcs.domain.model.Film;
 import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.widgets.Event;
