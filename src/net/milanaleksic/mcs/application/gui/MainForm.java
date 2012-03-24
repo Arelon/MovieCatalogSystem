@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Function;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
@@ -11,6 +12,7 @@ import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
+import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -31,10 +33,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 // do not allow java.awt.* to be added to import list because SWT's FileDialog
 // will not work in some cases(https://bugs.eclipse.org/bugs/show_bug.cgi?id=349387)
@@ -82,6 +86,9 @@ public class MainForm extends Observable {
     @Inject
     private ThumbnailManager thumbnailManager;
 
+    @Inject
+    private WorkerManager workerManager;
+
     private ResourceBundle bundle = null;
 
     private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com"; //NON-NLS
@@ -110,7 +117,7 @@ public class MainForm extends Observable {
         private volatile Long showableCount = 0L;
         private volatile String filterText = null;
         private volatile int maxItemsPerPage;
-        private SingularAttribute<Film,String> singularAttribute = Film_.medijListAsString;
+        private SingularAttribute<Film, String> singularAttribute = Film_.medijListAsString;
         private boolean ascending = true;
 
         public boolean isAscending() {
@@ -154,11 +161,11 @@ public class MainForm extends Observable {
             return maxItemsPerPage;
         }
 
-        public void setCurrentSortOn(SingularAttribute<Film,String> singularAttribute) {
+        public void setCurrentSortOn(SingularAttribute<Film, String> singularAttribute) {
             this.singularAttribute = singularAttribute;
         }
 
-        public SingularAttribute<Film,String> getSingularAttribute() {
+        public SingularAttribute<Film, String> getSingularAttribute() {
             return singularAttribute;
         }
     }
@@ -291,7 +298,7 @@ public class MainForm extends Observable {
             Combo combo = (Combo) e.widget;
             int selectionIndex = combo.getSelectionIndex();
             SingularAttribute singularAttribute = ((SingularAttribute[]) combo.getData())[selectionIndex];
-            currentViewState.setCurrentSortOn((SingularAttribute<Film,String>) singularAttribute);
+            currentViewState.setCurrentSortOn((SingularAttribute<Film, String>) singularAttribute);
             doFillMainTable();
             mainTable.setFocus();
         }
@@ -335,50 +342,57 @@ public class MainForm extends Observable {
             String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.') + 1);
             if (log.isDebugEnabled())
                 log.debug("Exporting to file \"" + targetFileForExport + "\""); //NON-NLS
-            Exporter exporter = ExporterFactory.getInstance().getExporter(ext);
+            final Exporter exporter = ExporterFactory.getInstance().getExporter(ext);
             if (exporter == null) {
                 log.error("Exporting to the selected format is not supported"); //NON-NLS
                 return;
             }
-            List<Film> filmList = getAllFilms(0);
-            final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
-            exporter.export(new ExporterSource() {
-
+            getAllFilms(0, new Function<List<Film>, Void>() {
                 @Override
-                public String getTargetFile() {
-                    return targetFileForExport;
-                }
+                public Void apply(@Nullable List<Film> filmList) {
+                    if (filmList == null)
+                        return null;
+                    final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
+                    exporter.export(new ExporterSource() {
 
-                @Override
-                public int getItemCount() {
-                    return allFilms.length;
-                }
+                        @Override
+                        public String getTargetFile() {
+                            return targetFileForExport;
+                        }
 
-                @Override
-                public int getColumnCount() {
-                    return 5;
-                }
+                        @Override
+                        public int getItemCount() {
+                            return allFilms.length;
+                        }
 
-                @Override
-                public String getData(int row, int column) {
-                    if (row == -1)
-                        return columnNames[column];
-                    switch (column) {
-                        case 0:
-                            return allFilms[row].getMedijListAsString();
-                        case 1:
-                            return allFilms[row].getNazivfilma();
-                        case 2:
-                            return allFilms[row].getPrevodnazivafilma();
-                        case 3:
-                            return allFilms[row].getZanr().getZanr();
-                        case 4:
-                            return allFilms[row].getPozicija();
-                        default:
-                            return "";
-                    }
-                }
+                        @Override
+                        public int getColumnCount() {
+                            return 5;
+                        }
 
+                        @Override
+                        public String getData(int row, int column) {
+                            if (row == -1)
+                                return columnNames[column];
+                            switch (column) {
+                                case 0:
+                                    return allFilms[row].getMedijListAsString();
+                                case 1:
+                                    return allFilms[row].getNazivfilma();
+                                case 2:
+                                    return allFilms[row].getPrevodnazivafilma();
+                                case 3:
+                                    return allFilms[row].getZanr().getZanr();
+                                case 4:
+                                    return allFilms[row].getPozicija();
+                                default:
+                                    return "";
+                            }
+                        }
+
+                    });
+                    return null;
+                }
             });
         }
 
@@ -804,13 +818,20 @@ public class MainForm extends Observable {
             toolTicker.setVisible(true);
             toolTicker.update();
         }
-        mainTable.setMovies(getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage()));
+        getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage(), new Function<List<Film>, Void>() {
+            @Override
+            public Void apply(@Nullable List<Film> films) {
+                mainTable.setMovies(films);
 
-        setChanged();
-        super.notifyObservers();
+                MainForm.this.setChanged();
+                MainForm.super.notifyObservers();
 
-        if (toolTicker != null)
-            toolTicker.setVisible(false);
+                if (toolTicker != null)
+                    toolTicker.setVisible(false);
+
+                return null;
+            }
+        });
     }
 
     private void nextPage() {
@@ -828,22 +849,27 @@ public class MainForm extends Observable {
         doFillMainTable();
     }
 
-    public List<Film> getAllFilms(int maxItems) {
-        Zanr zanrFilter = (Zanr) comboZanr.getData(Integer.toString(comboZanr.getSelectionIndex()));
-        TipMedija tipMedijaFilter = (TipMedija) comboTipMedija.getData(Integer.toString(comboTipMedija.getSelectionIndex()));
-        Pozicija pozicijaFilter = (Pozicija) comboPozicija.getData(Integer.toString(comboPozicija.getSelectionIndex()));
-        String filterText = currentViewState.getFilterText() == null ?
+    public void getAllFilms(final int maxItems, Function<List<Film>, Void> whatToDoWithFilms) {
+        final Zanr zanrFilter = (Zanr) comboZanr.getData(Integer.toString(comboZanr.getSelectionIndex()));
+        final TipMedija tipMedijaFilter = (TipMedija) comboTipMedija.getData(Integer.toString(comboTipMedija.getSelectionIndex()));
+        final Pozicija pozicijaFilter = (Pozicija) comboPozicija.getData(Integer.toString(comboPozicija.getSelectionIndex()));
+        final String filterText = currentViewState.getFilterText() == null ?
                 null :
                 '%' + currentViewState.getFilterText() + '%';
-        int startFrom = currentViewState.getActivePage().intValue() * maxItems;
-        currentViewState.setMaxItemsPerPage(maxItems);
+        final int startFrom = currentViewState.getActivePage().intValue() * maxItems;
 
-        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(startFrom, maxItems,
-                zanrFilter, tipMedijaFilter, pozicijaFilter, filterText, currentViewState.getSingularAttribute(),
-                currentViewState.isAscending());
-        currentViewState.setShowableCount(filmsWithCount.count);
-
-        return filmsWithCount.films;
+        workerManager.submitLongTaskWithResultProcessingInSWTThread(
+                new Callable<List<Film>>() {
+                    @Override
+                    public List<Film> call() throws Exception {
+                        currentViewState.setMaxItemsPerPage(maxItems);
+                        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(startFrom, maxItems,
+                                zanrFilter, tipMedijaFilter, pozicijaFilter, filterText, currentViewState.getSingularAttribute(),
+                                currentViewState.isAscending());
+                        currentViewState.setShowableCount(filmsWithCount.count);
+                        return filmsWithCount.films;
+                    }
+                }, whatToDoWithFilms);
     }
 
 }

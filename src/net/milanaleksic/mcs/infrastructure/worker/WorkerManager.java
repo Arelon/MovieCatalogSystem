@@ -1,5 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.worker;
 
+import com.google.common.base.Function;
+import net.milanaleksic.mcs.domain.model.Film;
+
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -18,4 +22,5 @@ public interface WorkerManager {
 
     Future<?> submitIoBoundWorker(Runnable runnable);
 
+    <T> void submitLongTaskWithResultProcessingInSWTThread(Callable<T> longTask, Function<T, Void> operationOnResultOfLongTask);
 }
