@@ -709,34 +709,81 @@ public class MainForm extends Observable {
         comboZanr.setItems(new String[]{});
         comboZanr.add(bundle.getString("main.allGenres"));
         comboZanr.add("-----------");
-        int iter = 2;
-        for (Zanr zanr : zanrRepository.getZanrs()) {
-            comboZanr.setData(Integer.toString(iter++), zanr);
-            comboZanr.add(zanr.toString());
-        }
-        comboZanr.select(0);
+        workerManager.submitLongTaskWithResultProcessingInSWTThread(
+                new Callable<List<Zanr>>() {
+                    @Override
+                    public List<Zanr> call() throws Exception {
+                        return zanrRepository.getZanrs();
+                    }
+                },
+                new Function<List<Zanr>, Void>() {
+                    @Override
+                    public Void apply(@Nullable List<Zanr> zanrs) {
+                        if (zanrs == null)
+                            return null;
+                        //TODO: what is this iter ?
+                        int iter = 2;
+                        for (Zanr zanr : zanrs) {
+                            comboZanr.setData(Integer.toString(iter++), zanr);
+                            comboZanr.add(zanr.toString());
+                        }
+                        comboZanr.select(0);
+                        return null;
+                    }
+                }
+        );
     }
 
     private void resetPozicije() {
         comboPozicija.setItems(new String[]{});
         comboPozicija.add(bundle.getString("main.anyLocation"));
         comboPozicija.add("-----------");
-        for (Pozicija pozicija : pozicijaRepository.getPozicijas()) {
-            comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
-            comboPozicija.add(pozicija.toString());
-        }
-        comboPozicija.select(0);
+        workerManager.submitLongTaskWithResultProcessingInSWTThread(new Callable<List<Pozicija>>() {
+                    @Override
+                    public List<Pozicija> call() throws Exception {
+                        return pozicijaRepository.getPozicijas();
+                    }
+                },
+                new Function<List<Pozicija>, Void>() {
+                    @Override
+                    public Void apply(@Nullable List<Pozicija> pozicijas) {
+                        if (pozicijas == null)
+                            return null;
+                        for (Pozicija pozicija : pozicijas) {
+                            comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
+                            comboPozicija.add(pozicija.toString());
+                        }
+                        comboPozicija.select(0);
+                        return null;
+                    }
+                }
+        );
     }
 
     private void resetMedija() {
         comboTipMedija.setItems(new String[]{});
         comboTipMedija.add(bundle.getString("main.allMediums"));
         comboTipMedija.add("-----------");
-        for (TipMedija tip : tipMedijaRepository.getTipMedijas()) {
-            comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
-            comboTipMedija.add(tip.toString());
-        }
-        comboTipMedija.select(0);
+        workerManager.submitLongTaskWithResultProcessingInSWTThread(new Callable<List<TipMedija>>() {
+                    @Override
+                    public List<TipMedija> call() throws Exception {
+                        return tipMedijaRepository.getTipMedijas();
+                    }
+                },
+                new Function<List<TipMedija>, Void>() {
+                    @Override
+                    public Void apply(@Nullable List<TipMedija> tipMedijas) {
+                        if (tipMedijas == null)
+                            return null;
+                        for (TipMedija tip : tipMedijas) {
+                            comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
+                            comboTipMedija.add(tip.toString());
+                        }
+                        comboTipMedija.select(0);
+                        return null;
+                    }
+                }
+        );
     }
 
     private void createStatusBar() {
