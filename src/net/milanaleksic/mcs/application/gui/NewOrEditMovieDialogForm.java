@@ -48,6 +48,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     private PozicijaRepository pozicijaRepository;
 
     @Inject
+    private TipMedijaRepository tipMedijaRepository;
+
+    @Inject
     @Named("offerMovieListForNewOrEditForm")
     private OfferMovieList offerMovieListForNewOrEditForm;
 
@@ -131,11 +134,20 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             comboLokacija.add(pozicija.getPozicija());
             sveLokacije.put(pozicija.getPozicija(), pozicija);
         }
-
         for (Medij medij : medijRepository.getMedijs()) {
             comboDisk.add(medij.toString());
             sviDiskovi.put(medij.toString(), medij);
         }
+
+        if (sviZanrovi.size() == 0 || sveLokacije.size() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
+            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+            box.setMessage("You don't have at least one genre, medium type and location.\r\n\r\nPlease use Settings dialog to introduce each of the basic domain information");
+            box.setText("Information");
+            box.open();
+            shell.close();
+            return;
+        }
+
         if (previousZanr != null && previousZanr.length() > 0 && comboZanr.indexOf(previousZanr) != -1)
             comboZanr.select(comboZanr.indexOf(previousZanr));
         if (previousLokacija != null && previousLokacija.length() > 0 && comboLokacija.indexOf(previousLokacija) != -1)

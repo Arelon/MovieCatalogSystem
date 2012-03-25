@@ -86,6 +86,9 @@ public abstract class AbstractDialogForm {
         if (!noReadyEvent)
             onShellReady();
 
+        if (shell.isDisposed())
+            return;
+
         shell.addShellListener(new ShellAdapter() {
             public void shellClosed(ShellEvent e) {
                 if (!onShouldShellClose()) {
