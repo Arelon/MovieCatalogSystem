@@ -9,6 +9,7 @@ import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.export.*;
+import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
@@ -88,6 +89,9 @@ public class MainForm extends Observable {
 
     @Inject
     private WorkerManager workerManager;
+
+    @Inject
+    private ImageRepository imageRepository;
 
     private ResourceBundle bundle = null;
 
@@ -638,7 +642,7 @@ public class MainForm extends Observable {
         centerComposite.setLayout(new GridLayout(1, false));
 
         ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL | SWT.NO);
-        mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
+        mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager, imageRepository);
         mainTable.addMovieSelectionListener(new MovieSelectionListener() {
 
             @Override

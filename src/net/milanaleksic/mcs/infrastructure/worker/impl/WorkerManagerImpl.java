@@ -48,10 +48,10 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
     }
 
     @Override
-    public <T> void submitLongTaskWithResultProcessingInSWTThread(final Callable<T> longTask, final Function<T, Void> operationOnResultOfLongTask) {
+    public <T> Future<?> submitLongTaskWithResultProcessingInSWTThread(final Callable<T> longTask, final Function<T, Void> operationOnResultOfLongTask) {
         if (longTask == null || operationOnResultOfLongTask == null)
             throw new IllegalArgumentException("Neither long task nor operationOnResultOfLongTask may be null");
-        pool.submit(new Runnable() {
+        return pool.submit(new Runnable() {
             @Override
             public void run() {
                 try {

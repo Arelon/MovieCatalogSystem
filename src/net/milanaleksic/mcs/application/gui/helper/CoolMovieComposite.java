@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.application.gui.helper.event.CustomTypedListener;
 import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
 import net.milanaleksic.mcs.domain.model.Film;
+import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.thumbnail.impl.ImageTargetWidget;
-import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -16,8 +16,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
@@ -33,6 +31,9 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private List<MovieWrapper> movies = new LinkedList<>();
 
     private final ThumbnailManager thumbnailManager;
+
+    private final ImageRepository imageRepository;
+
     private final int thumbnailHeight;
     private final int thumbnailWidth;
 
@@ -62,27 +63,18 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
 
         @Override
-        public void setImageFromExternalFile(String absoluteFileLocation) {
-            setImage(new Image(getDisplay(), absoluteFileLocation));
+        public void setImageFromExternalFile(final String absoluteFileLocation) {
+            setImage(imageRepository.getImage(absoluteFileLocation));
         }
 
         @Override
-        public void setImageFromResource(String imageResource) {
-            try {
-                setImage(StreamUtil.useClasspathResource(imageResource, new Function<InputStream, Image>() {
-                    @Override
-                    public Image apply(@Nullable InputStream inputStream) {
-                        return new Image(getDisplay(), inputStream);
-                    }
-                }));
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Unexpected exception while working with the image", e);
-            }
+        public void setImageFromResource(final String imageResource) {
+            setImage(imageRepository.getResourceImage(imageResource));
         }
 
         @Override
         public void safeSetImage(Image image, String imdbId) {
-            if (this.image == null || this.image.isDisposed())
+            if (image == null || image.isDisposed())
                 return;
             if (getFilm() == null)
                 return;
@@ -109,9 +101,10 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
     }
 
-    public CoolMovieComposite(Composite parent, int style, ThumbnailManager thumbnailManager) {
+    public CoolMovieComposite(Composite parent, int style, ThumbnailManager thumbnailManager, ImageRepository imageRepository) {
         super(parent, style | SWT.NO_BACKGROUND);
         this.thumbnailManager = thumbnailManager;
+        this.imageRepository = imageRepository;
         thumbnailWidth = thumbnailManager.getThumbnailWidth();
         thumbnailHeight = thumbnailManager.getThumbnailHeight();
         setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
@@ -324,9 +317,9 @@ public class CoolMovieComposite extends Composite implements PaintListener {
                 backgroundRegion.subtract(wrapper.x, wrapper.y, thumbnailWidth, thumbnailHeight);
             Point extent = gc.stringExtent(getVisibleMovieTitle(gc, wrapper));
             backgroundRegion.subtract(new Rectangle(
-                wrapper.x + (thumbnailWidth - extent.x) / 2,
-                thumbnailHeight + wrapper.y,
-                extent.x, extent.y));
+                    wrapper.x + (thumbnailWidth - extent.x) / 2,
+                    thumbnailHeight + wrapper.y,
+                    extent.x, extent.y));
         }
         gc.setClipping(backgroundRegion);
         gc.fillRectangle(e.x, e.y, e.width, e.height);
@@ -406,8 +399,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         if (selected) {
             gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
             gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
-        }
-        else {
+        } else {
             gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
             gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
         }
@@ -424,7 +416,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         String textToShow = movieWrapper.getFilm().getNazivfilma();
         Point textExtent = gc.stringExtent(textToShow);
         if (textExtent.x > thumbnailWidth) {
-            int len = movieWrapper.getFilm().getNazivfilma().length()-1;
+            int len = movieWrapper.getFilm().getNazivfilma().length() - 1;
             textToShow = movieWrapper.getFilm().getNazivfilma().substring(0, len) + "...";
             while (textExtent.x > thumbnailWidth) {
                 textExtent = gc.stringExtent(textToShow);

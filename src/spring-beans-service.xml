@@ -16,4 +16,6 @@
 
     <bean id="httpClientFactoryService" class="net.milanaleksic.mcs.infrastructure.network.impl.HttpClientFactoryServiceImpl" />
 
+    <bean id="imageRepository" class="net.milanaleksic.mcs.infrastructure.image.impl.ImageRepositoryImpl" />
+
 </beans>

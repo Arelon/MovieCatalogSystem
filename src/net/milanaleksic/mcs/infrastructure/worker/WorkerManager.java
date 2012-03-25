@@ -22,5 +22,5 @@ public interface WorkerManager {
 
     Future<?> submitIoBoundWorker(Runnable runnable);
 
-    <T> void submitLongTaskWithResultProcessingInSWTThread(Callable<T> longTask, Function<T, Void> operationOnResultOfLongTask);
+    <T> Future<?> submitLongTaskWithResultProcessingInSWTThread(Callable<T> longTask, Function<T, Void> operationOnResultOfLongTask);
 }
