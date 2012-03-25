@@ -372,7 +372,6 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
         Rectangle rectangleWithoutBorders = getRectangleForItem(movieWrapper);
         rectangleWithoutBorders.width--;
-        rectangleWithoutBorders.height--;
         gc.fillRectangle(rectangleWithoutBorders);
         gc.setBackground(previousBackground);
 
