@@ -16,6 +16,6 @@ public interface ThumbnailManager {
 
     int getThumbnailWidth();
 
-    void precacheThumbnails();
+    void preCacheThumbnails();
 
 }

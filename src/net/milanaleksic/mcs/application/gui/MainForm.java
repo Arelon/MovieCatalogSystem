@@ -940,7 +940,7 @@ public class MainForm extends Observable {
 
     @MethodTiming
     private void doExecuteAdditionalLowPriorityPreparation() {
-        thumbnailManager.precacheThumbnails();
+        thumbnailManager.preCacheThumbnails();
     }
 
 }
