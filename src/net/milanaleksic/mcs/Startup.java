@@ -16,24 +16,21 @@ public class Startup {
     public static void main(String[] args) {
         ProgramArgsService.setProgramArgs(args);
 
-        WinLauncherUtil.wrapSingletonApplicationLogic(
-                new ApplicationLogic(
-                        WinLauncherConfig.build().setExecutable("MCS.exe")
-                ) {
-                    public void run() {
-                        if (log.isInfoEnabled())
-                            log.info("Welcome to Movie Catalog System v" + VersionInformation.getVersion()); //NON-NLS
-                        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-beans.xml"); //NON-NLS
-                        applicationContext.registerShutdownHook();
-                        if (log.isDebugEnabled())
-                            log.debug("Application context booted"); //NON-NLS
-                        ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager")); //NON-NLS
-                        applicationManager.entryPoint();
-                    }
+        WinLauncherUtil.wrapSingletonApplicationLogic(new ApplicationLogic() {
+            public void run() {
+                if (log.isInfoEnabled())
+                    log.info("Welcome to Movie Catalog System v" + VersionInformation.getVersion()); //NON-NLS
+                ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-beans.xml"); //NON-NLS
+                applicationContext.registerShutdownHook();
+                if (log.isDebugEnabled())
+                    log.debug("Application context booted"); //NON-NLS
+                ApplicationManager applicationManager = ((ApplicationManager) applicationContext.getBean("applicationManager")); //NON-NLS
+                applicationManager.entryPoint();
+            }
 
-                    public void couldNotRun(Exception e) {
-                        JOptionPane.showMessageDialog(null, "Startup error - " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+            public void couldNotRun(Exception e) {
+                JOptionPane.showMessageDialog(null, "Startup error - " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); //NON-NLS
+            }
         });
     }
 
