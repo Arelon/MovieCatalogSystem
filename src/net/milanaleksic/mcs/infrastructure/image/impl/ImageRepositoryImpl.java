@@ -4,8 +4,8 @@ import com.google.common.base.Function;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.Logger;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 import javax.annotation.Nullable;
@@ -47,9 +47,8 @@ public class ImageRepositoryImpl implements ImageRepository {
                 try {
                     imageData = images.get(imageName);
                     if (imageData == null) {
-                        Image image = new Image(Display.getDefault(), imageName);
-                        images.put(imageName, image.getImageData());
-                        return image;
+                        ImageData data = cacheImageDataForImage(imageName);
+                        return new Image(Display.getDefault(), data);
                     }
                     return new Image(Display.getDefault(), imageData);
                 } finally {
@@ -60,6 +59,9 @@ public class ImageRepositoryImpl implements ImageRepository {
                 }
             }
             return new Image(Display.getDefault(), imageData);
+        } catch (SWTException e) {
+            logger.debug("SWT Exception: ", e); //NON-NLS
+            return null;
         } finally {
             if (lock.getReadHoldCount() > 0)
                 readLock.unlock();
@@ -108,6 +110,14 @@ public class ImageRepositoryImpl implements ImageRepository {
             if (lock.getReadHoldCount() > 0)
                 readLock.unlock();
         }
+    }
+
+    @Override
+    public ImageData cacheImageDataForImage(String absolutePath) {
+        ImageLoader imageLoader = new ImageLoader();
+        ImageData imageData = imageLoader.load(absolutePath)[0];
+        images.put(absolutePath, imageData);
+        return imageData;
     }
 
 }

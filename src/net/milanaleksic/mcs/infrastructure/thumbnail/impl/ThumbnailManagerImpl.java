@@ -6,6 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
@@ -24,7 +25,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.io.File;
+import java.io.*;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,9 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
 
     @Inject
     private HttpClientFactoryService httpClientFactoryService;
+
+    @Inject
+    private ImageRepository imageRepository;
 
     private String defaultImageResource;
 
@@ -245,6 +249,14 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
     @Override
     public int getThumbnailWidth() {
         return thumbnailWidth;
+    }
+
+    @Override
+    public void precacheThumbnails() {
+        Collection<String> values = imdbIdToLocallyCachedImageMap.values();
+        for (String absolutePath : values) {
+            imageRepository.cacheImageDataForImage(absolutePath);
+        }
     }
 
     @Override

@@ -5,7 +5,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
 import java.text.NumberFormat;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * User: Milan Aleksic
@@ -16,32 +15,48 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MethodTimingAspect {
 
     protected final Logger log = Logger.getLogger(this.getClass());
-    private static final long warningTime = 100;
-
-    private final AtomicBoolean thisIsFirstQuery = new AtomicBoolean(true);
+    private static final long warningTimeInMs = 100;
 
     @SuppressWarnings({"EmptyMethod"})
-    @Pointcut(value="execution(* net.milanaleksic.mcs.infrastructure.persistence.jpa.*Repository.*(..)) ||" +
-            "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * ()) ||" +
-            "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * (*))")
-    private void timedMethod() {}
-
+    @Pointcut(value = "execution(* net.milanaleksic.mcs.infrastructure.persistence.jpa.*Repository.*(..))")
+    private void timedMethod() {
+    }
 
     @Around("timedMethod()")
     public Object doTimeMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        if (thisIsFirstQuery.getAndSet(false) || !log.isDebugEnabled())
-            return proceedingJoinPoint.proceed();
         long begin = System.nanoTime();
         Object result = proceedingJoinPoint.proceed();
-        double periodUs = (System.nanoTime() - begin) / 1000000.0;
-        String periodAsString = NumberFormat.getInstance().format(periodUs);
-        if (periodUs >= warningTime)
-            log.warn("MethodTiming (long) [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
-                    + periodAsString + "ms");
+        double periodInMs = (System.nanoTime() - begin) / 1000000.0;
+
+        String periodAsString = NumberFormat.getInstance().format(periodInMs);
+        if (periodInMs >= warningTimeInMs)
+            log.warn("MethodTiming (long) [" + proceedingJoinPoint.getSignature().toShortString() + "] - " + periodAsString + "ms"); //NON-NLS
         else {
             if (log.isDebugEnabled())
-                log.debug("MethodTiming [" + proceedingJoinPoint.getSignature().toShortString() + "] - "
-                        + periodAsString + "ms");
+                log.debug("MethodTiming [" + proceedingJoinPoint.getSignature().toShortString() + "] - " + periodAsString + "ms"); //NON-NLS
+        }
+        return result;
+    }
+
+    @SuppressWarnings({"EmptyMethod"})
+    @Pointcut(value = "(execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * ()) ||" +
+            "execution(@net.milanaleksic.mcs.infrastructure.util.MethodTiming * * (*))) && @annotation(methodTiming)")
+    private void timedWithAnnotationMethod(MethodTiming methodTiming) {
+    }
+
+    @Around(value = "timedWithAnnotationMethod(methodTiming)")
+    public Object doTimeMethodWithAnnotation(ProceedingJoinPoint proceedingJoinPoint, MethodTiming methodTiming) throws Throwable {
+        long begin = System.nanoTime();
+        Object result = proceedingJoinPoint.proceed();
+        double periodInMs = (System.nanoTime() - begin) / 1000000.0;
+
+        String periodAsString = NumberFormat.getInstance().format(periodInMs);
+        String title = methodTiming.name().isEmpty() ? proceedingJoinPoint.getSignature().toShortString() : "<named> "+methodTiming.name();
+        if (periodInMs >= warningTimeInMs)
+            log.warn("MethodTiming (long) [" + title + "] - " + periodAsString + "ms"); //NON-NLS
+        else {
+            if (log.isDebugEnabled())
+                log.debug("MethodTiming [" + title + "] - " + periodAsString + "ms"); //NON-NLS
         }
         return result;
     }

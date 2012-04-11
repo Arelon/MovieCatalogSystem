@@ -279,6 +279,7 @@ public class MainForm extends Observable {
             if (programArgsService.getProgramArgs().isNoInitialMovieListLoading())
                 return;
             doFillMainTable();
+            executeAdditionalLowPriorityPreparation();
         }
     }
 
@@ -863,8 +864,7 @@ public class MainForm extends Observable {
     // LOGIC
 
 
-    @MethodTiming
-    public void doFillMainTable() {
+    private void doFillMainTable() {
         if (toolTicker != null) {
             toolTicker.setVisible(true);
             toolTicker.update();
@@ -912,6 +912,7 @@ public class MainForm extends Observable {
         workerManager.submitLongTaskWithResultProcessingInSWTThread(
                 new Callable<List<Film>>() {
                     @Override
+                    @MethodTiming(name = "getAllFilms")
                     public List<Film> call() throws Exception {
                         currentViewState.setMaxItemsPerPage(maxItems);
                         FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(startFrom, maxItems,
@@ -921,6 +922,25 @@ public class MainForm extends Observable {
                         return filmsWithCount.films;
                     }
                 }, whatToDoWithFilms);
+    }
+
+    private void executeAdditionalLowPriorityPreparation() {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                }
+                doExecuteAdditionalLowPriorityPreparation();
+            }
+        }.start();
+    }
+
+    @MethodTiming
+    private void doExecuteAdditionalLowPriorityPreparation() {
+        thumbnailManager.precacheThumbnails();
     }
 
 }
