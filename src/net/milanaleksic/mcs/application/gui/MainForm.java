@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
@@ -347,8 +348,8 @@ public class MainForm extends Observable {
             String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.') + 1);
             if (log.isDebugEnabled())
                 log.debug("Exporting to file \"" + targetFileForExport + "\""); //NON-NLS
-            final Exporter exporter = ExporterFactory.getInstance().getExporter(ext);
-            if (exporter == null) {
+            final Optional<Exporter> exporter = Optional.fromNullable(ExporterFactory.getInstance().getExporter(ext));
+            if (!exporter.isPresent()) {
                 log.error("Exporting to the selected format is not supported"); //NON-NLS
                 return;
             }
@@ -358,7 +359,7 @@ public class MainForm extends Observable {
                     if (filmList == null)
                         return null;
                     final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
-                    exporter.export(new ExporterSource() {
+                    exporter.get().export(new ExporterSource() {
 
                         @Override
                         public String getTargetFile() {

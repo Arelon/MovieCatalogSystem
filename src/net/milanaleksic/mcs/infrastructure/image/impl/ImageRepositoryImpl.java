@@ -1,7 +1,8 @@
 package net.milanaleksic.mcs.infrastructure.image.impl;
 
-import com.google.common.base.Function;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
+import net.milanaleksic.mcs.infrastructure.util.RuntimeUtil;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWTException;
@@ -33,32 +34,23 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image getImage(String imageName) {
+    public Image getImage(final String imageName) {
         Lock readLock = lock.readLock();
         try {
-            ImageData imageData = images.get(imageName);
-            if (imageData == null) {
-                final int holdCount = lock.getReadHoldCount();
-                for (int i = 0; i < holdCount; i++) {
-                    readLock.unlock();
-                }
-                Lock writeLock = lock.writeLock();
-                writeLock.lock();
-                try {
-                    imageData = images.get(imageName);
-                    if (imageData == null) {
+            Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageName));
+            if (imageDataOptional.isPresent())
+                return new Image(Display.getDefault(), imageDataOptional.get());
+            return RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<Image>() {
+                @Override
+                public Image get() {
+                    Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageName));
+                    if (!imageDataOptional.isPresent()) {
                         ImageData data = cacheImageDataForImage(imageName);
                         return new Image(Display.getDefault(), data);
                     }
-                    return new Image(Display.getDefault(), imageData);
-                } finally {
-                    for (int i = 0; i < holdCount; i++) {
-                        readLock.lock();
-                    }
-                    writeLock.unlock();
+                    return new Image(Display.getDefault(), imageDataOptional.get());
                 }
-            }
-            return new Image(Display.getDefault(), imageData);
+            });
         } catch (SWTException e) {
             logger.debug("SWT Exception: ", e); //NON-NLS
             return null;
@@ -69,43 +61,33 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image getResourceImage(String imageResource) {
+    public Image getResourceImage(final String imageResource) {
         Lock readLock = lock.readLock();
         try {
-            ImageData imageData = images.get(imageResource);
-            if (imageData == null) {
-                final int holdCount = lock.getReadHoldCount();
-                for (int i = 0; i < holdCount; i++) {
-                    readLock.unlock();
-                }
-                Lock writeLock = lock.writeLock();
-                writeLock.lock();
-                try {
-                    imageData = images.get(imageResource);
-                    if (imageData == null) {
-                        try {
-                            Image image = StreamUtil.useClasspathResource(imageResource, new Function<InputStream, Image>() {
-                                @Override
-                                public Image apply(@Nullable InputStream inputStream) {
-                                    return new Image(Display.getDefault(), inputStream);
-                                }
-                            });
-                            images.put(imageResource, image.getImageData());
-                            return image;
-                        } catch (IOException e) {
-                            logger.error("Error reading image details: " + imageResource);
-                            return null;
-                        }
+            Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageResource));
+            if (imageDataOptional.isPresent())
+                return new Image(Display.getDefault(), imageDataOptional.get());
+            return RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<Image>() {
+                @Override
+                public Image get() {
+                    Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageResource));
+                    if (imageDataOptional.isPresent())
+                        return new Image(Display.getDefault(), imageDataOptional.get());
+                    Image image;
+                    try {
+                        image = StreamUtil.useClasspathResource(imageResource, new Function<InputStream, Image>() {
+                            @Override
+                            public Image apply(@Nullable InputStream inputStream) {
+                                return new Image(Display.getDefault(), inputStream);
+                            }
+                        });
+                    } catch (IOException e) {
+                        throw new IllegalArgumentException("Resource does not exist: "+imageResource);
                     }
-                    return new Image(Display.getDefault(), imageData);
-                } finally {
-                    for (int i = 0; i < holdCount; i++) {
-                        readLock.lock();
-                    }
-                    writeLock.unlock();
+                    images.put(imageResource, image.getImageData());
+                    return image;
                 }
-            }
-            return new Image(Display.getDefault(), imageData);
+            });
         } finally {
             if (lock.getReadHoldCount() > 0)
                 readLock.unlock();
