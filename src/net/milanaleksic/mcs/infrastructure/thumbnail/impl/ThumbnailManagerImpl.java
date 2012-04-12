@@ -230,17 +230,15 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
         }
         cacheDirectory = location;
         File[] files = cacheDirectory.listFiles();
-        synchronized(this) {
-            for (File file : files) {
-                if (!PATTERN_CACHED_IMAGE.matcher(file.getName()).matches()) {
-                    logger.warn("File not detected as a proper cached image: " + file); //NON-NLS
-                    continue;
-                }
-                imdbIdToLocallyCachedImageMap.put(
-                        file.getName().substring(0, file.getName().lastIndexOf(".")),
-                        file.getAbsolutePath()
-                );
+        for (File file : files) {
+            if (!PATTERN_CACHED_IMAGE.matcher(file.getName()).matches()) {
+                logger.warn("File not detected as a proper cached image: " + file); //NON-NLS
+                continue;
             }
+            imdbIdToLocallyCachedImageMap.put(
+                    file.getName().substring(0, file.getName().lastIndexOf(".")),
+                    file.getAbsolutePath()
+            );
         }
     }
 
@@ -254,8 +252,9 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
     }
 
     @Override
-    public synchronized void preCacheThumbnails() {
-        Collection<String> values = imdbIdToLocallyCachedImageMap.values();
+    public void preCacheThumbnails() {
+        // to avoid concurrent modification exception, we will create copy of the values stored in thumbnail repository
+        LinkedList<String> values = new LinkedList<>(imdbIdToLocallyCachedImageMap.values());
         for (String absolutePath : values) {
             imageRepository.cacheImageDataForImage(absolutePath);
         }
