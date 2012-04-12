@@ -1,5 +1,10 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
+import com.google.common.base.Supplier;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * User: Milan Aleksic
  * Date: 4/11/12
@@ -17,6 +22,23 @@ public class RuntimeUtil {
             builder.append('\r').append('\n');
         }
         return builder.toString();
+    }
+
+    public static <T> T promoteReadLockToWriteLockAndProcess(ReentrantReadWriteLock lock, Supplier<T> function) {
+        final int holdCount = lock.getReadHoldCount();
+        for (int i = 0; i < holdCount; i++) {
+            lock.readLock().unlock();
+        }
+        Lock writeLock = lock.writeLock();
+        writeLock.lock();
+        try {
+            return function.get();
+        } finally {
+            for (int i = 0; i < holdCount; i++) {
+                lock.readLock().lock();
+            }
+            writeLock.unlock();
+        }
     }
 
 }
