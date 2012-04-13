@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.application.gui.helper.event.CustomTypedListener;
 import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
@@ -44,7 +45,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
         private Film film;
 
-        private Image image = null;
+        private Optional<Image> image = Optional.absent();
 
         private int x;
         private int y;
@@ -69,12 +70,12 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
         @Override
         public void setImageFromResource(final String imageResource) {
-            setImage(imageRepository.getResourceImage(imageResource));
+            setImage(Optional.of(imageRepository.getResourceImage(imageResource)));
         }
 
         @Override
-        public void safeSetImage(Image image, String imdbId) {
-            if (image == null || image.isDisposed())
+        public void safeSetImage(Optional<Image> image, String imdbId) {
+            if (!image.isPresent() || image.get().isDisposed())
                 return;
             if (getFilm() == null)
                 return;
@@ -82,20 +83,20 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
 
         void dispose() {
-            if (image != null && !image.isDisposed()) {
+            if (image.isPresent() && !image.get().isDisposed()) {
                 try {
-                    image.dispose();
-                    image = null;
+                    image.get().dispose();
+                    image = Optional.absent();
                 } catch (Exception ignored) {
                 }
             }
         }
 
-        public Image getImage() {
+        public Optional<Image> getImage() {
             return image;
         }
 
-        public void setImage(Image image) {
+        public void setImage(Optional<Image> image) {
             this.image = image;
             redrawItem(this);
         }
@@ -313,7 +314,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         Region backgroundRegion = new Region(getDisplay());
         backgroundRegion.add(new Rectangle(e.x, e.y, e.width, e.height));
         for (MovieWrapper wrapper : movies) {
-            if ((wrapper.getImage() == null || wrapper.getImage().getImageData().alphaData == null))
+            if (!wrapper.getImage().isPresent() || wrapper.getImage().get().getImageData().alphaData == null)
                 backgroundRegion.subtract(wrapper.x, wrapper.y, thumbnailWidth, thumbnailHeight);
             Point extent = gc.stringExtent(getVisibleMovieTitle(gc, wrapper));
             backgroundRegion.subtract(new Rectangle(
@@ -387,8 +388,8 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     private void subPaintMovieThumbnail(GC gc, MovieWrapper movieWrapper) {
-        if (movieWrapper.getImage() != null)
-            gc.drawImage(movieWrapper.getImage(), movieWrapper.x, movieWrapper.y);
+        if (movieWrapper.getImage().isPresent())
+            gc.drawImage(movieWrapper.getImage().get(), movieWrapper.x, movieWrapper.y);
         else
             thumbnailManager.setThumbnailOnWidget(movieWrapper);
     }

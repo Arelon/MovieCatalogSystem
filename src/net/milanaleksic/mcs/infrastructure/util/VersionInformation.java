@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
+import com.google.common.base.Optional;
+
 import java.io.IOException;
 import java.util.Properties;
 
@@ -10,19 +12,19 @@ import java.util.Properties;
  */
 public class VersionInformation {
 
-    private static String version = null;
+    private static Optional<String> version = Optional.absent();
 
     public static synchronized String getVersion() {
-        if (version == null) {
+        if (!version.isPresent()) {
             Properties properties;
             try {
                 properties = StreamUtil.fetchPropertiesFromClasspath("/net/milanaleksic/mcs/version.properties"); //NON-NLS
             } catch (IOException e) {
                 throw new RuntimeException("Version properties files not found in resources");
             }
-            version = properties.getProperty("src.version") + '.' + properties.getProperty("build.number");
+            version = Optional.of(properties.getProperty("src.version") + '.' + properties.getProperty("build.number"));
         }
-        return version;
+        return version.get();
     }
 
 }

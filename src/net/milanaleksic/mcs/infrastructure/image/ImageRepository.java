@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.image;
 
+import com.google.common.base.Optional;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -10,7 +11,7 @@ import org.eclipse.swt.graphics.ImageData;
  */
 public interface ImageRepository {
 
-    public Image getImage(String imageName);
+    public Optional<Image> getImage(String imageName);
 
     public Image getResourceImage(String imageResource);
 

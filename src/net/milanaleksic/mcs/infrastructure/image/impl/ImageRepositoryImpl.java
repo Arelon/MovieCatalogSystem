@@ -34,13 +34,13 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image getImage(final String imageName) {
+    public Optional<Image> getImage(final String imageName) {
         Lock readLock = lock.readLock();
         try {
             Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageName));
             if (imageDataOptional.isPresent())
-                return new Image(Display.getDefault(), imageDataOptional.get());
-            return RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<Image>() {
+                return Optional.of(new Image(Display.getDefault(), imageDataOptional.get()));
+            return Optional.of(RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<Image>() {
                 @Override
                 public Image get() {
                     Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageName));
@@ -50,10 +50,10 @@ public class ImageRepositoryImpl implements ImageRepository {
                     }
                     return new Image(Display.getDefault(), imageDataOptional.get());
                 }
-            });
+            }));
         } catch (SWTException e) {
             logger.debug("SWT Exception: ", e); //NON-NLS
-            return null;
+            return Optional.absent();
         } finally {
             if (lock.getReadHoldCount() > 0)
                 readLock.unlock();

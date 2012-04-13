@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.graphics.Image;
@@ -35,13 +36,13 @@ class CompositeImageTargetWidget implements ImageTargetWidget {
     }
 
     @Override
-    public void safeSetImage(Image image, String imdbId) {
+    public void safeSetImage(Optional<Image> image, String imdbId) {
         if (composite.isDisposed())
             return;
         String targetImdbId = getImdbId();
         if (targetImdbId == null || !targetImdbId.equals(imdbId))
             return;
-        composite.setImage(image);
+        composite.setImage(image.orNull());
     }
 
 }

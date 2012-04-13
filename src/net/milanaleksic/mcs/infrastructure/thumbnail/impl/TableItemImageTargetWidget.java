@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.graphics.Image;
@@ -38,7 +39,7 @@ class TableItemImageTargetWidget implements ImageTargetWidget {
     }
 
     @Override
-    public void safeSetImage(Image image, String imdbId) {
+    public void safeSetImage(Optional<Image> image, String imdbId) {
         if (tableItem.isDisposed())
             return;
         if (getFilm() == null)
@@ -46,7 +47,7 @@ class TableItemImageTargetWidget implements ImageTargetWidget {
         String targetImdbId = getImdbId();
         if (targetImdbId == null || !targetImdbId.equals(imdbId))
             return;
-        tableItem.setImage(image);
+        tableItem.setImage(image.orNull());
     }
 
 }

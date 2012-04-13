@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
+import com.google.common.base.Strings;
+
 import java.net.URI;
 import java.util.regex.Pattern;
 
@@ -23,6 +25,6 @@ public class IMDBUtil {
     }
 
     public static boolean isValidImdbId(String imdbId) {
-        return imdbId!=null && PATTERN_IMDB_ID.matcher(imdbId).matches();
+        return !Strings.isNullOrEmpty(imdbId) && PATTERN_IMDB_ID.matcher(imdbId).matches();
     }
 }

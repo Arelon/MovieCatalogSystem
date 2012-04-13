@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageSearchResult;
 import net.milanaleksic.mcs.infrastructure.tmdb.impl.AbstractServiceAwareRequest;
 
@@ -23,7 +24,7 @@ public class ImageSearch extends AbstractServiceAwareRequest {
         return apiLocation + "Movie.getImages/en/json/" + getApiKey() + "/" + imdbId;
     }
 
-    public ImageSearchResult[] getSearchResult() throws TmdbException {
+    public Optional<ImageSearchResult[]> getSearchResult() throws TmdbException {
         return processRequest(ImageSearchResult[].class);
     }
 

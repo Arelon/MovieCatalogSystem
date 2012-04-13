@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,7 +30,7 @@ public abstract class AbstractRequest {
     protected abstract String getUrl();
 
     @MethodTiming
-    protected <T> T processRequest(Class<T> clazz) throws TmdbException {
+    protected <T> Optional<T> processRequest(Class<T> clazz) throws TmdbException {
         String url = getUrl();
         String value;
         try {
@@ -42,17 +43,17 @@ public abstract class AbstractRequest {
                 throw new TmdbException("Invalid response: " + statusLine);
             HttpEntity entity = response.getEntity();
             if (entity == null)
-                return null;
+                return Optional.absent();
             value = EntityUtils.toString(entity);
             if ("[\"Nothing found.\"]".equals(value)) //NON-NLS
-                return null;
-            return mapper.readValue(value, clazz);
+                return Optional.absent();
+            return Optional.fromNullable(mapper.readValue(value, clazz));
         } catch (ClientProtocolException e) {
             throw new TmdbException("Client protocol exception occurred: ", e);
         } catch (InterruptedIOException e) {
             Thread.currentThread().interrupt();
             logger.warn("IO Interrupted, returning null as result from TMDB API request"); //NON-NLS
-            return null;
+            return Optional.absent();
         } catch (IOException e) {
             throw new TmdbException("IO exception occurred: ", e);
         } catch (Throwable t) {
@@ -62,7 +63,7 @@ public abstract class AbstractRequest {
 
     protected abstract HttpResponse executeHttpMethod(HttpGet httpMethod) throws IOException;
 
-    protected JsonNode processRequest() throws TmdbException {
+    protected Optional<JsonNode> processRequest() throws TmdbException {
         return processRequest(JsonNode.class);
     }
 

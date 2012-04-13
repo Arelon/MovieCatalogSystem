@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
@@ -103,7 +104,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
             downloadingWaiters.put(imdbId, new Function<Image, Void>() {
                 @Override
                 public Void apply(@Nullable Image image) {
-                    imageTargetWidget.safeSetImage(image, imdbId);
+                    imageTargetWidget.safeSetImage(Optional.fromNullable(image), imdbId);
                     return null;
                 }
             });
@@ -113,7 +114,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
             downloadingWaiters.put(imdbId, new Function<Image, Void>() {
                 @Override
                 public Void apply(@Nullable Image image) {
-                    imageTargetWidget.safeSetImage(image, imdbId);
+                    imageTargetWidget.safeSetImage(Optional.fromNullable(image), imdbId);
                     return null;
                 }
             });
@@ -127,17 +128,18 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
         return workerManager.submitIoBoundWorker(new Runnable() {
             @Override
             public void run() {
-                ImageSearchResult imagesForMovie;
                 try {
-                    imagesForMovie = getImagesForMovie(imdbId);
-                    final String url = findAppropriateThumbnailImage(imagesForMovie);
-                    if (url == null) {
+                    Optional<ImageSearchResult> imagesForMovieOptional = getImagesForMovie(imdbId);
+                    final Optional<String> url = imagesForMovieOptional.isPresent()
+                            ? findAppropriateThumbnailImage(imagesForMovieOptional.get())
+                            : Optional.<String>absent();
+                    if (!url.isPresent()) {
                         if (logger.isDebugEnabled())
                             logger.debug("No suitable poster found for movie: " + imdbId); //NON-NLS
                         recordDummyResponseForMovie(imdbId);
                         return;
                     }
-                    SWTUtil.createImageFromUrl(URI.create(url), persistentHttpContext, new Function<Image, Void>() {
+                    SWTUtil.createImageFromUrl(URI.create(url.get()), persistentHttpContext, new Function<Image, Void>() {
                         @Override
                         public Void apply(@Nullable Image image) {
                             final Image finalImage;
@@ -172,12 +174,14 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
         });
     }
 
-    private ImageSearchResult getImagesForMovie(String imdbId) throws TmdbException {
+    private Optional<ImageSearchResult> getImagesForMovie(String imdbId) throws TmdbException {
         ImageSearchResult imageSearchResult = cachedImageSearches.get(imdbId);
         if (imageSearchResult != null)
-            return imageSearchResult;
-        cachedImageSearches.put(imdbId, imageSearchResult = tmdbService.getImagesForMovie(imdbId));
-        return imageSearchResult;
+            return Optional.of(imageSearchResult);
+        Optional<ImageSearchResult> optionalImageSearchResult = tmdbService.getImagesForMovie(imdbId);
+        if (optionalImageSearchResult.isPresent())
+            cachedImageSearches.put(imdbId, optionalImageSearchResult.get());
+        return optionalImageSearchResult;
     }
 
     private void recordDummyResponseForMovie(String imdbId) {
@@ -185,19 +189,17 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
         downloadingWaiters.removeAll(imdbId);
     }
 
-    private String findAppropriateThumbnailImage(ImageSearchResult imagesForMovie) {
-        if (imagesForMovie == null)
-            return null;
+    private Optional<String> findAppropriateThumbnailImage(ImageSearchResult imagesForMovie) {
         for (ImageInfo imageInfo : imagesForMovie.getPosters()) {
             net.milanaleksic.mcs.infrastructure.tmdb.bean.Image image = imageInfo.getImage();
             if (image.getWidth() == thumbnailWidth && image.getHeight() == thumbnailHeight)
-                return image.getUrl();
+                return Optional.of(image.getUrl());
             // in case we don't have exact match, we need first with both dimensions larget than exact match
             // for best rescaling we can get
             if (image.getWidth() > thumbnailWidth && image.getHeight() > thumbnailHeight)
-                return image.getUrl();
+                return Optional.of(image.getUrl());
         }
-        return null;
+        return Optional.absent();
     }
 
     private void saveImageLocally(Image image, String imdbId) {

@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 
+import com.google.common.base.Optional;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -15,5 +16,5 @@ public interface ImageTargetWidget {
 
     void setImageFromResource(String defaultImageResource);
 
-    void safeSetImage(Image image, String imdbId);
+    void safeSetImage(Optional<Image> image, String imdbId);
 }

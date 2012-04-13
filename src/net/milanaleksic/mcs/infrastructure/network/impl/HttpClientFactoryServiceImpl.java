@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.network.impl;
 
+import com.google.common.base.Strings;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
@@ -38,12 +39,11 @@ public class HttpClientFactoryServiceImpl implements HttpClientFactoryService, L
         registry.register(new Scheme(SCHEME_HTTP, PlainSocketFactory.getSocketFactory(), 80));
         UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
         DefaultHttpClient httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(new BasicHttpParams(), registry), new BasicHttpParams());
-        if (null != proxyConfiguration.getServer() && !proxyConfiguration.getServer().isEmpty()) {
+        if (!Strings.isNullOrEmpty(proxyConfiguration.getServer())) {
             String server = proxyConfiguration.getServer();
             int port = proxyConfiguration.getPort() == 0 ? 80 : proxyConfiguration.getPort();
             final HttpHost hcProxyHost = new HttpHost(server, port, SCHEME_HTTP);
-            if (null != proxyConfiguration.getUsername() && !proxyConfiguration.getUsername().isEmpty()
-                    && null != proxyConfiguration.getPassword() && !proxyConfiguration.getPassword().isEmpty()) {
+            if (!Strings.isNullOrEmpty(proxyConfiguration.getUsername()) && !Strings.isNullOrEmpty(proxyConfiguration.getPassword())) {
                 Credentials credentials;
                 httpClient.getAuthSchemes().register(AUTH_SCHEME_NTLM, new NTLMSchemeFactory());
                 if (proxyConfiguration.isNtlm()) {

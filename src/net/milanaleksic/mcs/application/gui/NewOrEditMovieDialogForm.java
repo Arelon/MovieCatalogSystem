@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
@@ -7,7 +9,6 @@ import net.milanaleksic.mcs.domain.service.FilmService;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
-import net.milanaleksic.mcs.infrastructure.util.StringUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -323,7 +324,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             textGodina.setText(movie.getReleasedYear());
         comboNaziv.setText(movie.getName());
         textKomentar.setText(movie.getOverview());
-        textImdbId.setText(StringUtil.emptyIfNull(movie.getImdbId()));
+        textImdbId.setText(Strings.nullToEmpty(movie.getImdbId()));
         thumbnailManager.setThumbnailForShowImageComposite(posterImage, movie.getImdbId());
     }
 
@@ -523,7 +524,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     }
 
     @Override
-    public void setCurrentQueryItems(final String query, final String message, @Nullable final Movie[] movies) {
+    public void setCurrentQueryItems(final String query, final String message, final Optional<Movie[]> moviesOptional) {
         if (shell.isDisposed())
             return;
         shell.getDisplay().asyncExec(new Runnable() {
@@ -534,7 +535,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                     Point selection = comboNaziv.getSelection();
                     if (message != null) {
                         comboNaziv.setItems(new String[]{message});
-                    } else if (movies != null) {
+                    } else if (moviesOptional.isPresent()) {
+                        Movie[] movies = moviesOptional.get();
                         String[] newItems = new String[movies.length <= 10 ? movies.length : 10];
                         for (int i = 0; i < newItems.length; i++) {
                             newItems[i] = String.format("%s (%s)", movies[i].getName(), movies[i].getReleasedYear()); //NON-NLS

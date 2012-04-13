@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb.impl;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
@@ -27,21 +28,18 @@ public class TmdbServiceImpl implements TmdbService {
         this.apiKey = apiKey;
     }
 
-    public Movie[] searchForMovies(String searchString) throws TmdbException {
-        Movie[] ofTheJedi = new MovieSearch(this, searchString).getSearchResult();
-        if (ofTheJedi == null)
-            return new Movie[0];
-        return ofTheJedi;
+    public Optional<Movie[]> searchForMovies(String searchString) throws TmdbException {
+        return new MovieSearch(this, searchString).getSearchResult();
     }
 
     @Override
-    public ImageSearchResult getImagesForMovie(String imdbId) throws TmdbException {
-        ImageSearchResult[] ofTheJedi = new ImageSearch(this, imdbId).getSearchResult();
-        if (ofTheJedi == null)
-            return null;
-        if (ofTheJedi.length>1)
+    public Optional<ImageSearchResult> getImagesForMovie(String imdbId) throws TmdbException {
+        Optional<ImageSearchResult[]> ofTheJedi = new ImageSearch(this, imdbId).getSearchResult();
+        if (!ofTheJedi.isPresent())
+            return Optional.absent();
+        if (ofTheJedi.get().length>1)
             throw new TmdbException("Non-unique search for Images on TMDB API");
-        return ofTheJedi[0];
+        return Optional.fromNullable(ofTheJedi.get()[0]);
     }
 
     PersistentHttpContext getPersistentHttpContext() {

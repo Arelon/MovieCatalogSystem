@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
@@ -228,7 +229,7 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
     }
 
     @Override
-    public void setCurrentQueryItems(final String currentQuery, final String message, @Nullable final Movie[] movies) {
+    public void setCurrentQueryItems(final String currentQuery, final String message, final Optional<Movie[]> movies) {
         if (shell == null || shell.isDisposed())
             return;
         shell.getDisplay().asyncExec(new Runnable() {
@@ -241,8 +242,8 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
                     TableItem messageItem = new TableItem(mainTable, SWT.NONE);
                     messageItem.setText(new String[]{message, "", ""});
                 }
-                if (movies != null) {
-                    for (Movie movie : movies) {
+                if (movies.isPresent()) {
+                    for (Movie movie : movies.get()) {
                         TableItem movieItem = new TableItem(mainTable, SWT.NONE);
                         movieItem.setText(new String[]{movie.getName(), movie.getReleasedYear(), ""});
                         movieItem.setData(movie);

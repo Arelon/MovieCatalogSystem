@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.tmdb.impl.AbstractServiceAwareRequest;
 
@@ -31,7 +32,7 @@ public class MovieSearch extends AbstractServiceAwareRequest {
         }
     }
 
-    public Movie[] getSearchResult() throws TmdbException {
+    public Optional<Movie[]> getSearchResult() throws TmdbException {
         return processRequest(Movie[].class);
     }
 

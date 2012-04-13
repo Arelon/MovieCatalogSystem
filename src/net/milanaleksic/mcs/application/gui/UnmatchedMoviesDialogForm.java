@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
@@ -378,18 +379,19 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                         return;
                     }
                     setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processing"));
-                    Movie[] movies = tmdbService.searchForMovies(film.getNazivfilma());
+                    Optional<Movie[]> moviesOptional = tmdbService.searchForMovies(film.getNazivfilma());
                     if (movieMatchesMap == null)
                         return;
-                    movieMatchesMap.put(film, movies);
-                    if (movies == null || movies.length == 0) {
+                    if (moviesOptional.isPresent())
+                        movieMatchesMap.put(film, moviesOptional.get());
+                    if (!moviesOptional.isPresent() || moviesOptional.get().length == 0) {
                         deleteItem(item);
                         return;
                     }
                     setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
-                            + " (" + (movies.length) + ")");
+                            + " (" + (moviesOptional.get().length) + ")");
                     if (logger.isDebugEnabled())
-                        logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (movies == null ? "NULL" : movies.length) + " items"); //NON-NLS
+                        logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (moviesOptional.get().length) + " items"); //NON-NLS
                 } catch (TmdbException e) {
                     logger.error("Application error while processing movie: " + film.getNazivfilma(), e); //NON-NLS
                     retryForMovie(item, film);
@@ -441,7 +443,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             messageBox.setMessage(bundle.getString("unmatchedMoviesTable.processNotFinishedConfirm"));
             if (messageBox.open() != SWT.YES)
                 return false;
-            logger.info("Killing all unfinished workers");
+            logger.info("Killing all unfinished workers"); //NON-NLS
             killAllUnfinishedWorkers();
         }
         clearProcessingData();

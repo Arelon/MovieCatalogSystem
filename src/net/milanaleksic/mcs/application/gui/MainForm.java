@@ -348,7 +348,7 @@ public class MainForm extends Observable {
             String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.') + 1);
             if (log.isDebugEnabled())
                 log.debug("Exporting to file \"" + targetFileForExport + "\""); //NON-NLS
-            final Optional<Exporter> exporter = Optional.fromNullable(ExporterFactory.getInstance().getExporter(ext));
+            final Optional<Exporter> exporter = ExporterFactory.getInstance().getExporter(ext);
             if (!exporter.isPresent()) {
                 log.error("Exporting to the selected format is not supported"); //NON-NLS
                 return;

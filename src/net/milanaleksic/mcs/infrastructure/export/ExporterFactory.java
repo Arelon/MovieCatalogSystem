@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.export;
 
+import com.google.common.base.Optional;
+
 import java.util.Locale;
 
 /**
@@ -17,12 +19,12 @@ public class ExporterFactory {
 		return instance;
 	}
 	
-	public Exporter getExporter(String ext) {
+	public Optional<Exporter> getExporter(String ext) {
 		ext = ext.toLowerCase(Locale.ENGLISH);
 		if (ext.equals("htm") || ext.equals("html"))
-			return new HTMLExporter();
+			return Optional.<Exporter>of(new HTMLExporter());
 		else
-			return null;
+			return Optional.absent();
 	}
 	
 }

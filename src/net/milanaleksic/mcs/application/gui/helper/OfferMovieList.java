@@ -1,9 +1,10 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.IntegrationManager;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
 import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
@@ -13,7 +14,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.*;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ResourceBundle;
 import java.util.concurrent.*;
@@ -26,7 +26,7 @@ import java.util.concurrent.*;
 public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     public interface Receiver {
-        void setCurrentQueryItems(String currentQuery, String message, @Nullable Movie[] movies);
+        void setCurrentQueryItems(String currentQuery, String message, Optional<Movie[]> movies);
     }
 
     public static final int MIN_DELAY_BETWEEN_REQUESTS = 3000;
@@ -72,15 +72,15 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
                 try {
                     previousTimeFired = System.currentTimeMillis();
                     String message;
-                    Movie[] movies = tmdbService.searchForMovies(currentQuery);
-                    if (movies == null || movies.length == 0)
+                    Optional<Movie[]> moviesOptional = tmdbService.searchForMovies(currentQuery);
+                    if (!moviesOptional.isPresent() || moviesOptional.get().length == 0)
                         message = bundle.getString("offerList.nothingFound");
                     else
                         message = null;
-                    receiver.setCurrentQueryItems(currentQuery, message, movies);
+                    receiver.setCurrentQueryItems(currentQuery, message, moviesOptional);
                 } catch (TmdbException e1) {
                     logger.error("Error while fetching movie information", e1); //NON-NLS
-                    receiver.setCurrentQueryItems(currentQuery, bundle.getString("offerList.searchFailed"), null);
+                    receiver.setCurrentQueryItems(currentQuery, bundle.getString("offerList.searchFailed"), Optional.<Movie[]>absent());
                 } catch (Exception e) {
                     logger.error("Unexpected error while fetching movie information", e); //NON-NLS
                 }

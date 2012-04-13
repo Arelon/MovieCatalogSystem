@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Strings;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
@@ -206,7 +207,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         labelServer.setText(bundle.getString("settings.proxyServerAddress"));
         labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         final Text textProxyServer = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServer.setText(StringUtil.emptyIfNull(proxyConfiguration.getServer()));
+        textProxyServer.setText(Strings.nullToEmpty(proxyConfiguration.getServer()));
         textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         Label labelPort = new Label(groupProxyServer, SWT.NONE);
         labelPort.setText(bundle.getString("settings.proxyServerPort"));
@@ -218,13 +219,13 @@ public class SettingsDialogForm extends AbstractDialogForm {
         labelUsername.setText(bundle.getString("settings.username"));
         labelUsername.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         final Text textProxyServerUsername = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServerUsername.setText(StringUtil.emptyIfNull(proxyConfiguration.getUsername()));
+        textProxyServerUsername.setText(Strings.nullToEmpty(proxyConfiguration.getUsername()));
         textProxyServerUsername.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         Label labelPassword = new Label(groupProxyServer, SWT.NONE);
         labelPassword.setText(bundle.getString("settings.password"));
         labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
         final Text textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER | SWT.PASSWORD);
-        textProxyServerPassword.setText(StringUtil.emptyIfNull(proxyConfiguration.getPassword()));
+        textProxyServerPassword.setText(Strings.nullToEmpty(proxyConfiguration.getPassword()));
         textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         ModifyListener proxySettingsModifyListener = new HandledModifyListener(shell, bundle) {
             @Override
