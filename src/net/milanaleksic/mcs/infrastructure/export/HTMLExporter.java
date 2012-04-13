@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.*;
 import java.util.Calendar;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.apache.log4j.Logger;
 
@@ -109,20 +110,21 @@ public class HTMLExporter implements Exporter {
     private String dohvatiCss() {
         StringBuilder rez = new StringBuilder();
 		File css = new File("export/stilovi.css");
-        BufferedReader reader = null;
+        Optional<BufferedReader> reader = Optional.absent();
 		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(css), "UTF-8"));
-			String tmp;
-			while ((tmp = reader.readLine()) != null)
+            String tmp;
+            BufferedReader bufferedReader;
+            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(css), "UTF-8")));
+            while ((tmp = bufferedReader.readLine()) != null)
 				rez.append(tmp).append('\r').append('\n');
 		} catch (FileNotFoundException e) {
 			logger.error("FileNotFoundException", e);
 		} catch (IOException e) {
 			logger.error("IOException", e);
 		} finally {
-            if (reader != null)
+            if (reader.isPresent())
                 try {
-                    reader.close();
+                    reader.get().close();
                 } catch (IOException ignored) {
                 }
         }
@@ -132,11 +134,12 @@ public class HTMLExporter implements Exporter {
 	private String dohvatiJs() {
         StringBuilder rez = new StringBuilder();
 		File js = new File("export/prog.js");
-        BufferedReader reader = null;
+        Optional<BufferedReader> reader = Optional.absent();
 		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(js), "UTF-8"));
-			String tmp;
-			while ((tmp = reader.readLine()) != null) {
+            String tmp;
+            BufferedReader bufferedReader;
+            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(js), "UTF-8")));
+			while ((tmp = bufferedReader.readLine()) != null) {
 				tmp = tmp.replace('\t', ' ');
 				tmp = tmp.replaceAll("( ( ))+", "");
 				if (tmp.length()>0 && tmp.charAt(tmp.length()-1)==';')
@@ -150,9 +153,9 @@ public class HTMLExporter implements Exporter {
 		} catch (IOException e) {
 			logger.error("IOException", e);
 		} finally {
-            if (reader != null)
+            if (reader.isPresent())
                 try {
-                    reader.close();
+                    reader.get().close();
                 } catch (IOException ignored) {
                 }
         }

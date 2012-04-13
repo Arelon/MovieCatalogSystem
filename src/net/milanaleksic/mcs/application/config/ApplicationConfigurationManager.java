@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.config;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
@@ -19,7 +20,7 @@ public class ApplicationConfigurationManager implements LifecycleListener {
 
     private static final Logger log = Logger.getLogger(ApplicationConfigurationManager.class);
 
-    private static JAXBContext jaxbContext;
+    private static Optional<JAXBContext> jaxbContext = Optional.absent();
 
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
@@ -28,9 +29,9 @@ public class ApplicationConfigurationManager implements LifecycleListener {
     @Override
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         try {
-            if (jaxbContext == null)
-                return;
-            Marshaller m = jaxbContext.createMarshaller();
+            if (!jaxbContext.isPresent())
+                throw new IllegalStateException("JAXB context not prepared for saving of app configuration");
+            Marshaller m = jaxbContext.get().createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             m.marshal(applicationConfiguration, new File(CONFIGURATION_FILE));
         } catch (Throwable t) {
@@ -40,8 +41,8 @@ public class ApplicationConfigurationManager implements LifecycleListener {
 
     public ApplicationConfiguration loadApplicationConfiguration() {
         try {
-            jaxbContext = JAXBContext.newInstance(ApplicationConfiguration.class);
-            Unmarshaller u = jaxbContext.createUnmarshaller();
+            jaxbContext = Optional.of(JAXBContext.newInstance(ApplicationConfiguration.class));
+            Unmarshaller u = jaxbContext.get().createUnmarshaller();
             ApplicationConfiguration applicationConfiguration = (ApplicationConfiguration) u.unmarshal(new File(CONFIGURATION_FILE));
             if (log.isInfoEnabled()) {
                 log.info("ApplicationConfiguration read: " + applicationConfiguration); //NON-NLS

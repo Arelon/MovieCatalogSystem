@@ -917,7 +917,11 @@ public class MainForm extends Observable {
                     public List<Film> call() throws Exception {
                         currentViewState.setMaxItemsPerPage(maxItems);
                         FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(startFrom, maxItems,
-                                zanrFilter, tipMedijaFilter, pozicijaFilter, filterText, currentViewState.getSingularAttribute(),
+                                Optional.fromNullable(zanrFilter),
+                                Optional.fromNullable(tipMedijaFilter),
+                                Optional.fromNullable(pozicijaFilter),
+                                Optional.fromNullable(filterText),
+                                currentViewState.getSingularAttribute(),
                                 currentViewState.isAscending());
                         currentViewState.setShowableCount(filmsWithCount.count);
                         return filmsWithCount.films;

@@ -59,8 +59,8 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
 
         @Override
-        public String getImdbId() {
-            return film.getImdbId();
+        public Optional<String> getImdbId() {
+            return Optional.fromNullable(film.getImdbId());
         }
 
         @Override
@@ -76,8 +76,6 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         @Override
         public void safeSetImage(Optional<Image> image, String imdbId) {
             if (!image.isPresent() || image.get().isDisposed())
-                return;
-            if (getFilm() == null)
                 return;
             setImage(image);
         }
@@ -243,6 +241,8 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     public void setMovies(List<Film> sviFilmovi) {
+        if (isDisposed())
+            return;
         clearMovies();
         List<MovieWrapper> wrappers = new ArrayList<>();
         for (Film film : sviFilmovi) {

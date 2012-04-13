@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
-import javax.annotation.Nullable;
+import com.google.common.base.Optional;
+
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public interface FilmRepository {
 
     void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position);
 
-    FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, @Nullable Zanr zanrFilter, @Nullable TipMedija tipMedijaFilter,
-                                     @Nullable Pozicija pozicijaFilter, @Nullable String filterText,
+    FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter,
+                                     Optional<Pozicija> pozicijaFilter, Optional<String> filterText,
                                      SingularAttribute<Film, String> orderByAttribute, boolean ascending);
 
 }

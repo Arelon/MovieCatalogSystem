@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,9 +27,9 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
         Medij medij = new Medij();
         medij.setIndeks(index);
 
-        Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();
-        if (defaultPozicija != null)
-            defaultPozicija.addMedij(medij);
+        Optional<Pozicija> defaultPozicija = pozicijaRepository.getDefaultPozicija();
+        if (defaultPozicija.isPresent())
+            defaultPozicija.get().addMedij(medij);
 
         tipMedija = entityManager.merge(tipMedija);
         tipMedija.addMedij(medij);

@@ -1,12 +1,12 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
+import com.google.common.base.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -37,9 +37,9 @@ public abstract class AbstractRestorePointService {
         return dataSource.getConnection();
     }
 
-    protected void close(OutputStream pos) {
-        if (pos != null) {
-            try { pos.close(); } catch(IOException ignored) {}
+    protected void close(Optional<? extends Closeable> pos) {
+        if (pos.isPresent()) {
+            try { pos.get().close(); } catch(IOException ignored) {}
         }
     }
 

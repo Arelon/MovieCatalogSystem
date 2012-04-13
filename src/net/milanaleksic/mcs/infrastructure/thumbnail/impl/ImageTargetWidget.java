@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Image;
 */
 public interface ImageTargetWidget {
 
-    public String getImdbId();
+    public Optional<String> getImdbId();
 
     void setImageFromExternalFile(String absoluteFileLocation);
 

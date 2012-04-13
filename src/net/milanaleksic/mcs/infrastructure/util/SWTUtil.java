@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import org.apache.log4j.Logger;
@@ -90,20 +91,20 @@ public class SWTUtil {
     }
 
     public static void useImageAndThenDispose(String resourceLocation, Function<Image, Void> callback) {
-        Image image = null;
+        Optional<Image> image = Optional.absent();
         try {
-            image = StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
+            image = Optional.of(StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
                 @Override
                 public Image apply(@Nullable InputStream inputStream) {
                     return new Image(Display.getCurrent(), inputStream);
                 }
-            });
-            callback.apply(image);
+            }));
+            callback.apply(image.get());
         } catch (IOException e) {
             throw new IllegalArgumentException("Unexpected exception while working with the image", e);
         } finally {
-            if (image != null)
-                image.dispose();
+            if (image.isPresent())
+                image.get().dispose();
         }
     }
 
@@ -134,29 +135,28 @@ public class SWTUtil {
     }
 
     public static void addImagePaintListener(final Control target, final String resource) {
-        final AtomicReference<Image> image = new AtomicReference<>(null);
+        final AtomicReference<Optional<Image>> image = new AtomicReference<>(Optional.<Image>absent());
         try {
-            image.set(StreamUtil.useClasspathResource(resource, new Function<InputStream, Image>() {
+            image.set(Optional.of(StreamUtil.useClasspathResource(resource, new Function<InputStream, Image>() {
                 @Override
                 public Image apply(@Nullable InputStream inputStream) {
                     return new Image(Display.getCurrent(), inputStream);
                 }
-            }));
+            })));
         } catch (IOException e) {
             throw new IllegalArgumentException("Unexpected exception while working with the image", e);
         }
         target.addPaintListener(new PaintListener() {
             public void paintControl(PaintEvent event) {
-                event.gc.drawImage(image.get(), 0, 0);
+                event.gc.drawImage(image.get().get(), 0, 0);
             }
         });
         target.addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                if (image.get() != null) {
-                    image.get().dispose();
-                    image.set(null);
-                }
+                Optional<Image> optionalImage = image.getAndSet(Optional.<Image>absent());
+                if (optionalImage.isPresent())
+                    optionalImage.get().dispose();
             }
         });
     }

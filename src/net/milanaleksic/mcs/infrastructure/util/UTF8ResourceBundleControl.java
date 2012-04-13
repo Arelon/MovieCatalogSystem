@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
+import com.google.common.base.Optional;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -8,7 +10,7 @@ import java.util.*;
 
 public class UTF8ResourceBundleControl extends ResourceBundle.Control {
 
-    private static class TryToGetViaUrl implements PrivilegedExceptionAction<InputStream> {
+    private static class TryToGetViaUrl implements PrivilegedExceptionAction<Optional<InputStream>> {
 
         private ClassLoader loader;
         private boolean reload;
@@ -20,21 +22,21 @@ public class UTF8ResourceBundleControl extends ResourceBundle.Control {
             this.resourceName = resourceName;
         }
 
-        public InputStream run() throws IOException {
-            InputStream is = null;
+        public Optional<InputStream> run() throws IOException {
+            Optional<InputStream> is = Optional.absent();
             if (reload) {
-                URL url = loader.getResource(resourceName);
-                if (url != null) {
-                    URLConnection connection = url.openConnection();
-                    if (connection != null) {
+                Optional<URL> url = Optional.fromNullable(loader.getResource(resourceName));
+                if (url.isPresent()) {
+                    Optional<URLConnection> connection = Optional.fromNullable(url.get().openConnection());
+                    if (connection.isPresent()) {
                         // Disable caches to get fresh data for
                         // reloading.
-                        connection.setUseCaches(false);
-                        is = connection.getInputStream();
+                        connection.get().setUseCaches(false);
+                        is = Optional.of(connection.get().getInputStream());
                     }
                 }
             } else {
-                is = loader.getResourceAsStream(resourceName);
+                is = Optional.fromNullable(loader.getResourceAsStream(resourceName));
             }
             return is;
         }
@@ -46,18 +48,18 @@ public class UTF8ResourceBundleControl extends ResourceBundle.Control {
             throws IllegalAccessException, InstantiationException, IOException {
         String bundleName = toBundleName(baseName, locale);
         if (format.equals("java.properties")) {
-            InputStream stream;
+            Optional<InputStream> stream;
             try {
                 stream = AccessController.doPrivileged(new TryToGetViaUrl(loader, reload, toResourceName(bundleName, "properties")));
             } catch (PrivilegedActionException e) {
                 throw (IOException) e.getException();
             }
-            if (stream != null) {
+            if (stream.isPresent()) {
                 try {
                     // the only changed line from default implementation:
-                    return new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
+                    return new PropertyResourceBundle(new InputStreamReader(stream.get(), "UTF-8"));
                 } finally {
-                    stream.close();
+                    stream.get().close();
                 }
             }
         }

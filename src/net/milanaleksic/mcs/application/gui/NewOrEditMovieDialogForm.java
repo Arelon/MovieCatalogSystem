@@ -101,9 +101,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                 comboLokacija.select(indexOfPozicija);
             thumbnailManager.setThumbnailForShowImageComposite(posterImage, activeFilm.getImdbId());
         } else {
-            Pozicija defaultPozicija = pozicijaRepository.getDefaultPozicija();
-            if (defaultPozicija != null) {
-                String nameOfDefaultPosition = defaultPozicija.getPozicija();
+            Optional<Pozicija> defaultPozicija = pozicijaRepository.getDefaultPozicija();
+            if (defaultPozicija.isPresent()) {
+                String nameOfDefaultPosition = defaultPozicija.get().getPozicija();
                 if (comboLokacija.indexOf(nameOfDefaultPosition) != -1)
                     comboLokacija.select(comboLokacija.indexOf(nameOfDefaultPosition));
                 if (comboDisk.getItemCount() != 0)

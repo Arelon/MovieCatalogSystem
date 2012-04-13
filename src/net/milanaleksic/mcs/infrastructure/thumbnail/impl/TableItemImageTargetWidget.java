@@ -20,12 +20,12 @@ class TableItemImageTargetWidget implements ImageTargetWidget {
         this.tableItem = tableItem;
     }
 
-    public String getImdbId() {
-        return getFilm().getImdbId();
+    public Optional<String> getImdbId() {
+        return getFilm().isPresent() ? Optional.fromNullable(getFilm().get().getImdbId()) : Optional.<String>absent();
     }
 
-    private Film getFilm() {
-        return ((Film) tableItem.getData());
+    private Optional<Film> getFilm() {
+        return Optional.fromNullable((Film) tableItem.getData());
     }
 
     @Override
@@ -42,10 +42,8 @@ class TableItemImageTargetWidget implements ImageTargetWidget {
     public void safeSetImage(Optional<Image> image, String imdbId) {
         if (tableItem.isDisposed())
             return;
-        if (getFilm() == null)
-            return;
-        String targetImdbId = getImdbId();
-        if (targetImdbId == null || !targetImdbId.equals(imdbId))
+        Optional<String> targetImdbId = getImdbId();
+        if (!targetImdbId.isPresent() || !targetImdbId.get().equals(imdbId))
             return;
         tableItem.setImage(image.orNull());
     }

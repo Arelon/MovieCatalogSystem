@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.restore.DB2CyrillicToUnicodeConvertor;
 import org.apache.log4j.Logger;
 
@@ -41,18 +42,16 @@ public final class DBUtil {
         }
     }
 
-    public static String getSQLString(String input) {
-        if (input == null)
+    public static String getSQLString(Optional<String> input) {
+        if (!input.isPresent())
             return "NULL";
-        return '\'' + input.replaceAll("'", "''") + '\'';
+        return '\'' + input.get().replaceAll("'", "''") + '\'';
     }
 
-    public static String getSQLStringForDB2(String input) {
-        if (input == null)
+    public static String getSQLStringForDB2(Optional<String> input) {
+        if (!input.isPresent())
             return "NULL";
-        //if (log.isDebugEnabled())
-        //  log.debug("DB2 Unicode konvertor vratio: "+input+" -> "+tmp);
-        return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input + '\'');
+        return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input.get() + '\'');
     }
 
 }

@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 
@@ -47,22 +48,18 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     public void createRestorePoint() {
-        File renamedOldRestoreFile = null;
         try (Connection conn = getConnection()) {
             createRestoreDir();
 
             File restoreFile = new File("restore" + File.separatorChar + SCRIPT_KATALOG_RESTORE);
             if (log.isDebugEnabled())
                 log.debug("Renaming old restore script if there is one...");
-            if (restoreFile.exists()) {
-                renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
-            }
+            if (!restoreFile.exists())
+                return;
 
+            File renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
             printOutTableContentsToRestoreFile(conn, restoreFile);
-
-            if (renamedOldRestoreFile != null) {
-                eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
-            }
+            eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
             if (log.isInfoEnabled())
                 log.info("Restore point creation process finished successfully!");
         } catch (SQLException | IOException e) {
@@ -71,7 +68,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void printOutTableContentsToRestoreFile(Connection conn, File restoreFile) throws IOException, SQLException {
-        FileOutputStream fos = null;
+        Optional<FileOutputStream> fos = Optional.absent();
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintStream outputStream = new PrintStream(buffer, true, "UTF-8");
@@ -82,12 +79,10 @@ public class RestorePointCreator extends AbstractRestorePointService {
             for(RestoreSource source : restoreSources) {
                 printInsertStatementsForRestoreSource(conn, outputStream, source);
             }
-            fos = new FileOutputStream(restoreFile);
-            StreamUtil.copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos);
+            fos = Optional.of(new FileOutputStream(restoreFile));
+            StreamUtil.copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos.get());
         } finally {
-            if (fos != null) {
-                close(fos);
-            }
+            close(fos);
         }
     }
 
@@ -125,7 +120,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
             if (columnType == Types.INTEGER)
                 currentRowContents.append(resultSet.getInt(colIter));
             else if (columnType == Types.VARCHAR || columnType == Types.CHAR)
-                currentRowContents.append(getSQLString(resultSet.getString(colIter)));
+                currentRowContents.append(getSQLString(Optional.fromNullable(resultSet.getString(colIter))));
             else if (columnType == Types.DECIMAL)
                 currentRowContents.append(resultSet.getDouble(colIter));
             else
@@ -136,7 +131,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
         return String.format("INSERT INTO %s(%s) VALUES(%s)", tableName, colNames, currentRowContents);
     }
 
-    private String getSQLString(String value) {
+    private String getSQLString(Optional<String> value) {
         if (useDB2StyleStringInScripts) {
             return DBUtil.getSQLStringForDB2(value);
         } else
@@ -171,21 +166,18 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void compressPreviousRestoreFiles(File renamedOldRestoreFile) {
-        ZipOutputStream zos = null;
+        Optional<ZipOutputStream> zos = Optional.absent();
         try {
             if (log.isDebugEnabled())
                 log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip");
-            zos = new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"));
+            zos = Optional.of(new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip")));
 
-            StreamUtil.writeFileToZipStream(zos, renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
+            StreamUtil.writeFileToZipStream(zos.get(), renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
 
         } catch (Throwable t) {
             log.error("Failure while zipping restore script", t);
         } finally {
-            if (zos != null) try {
-                zos.close();
-            } catch (Throwable ignored) {
-            }
+            close(zos);
         }
     }
 

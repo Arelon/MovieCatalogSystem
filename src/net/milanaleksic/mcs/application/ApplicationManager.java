@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
@@ -68,13 +69,29 @@ public class ApplicationManager implements ApplicationContextAware {
 
     private void fireApplicationStarted() {
         for (LifecycleListener listener : lifecycleListeners) {
-            listener.applicationStarted(applicationConfiguration, userConfiguration);
+            safeCallStartedOnListener(listener);
         }
     }
 
     private void fireApplicationShutdown() {
         for (LifecycleListener listener : lifecycleListeners) {
+            safeCallShutdownOnListener(listener);
+        }
+    }
+
+    private void safeCallStartedOnListener(LifecycleListener listener) {
+        try {
+            listener.applicationStarted(applicationConfiguration, userConfiguration);
+        } catch (Exception e) {
+            log.error("Application exception while calling startup callbacks", e);
+        }
+    }
+
+    private void safeCallShutdownOnListener(LifecycleListener listener) {
+        try {
             listener.applicationShutdown(applicationConfiguration, userConfiguration);
+        } catch (Exception e) {
+            log.error("Application exception while calling shutdown callbacks", e);
         }
     }
 
@@ -111,7 +128,8 @@ public class ApplicationManager implements ApplicationContextAware {
         MessageBox messageBox = new MessageBox(activeShell, SWT.APPLICATION_MODAL | SWT.ERROR);
         messageBox.setMessage(message);
         messageBox.setText("Terrible, terrible error"); //NON-NLS
-        messageBox.open();
+        if (!activeShell.isDisposed())
+            messageBox.open();
     }
 
     private void mainGuiLoop() {
@@ -129,17 +147,18 @@ public class ApplicationManager implements ApplicationContextAware {
         } catch (Throwable t) {
             log.error("Unhandled GUI thread exception - "+t.getMessage(), t); //NON-NLS
         } finally {
-            display.dispose();
+            if (!display.isDisposed())
+                display.dispose();
         }
     }
 
-    private ResourceBundle messageBundle = null;
+    private Optional<ResourceBundle> messageBundle = Optional.absent();
 
     public synchronized ResourceBundle getMessagesBundle() {
-        if (messageBundle == null)
-            messageBundle = ResourceBundle.getBundle("messages", //NON-NLS
-                    new Locale(getUserConfiguration().getLocaleLanguage()), new UTF8ResourceBundleControl());
-        return messageBundle;
+        if (!messageBundle.isPresent())
+            messageBundle = Optional.of(ResourceBundle.getBundle("messages", //NON-NLS
+                    new Locale(getUserConfiguration().getLocaleLanguage()), new UTF8ResourceBundleControl()));
+        return messageBundle.get();
     }
 
     @Override

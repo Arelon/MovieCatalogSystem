@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
-import com.google.common.base.Function;
+import com.google.common.base.*;
 import com.twmacinta.util.MD5;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import org.apache.http.client.methods.HttpGet;
@@ -44,15 +44,15 @@ public final class StreamUtil {
     }
 
     public static void writeFileToZipStream(ZipOutputStream zos, String fileName, String entryName) throws IOException {
-        FileInputStream fis = null;
+        Optional<FileInputStream> fis = Optional.absent();
         try {
-            fis = new FileInputStream("restore\\"+fileName);
+            fis = Optional.of(new FileInputStream("restore\\"+fileName));
             ZipEntry zipEntry = new ZipEntry(entryName);
             zos.putNextEntry(zipEntry);
-            copyStream(fis, zos);
+            copyStream(fis.get(), zos);
         } finally {
-            if (fis != null) try {
-                fis.close();
+            if (fis.isPresent()) try {
+                fis.get().close();
             } catch (Throwable ignored) {
             }
         }
@@ -91,6 +91,8 @@ public final class StreamUtil {
 
     public static <T> T useURIResource(URI uri, PersistentHttpContext persistentHttpContext, Function<InputStream, ? extends T> function) throws IOException {
         try (InputStream stream = new BufferedInputStream(persistentHttpContext.execute(new HttpGet(uri)).getEntity().getContent())) {
+            if (stream == null)
+                throw new IOException("URI Resource null: "+uri);
             return function.apply(stream);
         }
     }

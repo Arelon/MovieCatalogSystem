@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,11 +45,13 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS, readOnly = true)
-    public Pozicija getDefaultPozicija() {
+    public Optional<Pozicija> getDefaultPozicija() {
         TypedQuery<Pozicija> defaultPozicija = entityManager.createNamedQuery("getPozicijaDefault", Pozicija.class);
         defaultPozicija.setMaxResults(1);
         List<Pozicija> defaultPozicijaOrFirstOneInOrder = defaultPozicija.getResultList();
-        return defaultPozicijaOrFirstOneInOrder.size() == 0 ? null : defaultPozicijaOrFirstOneInOrder.get(0);
+        return defaultPozicijaOrFirstOneInOrder.size() == 0
+                ? Optional.<Pozicija>absent()
+                : Optional.of(defaultPozicijaOrFirstOneInOrder.get(0));
     }
 
     @Override

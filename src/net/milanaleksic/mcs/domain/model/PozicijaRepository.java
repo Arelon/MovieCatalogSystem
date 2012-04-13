@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import com.google.common.base.Optional;
+
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ public interface PozicijaRepository {
 
     void deletePozicijaByName(String pozicija);
 
-    Pozicija getDefaultPozicija();
+    Optional<Pozicija> getDefaultPozicija();
 
     Pozicija getByName(String locationName);
 

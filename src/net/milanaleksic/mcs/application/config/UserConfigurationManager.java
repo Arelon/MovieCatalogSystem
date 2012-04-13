@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.config;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
@@ -19,36 +20,37 @@ public class UserConfigurationManager implements LifecycleListener {
 
     private static final Logger log = Logger.getLogger(UserConfigurationManager.class);
 
-    private JAXBContext jaxbContext = null;
+    private static Optional<JAXBContext> jaxbContext = Optional.absent();
 
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
     }
 
     public UserConfiguration loadUserConfiguration() {
-        UserConfiguration ofTheJedi = null;
         File configurationFile = new File(CONFIGURATION_FILE);
         if (configurationFile.exists()) {
             try {
-                jaxbContext = JAXBContext.newInstance(UserConfiguration.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
-                ofTheJedi = (UserConfiguration) u.unmarshal(configurationFile);
+                jaxbContext = Optional.of(JAXBContext.newInstance(UserConfiguration.class));
+                Unmarshaller u = jaxbContext.get().createUnmarshaller();
+                UserConfiguration ofTheJedi = (UserConfiguration) u.unmarshal(configurationFile);
                 if (log.isInfoEnabled())
                     log.info("UserConfiguration read: " + ofTheJedi); //NON-NLS
+                return ofTheJedi;
             } catch (Throwable t) {
                 log.error("UserConfiguration could not have been read. Using default settings", t); //NON-NLS
             }
         }
-        return ofTheJedi;
+        log.warn("User configuration file could not have been found! Using defaults...");
+        return new UserConfiguration();
     }
 
 
     @Override
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         try {
-            if (jaxbContext == null)
-                return;
-            Marshaller m = jaxbContext.createMarshaller();
+            if (!jaxbContext.isPresent())
+                throw new IllegalStateException("JAXB context not prepared for saving of app configuration");
+            Marshaller m = jaxbContext.get().createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             m.marshal(userConfiguration, new File(CONFIGURATION_FILE));
         } catch (Throwable t) {

@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.*;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.*;
@@ -64,7 +65,7 @@ public class JpaFilmRepositoryIntegrationTest {
     @Test
     public void get_films_with_zanr() {
         Zanr zanr = zanrRepository.getZanrByName("акција");
-        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 23, zanr, null, null, null, Film_.medijListAsString, true);
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 23, Optional.fromNullable(zanr), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         for (Film film : filmsWithCount.films) {
             assertThat("Zanr is not correct", zanr.getIdzanr(), equalTo(film.getZanr().getIdzanr()));
         }
@@ -74,7 +75,7 @@ public class JpaFilmRepositoryIntegrationTest {
     @Test
     public void get_films_with_zanr_no_limit() {
         Zanr zanr = zanrRepository.getZanrByName("акција");
-        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, zanr, null, null, null, Film_.medijListAsString, true);
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, Optional.fromNullable(zanr), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         Assert.assertTrue("Films are empty", filmsWithCount.films.size() != 0);
         for (Film film : filmsWithCount.films) {
             assertThat("Zanr is not correct", zanr.getIdzanr(), equalTo(film.getZanr().getIdzanr()));

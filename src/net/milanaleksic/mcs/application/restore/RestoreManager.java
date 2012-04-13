@@ -7,6 +7,7 @@ import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
+import org.eclipse.swt.widgets.Display;
 
 import javax.inject.Inject;
 
@@ -40,7 +41,11 @@ public class RestoreManager implements LifecycleListener {
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
         if (configuration.getDatabaseConfiguration().isDatabaseCreateRestore()) {
-            closingDialogForm.open();
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    closingDialogForm.open();
+                }
+            });
             restorePointCreator.createRestorePoint();
         }
     }

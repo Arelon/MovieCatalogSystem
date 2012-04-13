@@ -6,6 +6,8 @@ import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import javax.annotation.Nullable;
+
 /**
  * User: Milan Aleksic
  * Date: 3/17/12
@@ -14,14 +16,14 @@ import org.eclipse.swt.widgets.Display;
 class CompositeImageTargetWidget implements ImageTargetWidget {
 
     private final ShowImageComposite composite;
-    private final String imdbId;
+    private final Optional<String> imdbId;
 
-    public CompositeImageTargetWidget(ShowImageComposite composite, String imdbId) {
+    public CompositeImageTargetWidget(ShowImageComposite composite, @Nullable String imdbId) {
         this.composite = composite;
-        this.imdbId = imdbId;
+        this.imdbId = Optional.fromNullable(imdbId);
     }
 
-    public String getImdbId() {
+    public Optional<String> getImdbId() {
         return imdbId;
     }
 
@@ -39,8 +41,7 @@ class CompositeImageTargetWidget implements ImageTargetWidget {
     public void safeSetImage(Optional<Image> image, String imdbId) {
         if (composite.isDisposed())
             return;
-        String targetImdbId = getImdbId();
-        if (targetImdbId == null || !targetImdbId.equals(imdbId))
+        if (!this.imdbId.isPresent() || !this.imdbId.get().equals(imdbId))
             return;
         composite.setImage(image.orNull());
     }

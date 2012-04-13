@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
@@ -69,18 +70,17 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         File restoreFile = new File("restore//" + SCRIPT_KATALOG_RESTORE);
         if (!restoreFile.exists())
             return 0;
-        LineNumberReader reader = null;
+        Optional<LineNumberReader> reader = Optional.absent();
         try {
-            reader = new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), "UTF-8"));
-            String firstLine = reader.readLine();
+            reader = Optional.of(new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), "UTF-8")));
+            String firstLine = reader.get().readLine();
             if (firstLine != null)
                 if (firstLine.contains(MCS_VERSION_TAG))
                     return Integer.parseInt((firstLine.indexOf(MCS_VERSION_TAG) + firstLine.substring(MCS_VERSION_TAG.length())).trim());
         } catch (IOException e) {
             log.error("IO Error while reading DB version from restore point", e);
         } finally {
-            if (reader != null)
-                try { reader.close(); } catch (IOException ignored) {}
+            close(reader);
         }
         return 1;
     }
@@ -116,10 +116,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
                 @Override
                 public Void apply(InputStream inputStream) {
                     try {
-                        if (inputStream != null)  {
-                            // file has not been found, there is SQL alter... proceed
-                            DBUtil.executeScriptOnConnection(inputStream, conn);
-                        }
+                        DBUtil.executeScriptOnConnection(inputStream, conn);
                     } catch (IOException e) {
                         log.error("Unexpected exception occurred while running SQL alter for version "+alterVersion, e);
                     } catch (SQLException e) {
@@ -128,6 +125,10 @@ public class RestorePointRestorer extends AbstractRestorePointService {
                     return null;
                 }
             });
+        } catch (IOException ignored) {
+            // SQL alter has not been found
+        }
+        try {
             AlterScript alterScript = (AlterScript) Class.forName(
                     String.format(patternForCodeAlters, alterVersion)).newInstance();
             if (log.isInfoEnabled())
