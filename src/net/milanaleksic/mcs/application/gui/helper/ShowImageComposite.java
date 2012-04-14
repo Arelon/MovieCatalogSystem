@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
+import com.google.common.base.Optional;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.*;
@@ -17,23 +18,26 @@ public class ShowImageComposite extends Composite implements PaintListener {
 
     private ResourceBundle bundle;
 
-    private Image image;
-    private String status;
+    private Optional<Image> image;
+    private Optional<String> status;
 
     public ShowImageComposite(Composite parent, int style, ResourceBundle bundle) {
         super(parent, style);
         this.bundle = bundle;
+        image = Optional.absent();
+        status = Optional.of(bundle.getString("global.noImagePresent"));
         addPaintListener(this);
     }
 
     @Override
     public void paintControl(PaintEvent paintEvent) {
         GC gc = paintEvent.gc;
-        if (image == null) {
+        if (!image.isPresent()) {
             paintMessageWhenNoImageExists(paintEvent);
             return;
         }
         Rectangle bounds = getDrawableBounds();
+        Image image = this.image.get();
         gc.drawImage(image, (bounds.width-image.getBounds().width) / 2, (bounds.height-image.getBounds().height) / 2);
     }
 
@@ -52,22 +56,20 @@ public class ShowImageComposite extends Composite implements PaintListener {
         gc.drawRectangle(bounds);
         color.dispose();
 
-        if (status == null)
-            status = bundle.getString("global.noImagePresent");
-        Point point = gc.textExtent(status);
-        gc.drawText(status, (bounds.width - point.x) / 2, (bounds.height - point.y) / 2);
+        Point point = gc.textExtent(status.get());
+        gc.drawText(status.get(), (bounds.width - point.x) / 2, (bounds.height - point.y) / 2);
     }
 
-    public void setImage(@Nullable Image image) {
+    public void setImage(Optional<Image> image) {
         disposeImage();
         this.image = image;
         redraw();
     }
 
     private void disposeImage() {
-        if (image != null && !image.isDisposed()) {
-            image.dispose();
-            image = null;
+        if (image.isPresent() && !image.get().isDisposed()) {
+            image.get().dispose();
+            image = Optional.absent();
         }
     }
 
@@ -77,8 +79,8 @@ public class ShowImageComposite extends Composite implements PaintListener {
         super.dispose();
     }
 
-    public void setStatus(@Nullable String status) {
-        this.status = status;
+    public void setStatus(Optional<String> status) {
+        this.status = status.or(Optional.of(bundle.getString("global.noImagePresent")));
         redraw();
     }
 }

@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
@@ -9,9 +10,9 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.*;
 
 import java.awt.*;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class MovieDetailsPanel extends Composite {
     private Label locationLabel;
     private Label locationValue;
     private Text commentValue;
-    private Film film;
+    private Optional<Film> film = Optional.absent();
 
     public MovieDetailsPanel(Composite parent, int style, ResourceBundle bundle, ThumbnailManager thumbnailManager) {
         super(parent, style);
@@ -96,9 +97,9 @@ public class MovieDetailsPanel extends Composite {
         movieNameValue.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
-                if (film == null)
+                if (!film.isPresent())
                     return;
-                if (!IMDBUtil.isValidImdbId(film.getImdbId())) {
+                if (!IMDBUtil.isValidImdbId(film.get().getImdbId())) {
                     MessageBox box = new MessageBox(getParent().getShell(), SWT.ICON_INFORMATION);
                     box.setText(bundle.getString("global.infoDialogTitle"));
                     box.setMessage(bundle.getString("global.movieIsNotLinkedToImdb"));
@@ -106,7 +107,7 @@ public class MovieDetailsPanel extends Composite {
                     return;
                 }
                 try {
-                    Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(film.getImdbId()));
+                    Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(film.get().getImdbId()));
                 } catch (IOException ignored) {}
             }
         });
@@ -145,9 +146,9 @@ public class MovieDetailsPanel extends Composite {
     }
 
     public void clearData() {
-        this.film = null;
-        movieDetailsImage.setStatus(bundle.getString("global.noImagePresent"));
-        movieDetailsImage.setImage(null);
+        this.film = Optional.absent();
+        movieDetailsImage.setStatus(Optional.of(bundle.getString("global.noImagePresent")));
+        movieDetailsImage.setImage(Optional.<org.eclipse.swt.graphics.Image>absent());
         movieNameValue.setText(bundle.getString("global.selectAMovie"));
         mediumListLabel.setVisible(false);
         mediumListValue.setText("");
@@ -158,22 +159,23 @@ public class MovieDetailsPanel extends Composite {
         commentValue.setVisible(false);
     }
 
-    public void showDataForMovie(Film film) {
-        if (film == null) {
+    public void showDataForMovie(Optional<Film> film) {
+        this.film = film;
+        if (!this.film.isPresent()) {
             clearData();
             return;
         }
-        this.film = film;
-        thumbnailManager.setThumbnailForShowImageComposite(movieDetailsImage, film.getImdbId());
-        movieNameValue.setText(film.getNazivfilma());
+        Film theFilm = film.get();
+        thumbnailManager.setThumbnailForShowImageComposite(movieDetailsImage, theFilm.getImdbId());
+        movieNameValue.setText(theFilm.getNazivfilma());
         mediumListLabel.setVisible(true);
-        mediumListValue.setText(film.getMedijListAsString());
+        mediumListValue.setText(theFilm.getMedijListAsString());
         genreLabel.setVisible(true);
-        genreValue.setText(film.getZanr().getZanr());
+        genreValue.setText(theFilm.getZanr().getZanr());
         locationLabel.setVisible(true);
-        locationValue.setText(film.getPozicija());
+        locationValue.setText(theFilm.getPozicija());
         commentValue.setVisible(true);
-        commentValue.setText(film.getKomentar());
+        commentValue.setText(theFilm.getKomentar());
     }
 
 

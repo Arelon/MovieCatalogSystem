@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
@@ -18,8 +19,8 @@ import javax.inject.Inject;
 
 public class DeleteMovieDialogForm extends AbstractDialogForm {
 
-    private Label labFilmNaziv = null;
-    private Film film = null;
+    private Label labFilmNaziv;
+    private Optional<Film> film = Optional.absent();
 
     @Inject private FilmRepository filmRepository;
 
@@ -37,14 +38,14 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
     }
 
     public void open(Shell parent, Film film, Runnable callback) {
-        this.film = film;
+        this.film = Optional.of(film);
         super.open(parent, callback);
 	}
 
 	protected void reReadData() {
 		// preuzimanje podataka za film koji se azurira
-        if (film != null) {
-            labFilmNaziv.setText(film.getNazivfilma() + "\n(" + film.getPrevodnazivafilma() + ")");
+        if (film.isPresent()) {
+            labFilmNaziv.setText(film.get().getNazivfilma() + "\n(" + film.get().getPrevodnazivafilma() + ")");
         }
 	}
 
@@ -99,7 +100,7 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
 		btnCancel.setLayoutData(gridData12);
 		btnOk.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override public void handledSelected(SelectionEvent event) throws ApplicationException {
-                filmRepository.deleteFilm(film);
+                filmRepository.deleteFilm(film.get());
                 runnerWhenClosingShouldRun = true;
                 shell.close();
             }

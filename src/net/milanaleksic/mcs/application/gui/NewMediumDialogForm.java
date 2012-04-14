@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
@@ -22,9 +23,10 @@ public class NewMediumDialogForm extends AbstractDialogForm {
 
     @Inject private MedijService medijService;
 
-    private Text textID = null;
-    private TipMedija selectedMediumType = null;
-    private Group group = null;
+    private Optional<TipMedija> selectedMediumType = Optional.absent();
+
+    private Text textID;
+    private Group group;
 
 	@Override protected void onShellCreated() {
 		shell.setText(bundle.getString("newMedium.addNewMedium"));
@@ -51,18 +53,14 @@ public class NewMediumDialogForm extends AbstractDialogForm {
             mediumTypeBtn.setData(tipMedija);
             mediumTypeBtn.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
                 public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                    obradaIzbora(((Button) e.getSource()).getData());
+                    TipMedija tipMedija = (TipMedija) e.widget.getData();
+                    Integer indeks = medijService.getNextMedijIndeks(tipMedija.getNaziv());
+                    textID.setText(indeks.toString());
+                    selectedMediumType = Optional.of(tipMedija);
                 }
             });
         }
     }
-
-	public void obradaIzbora(Object mediumTypeAsObject) {
-        TipMedija tipMedija = (TipMedija) mediumTypeAsObject;
-        Integer indeks = medijService.getNextMedijIndeks(tipMedija.getNaziv());
-		textID.setText(indeks.toString());
-        selectedMediumType = tipMedija;
-	}
 
 	private void createComposite() {
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -75,14 +73,14 @@ public class NewMediumDialogForm extends AbstractDialogForm {
 		btnOk.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
-                if (selectedMediumType == null) {
-                    MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
+                if (!selectedMediumType.isPresent()) {
+                    MessageBox box = new MessageBox(parent.orNull(), SWT.ICON_ERROR);
                     box.setMessage(bundle.getString("global.youHaveToSelectMediumType"));
                     box.setText("Error");
                     box.open();
                     return;
                 }
-                medijRepository.saveMedij(Integer.parseInt(textID.getText()), selectedMediumType);
+                medijRepository.saveMedij(Integer.parseInt(textID.getText()), selectedMediumType.get());
                 runnerWhenClosingShouldRun = true;
                 shell.close();
             }

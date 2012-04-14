@@ -29,7 +29,7 @@ class CompositeImageTargetWidget implements ImageTargetWidget {
 
     @Override
     public void setImageFromExternalFile(String absoluteFileLocation) {
-        composite.setImage(new Image(Display.getCurrent(), absoluteFileLocation));
+        composite.setImage(Optional.of(new Image(Display.getCurrent(), absoluteFileLocation)));
     }
 
     @Override
@@ -43,7 +43,7 @@ class CompositeImageTargetWidget implements ImageTargetWidget {
             return;
         if (!this.imdbId.isPresent() || !this.imdbId.get().equals(imdbId))
             return;
-        composite.setImage(image.orNull());
+        composite.setImage(image);
     }
 
 }

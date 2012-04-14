@@ -16,6 +16,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.List;
@@ -29,6 +30,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private final int PADDING_BETWEEN_ROWS = 10;
     private final int PADDING_BETWEEN_ROWS_TEXT = 15;
 
+    @Nonnull
     private List<MovieWrapper> movies = new LinkedList<>();
 
     private final ThumbnailManager thumbnailManager;
@@ -206,8 +208,6 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     // standard operations on item collection
 
     public int size() {
-        if (movies == null)
-            return 0;
         return movies.size();
     }
 
@@ -222,10 +222,10 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public Film getSelectedItem() {
-        if (movies == null || movies.size() < selectedIndex || selectedIndex == -1)
-            return null;
-        return movies.get(selectedIndex).getFilm();
+    public Optional<Film> getSelectedItem() {
+        if (movies.size() < selectedIndex || selectedIndex == -1)
+            return Optional.absent();
+        return Optional.of(movies.get(selectedIndex).getFilm());
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -234,18 +234,20 @@ public class CoolMovieComposite extends Composite implements PaintListener {
             @Override
             public Film apply(@Nullable MovieWrapper movieWrapper) {
                 if (movieWrapper == null)
-                    return null;
+                    throw new IllegalArgumentException("Movie wrapper is null?");
                 return movieWrapper.getFilm();
             }
         }).iterator();
     }
 
-    public void setMovies(List<Film> sviFilmovi) {
+    public void setMovies(Optional<List<Film>> sviFilmovi) {
         if (isDisposed())
             return;
         clearMovies();
+        if (!sviFilmovi.isPresent())
+            return;
         List<MovieWrapper> wrappers = new ArrayList<>();
-        for (Film film : sviFilmovi) {
+        for (Film film : sviFilmovi.get()) {
             MovieWrapper movieWrapper = new MovieWrapper(film);
             wrappers.add(movieWrapper);
         }

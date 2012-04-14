@@ -10,8 +10,10 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -84,7 +86,7 @@ public class SWTUtil {
                 }
             });
 //        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
-            target.setImage(image);
+            target.setImage(Optional.of(image));
         } catch (IOException e) {
             throw new IllegalArgumentException("Unexpected exception while working with the image", e);
         }
@@ -125,7 +127,7 @@ public class SWTUtil {
         }
     }
 
-    public static String getTextFrom(Scrollable source) {
+    public static @Nonnull String getTextFrom(Scrollable source) {
         if (source instanceof Text)
             return ((Text) source).getText();
         else if (source instanceof Combo)

@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.*;
 
 public class ClosingDialogForm extends AbstractDialogForm {
 
-    @Override protected void createShell(Shell parent) {
+    @Override protected void createShell() {
         shell = new Shell(SWT.NO_TRIM | SWT.BORDER);
     }
 

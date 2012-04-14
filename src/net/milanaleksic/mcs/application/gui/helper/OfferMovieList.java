@@ -26,7 +26,7 @@ import java.util.concurrent.*;
 public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     public interface Receiver {
-        void setCurrentQueryItems(String currentQuery, String message, Optional<Movie[]> movies);
+        void setCurrentQueryItems(String currentQuery, Optional<String> message, Optional<Movie[]> movies);
     }
 
     public static final int MIN_DELAY_BETWEEN_REQUESTS = 3000;
@@ -46,7 +46,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     private Receiver receiver;
 
-    private ScheduledThreadPoolExecutor executorService;
+    private Optional<ScheduledThreadPoolExecutor> executorService = Optional.absent();
     private ResourceBundle bundle;
 
     public void setReceiver(Receiver receiver) {
@@ -71,16 +71,14 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
             public void run() {
                 try {
                     previousTimeFired = System.currentTimeMillis();
-                    String message;
+                    Optional<String> message = Optional.absent();
                     Optional<Movie[]> moviesOptional = tmdbService.searchForMovies(currentQuery);
                     if (!moviesOptional.isPresent() || moviesOptional.get().length == 0)
-                        message = bundle.getString("offerList.nothingFound");
-                    else
-                        message = null;
+                        message = Optional.of(bundle.getString("offerList.nothingFound"));
                     receiver.setCurrentQueryItems(currentQuery, message, moviesOptional);
                 } catch (TmdbException e1) {
                     logger.error("Error while fetching movie information", e1); //NON-NLS
-                    receiver.setCurrentQueryItems(currentQuery, bundle.getString("offerList.searchFailed"), Optional.<Movie[]>absent());
+                    receiver.setCurrentQueryItems(currentQuery, Optional.of(bundle.getString("offerList.searchFailed")), Optional.<Movie[]>absent());
                 } catch (Exception e) {
                     logger.error("Unexpected error while fetching movie information", e); //NON-NLS
                 }
@@ -91,20 +89,20 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
                 ? 0
                 : MIN_DELAY_BETWEEN_REQUESTS - timePassedSinceLastFire;
         currentQuery = query;
-        if (executorService.getQueue().size() == 0) {
+        if (executorService.get().getQueue().size() == 0) {
             if (logger.isDebugEnabled())
                 logger.debug("Scheduling search in " + delay + "ms"); //NON-NLS
-            executorService.schedule(fetchItem, delay, TimeUnit.MILLISECONDS);
+            executorService.get().schedule(fetchItem, delay, TimeUnit.MILLISECONDS);
         }
     }
 
     public void startup() {
-        executorService = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3);
+        executorService = Optional.of((ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3));
     }
 
     public void cleanup() {
-        if (executorService != null && !executorService.isShutdown())
-            executorService.shutdownNow();
+        if (executorService.isPresent() && !executorService.get().isShutdown())
+            executorService.get().shutdownNow();
     }
 
     @Override
@@ -131,8 +129,8 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     public void refreshRecommendations() {
         final String query = SWTUtil.getTextFrom(source);
-        if (query == null || query.length() == 0) {
-            receiver.setCurrentQueryItems(query, bundle.getString("offerList.noSearchString"), null);
+        if (query.isEmpty()) {
+            receiver.setCurrentQueryItems(query, Optional.of(bundle.getString("offerList.noSearchString")), Optional.<Movie[]>absent());
             return;
         }
         executeSearch(query);

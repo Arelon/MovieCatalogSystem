@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -29,14 +30,14 @@ public class EditableSingleColumnTableSelectionListener extends SelectionAdapter
 
     private final ResourceBundle bundle;
 
-    private final ContentEditingFinishedListener contentEditingFinishedListener;
+    private final Optional<ContentEditingFinishedListener> contentEditingFinishedListener;
 
     public EditableSingleColumnTableSelectionListener(Table sourceTable, Shell parent, ResourceBundle bundle,
                                                       ContentEditingFinishedListener contentEditingFinishedListener) {
         this.sourceTable = sourceTable;
         this.parent = parent;
         this.bundle = bundle;
-        this.contentEditingFinishedListener = contentEditingFinishedListener;
+        this.contentEditingFinishedListener = Optional.fromNullable(contentEditingFinishedListener);
         editor = new TableEditor(sourceTable);
         editor.horizontalAlignment = SWT.LEFT;
         editor.grabHorizontal = true;
@@ -86,7 +87,7 @@ public class EditableSingleColumnTableSelectionListener extends SelectionAdapter
 
     private void fireContentChanged(String text, Object data) {
         editor.getItem().setText(EDITING_COLUMN, text);
-        if (contentEditingFinishedListener != null)
-            contentEditingFinishedListener.contentEditingFinished(text, data);
+        if (contentEditingFinishedListener.isPresent())
+            contentEditingFinishedListener.get().contentEditingFinished(text, data);
     }
 }

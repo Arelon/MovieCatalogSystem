@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
@@ -54,6 +53,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     private LinkedList<Future<?>> listOfQueuedWorkers;
     private Map<Film, Integer> failureCountMap;
     private Map<Film, Movie[]> movieMatchesMap;
+
     private CountDownLatch processingCounterLatch;
 
     private ShowImageComposite matchImage;
@@ -101,25 +101,25 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             }
             TableItem item = possibleMatchesTable.getItem(selectionIndex);
             Movie movie = (Movie) item.getData();
-            String appropriateImageUrl = getAppropriateImageUrl(movie);
-            matchDescription.setText(movie.getOverview() == null ? "" : movie.getOverview());
-            if (appropriateImageUrl == null)
-                setStatusAndImage("unmatchedMoviesTable.noImageFound", null);
+            matchDescription.setText(Strings.nullToEmpty(movie.getOverview()));
+            Optional<String> appropriateImageUrl = getAppropriateImageUrl(movie);
+            if (appropriateImageUrl.isPresent())
+                schedulePosterDownload(appropriateImageUrl.get());
             else
-                schedulePosterDownload(appropriateImageUrl);
+                setStatusAndImage(Optional.of("unmatchedMoviesTable.noImageFound"), Optional.<Image>absent());
         }
 
         private void schedulePosterDownload(final String appropriateImageUrl) {
             HandledRunnable task = new HandledRunnable(shell, bundle) {
                 @Override
                 public void handledRun() {
-                    setStatusAndImage("unmatchedMoviesTable.downloadingImage", null);
+                    setStatusAndImage(Optional.of("unmatchedMoviesTable.downloadingImage"), Optional.<Image>absent());
                     SWTUtil.createImageFromUrl(URI.create(appropriateImageUrl),
                             persistentHttpContext,
                             new Function<Image, Void>() {
                                 @Override
                                 public Void apply(@Nullable final Image image) {
-                                    setStatusAndImage(null, image);
+                                    setStatusAndImage(Optional.<String>absent(), Optional.fromNullable(image));
                                     return null;
                                 }
                             }
@@ -133,21 +133,21 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                 listOfQueuedWorkers.add(workerManager.submitIoBoundWorker(task));
         }
 
-        private String getAppropriateImageUrl(Movie movie) {
+        private Optional<String> getAppropriateImageUrl(Movie movie) {
             for (ImageInfo imageInfo : movie.getPosters()) {
                 if (imageInfo.getImage().getWidth() == 185)
-                    return imageInfo.getImage().getUrl();
+                    return Optional.of(imageInfo.getImage().getUrl());
             }
-            return null;
+            return Optional.absent();
         }
 
-        private void setStatusAndImage(@Nullable final String resourceId, @Nullable final Image image) {
+        private void setStatusAndImage(final Optional<String> resourceId, final Optional<Image> image) {
             shell.getDisplay().asyncExec(new Runnable() {
                 @Override
                 public void run() {
                     matchImage.setImage(image);
-                    if (resourceId != null) {
-                        matchImage.setStatus(bundle.getString(resourceId));
+                    if (resourceId.isPresent()) {
+                        matchImage.setStatus(Optional.of(bundle.getString(resourceId.get())));
                         btnAcceptThisMatch.setEnabled(true);
                     }
                 }
@@ -219,8 +219,8 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     }
 
     private void removeMatchDetails() {
-        matchImage.setImage(null);
-        matchImage.setStatus(null);
+        matchImage.setImage(Optional.<Image>absent());
+        matchImage.setStatus(Optional.<String>absent());
         matchDescription.setText("");
         btnAcceptThisMatch.setEnabled(false);
         possibleMatchesTable.removeAll();

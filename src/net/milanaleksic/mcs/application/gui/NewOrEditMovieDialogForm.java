@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.awt.*;
@@ -61,45 +61,46 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     @Inject
     FindMovieDialogForm findMovieDialogForm;
 
-    private Composite mainPanel = null;
-    private Combo comboLokacija = null;
-    private Combo comboZanr = null;
-    private Combo comboDisk = null;
-    private List listDiskovi = null;
-    private Combo comboNaziv = null;
-    private Text textPrevod = null;
-    private Text textImdbId = null;
-    private Text textGodina = null;
-    private Text textKomentar = null;
+    private Composite mainPanel;
+    private Combo comboLokacija;
+    private Combo comboZanr;
+    private Combo comboDisk;
+    private List listDiskovi;
+    private Combo comboNaziv;
+    private Text textPrevod;
+    private Text textImdbId;
+    private Text textGodina;
+    private Text textKomentar;
     private ShowImageComposite posterImage;
 
-    private Film activeFilm = null;
+    private Optional<Film> activeFilm;
 
     private HashMap<String, Zanr> sviZanrovi;
     private HashMap<String, Pozicija> sveLokacije;
     private HashMap<String, Medij> sviDiskovi;
 
-    public void open(Shell parent, @Nullable Film film, Runnable callback) {
+    public void open(Shell parent, Optional<Film> film, Runnable callback) {
         this.activeFilm = film;
         super.open(parent, callback);
     }
 
     protected void reReadData() {
         refillCombos();
-        if (activeFilm != null) {
-            comboNaziv.setText(activeFilm.getNazivfilma());
-            textPrevod.setText(activeFilm.getPrevodnazivafilma());
-            textGodina.setText(String.valueOf(activeFilm.getGodina()));
-            textImdbId.setText(activeFilm.getImdbId());
-            textKomentar.setText(activeFilm.getKomentar());
-            comboZanr.select(comboZanr.indexOf(activeFilm.getZanr().getZanr()));
+        if (activeFilm.isPresent()) {
+            Film film = activeFilm.get();
+            comboNaziv.setText(film.getNazivfilma());
+            textPrevod.setText(film.getPrevodnazivafilma());
+            textGodina.setText(String.valueOf(film.getGodina()));
+            textImdbId.setText(film.getImdbId());
+            textKomentar.setText(film.getKomentar());
+            comboZanr.select(comboZanr.indexOf(film.getZanr().getZanr()));
             listDiskovi.removeAll();
-            for (Medij medij : activeFilm.getMedijs())
+            for (Medij medij : film.getMedijs())
                 listDiskovi.add(medij.toString());
-            int indexOfPozicija = comboLokacija.indexOf(activeFilm.getPozicija());
+            int indexOfPozicija = comboLokacija.indexOf(film.getPozicija());
             if (indexOfPozicija >= 0)
                 comboLokacija.select(indexOfPozicija);
-            thumbnailManager.setThumbnailForShowImageComposite(posterImage, activeFilm.getImdbId());
+            thumbnailManager.setThumbnailForShowImageComposite(posterImage, film.getImdbId());
         } else {
             Optional<Pozicija> defaultPozicija = pozicijaRepository.getDefaultPozicija();
             if (defaultPozicija.isPresent()) {
@@ -149,11 +150,11 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             return;
         }
 
-        if (previousZanr != null && previousZanr.length() > 0 && comboZanr.indexOf(previousZanr) != -1)
+        if (!previousZanr.isEmpty() && comboZanr.indexOf(previousZanr) != -1)
             comboZanr.select(comboZanr.indexOf(previousZanr));
-        if (previousLokacija != null && previousLokacija.length() > 0 && comboLokacija.indexOf(previousLokacija) != -1)
+        if (!previousLokacija.isEmpty() && comboLokacija.indexOf(previousLokacija) != -1)
             comboLokacija.select(comboLokacija.indexOf(previousLokacija));
-        if (previousDisk != null && previousDisk.length() > 0 && comboDisk.indexOf(previousDisk) != -1)
+        if (!previousDisk.isEmpty() && comboDisk.indexOf(previousDisk) != -1)
             comboDisk.select(comboDisk.indexOf(previousDisk));
     }
 
@@ -179,18 +180,19 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     }
 
     private void izmeniFilm() {
-        activeFilm.setNazivfilma(comboNaziv.getText().trim());
-        activeFilm.setPrevodnazivafilma(textPrevod.getText().trim());
-        activeFilm.setGodina(Integer.parseInt(textGodina.getText()));
-        activeFilm.setImdbId(textImdbId.getText().trim());
-        activeFilm.setKomentar(textKomentar.getText());
+        Film film = activeFilm.get();
+        film.setNazivfilma(comboNaziv.getText().trim());
+        film.setPrevodnazivafilma(textPrevod.getText().trim());
+        film.setGodina(Integer.parseInt(textGodina.getText()));
+        film.setImdbId(textImdbId.getText().trim());
+        film.setKomentar(textKomentar.getText());
 
         Set<Medij> selectedMediums = new HashSet<>();
         for (String item : listDiskovi.getItems()) {
             selectedMediums.add(sviDiskovi.get(item));
         }
 
-        filmService.updateFilmWithChanges(activeFilm,
+        filmService.updateFilmWithChanges(film,
                 sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())),
                 sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
                 selectedMediums);
@@ -307,17 +309,16 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                 findMovieDialogForm.open(shell, new Runnable() {
                     @Override
                     public void run() {
-                        readFromMovie(findMovieDialogForm.getSelectedMovie());
+                        Optional<Movie> selectedMovie = findMovieDialogForm.getSelectedMovie();
+                        if (selectedMovie.isPresent())
+                            readFromMovie(selectedMovie.get());
                     }
                 });
-                findMovieDialogForm.setInitialText(null);
             }
         });
     }
 
-    private void readFromMovie(Movie movie) {
-        if (movie == null)
-            return;
+    private void readFromMovie(@Nonnull Movie movie) {
         if ("?".equals(movie.getReleasedYear()))
             textGodina.setText("");
         else
@@ -404,7 +405,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                     messageBox.setMessage(bundle.getString("newOrEdit.cancellationCause") + "\r\n----------" + razlogOtkaza.toString());
                     messageBox.open();
                 } else {
-                    if (activeFilm != null)
+                    if (activeFilm.isPresent())
                         izmeniFilm();
                     else
                         dodajNoviFilm();
@@ -524,7 +525,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     }
 
     @Override
-    public void setCurrentQueryItems(final String query, final String message, final Optional<Movie[]> moviesOptional) {
+    public void setCurrentQueryItems(final String query, final Optional<String> message, final Optional<Movie[]> moviesOptional) {
         if (shell.isDisposed())
             return;
         shell.getDisplay().asyncExec(new Runnable() {
@@ -533,8 +534,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             public void run() {
                 if (query.equals(comboNaziv.getText())) {
                     Point selection = comboNaziv.getSelection();
-                    if (message != null) {
-                        comboNaziv.setItems(new String[]{message});
+                    if (message.isPresent()) {
+                        comboNaziv.setItems(new String[]{message.get()});
                     } else if (moviesOptional.isPresent()) {
                         Movie[] movies = moviesOptional.get();
                         String[] newItems = new String[movies.length <= 10 ? movies.length : 10];

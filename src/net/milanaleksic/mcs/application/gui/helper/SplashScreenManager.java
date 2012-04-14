@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
@@ -13,11 +14,11 @@ import java.awt.*;
  */
 public class SplashScreenManager implements LifecycleListener {
 
-    private SplashScreen splashScreen;
+    private Optional<SplashScreen> splashScreen = Optional.absent();
 
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
-        splashScreen = SplashScreen.getSplashScreen();
+        splashScreen = Optional.fromNullable(SplashScreen.getSplashScreen());
     }
 
     @Override
@@ -25,7 +26,7 @@ public class SplashScreenManager implements LifecycleListener {
     }
 
     public void closeSplashScreen() {
-        if (splashScreen != null)
-            splashScreen.close();
+        if (splashScreen.isPresent())
+            splashScreen.get().close();
     }
 }

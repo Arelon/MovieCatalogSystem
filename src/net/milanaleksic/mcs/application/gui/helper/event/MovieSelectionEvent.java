@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper.event;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.Film;
 import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.widgets.Event;
@@ -80,7 +81,7 @@ public class MovieSelectionEvent extends TypedEvent {
 
     static final long serialVersionUID = 3976735856884987953L;
 
-    public Film film;
+    public Optional<Film> film;
 
     /**
      * Constructs a new instance of this class based on the
@@ -88,6 +89,7 @@ public class MovieSelectionEvent extends TypedEvent {
      *
      * @param e the untyped event containing the information
      */
+    @SuppressWarnings("unchecked")
     public MovieSelectionEvent(Event e) {
         super(e);
         this.item = e.item;
@@ -99,7 +101,7 @@ public class MovieSelectionEvent extends TypedEvent {
         this.stateMask = e.stateMask;
         this.text = e.text;
         this.doit = e.doit;
-        this.film = (Film) e.data;
+        this.film = (Optional<Film>) e.data;
     }
 
     /**

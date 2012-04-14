@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.application.gui.helper.*;
@@ -29,16 +30,16 @@ public class SettingsDialogForm extends AbstractDialogForm {
 
     private SelectionAdapter pozicijaDefaultButtonSelected;
 
-    private Table listMediumTypes = null;
-    private Table listLokacije = null;
-    private Table listZanrovi = null;
-    private Text textElementsPerPage = null;
-
-    private UserConfiguration userConfiguration = null;
+    private Table listMediumTypes;
+    private Table listLokacije;
+    private Table listZanrovi;
+    private Text textElementsPerPage;
     private Combo comboLanguage;
 
+    private Optional<UserConfiguration> userConfiguration = Optional.absent();
+
     @Override public void open(Shell parent, Runnable callback) {
-        this.userConfiguration = applicationManager.getUserConfiguration();
+        this.userConfiguration = Optional.of(applicationManager.getUserConfiguration());
         super.open(parent, callback);
     }
 
@@ -155,13 +156,13 @@ public class SettingsDialogForm extends AbstractDialogForm {
         comboLanguage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         for (Language language : Language.values())
             comboLanguage.add(bundle.getString("language.name." + language.getName()));
-        comboLanguage.select(Language.ordinalForName(userConfiguration.getLocaleLanguage()));
+        comboLanguage.select(Language.ordinalForName(userConfiguration.get().getLocaleLanguage()));
         comboLanguage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
                 int index = comboLanguage.getSelectionIndex();
                 if (index > -1 && index < Language.values().length) {
-                    userConfiguration.setLocaleLanguage(Language.values()[index].getName());
+                    userConfiguration.get().setLocaleLanguage(Language.values()[index].getName());
                     runnerWhenClosingShouldRun = true;
                 }
             }
@@ -173,32 +174,32 @@ public class SettingsDialogForm extends AbstractDialogForm {
         label.setText(bundle.getString("settings.numberOfElementsPerPage"));
         textElementsPerPage = new Text(groupGlobal, SWT.BORDER);
         textElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
+        textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
         textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
                 String data = textElementsPerPage.getText();
-                if (data == null || data.length() == 0) {
-                    textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
+                if (data.isEmpty()) {
+                    textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
                     return;
                 }
                 int elementsPerPage;
                 try {
                     elementsPerPage = Integer.parseInt(data);
                 } catch (NumberFormatException e) {
-                    textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
+                    textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
                     return;
                 }
                 if (elementsPerPage < 0) {
-                    textElementsPerPage.setText(Integer.toString(userConfiguration.getElementsPerPage()));
+                    textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
                     return;
                 }
-                userConfiguration.setElementsPerPage(elementsPerPage);
+                userConfiguration.get().setElementsPerPage(elementsPerPage);
                 runnerWhenClosingShouldRun = true;
             }
         });
 
-        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
         Group groupProxyServer = new Group(compositeSettings, SWT.NONE);
         groupProxyServer.setText(bundle.getString("settings.proxyServer"));
         groupProxyServer.setLayout(new GridLayout(2, false));
@@ -230,7 +231,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         ModifyListener proxySettingsModifyListener = new HandledModifyListener(shell, bundle) {
             @Override
             public void handledModifyText() {
-                UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+                UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
                 proxyConfiguration.setServer(textProxyServer.getText());
                 if (!textProxyServerPort.getText().isEmpty())
                     proxyConfiguration.setPort(Integer.parseInt(textProxyServerPort.getText()));
@@ -252,7 +253,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         chkProxyServerUsesNtlm.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
-                UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+                UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
                 proxyConfiguration.setNtlm(chkProxyServerUsesNtlm.getSelection());
             }
         });

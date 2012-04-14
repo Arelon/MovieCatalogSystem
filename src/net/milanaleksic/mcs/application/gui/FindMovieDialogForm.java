@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,7 +33,7 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
 
     private ShowImageComposite matchImage;
 
-    private Movie selectedMovie;
+    private Optional<Movie> selectedMovie = Optional.absent();
 
     private PersistentHttpContext persistentHttpContext;
 
@@ -41,9 +42,10 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
 
     @Inject
     @Named("offerMovieListForFindMovieDialogForm")
+    @Nullable
     private OfferMovieList offerMovieListForFindMovieDialogForm;
 
-    private String initialText;
+    private String initialText = "";
 
     private HandledSelectionAdapter matchSelectionHandler = new HandledSelectionAdapter(shell, bundle) {
         @Override
@@ -56,26 +58,26 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
             TableItem item = mainTable.getItem(selectionIndex);
             Movie movie = (Movie) item.getData();
             if (movie == null)
-                return;
-            String appropriateImageUrl = getAppropriateImageUrl(movie);
+                throw new IllegalStateException("Movie should not be null");
+            Optional<String> appropriateImageUrl = getAppropriateImageUrl(movie);
             matchDescription.setText(movie.getOverview() == null ? "" : movie.getOverview());
-            if (appropriateImageUrl == null)
-                setStatusAndImage("unmatchedMoviesTable.noImageFound", null);
+            if (appropriateImageUrl.isPresent())
+                schedulePosterDownload(appropriateImageUrl.get());
             else
-                schedulePosterDownload(appropriateImageUrl);
+                setStatusAndImage(Optional.of("unmatchedMoviesTable.noImageFound"), Optional.<Image>absent());
         }
 
         private void schedulePosterDownload(final String appropriateImageUrl) {
             HandledRunnable task = new HandledRunnable(shell, bundle) {
                 @Override
                 public void handledRun() {
-                    setStatusAndImage("unmatchedMoviesTable.downloadingImage", null);
+                    setStatusAndImage(Optional.of("unmatchedMoviesTable.downloadingImage"), Optional.<Image>absent());
                     SWTUtil.createImageFromUrl(URI.create(appropriateImageUrl),
                             persistentHttpContext,
                             new Function<Image, Void>() {
                                 @Override
                                 public Void apply(@Nullable final Image image) {
-                                    setStatusAndImage(null, image);
+                                    setStatusAndImage(Optional.<String>absent(), Optional.<Image>absent());
                                     return null;
                                 }
                             }
@@ -87,34 +89,34 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
             thread.start();
         }
 
-        private String getAppropriateImageUrl(Movie movie) {
+        private Optional<String> getAppropriateImageUrl(Movie movie) {
             for (ImageInfo imageInfo : movie.getPosters()) {
                 if (imageInfo.getImage().getWidth() == 185)
-                    return imageInfo.getImage().getUrl();
+                    return Optional.of(imageInfo.getImage().getUrl());
             }
-            return null;
+            return Optional.absent();
         }
 
-        private void setStatusAndImage(@Nullable final String resourceId, @Nullable final Image image) {
-            if (shell == null || shell.isDisposed())
+        private void setStatusAndImage(final Optional<String> resourceId, final Optional<Image> image) {
+            if (shell.isDisposed())
                 return;
             shell.getDisplay().asyncExec(new Runnable() {
                 @Override
                 public void run() {
                     matchImage.setImage(image);
-                    if (resourceId != null) {
-                        matchImage.setStatus(bundle.getString(resourceId));
+                    if (resourceId.isPresent()) {
+                        matchImage.setStatus(Optional.of(bundle.getString(resourceId.get())));
                     }
                 }
             });
         }
     };
 
-    public void setInitialText(@Nullable String initialText) {
+    public void setInitialText(@Nonnull String initialText) {
         this.initialText = initialText;
     }
 
-    Movie getSelectedMovie() {
+    Optional<Movie> getSelectedMovie() {
         return selectedMovie;
     }
 
@@ -136,7 +138,8 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
     @Override
     protected void onShellReady() {
         persistentHttpContext = httpClientFactoryService.createPersistentHttpContext();
-        offerMovieListForFindMovieDialogForm.prepareFor(movieName);
+        if (offerMovieListForFindMovieDialogForm != null)
+            offerMovieListForFindMovieDialogForm.prepareFor(movieName);
         removeMatchDetails();
     }
 
@@ -154,7 +157,7 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
                 int selectionIndex = mainTable.getSelectionIndex();
                 if (selectionIndex < 0)
                     return;
-                selectedMovie = (Movie) mainTable.getItem(selectionIndex).getData();
+                selectedMovie = Optional.of((Movie) mainTable.getItem(selectionIndex).getData());
                 FindMovieDialogForm.super.runnerWhenClosingShouldRun = true;
                 shell.close();
             }
@@ -218,19 +221,17 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
     }
 
     private void removeMatchDetails() {
-        matchImage.setImage(null);
-        matchImage.setStatus(null);
-        selectedMovie = null;
-        if (initialText != null) {
-            movieName.setText(initialText);
+        matchImage.setImage(Optional.<Image>absent());
+        matchImage.setStatus(Optional.<String>absent());
+        selectedMovie = Optional.absent();
+        movieName.setText(initialText);
+        if (offerMovieListForFindMovieDialogForm != null)
             offerMovieListForFindMovieDialogForm.refreshRecommendations();
-            initialText = null;
-        }
     }
 
     @Override
-    public void setCurrentQueryItems(final String currentQuery, final String message, final Optional<Movie[]> movies) {
-        if (shell == null || shell.isDisposed())
+    public void setCurrentQueryItems(final String currentQuery, final Optional<String> message, final Optional<Movie[]> movies) {
+        if (shell.isDisposed())
             return;
         shell.getDisplay().asyncExec(new Runnable() {
             @Override
@@ -238,9 +239,9 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
                 if (mainTable.isDisposed())
                     return;
                 mainTable.removeAll();
-                if (message != null) {
+                if (message.isPresent()) {
                     TableItem messageItem = new TableItem(mainTable, SWT.NONE);
-                    messageItem.setText(new String[]{message, "", ""});
+                    messageItem.setText(new String[]{message.get(), "", ""});
                 }
                 if (movies.isPresent()) {
                     for (Movie movie : movies.get()) {

@@ -1,14 +1,14 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Shell;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -21,10 +21,10 @@ public abstract class AbstractDialogForm {
     @Inject
     protected ApplicationManager applicationManager;
 
-    protected Shell shell = null;
-    protected Shell parent = null;
+    protected Shell shell;
+    protected Optional<Shell> parent = Optional.absent();
 
-    private Function<AbstractDialogForm, Void> runWhenClosing = null;
+    private Optional<Function<AbstractDialogForm, Void>> runWhenClosing = Optional.absent();
 
     protected ResourceBundle bundle;
 
@@ -68,19 +68,19 @@ public abstract class AbstractDialogForm {
     }
 
     public void open(@Nullable Shell parent, @Nullable Function<AbstractDialogForm, Void> runWhenClosing) {
-        this.parent = parent;
-        this.runWhenClosing = runWhenClosing;
+        this.parent = Optional.fromNullable(parent);
+        this.runWhenClosing = Optional.fromNullable(runWhenClosing);
         this.runnerWhenClosingShouldRun = false;
         bundle = applicationManager.getMessagesBundle();
-        createShell(parent);
+        createShell();
     }
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
     }
 
-    protected void createShell(Shell parent) {
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+    protected void createShell() {
+        shell = new Shell(this.parent.orNull(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         onShellCreated();
 
         if (!noReadyEvent)
@@ -96,19 +96,20 @@ public abstract class AbstractDialogForm {
                     return;
                 }
                 if (runnerWhenClosingShouldRun) {
-                    if (AbstractDialogForm.this.runWhenClosing == null)
+                    if (!AbstractDialogForm.this.runWhenClosing.isPresent())
                         throw new IllegalStateException("Value runnerWhenClosingShouldRun set to true, but no valid runner registered!");
-                    AbstractDialogForm.this.runWhenClosing.apply(AbstractDialogForm.this);
+                    AbstractDialogForm.this.runWhenClosing.get().apply(AbstractDialogForm.this);
                 }
                 shell.dispose();
             }
         });
 
         shell.pack();
-        if (parent != null) {
+        if (this.parent.isPresent()) {
+            Shell parentShell = this.parent.get();
             shell.setLocation(new Point(
-                    parent.getLocation().x + Math.abs(parent.getSize().x - shell.getSize().x) / 2,
-                    parent.getLocation().y + Math.abs(parent.getSize().y - shell.getSize().y) / 2)
+                    parentShell.getLocation().x + Math.abs(parentShell.getSize().x - shell.getSize().x) / 2,
+                    parentShell.getLocation().y + Math.abs(parentShell.getSize().y - shell.getSize().y) / 2)
             );
         }
         shell.open();

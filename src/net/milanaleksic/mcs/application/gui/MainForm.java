@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
@@ -94,20 +93,21 @@ public class MainForm extends Observable {
     @Inject
     private ImageRepository imageRepository;
 
-    private ResourceBundle bundle = null;
+    private ResourceBundle bundle;
 
     private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com"; //NON-NLS
 
-    private Shell sShell = null;
-    private Combo comboZanr = null;
-    private Combo comboTipMedija = null;
-    private Combo comboPozicija = null;
-    private Label labelFilter = null;
-    private Label labelFilterDesc = null;
-    private Label labelCurrent = null;
-    private Canvas toolTicker = null;
-    private Menu settingsPopupMenu = null;
-    private Composite statusBar = null;
+    private Shell sShell;
+    private Combo comboZanr;
+    private Combo comboTipMedija;
+    private Combo comboPozicija;
+    private Label labelFilter;
+    private Label labelFilterDesc;
+    private Label labelCurrent;
+    private Canvas toolTicker;
+    private Menu settingsPopupMenu;
+    private Composite statusBar;
+
     private CurrentViewState currentViewState = new CurrentViewState();
 
     private CoolMovieComposite mainTable;
@@ -120,7 +120,7 @@ public class MainForm extends Observable {
 
         private volatile Long activePage = 0L;
         private volatile Long showableCount = 0L;
-        private volatile String filterText = null;
+        private volatile String filterText = "";
         private volatile int maxItemsPerPage;
         private SingularAttribute<Film, String> singularAttribute = Film_.medijListAsString;
         private boolean ascending = true;
@@ -195,7 +195,7 @@ public class MainForm extends Observable {
                             clearAllFilters();
                         return;
                     case SWT.BS:
-                        if (filterText != null && filterText.length() > 0) {
+                        if (!filterText.isEmpty()) {
                             currentViewState.setFilterText(filterText.substring(0, filterText.length() - 1));
                             doFillMainTable();
                         }
@@ -203,10 +203,7 @@ public class MainForm extends Observable {
                 }
                 if (!Character.isLetterOrDigit(e.character) && e.keyCode != java.awt.event.KeyEvent.VK_SPACE)
                     return;
-                if (filterText == null)
-                    currentViewState.setFilterText("" + e.character);
-                else
-                    currentViewState.setFilterText(filterText + e.character);
+                currentViewState.setFilterText(filterText + e.character);
                 doFillMainTable();
             } finally {
                 if (!sShell.isDisposed()) {
@@ -226,7 +223,7 @@ public class MainForm extends Observable {
 
         private boolean allFiltersAreCleared() {
             String filterText = currentViewState.getFilterText();
-            return (filterText == null || filterText.length() == 0)
+            return filterText.isEmpty()
                     && comboPozicija.getSelectionIndex() == 0
                     && comboTipMedija.getSelectionIndex() == 0
                     && comboZanr.getSelectionIndex() == 0;
@@ -357,7 +354,7 @@ public class MainForm extends Observable {
                 @Override
                 public Void apply(@Nullable List<Film> filmList) {
                     if (filmList == null)
-                        return null;
+                        throw new IllegalStateException("Query returned NULL instead of empty list");
                     final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
                     exporter.get().export(new ExporterSource() {
 
@@ -408,10 +405,10 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            Film selectedMovie = mainTable.getSelectedItem();
-            if (selectedMovie == null)
+            Optional<Film> selectedMovie = mainTable.getSelectedItem();
+            if (!selectedMovie.isPresent())
                 return;
-            deleteMovieDialogForm.open(sShell, selectedMovie,
+            deleteMovieDialogForm.open(sShell, selectedMovie.get(),
                     new Runnable() {
 
                         @Override
@@ -473,7 +470,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            newOrEditMovieDialogForm.open(sShell, null, new Runnable() {
+            newOrEditMovieDialogForm.open(sShell, Optional.<Film>absent(), new Runnable() {
                 @Override
                 public void run() {
                     doFillMainTable();
@@ -533,8 +530,8 @@ public class MainForm extends Observable {
                 } else
                     labelCurrent.setText(currentViewState.getShowableCount().toString());
                 String filter = currentViewState.getFilterText();
-                labelFilter.setText(filter == null ? "" : filter);
-                labelFilterDesc.setVisible(filter != null && !filter.isEmpty());
+                labelFilter.setText(filter);
+                labelFilterDesc.setVisible(!filter.isEmpty());
                 statusBar.layout();
             }
 
@@ -649,15 +646,12 @@ public class MainForm extends Observable {
 
             @Override
             public void movieSelected(MovieSelectionEvent e) {
-                if (e.film == null)
-                    movieDetailsPanel.clearData();
-                else
-                    movieDetailsPanel.showDataForMovie(e.film);
+                movieDetailsPanel.showDataForMovie(e.film);
             }
 
             @Override
             public void movieDetailsSelected(MovieSelectionEvent e) {
-                newOrEditMovieDialogForm.open(sShell, filmRepository.getCompleteFilm(e.film),
+                newOrEditMovieDialogForm.open(sShell, Optional.of(filmRepository.getCompleteFilm(e.film.get())),
                         new Runnable() {
                             @Override
                             public void run() {
@@ -726,9 +720,8 @@ public class MainForm extends Observable {
                     @Override
                     public Void apply(@Nullable List<Zanr> zanrs) {
                         if (zanrs == null)
-                            return null;
-                        //TODO: what is this iter ?
-                        int iter = 2;
+                            throw new IllegalStateException("Query returned null instead of empty list");
+                        int iter = 2; // each item except first 2 will have Zanr object as data
                         for (Zanr zanr : zanrs) {
                             comboZanr.setData(Integer.toString(iter++), zanr);
                             comboZanr.add(zanr.toString());
@@ -754,7 +747,7 @@ public class MainForm extends Observable {
                     @Override
                     public Void apply(@Nullable List<Pozicija> pozicijas) {
                         if (pozicijas == null)
-                            return null;
+                            throw new IllegalStateException("Query returned null instead of empty list");
                         for (Pozicija pozicija : pozicijas) {
                             comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
                             comboPozicija.add(pozicija.toString());
@@ -780,7 +773,7 @@ public class MainForm extends Observable {
                     @Override
                     public Void apply(@Nullable List<TipMedija> tipMedijas) {
                         if (tipMedijas == null)
-                            return null;
+                            throw new IllegalStateException("Query returned null instead of empty list");
                         for (TipMedija tip : tipMedijas) {
                             comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
                             comboTipMedija.add(tip.toString());
@@ -866,20 +859,17 @@ public class MainForm extends Observable {
 
 
     private void doFillMainTable() {
-        if (toolTicker != null) {
-            toolTicker.setVisible(true);
-            toolTicker.update();
-        }
+        toolTicker.setVisible(true);
+        toolTicker.update();
         getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage(), new Function<List<Film>, Void>() {
             @Override
             public Void apply(@Nullable List<Film> films) {
-                mainTable.setMovies(films);
+                mainTable.setMovies(Optional.fromNullable(films));
 
                 MainForm.this.setChanged();
                 MainForm.super.notifyObservers();
 
-                if (toolTicker != null)
-                    toolTicker.setVisible(false);
+                toolTicker.setVisible(false);
 
                 return null;
             }
@@ -905,7 +895,7 @@ public class MainForm extends Observable {
         final Zanr zanrFilter = (Zanr) comboZanr.getData(Integer.toString(comboZanr.getSelectionIndex()));
         final TipMedija tipMedijaFilter = (TipMedija) comboTipMedija.getData(Integer.toString(comboTipMedija.getSelectionIndex()));
         final Pozicija pozicijaFilter = (Pozicija) comboPozicija.getData(Integer.toString(comboPozicija.getSelectionIndex()));
-        final String filterText = currentViewState.getFilterText() == null ?
+        final String filterText = currentViewState.getFilterText().isEmpty() ?
                 null :
                 '%' + currentViewState.getFilterText() + '%';
         final int startFrom = currentViewState.getActivePage().intValue() * maxItems;
