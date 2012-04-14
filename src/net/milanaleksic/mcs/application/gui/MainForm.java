@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 // do not allow java.awt.* to be added to import list because SWT's FileDialog
 // will not work in some cases(https://bugs.eclipse.org/bugs/show_bug.cgi?id=349387)
 
@@ -352,9 +354,8 @@ public class MainForm extends Observable {
             }
             getAllFilms(0, new Function<List<Film>, Void>() {
                 @Override
-                public Void apply(@Nullable List<Film> filmList) {
-                    if (filmList == null)
-                        throw new IllegalStateException("Query returned NULL instead of empty list");
+                public Void apply(List<Film> filmList) {
+                    checkNotNull(filmList);
                     final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
                     exporter.get().export(new ExporterSource() {
 
@@ -718,9 +719,8 @@ public class MainForm extends Observable {
                 },
                 new Function<List<Zanr>, Void>() {
                     @Override
-                    public Void apply(@Nullable List<Zanr> zanrs) {
-                        if (zanrs == null)
-                            throw new IllegalStateException("Query returned null instead of empty list");
+                    public Void apply(List<Zanr> zanrs) {
+                        checkNotNull(zanrs);
                         int iter = 2; // each item except first 2 will have Zanr object as data
                         for (Zanr zanr : zanrs) {
                             comboZanr.setData(Integer.toString(iter++), zanr);
@@ -745,9 +745,8 @@ public class MainForm extends Observable {
                 },
                 new Function<List<Pozicija>, Void>() {
                     @Override
-                    public Void apply(@Nullable List<Pozicija> pozicijas) {
-                        if (pozicijas == null)
-                            throw new IllegalStateException("Query returned null instead of empty list");
+                    public Void apply(List<Pozicija> pozicijas) {
+                        checkNotNull(pozicijas);
                         for (Pozicija pozicija : pozicijas) {
                             comboPozicija.setData(Integer.toString(comboPozicija.getItemCount()), pozicija);
                             comboPozicija.add(pozicija.toString());
@@ -771,9 +770,8 @@ public class MainForm extends Observable {
                 },
                 new Function<List<TipMedija>, Void>() {
                     @Override
-                    public Void apply(@Nullable List<TipMedija> tipMedijas) {
-                        if (tipMedijas == null)
-                            throw new IllegalStateException("Query returned null instead of empty list");
+                    public Void apply(List<TipMedija> tipMedijas) {
+                        checkNotNull(tipMedijas);
                         for (TipMedija tip : tipMedijas) {
                             comboTipMedija.setData(Integer.toString(comboTipMedija.getItemCount()), tip);
                             comboTipMedija.add(tip.toString());

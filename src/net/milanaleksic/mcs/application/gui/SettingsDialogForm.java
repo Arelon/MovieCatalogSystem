@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
 
+import static com.google.common.base.Preconditions.checkElementIndex;
+
 public class SettingsDialogForm extends AbstractDialogForm {
 
     @Inject
@@ -161,10 +163,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
                 int index = comboLanguage.getSelectionIndex();
-                if (index > -1 && index < Language.values().length) {
-                    userConfiguration.get().setLocaleLanguage(Language.values()[index].getName());
-                    runnerWhenClosingShouldRun = true;
-                }
+                checkElementIndex(index, Language.values().length);
+                userConfiguration.get().setLocaleLanguage(Language.values()[index].getName());
+                runnerWhenClosingShouldRun = true;
             }
         });
 

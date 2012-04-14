@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
@@ -22,6 +21,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.URI;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovieList.Receiver {
 
@@ -57,10 +58,9 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
             }
             TableItem item = mainTable.getItem(selectionIndex);
             Movie movie = (Movie) item.getData();
-            if (movie == null)
-                throw new IllegalStateException("Movie should not be null");
+            checkNotNull(movie);
             Optional<String> appropriateImageUrl = getAppropriateImageUrl(movie);
-            matchDescription.setText(movie.getOverview() == null ? "" : movie.getOverview());
+            matchDescription.setText(Strings.nullToEmpty(movie.getOverview()));
             if (appropriateImageUrl.isPresent())
                 schedulePosterDownload(appropriateImageUrl.get());
             else

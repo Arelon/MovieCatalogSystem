@@ -10,16 +10,16 @@ import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.thumbnail.impl.ImageTargetWidget;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CoolMovieComposite extends Composite implements PaintListener {
 
@@ -126,8 +126,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
     public void addMovieSelectionListener(MovieSelectionListener listener) {
         checkWidget();
-        if (listener == null)
-            throw new SWTException(SWT.ERROR_NULL_ARGUMENT);
+        checkNotNull(listener);
         CustomTypedListener typedListener = new CustomTypedListener(listener);
         addListener(EventMovieSelected, typedListener);
         addListener(EventMovieDetailsSelected, typedListener);
@@ -232,15 +231,14 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     public Iterator<Film> iterator() {
         return Lists.transform(movies, new Function<MovieWrapper, Film>() {
             @Override
-            public Film apply(@Nullable MovieWrapper movieWrapper) {
-                if (movieWrapper == null)
-                    throw new IllegalArgumentException("Movie wrapper is null?");
+            public Film apply(MovieWrapper movieWrapper) {
+                checkNotNull(movieWrapper);
                 return movieWrapper.getFilm();
             }
         }).iterator();
     }
 
-    public void setMovies(Optional<List<Film>> sviFilmovi) {
+    public void setMovies(@Nonnull Optional<List<Film>> sviFilmovi) {
         if (isDisposed())
             return;
         clearMovies();
