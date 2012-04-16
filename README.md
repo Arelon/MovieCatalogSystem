@@ -18,11 +18,7 @@ In case you wish to have a simple movie list so you can print it out or send via
 that - MCS has an export feature that creates a dynamic HTML file in which you can select items and
 aggregate CDs/DVDs you want to take, to ease the borrowing process.
 
-"Movie Catalog System" is application that went through a very long way from the initial version
-(which was ASP .Net / MSSQL application) and now is a Spring/SWT/JPA2(Hibernate) Windows application
-with support for H2/Derby/DB2/HSQLDB databases (H2 is the only one thoroughly tested though). 
-
-Every time you close the program, complete SQL dump is created so you can import the database to some 
+Every time you close the program, complete SQL dump is created so you can import the database to some
 other DB of choice.
 MCS is a portable application (you can start it from USB or keep it in your Dropbox folder).
 
