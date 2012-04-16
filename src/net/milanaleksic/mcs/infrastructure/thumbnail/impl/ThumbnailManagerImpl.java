@@ -250,9 +250,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
 
     @Override
     public void preCacheThumbnails() {
-        // to avoid concurrent modification exception, we will create copy of the values stored in thumbnail repository
-        LinkedList<String> values = new LinkedList<>(imdbIdToLocallyCachedImageMap.values());
-        for (String absolutePath : values) {
+        for (String absolutePath : ImmutableList.copyOf(imdbIdToLocallyCachedImageMap.values())) {
             if (MAGIC_VALUE_NON_EXISTING.equals(absolutePath) || MAGIC_VALUE_ENQUEUED.equals(absolutePath))
                 continue;
             imageRepository.cacheImageDataForImage(absolutePath);

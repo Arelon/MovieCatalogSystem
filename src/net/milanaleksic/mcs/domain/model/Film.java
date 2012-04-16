@@ -1,6 +1,8 @@
 package net.milanaleksic.mcs.domain.model;
 
+import com.google.common.collect.Ordering;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
+import org.hibernate.sql.ordering.antlr.OrderingSpecification;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -181,9 +183,7 @@ public class Film implements Serializable, Comparable<Film> {
 
     public void refreshMedijListAsString() {
         StringBuilder medijInfo = new StringBuilder();
-        Object[] mediji = getMedijs().toArray();
-        Arrays.sort(mediji);
-        for (Object medij : mediji)
+        for (Medij medij : Ordering.natural().sortedCopy(getMedijs()))
             medijInfo.append(medij.toString()).append(' ');
         medijListAsString = medijInfo.toString();
     }

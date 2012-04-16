@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 
@@ -23,7 +24,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private static final String FILENAME_FORMAT_DATE = "yyyyMMddkkmmss"; //NON-NLS
 
     @SuppressWarnings({"HardCodedStringLiteral"})
-    private static final RestoreSource[] restoreSources = new RestoreSource[] {
+    private static final List<RestoreSource> restoreSources = ImmutableList.of(
             new TableRestoreSource("DB2ADMIN.TIPMEDIJA"),
             new TableRestoreSource("DB2ADMIN.POZICIJA"),
             new TableRestoreSource("DB2ADMIN.ZANR"),
@@ -31,7 +32,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
             new TableRestoreSource("DB2ADMIN.FILM"),
             new TableRestoreSource("DB2ADMIN.ZAUZIMA"),
             new ExactSqlRestoreSource("SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'")
-    };
+    );
 
     private String createRestartWithForTable(String tableName, String idName, Connection conn) throws SQLException {
         try (PreparedStatement st = conn.prepareStatement(new Formatter().format("SELECT COALESCE(MAX(%1s)+1,1) FROM DB2ADMIN.%2s", idName, tableName).toString())) { //NON-NLS
