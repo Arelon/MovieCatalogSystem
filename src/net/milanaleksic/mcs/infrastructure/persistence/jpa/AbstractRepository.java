@@ -8,9 +8,10 @@ import javax.persistence.PersistenceContext;
  * Date: 8/18/11
  * Time: 10:38 PM
  */
+@SuppressWarnings({"HardCodedStringLiteral"})
 public abstract class AbstractRepository {
 
-    protected static final String HIBERNATE_HINT_CACHEABLE = "org.hibernate.cacheable"; //NON-NLS
+    protected static final String HIBERNATE_HINT_CACHEABLE = "org.hibernate.cacheable";
 
     @PersistenceContext(name = "MovieCatalogSystemDB")
     protected EntityManager entityManager;

@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.application.gui;
 import java.awt.Desktop;
 import java.net.URI;
 
-import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.*;
@@ -22,7 +22,7 @@ public class AboutDialogForm extends AbstractDialogForm {
                         Desktop desktop = Desktop.getDesktop();
                         if (desktop.isSupported(Desktop.Action.MAIL)) {
                             try {
-                                desktop.mail(new URI("mailto:milan.aleksic@gmail.com"));
+                                desktop.mail(new URI("mailto:milan.aleksic@gmail.com")); //NON-NLS
                             } catch (Exception exc) {
                                 exc.printStackTrace();
                             }
@@ -43,7 +43,7 @@ public class AboutDialogForm extends AbstractDialogForm {
                         Desktop desktop = Desktop.getDesktop();
                         if (desktop.isSupported(Desktop.Action.BROWSE)) {
                             try {
-                                desktop.browse(URI.create("http://www.milanaleksic.net"));
+                                desktop.browse(URI.create("http://www.milanaleksic.net")); //NON-NLS
                             } catch (Exception exc) {
                                 exc.printStackTrace();
                             }
@@ -66,7 +66,7 @@ public class AboutDialogForm extends AbstractDialogForm {
         createHeaderEmailPanel();
         createHeaderWebSitePanel();
         Text textArea = new Text(shell, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY | SWT.CENTER | SWT.BORDER);
-        textArea.setText("Copyright 2007-2012 by Milan Aleksic");
+        textArea.setText("Copyright 2007-2012 by Milan Aleksic"); //NON-NLS
         textArea.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
                 true, true));
         textArea.setText(textArea.getText() + "\n\n" +
@@ -82,7 +82,7 @@ public class AboutDialogForm extends AbstractDialogForm {
         Color color = new Color(Display.getCurrent(), 0, 0, 0);
         labEmail.setForeground(color);
         color.dispose();
-        labEmail.setText("milan.aleksic@gmail.com");
+        labEmail.setText("milan.aleksic@gmail.com"); //NON-NLS
         Button btnEmail = new Button(composite, SWT.NONE);
         btnEmail.setText(bundle.getString("about.sendEmail"));
         btnEmail.addSelectionListener(emailSender);
@@ -96,7 +96,7 @@ public class AboutDialogForm extends AbstractDialogForm {
         Color color = new Color(Display.getCurrent(), 0, 0, 0);
         labSite.setForeground(color);
         color.dispose();
-        labSite.setText("www.milanaleksic.net  ");
+        labSite.setText("www.milanaleksic.net  "); //NON-NLS
         Button btnSite = new Button(composite1, SWT.NONE);
         btnSite.setText(bundle.getString("about.visit"));
         btnSite.addSelectionListener(webSiteVisitor);
@@ -107,15 +107,15 @@ public class AboutDialogForm extends AbstractDialogForm {
         footerPanel.setLayout(new GridLayout(1, false));
         footerPanel.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
         Label labTitle = new Label(footerPanel, SWT.CENTER);
-        labTitle.setText("Movie Catalog System");
-        labTitle.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
+        labTitle.setText("Movie Catalog System"); //NON-NLS
+        labTitle.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 12, SWT.BOLD));
         labTitle.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
         Color color = new Color(Display.getCurrent(), 0, 0, 255);
         labTitle.setForeground(color);
         color.dispose();
         Label labAuthor = new Label(footerPanel, SWT.NONE);
         labAuthor.setText(bundle.getString("about.programAuthor"));
-        labAuthor.setFont(new Font(Display.getDefault(), "Segoe UI", 10, SWT.BOLD));
+        labAuthor.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 10, SWT.BOLD));
         labAuthor.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, true, false));
     }
 

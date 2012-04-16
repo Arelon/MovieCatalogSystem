@@ -17,6 +17,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class JpaMedijRepository extends AbstractRepository implements MedijRepository {
 
     @Inject

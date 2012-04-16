@@ -40,7 +40,7 @@ public class UserConfigurationManager implements LifecycleListener {
                 log.error("UserConfiguration could not have been read. Using default settings", t); //NON-NLS
             }
         }
-        log.warn("User configuration file could not have been found! Using defaults...");
+        log.warn("User configuration file could not have been found! Using defaults..."); //NON-NLS
         return new UserConfiguration();
     }
 

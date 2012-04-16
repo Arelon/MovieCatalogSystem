@@ -83,7 +83,7 @@ public class ApplicationManager implements ApplicationContextAware {
         try {
             listener.applicationStarted(applicationConfiguration, userConfiguration);
         } catch (Exception e) {
-            log.error("Application exception while calling startup callbacks", e);
+            log.error("Application exception while calling startup callbacks", e); //NON-NLS
         }
     }
 
@@ -91,7 +91,7 @@ public class ApplicationManager implements ApplicationContextAware {
         try {
             listener.applicationShutdown(applicationConfiguration, userConfiguration);
         } catch (Exception e) {
-            log.error("Application exception while calling shutdown callbacks", e);
+            log.error("Application exception while calling shutdown callbacks", e); //NON-NLS
         }
     }
 

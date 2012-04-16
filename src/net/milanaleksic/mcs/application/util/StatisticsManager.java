@@ -34,7 +34,7 @@ public class StatisticsManager implements LifecycleListener {
     @Override public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         if (programArgsService.getProgramArgs().isCollectStatistics()) {
             if (log.isInfoEnabled())
-                log.info("Statistics information: " + sessionFactory.getStatistics());
+                log.info("Statistics information: " + sessionFactory.getStatistics()); //NON-NLS
         }
     }
 

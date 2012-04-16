@@ -18,7 +18,8 @@ import java.util.*;
  * Time: 11:35 PM
  */
 @Repository
-@Transactional()
+@Transactional
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class JpaFilmRepository extends AbstractRepository implements FilmRepository {
 
     @Override
@@ -67,7 +68,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
         Optional<ParameterExpression<String>> textFilterParameter = Optional.absent();
         if (textFilter.isPresent()) {
-            textFilterParameter = Optional.of(builder.parameter(String.class, "filter")); //NON-NLS
+            textFilterParameter = Optional.of(builder.parameter(String.class, "filter"));
             predicates.add(builder.or(
                     builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter.get()),
                     builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter.get()),
@@ -77,17 +78,17 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Optional<ParameterExpression<Zanr>> zanrParameter = Optional.absent();
         if (zanrFilter.isPresent()) {
             zanrParameter = Optional.of(builder.parameter(Zanr.class, "zanr"));
-            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter.get())); //NON-NLS
+            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter.get()));
         }
         Optional<ParameterExpression<String>> tipMedijaParameter = Optional.absent();
         if (tipMedijaFilter.isPresent()) {
             tipMedijaParameter = Optional.of(builder.parameter(String.class, "medijListAsString"));
-            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter.get())); //NON-NLS
+            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter.get()));
         }
         Optional<ParameterExpression<String>> pozicijaParameter = Optional.absent();
         if (pozicijaFilter.isPresent()) {
             pozicijaParameter = Optional.of(builder.parameter(String.class, "pozicija"));
-            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter)); //NON-NLS
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter));
         }
 
         if (predicates.size()==1)
@@ -123,7 +124,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
         Optional<ParameterExpression<String>> textFilterParameter = Optional.absent();
         if (textFilter.isPresent()) {
-            textFilterParameter = Optional.of(builder.parameter(String.class, "filter")); //NON-NLS
+            textFilterParameter = Optional.of(builder.parameter(String.class, "filter"));
             predicates.add(builder.or(
                     builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter.get()),
                     builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter.get()),
@@ -133,17 +134,17 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Optional<ParameterExpression<Zanr>> zanrParameter = Optional.absent();
         if (zanrFilter.isPresent()) {
             zanrParameter = Optional.of(builder.parameter(Zanr.class, "zanr"));
-            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter.get())); //NON-NLS
+            predicates.add(builder.equal(film.<Zanr>get(Film_.zanr), zanrParameter.get()));
         }
         Optional<ParameterExpression<String>> tipMedijaParameter = Optional.absent();
         if (tipMedijaFilter.isPresent()) {
             tipMedijaParameter = Optional.of(builder.parameter(String.class, "medijListAsString"));
-            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter.get())); //NON-NLS
+            predicates.add(builder.like(film.<String>get(Film_.medijListAsString), tipMedijaParameter.get()));
         }
         Optional<ParameterExpression<String>> pozicijaParameter = Optional.absent();
         if (pozicijaFilter.isPresent()) {
             pozicijaParameter = Optional.of(builder.parameter(String.class, "pozicija"));
-            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter)); //NON-NLS
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter));
         }
 
         if (predicates.size()==1)

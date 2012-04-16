@@ -76,7 +76,7 @@ public class NewMediumDialogForm extends AbstractDialogForm {
                 if (!selectedMediumType.isPresent()) {
                     MessageBox box = new MessageBox(parent.orNull(), SWT.ICON_ERROR);
                     box.setMessage(bundle.getString("global.youHaveToSelectMediumType"));
-                    box.setText("Error");
+                    box.setText(bundle.getString("global.error"));
                     box.open();
                     return;
                 }

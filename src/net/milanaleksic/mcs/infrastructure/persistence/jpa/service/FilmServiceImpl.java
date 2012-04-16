@@ -8,6 +8,7 @@ import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Transactional(readOnly = false)
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class FilmServiceImpl extends AbstractService implements FilmService {
 
     @Override

@@ -4,11 +4,11 @@ public enum Language {
 
     ENGLISH {
         @Override public String getName() {
-            return "en";
+            return "en"; //NON-NLS
         }
     }, SERBIAN {
         @Override public String getName() {
-            return "sr";
+            return "sr"; //NON-NLS
         }
     };
 

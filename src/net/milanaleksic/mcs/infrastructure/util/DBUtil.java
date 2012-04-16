@@ -16,9 +16,10 @@ import java.sql.*;
 public final class DBUtil {
 
     private final static Logger log = Logger.getLogger(DBUtil.class);
+    public static final String STRING_WHEN_NULL = "NULL"; //NON-NLS
 
     public static void executeScriptOnConnection(InputStream stream, Connection conn) throws IOException, SQLException {
-        BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
+        BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charset.forName(StreamUtil.UTF8)));
         StringBuilder script = new StringBuilder();
         String line;
         while ((line = scriptStreamReader.readLine()) != null) {
@@ -34,7 +35,7 @@ public final class DBUtil {
     public static void executeScriptOnConnection(String restartCountersScript, Connection conn) throws IOException, SQLException {
         File fileRestartCountersScript = new File(restartCountersScript);
         if (log.isInfoEnabled())
-            log.info("Executing script file: " + fileRestartCountersScript.getName());
+            log.info("Executing script file: " + fileRestartCountersScript.getName()); //NON-NLS
         if (fileRestartCountersScript.exists()) {
             try (FileInputStream fis = new FileInputStream(fileRestartCountersScript)) {
                 DBUtil.executeScriptOnConnection(fis, conn);
@@ -44,13 +45,13 @@ public final class DBUtil {
 
     public static String getSQLString(Optional<String> input) {
         if (!input.isPresent())
-            return "NULL";
+            return STRING_WHEN_NULL;
         return '\'' + input.get().replaceAll("'", "''") + '\'';
     }
 
     public static String getSQLStringForDB2(Optional<String> input) {
         if (!input.isPresent())
-            return "NULL";
+            return STRING_WHEN_NULL;
         return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input.get() + '\'');
     }
 

@@ -17,9 +17,11 @@ import java.sql.SQLException;
  */
 public abstract class AbstractRestorePointService {
 
-    protected static final String MCS_VERSION_TAG = "/*MCS-VERSION: ";
+    protected static final String MCS_VERSION_TAG = "/*MCS-VERSION: "; //NON-NLS
 
-    protected static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";
+    protected static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";   //NON-NLS
+
+    protected static final String SCRIPT_KATALOG_RESTORE_LOCATION = "restore" + File.separator + SCRIPT_KATALOG_RESTORE; //NON-NLS
 
     private int dbVersion;
 

@@ -21,6 +21,8 @@ public final class StreamUtil {
 
     private final static Logger log = Logger.getLogger(StreamUtil.class);
 
+    public static final String UTF8 = "UTF-8"; //NON-NLS
+
     private static boolean triedToInitNativeMD5 = false;
 
     public static String returnMD5ForFile(File input) {
@@ -28,17 +30,17 @@ public final class StreamUtil {
             if (!triedToInitNativeMD5) {
                 boolean success = MD5.initNativeLibrary();
                 if (log.isDebugEnabled())
-                    log.debug("Native MD5 implementation library initialization success: "+success);
+                    log.debug("Native MD5 implementation library initialization success: "+success); //NON-NLS
                 triedToInitNativeMD5 = true;
             }
         }
         try {
             String hash = MD5.asHex(MD5.getHash(input));
             if (log.isDebugEnabled())
-                log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash);
+                log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash); //NON-NLS
             return hash;
         } catch (IOException e) {
-            log.error("Failure while calculating MD5", e);
+            log.error("Failure while calculating MD5", e); //NON-NLS
             throw new IllegalStateException(e);
         }
     }

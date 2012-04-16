@@ -57,7 +57,7 @@ public class UTF8ResourceBundleControl extends ResourceBundle.Control {
             if (stream.isPresent()) {
                 try {
                     // the only changed line from default implementation:
-                    return new PropertyResourceBundle(new InputStreamReader(stream.get(), "UTF-8"));
+                    return new PropertyResourceBundle(new InputStreamReader(stream.get(), StreamUtil.UTF8));
                 } finally {
                     stream.get().close();
                 }

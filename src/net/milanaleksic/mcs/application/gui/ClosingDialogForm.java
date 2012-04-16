@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
@@ -29,7 +30,7 @@ public class ClosingDialogForm extends AbstractDialogForm {
 		label.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GRAY));
 		label.setLayoutData(gridData);
-		label.setFont(new Font(Display.getDefault(), "Arial", 10, SWT.BOLD));
+		label.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 10, SWT.BOLD));
         Rectangle monitorBounds = Display.getCurrent().getPrimaryMonitor().getBounds();
 		shell.setLocation(
 				new Point(

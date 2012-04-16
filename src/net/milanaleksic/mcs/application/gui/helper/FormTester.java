@@ -17,7 +17,7 @@ public class FormTester {
         Display display = new Display();
 
         ApplicationManager applicationManager = new ApplicationManager(true);
-        applicationManager.getUserConfiguration().setLocaleLanguage(args.length>1?args[1]:"en");
+        applicationManager.getUserConfiguration().setLocaleLanguage(args.length>1?args[1]:"en"); //NON-NLS
 
         Class<?> clazz = Class.forName(clazzName);
         AbstractDialogForm form = (AbstractDialogForm) clazz.newInstance();

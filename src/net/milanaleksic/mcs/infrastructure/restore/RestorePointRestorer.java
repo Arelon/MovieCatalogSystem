@@ -24,24 +24,24 @@ public class RestorePointRestorer extends AbstractRestorePointService {
         try (Connection conn = getConnection()) {
             safeRestoreDatabaseIfNeeded(conn);
         } catch (SQLException | IOException e) {
-            log.error("Failure while restoring database", e);
+            log.error("Failure while restoring database", e); //NON-NLS
         }
     }
 
     public int getDatabaseVersionFromDatabase(Connection conn) {
         if (log.isInfoEnabled())
-            log.info("Validating database");
+            log.info("Validating database"); //NON-NLS
         try (PreparedStatement st = conn.prepareStatement(versionScript)) {
             try (ResultSet rs = st.executeQuery()) {
                 rs.next();
                 String dbVersion = rs.getString(1);
                 if (log.isInfoEnabled())
-                    log.info("Expected DB version = " + getDbVersion() + ", DB version = " + dbVersion);
+                    log.info("Expected DB version = " + getDbVersion() + ", DB version = " + dbVersion); //NON-NLS
 
                 return Integer.valueOf(dbVersion);
             }
         } catch (Exception e) {
-            log.error("Validation failed - " + e.getMessage());
+            log.error("Validation failed - " + e.getMessage()); //NON-NLS
         }
         return 0;
     }
@@ -54,31 +54,31 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
         if (versionFromDatabase > activeMCSDBVersion)
             throw new IllegalStateException(
-                    String.format("Database is not supported (MCS is of activeMCSDBVersion %d, but your database is of versionFromDatabase %d)",
+                    String.format("Database is not supported (MCS is of activeMCSDBVersion %d, but your database is of versionFromDatabase %d)", //NON-NLS
                             activeMCSDBVersion, versionFromDatabase));
 
         int versionFromRestorePoint = getDatabaseVersionFromRestorePoint();
         if (versionFromRestorePoint > activeMCSDBVersion) {
             throw new IllegalStateException(
-                    String.format("Database restore point is not supported (MCS is of activeMCSDBVersion %d, but your database is of versionFromRestorePoint %d)",
+                    String.format("Database restore point is not supported (MCS is of activeMCSDBVersion %d, but your database is of versionFromRestorePoint %d)", //NON-NLS
                             activeMCSDBVersion, versionFromRestorePoint));
         }
         runDatabaseRecreation(versionFromDatabase, versionFromRestorePoint, conn);
     }
 
     private int getDatabaseVersionFromRestorePoint() {
-        File restoreFile = new File("restore//" + SCRIPT_KATALOG_RESTORE);
+        File restoreFile = new File(SCRIPT_KATALOG_RESTORE_LOCATION);
         if (!restoreFile.exists())
             return 0;
         Optional<LineNumberReader> reader = Optional.absent();
         try {
-            reader = Optional.of(new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), "UTF-8")));
+            reader = Optional.of(new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), StreamUtil.UTF8)));
             String firstLine = reader.get().readLine();
             if (firstLine != null)
                 if (firstLine.contains(MCS_VERSION_TAG))
                     return Integer.parseInt((firstLine.indexOf(MCS_VERSION_TAG) + firstLine.substring(MCS_VERSION_TAG.length())).trim());
         } catch (IOException e) {
-            log.error("IO Error while reading DB version from restore point", e);
+            log.error("IO Error while reading DB version from restore point", e); //NON-NLS
         } finally {
             close(reader);
         }
@@ -87,7 +87,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
     private void runDatabaseRecreation(int dbVersionFromDatabase, int dbVersionFromRestorePoint, Connection conn) throws SQLException, IOException {
         if (log.isDebugEnabled())
-            log.debug(String.format("RunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint));
+            log.debug(String.format("RunDatabaseRecreation: dbVersionFromDatabase=%d, dbVersionFromRestorePoint=%d", dbVersionFromDatabase, dbVersionFromRestorePoint)); //NON-NLS
         int startAlterVersion = dbVersionFromDatabase+1;
         if (dbVersionFromDatabase == 0) {
             int ending = dbVersionFromRestorePoint == 0 ? 1 : dbVersionFromRestorePoint;
@@ -98,19 +98,19 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
             if (dbVersionFromRestorePoint != 0) {
                 if (log.isInfoEnabled())
-                    log.info("Restoring content");
-                DBUtil.executeScriptOnConnection("restore//" + SCRIPT_KATALOG_RESTORE, conn);
+                    log.info("Restoring content"); //NON-NLS
+                DBUtil.executeScriptOnConnection(SCRIPT_KATALOG_RESTORE_LOCATION, conn);
             }
         }
         for (int i=startAlterVersion; i<=getDbVersion(); i++)
             runAltersForVersion(conn, i);
         if (log.isInfoEnabled())
-            log.info("Restoration finished");
+            log.info("Restoration finished"); //NON-NLS
     }
 
     private void runAltersForVersion(final Connection conn, final int alterVersion) throws IOException, SQLException {
         if (log.isInfoEnabled())
-            log.info("Running SQL DB alter "+ String.format(patternForSqlAlters, alterVersion));
+            log.info("Running SQL DB alter "+ String.format(patternForSqlAlters, alterVersion)); //NON-NLS
         try {
             StreamUtil.useClasspathResource(String.format(patternForSqlAlters, alterVersion), new Function<InputStream, Void>() {
                 @Override
@@ -118,7 +118,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
                     try {
                         DBUtil.executeScriptOnConnection(inputStream, conn);
                     } catch (IOException e) {
-                        log.error("Unexpected exception occurred while running SQL alter for version "+alterVersion, e);
+                        log.error("Unexpected exception occurred while running SQL alter for version "+alterVersion, e); //NON-NLS
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -132,7 +132,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             AlterScript alterScript = (AlterScript) Class.forName(
                     String.format(patternForCodeAlters, alterVersion)).newInstance();
             if (log.isInfoEnabled())
-                log.info("Running application-driven DB alter "+ String.format(patternForCodeAlters, alterVersion));
+                log.info("Running application-driven DB alter "+ String.format(patternForCodeAlters, alterVersion)); //NON-NLS
             alterScript.executeAlterOnConnection(conn);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ignored) {
             // if class has not been found, there is no app-driven alter... proceed

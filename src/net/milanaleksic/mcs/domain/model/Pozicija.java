@@ -9,7 +9,11 @@ import java.util.Set;
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class Pozicija implements java.io.Serializable {
+
+    public static final String DEFAULT_POSITION_YES = "Y";
+    public static final String DEFAULT_POSITION_NO = "N";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,11 +97,11 @@ public class Pozicija implements java.io.Serializable {
     @Column(nullable = false)
     @Access(AccessType.PROPERTY)
     public String getDefaultPosition() {
-        return defaultPosition ? "Y" : "N";
+        return defaultPosition ? DEFAULT_POSITION_YES : DEFAULT_POSITION_NO;
     }
 
     public void setDefaultPosition(String defaultPosition) {
-        this.defaultPosition = defaultPosition != null && "Y".equals(defaultPosition);
+        this.defaultPosition = defaultPosition != null && DEFAULT_POSITION_YES.equals(defaultPosition);
     }
 
     public boolean isDefault() {

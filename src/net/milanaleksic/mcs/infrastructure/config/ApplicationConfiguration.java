@@ -73,7 +73,7 @@ public class ApplicationConfiguration {
 
     public static class CacheConfiguration {
 
-        private String location = "./cache";
+        private String location = "./cache"; //NON-NLS
 
         public String getLocation() {
             return location;

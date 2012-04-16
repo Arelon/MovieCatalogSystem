@@ -22,12 +22,15 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
     private Label labFilmNaziv;
     private Optional<Film> film = Optional.absent();
 
+    public static final String RESOURCE_ALERT_IMAGE = "/net/milanaleksic/mcs/application/res/alert.png"; //NON-NLS
+
     @Inject private FilmRepository filmRepository;
 
     private final static class AlertImagePainter implements PaintListener {
 
+
         public void paintControl(final PaintEvent e) {
-            SWTUtil.useImageAndThenDispose("/net/milanaleksic/mcs/application/res/alert.png", new Function<Image, Void>() {
+            SWTUtil.useImageAndThenDispose(RESOURCE_ALERT_IMAGE, new Function<Image, Void>() {
                 @Override
                 public Void apply(@Nullable Image image) {
                     e.gc.drawImage(image, 0, 0);
@@ -68,10 +71,10 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
         Color color = new Color(Display.getCurrent(), 255, 0, 0);
         labUpozorenje.setForeground(color);
         color.dispose();
-        labUpozorenje.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
+        labUpozorenje.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 12, SWT.BOLD));
         labFilmNaziv = new Label(shell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
         labFilmNaziv.setLayoutData(gridData2);
-		labFilmNaziv.setFont(new Font(Display.getDefault(), "Segoe UI", 12, SWT.BOLD));
+		labFilmNaziv.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 12, SWT.BOLD));
 		new Label(shell, SWT.NONE);
 		createComposite();
     }

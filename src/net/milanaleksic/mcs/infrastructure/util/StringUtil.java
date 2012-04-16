@@ -15,7 +15,7 @@ public class StringUtil {
         int minutes = period > 60000 ? ((int)period / 1000) / 60 : 0;
         int seconds = period > 1000 ? ((int)period / 1000) % 60 : 0;
         int milliseconds = (int) period % 1000;
-        return String.format("%02d:%02d.%03d", minutes, seconds, milliseconds);
+        return String.format("%02d:%02d.%03d", minutes, seconds, milliseconds); //NON-NLS
     }
 
 }

@@ -15,6 +15,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class JpaTipMedijaRepository extends AbstractRepository implements TipMedijaRepository {
 
     @Override

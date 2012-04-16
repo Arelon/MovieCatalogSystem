@@ -63,7 +63,7 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.error("Exception occurred in task processing", e);
+                    logger.error("Exception occurred in task processing", e); //NON-NLS
                 }
             }
 

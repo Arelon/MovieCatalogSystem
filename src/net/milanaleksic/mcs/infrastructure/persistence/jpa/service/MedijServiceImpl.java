@@ -14,6 +14,7 @@ import java.util.List;
  * Time: 12:21 PM
  */
 @Transactional(readOnly = false)
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class MedijServiceImpl extends AbstractService implements MedijService {
 
     @Override

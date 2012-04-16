@@ -8,6 +8,7 @@ import java.util.HashMap;
  * @author Milan Aleksic
  * 06.04.2008.
  */
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class DB2CyrillicToUnicodeConvertor {
 	
 	private final static HashMap<Character, String> konverzionaTabela;

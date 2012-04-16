@@ -27,9 +27,9 @@ public class ProgramArgsService {
         try {
             parser.parseArgument(args);
             if (log.isInfoEnabled())
-                log.info("Program arguments: " + programArgs);
+                log.info("Program arguments: " + programArgs); //NON-NLS
         } catch (CmdLineException e) {
-            log.error("Command line arguments could not have been read", e);
+            log.error("Command line arguments could not have been read", e); //NON-NLS
             parser.printUsage(System.err);
             return null;
         }

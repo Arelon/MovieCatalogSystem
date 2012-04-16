@@ -16,6 +16,7 @@ import java.util.Set;
  * This Script fills up the denormalized column "MEDIJ_LIST" to allow fast fetching
  * and paging as part of the main movie fetch algorithm
  */
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class AlterScript3 implements AlterScript {
 
     protected final Log log = LogFactory.getLog(this.getClass());

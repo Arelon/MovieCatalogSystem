@@ -16,6 +16,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
+@SuppressWarnings({"HardCodedStringLiteral"})
 public class JpaPozicijaRepository extends AbstractRepository implements PozicijaRepository {
 
     @Override

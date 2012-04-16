@@ -51,7 +51,7 @@ public class MethodTimingAspect {
         double periodInMs = (System.nanoTime() - begin) / 1000000.0;
 
         String periodAsString = NumberFormat.getInstance().format(periodInMs);
-        String title = methodTiming.name().isEmpty() ? proceedingJoinPoint.getSignature().toShortString() : "<named> "+methodTiming.name();
+        String title = methodTiming.name().isEmpty() ? proceedingJoinPoint.getSignature().toShortString() : "<named> "+methodTiming.name(); //NON-NLS
         if (periodInMs >= warningTimeInMs)
             log.warn("MethodTiming (long) [" + title + "] - " + periodAsString + "ms"); //NON-NLS
         else {

@@ -157,7 +157,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         comboLanguage = new Combo(groupGlobal, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
         comboLanguage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         for (Language language : Language.values())
-            comboLanguage.add(bundle.getString("language.name." + language.getName()));
+            comboLanguage.add(bundle.getString("language.name." + language.getName())); //NON-NLS
         comboLanguage.select(Language.ordinalForName(userConfiguration.get().getLocaleLanguage()));
         comboLanguage.addModifyListener(new ModifyListener() {
             @Override

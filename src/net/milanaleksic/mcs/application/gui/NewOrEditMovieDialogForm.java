@@ -143,8 +143,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
 
         if (sviZanrovi.size() == 0 || sveLokacije.size() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
             MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-            box.setMessage("You don't have at least one genre, medium type and location.\r\n\r\nPlease use Settings dialog to introduce each of the basic domain information");
-            box.setText("Information");
+            box.setMessage(bundle.getString("newOrEdit.someBasicDomainElementsMissing"));
+            box.setText(bundle.getString("global.information"));
             box.open();
             shell.close();
             return;

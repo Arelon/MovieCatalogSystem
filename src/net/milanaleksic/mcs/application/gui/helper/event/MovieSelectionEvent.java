@@ -79,8 +79,6 @@ public class MovieSelectionEvent extends TypedEvent {
      */
     public boolean doit;
 
-    static final long serialVersionUID = 3976735856884987953L;
-
     public Optional<Film> film;
 
     /**

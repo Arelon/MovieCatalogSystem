@@ -10,7 +10,7 @@ public class TableRestoreSource implements RestoreSource {
     private final String script;
 
     public TableRestoreSource(String tableName) {
-        script = String.format("SELECT * FROM %s", tableName);
+        script = String.format("SELECT * FROM %s", tableName); //NON-NLS
     }
 
     public String getScript() {

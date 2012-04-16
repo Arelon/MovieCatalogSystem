@@ -34,15 +34,16 @@ public abstract class HandledSelectionAdapter extends org.eclipse.swt.events.Sel
         try {
             handledSelected(event);
         } catch(ApplicationException exc) {
+            logger.error(exc.getMessage(), exc);
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
-            box.setMessage(String.format(bundle.getString("global.applicationError"), exc.getClass().getCanonicalName(), exc.getMessage()));
-            box.setText("Error");
+            box.setMessage(String.format(bundle.getString("global.applicationErrorTemplate"), exc.getClass().getCanonicalName(), exc.getMessage()));
+            box.setText(bundle.getString("global.error"));
             box.open();
         } catch (Throwable t) {
-            logger.error("Unexpected error: "+t.getMessage(), t);
+            logger.error("Unexpected error: "+t.getMessage(), t); //NON-NLS
             MessageBox box = new MessageBox(parent, SWT.ICON_ERROR);
-            box.setMessage(String.format(bundle.getString("global.unexpectedError"), t.getClass().getCanonicalName(), t.getMessage()));
-            box.setText("Unexpected Error");
+            box.setMessage(String.format(bundle.getString("global.unexpectedErrorTemplate"), t.getClass().getCanonicalName(), t.getMessage()));
+            box.setText(bundle.getString("global.unexpectedError"));
             box.open();
         }
     }
