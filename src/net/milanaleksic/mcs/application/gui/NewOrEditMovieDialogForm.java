@@ -480,7 +480,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         });
 
         // 2nd row
-        listDiskovi = new List(groupMediums, SWT.NONE);
+        listDiskovi = new List(groupMediums, SWT.V_SCROLL);
         GridData mediumListGridData = new GridData();
         mediumListGridData.horizontalAlignment = GridData.FILL;
         mediumListGridData.heightHint = 50;

@@ -16,6 +16,9 @@
 
     <bean id="httpClientFactoryService" class="net.milanaleksic.mcs.infrastructure.network.impl.HttpClientFactoryServiceImpl" />
 
-    <bean id="imageRepository" class="net.milanaleksic.mcs.infrastructure.image.impl.ImageRepositoryImpl" />
+    <bean id="imageRepository" class="net.milanaleksic.mcs.infrastructure.image.impl.ImageRepositoryImpl">
+        <property name="maximumSize" value="1000" />
+        <property name="initialCapacity" value="200" />
+    </bean>
 
 </beans>

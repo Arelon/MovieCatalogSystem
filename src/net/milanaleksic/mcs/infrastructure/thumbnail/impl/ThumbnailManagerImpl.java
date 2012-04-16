@@ -86,14 +86,14 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
     public void setThumbnailOnWidget(final ImageTargetWidget imageTargetWidget) {
         Optional<String> imdbIdOptional = imageTargetWidget.getImdbId();
         if (!IMDBUtil.isValidImdbId(imdbIdOptional.orNull())) {
-            imageTargetWidget.setImageFromResource(defaultImageResource);
+            imageTargetWidget.setImage(imageRepository.getResourceImage(defaultImageResource));
             return;
         }
         final String imdbId = imdbIdOptional.get();
         Optional<String> absoluteFileLocation = Optional.fromNullable(imdbIdToLocallyCachedImageMap.get(imdbId));
         //TODO: use image repository instead of setimagefromresource
         if (!absoluteFileLocation.isPresent()) {
-            imageTargetWidget.setImageFromResource(defaultImageResource);
+            imageTargetWidget.setImage(imageRepository.getResourceImage(defaultImageResource));
             imdbIdToLocallyCachedImageMap.put(imdbId, MAGIC_VALUE_ENQUEUED);
             downloadingWaiters.put(imdbId, new Function<Image, Void>() {
                 @Override
@@ -104,7 +104,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
             });
             startDownloadingWorker(imdbId);
         } else if (absoluteFileLocation.get().equals(MAGIC_VALUE_ENQUEUED)) {
-            imageTargetWidget.setImageFromResource(defaultImageResource);
+            imageTargetWidget.setImage(imageRepository.getResourceImage(defaultImageResource));
             downloadingWaiters.put(imdbId, new Function<Image, Void>() {
                 @Override
                 public Void apply(@Nullable Image image) {
@@ -113,9 +113,9 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
                 }
             });
         } else if (absoluteFileLocation.get().equals(MAGIC_VALUE_NON_EXISTING))
-            imageTargetWidget.setImageFromResource(defaultImageResource);
+            imageTargetWidget.setImage(imageRepository.getResourceImage(defaultImageResource));
         else
-            imageTargetWidget.setImageFromExternalFile(absoluteFileLocation.get());
+            imageTargetWidget.setImage(imageRepository.getImageByPath(absoluteFileLocation.get()).orNull());
     }
 
     private Future<?> startDownloadingWorker(final String imdbId) {
@@ -246,7 +246,11 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
         for (String absolutePath : ImmutableList.copyOf(imdbIdToLocallyCachedImageMap.values())) {
             if (MAGIC_VALUE_NON_EXISTING.equals(absolutePath) || MAGIC_VALUE_ENQUEUED.equals(absolutePath))
                 continue;
-            imageRepository.cacheImageDataForImage(absolutePath);
+            if (imageRepository.cacheExternalImageFile(absolutePath)) {
+                if (logger.isInfoEnabled())
+                    logger.info("Giving up of further image caching because cache started to evict"); //NON-NLS
+                break;
+            }
         }
     }
 

@@ -11,9 +11,15 @@ import org.eclipse.swt.graphics.ImageData;
  */
 public interface ImageRepository {
 
-    public Optional<Image> getImage(String imageName);
+    public Optional<Image> getImageByPath(String imageName);
 
     public Image getResourceImage(String imageResource);
 
-    public ImageData cacheImageDataForImage(String absolutePath);
+    /**
+     * Puts the image behind the path in the memory cache.
+     * @param absolutePath physical path of image file for caching
+     * @return true if at least one item was removed from cache during introduction of the requested item
+     */
+    public boolean cacheExternalImageFile(String absolutePath);
+
 }

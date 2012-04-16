@@ -64,20 +64,15 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
 
         @Override
-        public void setImageFromExternalFile(final String absoluteFileLocation) {
-            setImage(imageRepository.getImage(absoluteFileLocation));
-        }
-
-        @Override
-        public void setImageFromResource(final String imageResource) {
-            setImage(Optional.of(imageRepository.getResourceImage(imageResource)));
-        }
-
-        @Override
         public void safeSetImage(Optional<Image> image, String imdbId) {
             if (!image.isPresent() || image.get().isDisposed())
                 return;
             setImage(image);
+        }
+
+        @Override
+        public void setImage(Image image) {
+            setImage(Optional.of(image));
         }
 
         void dispose() {

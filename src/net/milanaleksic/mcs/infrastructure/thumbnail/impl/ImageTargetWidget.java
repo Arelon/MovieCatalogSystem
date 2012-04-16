@@ -12,9 +12,7 @@ public interface ImageTargetWidget {
 
     public Optional<String> getImdbId();
 
-    void setImageFromExternalFile(String absoluteFileLocation);
-
-    void setImageFromResource(String defaultImageResource);
-
     void safeSetImage(Optional<Image> image, String imdbId);
+
+    void setImage(Image image);
 }

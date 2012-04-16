@@ -550,7 +550,7 @@ public class MainForm extends Observable {
         if (sShell != null)
             return;
         createSShell();
-        SWTUtil.setImageOnTarget(sShell, "/net/milanaleksic/mcs/application/res/database-64.png"); //NON-NLS
+        sShell.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/database-64.png")); //NON-NLS
     }
 
     @SuppressWarnings({"BooleanMethodIsAlwaysInverted"})
@@ -608,25 +608,25 @@ public class MainForm extends Observable {
         toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
         ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
         toolNew.setText(bundle.getString("global.newMovie"));
-        SWTUtil.setImageOnTarget(toolNew, "/net/milanaleksic/mcs/application/res/media.png"); //NON-NLS
+        toolNew.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/media.png")); //NON-NLS
         ToolItem toolErase = new ToolItem(toolBar, SWT.PUSH);
         toolErase.setText(bundle.getString("global.deleteMovie"));
-        SWTUtil.setImageOnTarget(toolErase, "/net/milanaleksic/mcs/application/res/alert.png"); //NON-NLS
+        toolErase.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/alert.png")); //NON-NLS
         ToolItem toolExport = new ToolItem(toolBar, SWT.PUSH);
-        SWTUtil.setImageOnTarget(toolExport, "/net/milanaleksic/mcs/application/res/folder_outbox.png"); //NON-NLS
+        toolExport.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/folder_outbox.png")); //NON-NLS
         toolExport.setText(bundle.getString("main.export"));
         final ToolItem toolSettings = new ToolItem(toolBar, SWT.DROP_DOWN);
-        SWTUtil.setImageOnTarget(toolSettings, "/net/milanaleksic/mcs/application/res/advancedsettings.png"); //NON-NLS
+        toolSettings.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/advancedsettings.png")); //NON-NLS
         toolSettings.setWidth(90);
         toolSettings.setText(bundle.getString("main.settings"));
         new ToolItem(toolBar, SWT.SEPARATOR);
         ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
         toolAbout.setText(bundle.getString("global.aboutProgram"));
-        SWTUtil.setImageOnTarget(toolAbout, "/net/milanaleksic/mcs/application/res/jabber_protocol.png"); //NON-NLS
+        toolAbout.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/jabber_protocol.png")); //NON-NLS
         new ToolItem(toolBar, SWT.SEPARATOR);
         ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
         toolExit.setText(bundle.getString("main.exit"));
-        SWTUtil.setImageOnTarget(toolExit, "/net/milanaleksic/mcs/application/res/shutdown.png"); //NON-NLS
+        toolExit.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/shutdown.png")); //NON-NLS
 
         toolNew.addSelectionListener(new ToolNewSelectionAdapter());
         toolErase.addSelectionListener(new ToolEraseSelectionAdapter());

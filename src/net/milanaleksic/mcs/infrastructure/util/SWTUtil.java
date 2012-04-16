@@ -1,8 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -10,10 +8,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.annotation.*;
+import java.io.*;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,72 +21,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SWTUtil {
 
     private static final Logger log = Logger.getLogger(SWTUtil.class);
-
-    public static void setImageOnTarget(Decorations target, String resourceLocation) {
-        Image image;
-        try {
-            image = StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
-                @Override
-                public Image apply(@Nullable InputStream inputStream) {
-                    return new Image(Display.getCurrent(), inputStream);
-                }
-            });
-//        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
-            target.setImage(image);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unexpected exception while working with the image", e);
-        }
-    }
-
-    public static void setImageOnTarget(ToolItem target, String resourceLocation) {
-        Image image;
-        try {
-            image = StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
-                @Override
-                public Image apply(@Nullable InputStream inputStream) {
-                    return new Image(Display.getCurrent(), inputStream);
-                }
-            });
-//        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
-            target.setImage(image);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unexpected exception while working with the image", e);
-        }
-    }
-
-    public static void setImageOnTarget(Item target, String resourceLocation) {
-        Image image;
-        try {
-            image = StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
-                @Override
-                public Image apply(@Nullable InputStream inputStream) {
-                    return new Image(Display.getCurrent(), inputStream);
-                }
-            });
-//        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
-            if (target.isDisposed())
-                return;
-            target.setImage(image);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unexpected exception while working with the image", e);
-        }
-    }
-
-    public static void setImageOnTarget(ShowImageComposite target, String resourceLocation) {
-        Image image;
-        try {
-            image = StreamUtil.useClasspathResource(resourceLocation, new Function<InputStream, Image>() {
-                @Override
-                public Image apply(@Nullable InputStream inputStream) {
-                    return new Image(Display.getCurrent(), inputStream);
-                }
-            });
-//        NOTE: DO NOT DISPOSE THE IMAGE OBJECT, IT WILL BE DISPOSED BY THE WIDGET CODE
-            target.setImage(Optional.of(image));
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unexpected exception while working with the image", e);
-        }
-    }
 
     public static void useImageAndThenDispose(String resourceLocation, Function<Image, Void> callback) {
         Optional<Image> image = Optional.absent();

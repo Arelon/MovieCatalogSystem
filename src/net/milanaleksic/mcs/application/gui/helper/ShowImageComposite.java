@@ -1,12 +1,10 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import com.google.common.base.Optional;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Composite;
 
-import javax.annotation.Nullable;
 import java.util.ResourceBundle;
 
 /**

@@ -28,22 +28,17 @@ class CompositeImageTargetWidget implements ImageTargetWidget {
     }
 
     @Override
-    public void setImageFromExternalFile(String absoluteFileLocation) {
-        composite.setImage(Optional.of(new Image(Display.getCurrent(), absoluteFileLocation)));
-    }
-
-    @Override
-    public void setImageFromResource(String imageResource) {
-        SWTUtil.setImageOnTarget(composite, imageResource);
-    }
-
-    @Override
     public void safeSetImage(Optional<Image> image, String imdbId) {
         if (composite.isDisposed())
             return;
         if (!this.imdbId.isPresent() || !this.imdbId.get().equals(imdbId))
             return;
-        composite.setImage(image);
+        setImage(image.orNull());
+    }
+
+    @Override
+    public void setImage(Image image) {
+        composite.setImage(Optional.of(image));
     }
 
 }

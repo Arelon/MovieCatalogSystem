@@ -1,17 +1,19 @@
 package net.milanaleksic.mcs.infrastructure.image.impl;
 
 import com.google.common.base.*;
-import com.google.common.collect.Maps;
+import com.google.common.cache.*;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
+import org.springframework.beans.BeansException;
+import org.springframework.context.*;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.util.Map;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 
 /**
@@ -19,39 +21,44 @@ import java.util.concurrent.locks.*;
  * Date: 3/25/12
  * Time: 10:03 AM
  */
-public class ImageRepositoryImpl implements ImageRepository {
+public class ImageRepositoryImpl implements ImageRepository, ApplicationContextAware {
 
     private static final Logger logger = Logger.getLogger(ImageRepositoryImpl.class);
 
-    private Map<String, ImageData> images;
+    private Cache<String, ImageData> images;
 
     private ReentrantReadWriteLock lock;
 
+    private int initialCapacity = 200;
+
+    private long maximumSize = 1000;
+
     public ImageRepositoryImpl() {
-        images = Maps.newHashMap();
         lock = new ReentrantReadWriteLock();
     }
 
     @Override
-    public Optional<Image> getImage(final String imageName) {
+    public Optional<Image> getImageByPath(final String imageName) {
         Lock readLock = lock.readLock();
         try {
-            Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageName));
-            if (imageDataOptional.isPresent())
-                return Optional.of(new Image(Display.getDefault(), imageDataOptional.get()));
-            return Optional.of(RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<Image>() {
+            return Optional.of(new Image(Display.getDefault(), images.get(imageName, new Callable<ImageData>() {
                 @Override
-                public Image get() {
-                    Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageName));
-                    if (!imageDataOptional.isPresent()) {
-                        ImageData data = cacheImageDataForImage(imageName);
-                        return new Image(Display.getDefault(), data);
-                    }
-                    return new Image(Display.getDefault(), imageDataOptional.get());
+                public ImageData call() throws Exception {
+                    return RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<ImageData>() {
+                        @Override
+                        public ImageData get() {
+                            ImageData imageData = new ImageLoader().load(imageName)[0];
+                            images.put(imageName, imageData);
+                            return imageData;
+                        }
+                    });
                 }
-            }));
+            })));
         } catch (SWTException e) {
             logger.debug("SWT Exception: ", e); //NON-NLS
+            return Optional.absent();
+        } catch (ExecutionException e) {
+            logger.error("Execution exception", e); //NON-NLS
             return Optional.absent();
         } finally {
             if (lock.getReadHoldCount() > 0)
@@ -63,30 +70,30 @@ public class ImageRepositoryImpl implements ImageRepository {
     public Image getResourceImage(final String imageResource) {
         Lock readLock = lock.readLock();
         try {
-            Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageResource));
-            if (imageDataOptional.isPresent())
-                return new Image(Display.getDefault(), imageDataOptional.get());
-            return RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<Image>() {
+            return new Image(Display.getDefault(), images.get(imageResource, new Callable<ImageData>() {
                 @Override
-                public Image get() {
-                    Optional<ImageData> imageDataOptional = Optional.fromNullable(images.get(imageResource));
-                    if (imageDataOptional.isPresent())
-                        return new Image(Display.getDefault(), imageDataOptional.get());
-                    Image image;
-                    try {
-                        image = StreamUtil.useClasspathResource(imageResource, new Function<InputStream, Image>() {
-                            @Override
-                            public Image apply(@Nullable InputStream inputStream) {
-                                return new Image(Display.getDefault(), inputStream);
+                public ImageData call() throws Exception {
+                    return RuntimeUtil.promoteReadLockToWriteLockAndProcess(lock, new Supplier<ImageData>() {
+                        @Override
+                        public ImageData get() {
+                            try {
+                                return StreamUtil.useClasspathResource(imageResource, new Function<InputStream, ImageData>() {
+                                    @Override
+                                    public ImageData apply(@Nullable InputStream inputStream) {
+                                        ImageData imageData = new ImageLoader().load(inputStream)[0];
+                                        images.put(imageResource, imageData);
+                                        return imageData;
+                                    }
+                                });
+                            } catch (IOException e) {
+                                throw new IllegalArgumentException("Resource does not exist: " + imageResource);
                             }
-                        });
-                    } catch (IOException e) {
-                        throw new IllegalArgumentException("Resource does not exist: "+imageResource);
-                    }
-                    images.put(imageResource, image.getImageData());
-                    return image;
+                        }
+                    });
                 }
-            });
+            }));
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         } finally {
             if (lock.getReadHoldCount() > 0)
                 readLock.unlock();
@@ -94,11 +101,33 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public ImageData cacheImageDataForImage(String absolutePath) {
-        ImageLoader imageLoader = new ImageLoader();
-        ImageData imageData = imageLoader.load(absolutePath)[0];
-        images.put(absolutePath, imageData);
-        return imageData;
+    public boolean cacheExternalImageFile(String absolutePath) {
+        long begin = images.stats().evictionCount();
+        images.put(absolutePath, new ImageLoader().load(absolutePath)[0]);
+        long end = images.stats().evictionCount();
+        return end - begin > 0;
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        images = CacheBuilder
+                .newBuilder()
+                .maximumSize(maximumSize)
+                .initialCapacity(initialCapacity)
+//            .removalListener(new RemovalListener<String, ImageData>() {
+//                @Override
+//                public void onRemoval(RemovalNotification<String, ImageData> removalNotification) {
+//                    logger.debug("Removed from image cache: "+removalNotification.getKey()); //NON-NLS
+//                }
+//            })
+                .build();
+    }
+
+    public void setInitialCapacity(int initialCapacity) {
+        this.initialCapacity = initialCapacity;
+    }
+
+    public void setMaximumSize(long maximumSize) {
+        this.maximumSize = maximumSize;
+    }
 }
