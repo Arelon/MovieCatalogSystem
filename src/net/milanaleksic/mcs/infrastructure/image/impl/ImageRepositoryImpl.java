@@ -1,18 +1,17 @@
 package net.milanaleksic.mcs.infrastructure.image.impl;
 
 import com.google.common.base.*;
+import com.google.common.collect.Maps;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
-import net.milanaleksic.mcs.infrastructure.util.RuntimeUtil;
-import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
+import java.io.*;
+import java.util.Map;
 import java.util.concurrent.locks.*;
 
 /**
@@ -24,12 +23,12 @@ public class ImageRepositoryImpl implements ImageRepository {
 
     private static final Logger logger = Logger.getLogger(ImageRepositoryImpl.class);
 
-    private HashMap<String, ImageData> images;
+    private Map<String, ImageData> images;
 
     private ReentrantReadWriteLock lock;
 
     public ImageRepositoryImpl() {
-        images = new HashMap<>();
+        images = Maps.newHashMap();
         lock = new ReentrantReadWriteLock();
     }
 

@@ -1,16 +1,16 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.domain.model.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.*;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.SingularAttribute;
-import java.util.*;
+import java.util.List;
 
 /**
  * User: Milan Aleksic
@@ -64,7 +64,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Root<Film> film = cq.from(Film.class);
         cq.select(builder.countDistinct(film));
 
-        List<Predicate> predicates = new ArrayList<>();
+        List<Predicate> predicates = Lists.newLinkedList();
 
         Optional<ParameterExpression<String>> textFilterParameter = Optional.absent();
         if (textFilter.isPresent()) {
@@ -120,7 +120,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Root<Film> film = cq.from(Film.class);
         cq.select(film);
 
-        List<Predicate> predicates = new ArrayList<>();
+        List<Predicate> predicates = Lists.newLinkedList();
 
         Optional<ParameterExpression<String>> textFilterParameter = Optional.absent();
         if (textFilter.isPresent()) {

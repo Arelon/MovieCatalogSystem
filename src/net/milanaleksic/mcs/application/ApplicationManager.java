@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
@@ -42,7 +43,7 @@ public class ApplicationManager implements ApplicationContextAware {
 
     private UserConfiguration userConfiguration;
 
-    private Set<LifecycleListener> lifecycleListeners = new HashSet<>();
+    private Set<LifecycleListener> lifecycleListeners = Sets.newHashSet();
 
     public ApplicationManager() {
         this(false);

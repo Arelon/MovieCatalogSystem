@@ -1,35 +1,28 @@
 package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
-import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
-import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
-import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
+import net.milanaleksic.mcs.infrastructure.network.*;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageSearchResult;
-import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
-import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
+import net.milanaleksic.mcs.infrastructure.tmdb.*;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.io.*;
+import java.io.File;
 import java.net.URI;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener {
@@ -56,7 +49,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
 
     // various concurrent optimizations
     private Multimap<String, Function<Image, Void>> downloadingWaiters = ArrayListMultimap.create();
-    private Map<String, ImageSearchResult> cachedImageSearches = new ConcurrentHashMap<>();
+    private Map<String, ImageSearchResult> cachedImageSearches = Maps.newConcurrentMap();
 
     private int thumbnailWidth = 138;
     private int thumbnailHeight = 92;
@@ -219,7 +212,7 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
     }
 
     private void prepareLocallyCachedImages(ApplicationConfiguration configuration) {
-        imdbIdToLocallyCachedImageMap = new HashMap<>();
+        imdbIdToLocallyCachedImageMap = Maps.newHashMap();
         ApplicationConfiguration.CacheConfiguration cacheConfiguration = configuration.getCacheConfiguration();
         File location = new File(cacheConfiguration.getLocation());
         if ((!location.exists() && !location.mkdir()) || !location.canWrite()) {

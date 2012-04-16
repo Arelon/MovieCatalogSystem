@@ -1,10 +1,8 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import com.google.common.collect.Lists;
-import net.milanaleksic.mcs.application.gui.helper.event.CustomTypedListener;
-import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
+import net.milanaleksic.mcs.application.gui.helper.event.*;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
@@ -31,7 +29,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private final int PADDING_BETWEEN_ROWS_TEXT = 15;
 
     @Nonnull
-    private List<MovieWrapper> movies = new LinkedList<>();
+    private List<MovieWrapper> movies = Lists.newLinkedList();
 
     private final ThumbnailManager thumbnailManager;
 
@@ -244,7 +242,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         clearMovies();
         if (!sviFilmovi.isPresent())
             return;
-        List<MovieWrapper> wrappers = new ArrayList<>();
+        List<MovieWrapper> wrappers = Lists.newLinkedList();
         for (Film film : sviFilmovi.get()) {
             MovieWrapper movieWrapper = new MovieWrapper(film);
             wrappers.add(movieWrapper);

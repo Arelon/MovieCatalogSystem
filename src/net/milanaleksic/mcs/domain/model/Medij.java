@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import com.google.common.collect.Sets;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +33,7 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
     @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
     @org.hibernate.annotations.BatchSize(size=3)
-	private Set<Film> films = new HashSet<Film>(0);
+	private Set<Film> films = Sets.newHashSet();
 	
 	@Transient
     private String toStringValue = null;

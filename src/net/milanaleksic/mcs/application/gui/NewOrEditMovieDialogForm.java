@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
+import com.google.common.base.*;
+import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
@@ -10,10 +10,9 @@ import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.*;
@@ -22,8 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
@@ -75,9 +73,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
 
     private Optional<Film> activeFilm;
 
-    private HashMap<String, Zanr> sviZanrovi;
-    private HashMap<String, Pozicija> sveLokacije;
-    private HashMap<String, Medij> sviDiskovi;
+    private Map<String, Zanr> sviZanrovi;
+    private Map<String, Pozicija> sveLokacije;
+    private Map<String, Medij> sviDiskovi;
 
     public void open(Shell parent, Optional<Film> film, Runnable callback) {
         this.activeFilm = film;
@@ -124,9 +122,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         if (comboDisk.getItemCount() != 0)
             comboDisk.removeAll();
 
-        sviZanrovi = new HashMap<>();
-        sveLokacije = new HashMap<>();
-        sviDiskovi = new HashMap<>();
+        sviZanrovi = Maps.newHashMap();
+        sveLokacije = Maps.newHashMap();
+        sviDiskovi = Maps.newHashMap();
 
         for (Zanr zanr : zanrRepository.getZanrs()) {
             comboZanr.add(zanr.getZanr());
@@ -168,7 +166,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         novFilm.setKomentar(textKomentar.getText());
         Zanr zanr = sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex()));
         Pozicija position = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
-        java.util.List<Medij> medijs = new ArrayList<>();
+        java.util.List<Medij> medijs = Lists.newLinkedList();
         if (listDiskovi.getItemCount() != 0) {
             for (String medijName : listDiskovi.getItems()) {
                 Medij medij = sviDiskovi.get(medijName);
@@ -187,7 +185,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         film.setImdbId(textImdbId.getText().trim());
         film.setKomentar(textKomentar.getText());
 
-        Set<Medij> selectedMediums = new HashSet<>();
+        Set<Medij> selectedMediums = Sets.newHashSet();
         for (String item : listDiskovi.getItems()) {
             selectedMediums.add(sviDiskovi.get(item));
         }

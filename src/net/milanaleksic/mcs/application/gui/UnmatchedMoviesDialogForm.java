@@ -1,33 +1,27 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.*;
+import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.service.FilmService;
-import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
-import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
+import net.milanaleksic.mcs.infrastructure.network.*;
+import net.milanaleksic.mcs.infrastructure.tmdb.*;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Table;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
@@ -213,9 +207,9 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             tableItem.setText(new String[]{film.toString(), bundle.getString("unmatchedMoviesTable.status.awaiting")});
             tableItem.setData(film);
         }
-        movieMatchesMap = new ConcurrentHashMap<>();
-        listOfQueuedWorkers = new LinkedList<>();
-        failureCountMap = new ConcurrentHashMap<>();
+        movieMatchesMap = Maps.newConcurrentMap();
+        listOfQueuedWorkers = Lists.newLinkedList();
+        failureCountMap = Maps.newConcurrentMap();
     }
 
     private void removeMatchDetails() {

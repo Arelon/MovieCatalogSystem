@@ -10,6 +10,8 @@ import java.util.HashMap;
  */
 @SuppressWarnings({"HardCodedStringLiteral"})
 public class DB2CyrillicToUnicodeConvertor {
+
+    //TODO: deprecated approach, should be updated with dynamic calculation!
 	
 	private final static HashMap<Character, String> konverzionaTabela;
 	

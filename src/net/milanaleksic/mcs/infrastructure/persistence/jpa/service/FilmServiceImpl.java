@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
+import com.google.common.collect.Sets;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,7 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
             newZanr.addFilm(movieToBeUpdated);
         }
 
-        Set<Medij> raniji = new HashSet<>();
-        for (Medij medij : movieToBeUpdated.getMedijs())
-            raniji.add(medij);
+        Set<Medij> raniji = Sets.newHashSet(movieToBeUpdated.getMedijs());
 
         if (!newMediums.isEmpty()) {
             newPozicija = entityManager.merge(newPozicija);

@@ -1,12 +1,11 @@
 package net.milanaleksic.mcs.domain.model;
 
-import com.google.common.collect.Ordering;
+import com.google.common.collect.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
-import org.hibernate.sql.ordering.antlr.OrderingSpecification;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Set;
 
 @Entity
 @Cacheable
@@ -132,7 +131,7 @@ public class Film implements Serializable, Comparable<Film> {
 	
 	public void addMedij(Medij m) {
         if (medijs == null)
-            medijs = new HashSet<Medij>();
+            medijs = Sets.newHashSet();
 		medijs.add(m);
 		m.getFilms().add(this);
         refreshDeNormalizedAttributes();
