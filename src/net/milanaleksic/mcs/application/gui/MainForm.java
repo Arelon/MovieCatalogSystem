@@ -577,8 +577,8 @@ public class MainForm extends Observable {
         GridLayout layout = new GridLayout(2, false);
         header.setLayout(layout);
         header.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-        createToolTicker(header);
         createToolBar(header);
+        createToolTicker(header);
     }
 
     private void createToolTicker(Composite header) {
@@ -626,8 +626,11 @@ public class MainForm extends Observable {
 
     private void createCenterComposite() {
         Composite centerComposite = new Composite(sShell, SWT.NONE);
+        GridLayout layout = new GridLayout(1, false);
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+        centerComposite.setLayout(layout);
         centerComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        centerComposite.setLayout(new GridLayout(1, false));
 
         ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL | SWT.NO);
         mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
