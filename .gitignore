@@ -8,6 +8,8 @@ startup/db
 startup/log
 startup/restore
 startup/cache
+startup/application-configuration.xml
+startup/configuration.xml
 *.iml
 *.log
 FindBugsAnalysis.html
