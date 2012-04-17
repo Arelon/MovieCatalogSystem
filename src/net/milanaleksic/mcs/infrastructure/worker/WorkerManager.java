@@ -1,11 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.worker;
 
 import com.google.common.base.Function;
-import net.milanaleksic.mcs.domain.model.Film;
+import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 /**
  * User: Milan Aleksic
@@ -14,13 +12,13 @@ import java.util.concurrent.Future;
  */
 public interface WorkerManager {
 
-    <T> Future<T> submitWorker(Callable<T> worker) ;
+    <T> ListenableFuture<T> submitWorker(Callable<T> worker) ;
 
-    Future<?> submitWorker(Runnable runnable);
+    ListenableFuture<?> submitWorker(Runnable runnable);
 
-    <T> Future<T> submitIoBoundWorker(Callable<T> worker) ;
+    <T> ListenableFuture<T> submitIoBoundWorker(Callable<T> worker) ;
 
-    Future<?> submitIoBoundWorker(Runnable runnable);
+    ListenableFuture<?> submitIoBoundWorker(Runnable runnable);
 
-    <T> Future<?> submitLongTaskWithResultProcessingInSWTThread(Callable<T> longTask, Function<T, Void> operationOnResultOfLongTask);
+    <T> ListenableFuture<?> submitLongTaskWithResultProcessingInSWTThread(Callable<T> longTask, Function<T, Void> operationOnResultOfLongTask);
 }

@@ -118,8 +118,8 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
             imageTargetWidget.setImage(imageRepository.getImageByPath(absoluteFileLocation.get()).orNull());
     }
 
-    private Future<?> startDownloadingWorker(final String imdbId) {
-        return workerManager.submitIoBoundWorker(new Runnable() {
+    private void startDownloadingWorker(final String imdbId) {
+        workerManager.submitIoBoundWorker(new Runnable() {
             @Override
             public void run() {
                 try {

@@ -1,15 +1,16 @@
 package net.milanaleksic.mcs.infrastructure.worker.impl;
 
 import com.google.common.base.Function;
-import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import com.google.common.util.concurrent.*;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
-import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.jmx.export.annotation.*;
 
 import java.util.concurrent.*;
+
 
 /**
  * User: Milan Aleksic
@@ -29,32 +30,32 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
 
     private int timeAllowedForThreadPoolToLiveAfterShutdown = DEFAULT_POOL_TTL;
 
-    private ExecutorService cpuBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private ListeningExecutorService cpuBoundPool;
 
-    private ExecutorService ioBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    private ListeningExecutorService ioBoundPool;
 
     @Override
-    public <T> Future<T> submitWorker(Callable<T> worker) {
+    public <T> ListenableFuture<T> submitWorker(Callable<T> worker) {
         return cpuBoundPool.submit(worker);
     }
 
     @Override
-    public Future<?> submitWorker(Runnable runnable) {
+    public ListenableFuture<?> submitWorker(Runnable runnable) {
         return cpuBoundPool.submit(runnable);
     }
 
     @Override
-    public <T> Future<T> submitIoBoundWorker(Callable<T> worker) {
+    public <T> ListenableFuture<T> submitIoBoundWorker(Callable<T> worker) {
         return ioBoundPool.submit(worker);
     }
 
     @Override
-    public Future<?> submitIoBoundWorker(Runnable runnable) {
+    public ListenableFuture<?> submitIoBoundWorker(Runnable runnable) {
         return ioBoundPool.submit(runnable);
     }
 
     @Override
-    public <T> Future<?> submitLongTaskWithResultProcessingInSWTThread(final Callable<T> longTask, final Function<T, Void> operationOnResultOfLongTask) {
+    public <T> ListenableFuture<?> submitLongTaskWithResultProcessingInSWTThread(final Callable<T> longTask, final Function<T, Void> operationOnResultOfLongTask) {
         return cpuBoundPool.submit(new Runnable() {
             @Override
             public void run() {
@@ -78,8 +79,8 @@ public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
 
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
-        cpuBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        ioBoundPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+        cpuBoundPool = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        ioBoundPool = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2));
     }
 
     @Override
