@@ -88,7 +88,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Optional<ParameterExpression<String>> pozicijaParameter = Optional.absent();
         if (pozicijaFilter.isPresent()) {
             pozicijaParameter = Optional.of(builder.parameter(String.class, "pozicija"));
-            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter));
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter.get()));
         }
 
         if (predicates.size()==1)
@@ -144,7 +144,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         Optional<ParameterExpression<String>> pozicijaParameter = Optional.absent();
         if (pozicijaFilter.isPresent()) {
             pozicijaParameter = Optional.of(builder.parameter(String.class, "pozicija"));
-            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter));
+            predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter.get()));
         }
 
         if (predicates.size()==1)
