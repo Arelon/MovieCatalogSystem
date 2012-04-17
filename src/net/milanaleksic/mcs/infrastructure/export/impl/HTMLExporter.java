@@ -1,13 +1,14 @@
 package net.milanaleksic.mcs.infrastructure.export.impl;
 
-import java.awt.Desktop;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import net.milanaleksic.mcs.infrastructure.export.*;
+import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
+import org.apache.log4j.Logger;
+
+import java.awt.*;
 import java.io.*;
 import java.util.Calendar;
-
-import com.google.common.base.*;
-import net.milanaleksic.mcs.infrastructure.export.*;
-import net.milanaleksic.mcs.infrastructure.util.*;
-import org.apache.log4j.Logger;
 
 public class HTMLExporter implements Exporter {
 	
@@ -29,7 +30,7 @@ public class HTMLExporter implements Exporter {
             writeTableContents(source, writer);
             writeFooter(writer);
 
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+        } catch (IOException e) {
             logger.error("Unexpected exception occurred", e);
         }
 
@@ -77,7 +78,7 @@ public class HTMLExporter implements Exporter {
         writer.println("</tr>\r\n");
     }
 
-    private void writeHtmlHead(PrintWriter writer) {
+    private void writeHtmlHead(PrintWriter writer) throws IOException {
         writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
         writer.println("\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         writer.println("<html xmlns=\"http://www.w3.org/1999/xhtml\"><!--");
@@ -89,9 +90,9 @@ public class HTMLExporter implements Exporter {
         writer.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
         writer.println("<meta name=\"author\" content=\"Milan Aleksić\" />");
         writer.println("<style>");
-        writer.println(dohvatiCss());
+        writer.println(Files.toString(new File("export/stilovi.css"), Charsets.UTF_8));
         writer.println("</style><script language=\"javascript\"><!--");
-        writer.println(dohvatiJs());
+        writer.println(Files.toString(new File("export/prog.js"), Charsets.UTF_8));
         writer.println("--></script></head>");
     }
 
@@ -109,61 +110,5 @@ public class HTMLExporter implements Exporter {
             }
         }
     }
-
-    private String dohvatiCss() {
-        StringBuilder rez = new StringBuilder();
-		File css = new File("export/stilovi.css");
-        Optional<BufferedReader> reader = Optional.absent();
-		try {
-            String tmp;
-            BufferedReader bufferedReader;
-            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(css), Charsets.UTF_8.name())));
-            while ((tmp = bufferedReader.readLine()) != null)
-				rez.append(tmp).append('\r').append('\n');
-		} catch (FileNotFoundException e) {
-			logger.error("FileNotFoundException", e);
-		} catch (IOException e) {
-			logger.error("IOException", e);
-		} finally {
-            if (reader.isPresent())
-                try {
-                    reader.get().close();
-                } catch (IOException ignored) {
-                }
-        }
-		return rez.toString().trim();
-	}
-
-	private String dohvatiJs() {
-        StringBuilder rez = new StringBuilder();
-		File js = new File("export/prog.js");
-        Optional<BufferedReader> reader = Optional.absent();
-		try {
-            String tmp;
-            BufferedReader bufferedReader;
-            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(js), Charsets.UTF_8.name())));
-			while ((tmp = bufferedReader.readLine()) != null) {
-				tmp = tmp.replace('\t', ' ');
-				tmp = tmp.replaceAll("( ( ))+", "");
-				if (tmp.length()>0 && tmp.charAt(tmp.length()-1)==';')
-					rez.append(tmp);
-				else
-					rez.append(tmp).append(' ');
-			}
-				
-		} catch (FileNotFoundException e) {
-			logger.error("FileNotFoundException", e);
-		} catch (IOException e) {
-			logger.error("IOException", e);
-		} finally {
-            if (reader.isPresent())
-                try {
-                    reader.get().close();
-                } catch (IOException ignored) {
-                }
-        }
-		return rez.toString().trim();
-	}
-
 
 }

@@ -2,8 +2,8 @@ package net.milanaleksic.mcs.infrastructure.restore;
 
 import com.google.common.base.*;
 import com.google.common.collect.ImmutableList;
-import net.milanaleksic.mcs.infrastructure.util.DBUtil;
-import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
+import com.google.common.io.ByteStreams;
+import net.milanaleksic.mcs.infrastructure.util.*;
 
 import java.io.*;
 import java.sql.*;
@@ -84,7 +84,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 printInsertStatementsForRestoreSource(conn, outputStream, source);
             }
             fos = Optional.of(new FileOutputStream(restoreFile));
-            StreamUtil.copyStream(new ByteArrayInputStream(buffer.toByteArray()), fos.get());
+            ByteStreams.copy(new ByteArrayInputStream(buffer.toByteArray()), fos.get());
         } finally {
             close(fos);
         }

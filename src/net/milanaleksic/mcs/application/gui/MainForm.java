@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.*;
+import com.google.common.io.Files;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
@@ -342,10 +343,9 @@ public class MainForm extends Observable {
             final String targetFileForExport = dlg.open();
             if (targetFileForExport == null)
                 return;
-            String ext = targetFileForExport.substring(targetFileForExport.lastIndexOf('.') + 1);
             if (log.isDebugEnabled())
                 log.debug("Exporting to file \"" + targetFileForExport + "\""); //NON-NLS
-            final Optional<Exporter> exporter = ExporterFactory.getInstance().getExporter(ext);
+            final Optional<Exporter> exporter = ExporterFactory.getInstance().getExporter(Files.getFileExtension(targetFileForExport));
             if (!exporter.isPresent()) {
                 log.error("Exporting to the selected format is not supported"); //NON-NLS
                 return;
