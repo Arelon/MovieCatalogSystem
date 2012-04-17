@@ -46,6 +46,7 @@ public class MainForm extends Observable {
     private static final int GUI_COMBO_WIDTH = 80;
     private static final int GUI_LABELCURRENT_WIDTH = 90;
     public static final int GUI_MOVIEDETAILS_HEIGHT = 150;
+    public static final int GUI_SEARCHFILTER_HEIGHT = 25;
 
     @Inject
     private NewOrEditMovieDialogForm newOrEditMovieDialogForm;
@@ -98,9 +99,8 @@ public class MainForm extends Observable {
     private Combo comboZanr;
     private Combo comboTipMedija;
     private Combo comboPozicija;
-    private Label labelFilter;
-    private Label labelFilterDesc;
     private Label labelCurrent;
+    private Label labelFilter;
     private Canvas toolTicker;
     private Menu settingsPopupMenu;
     private Composite statusBar;
@@ -111,6 +111,7 @@ public class MainForm extends Observable {
     private ResourceBundle bundle;
 
     private CurrentViewState currentViewState = new CurrentViewState();
+    private Composite searchFilterLineComposite;
 
     // private classes
 
@@ -527,10 +528,18 @@ public class MainForm extends Observable {
                     labelCurrent.setText(lowerBound + "-" + upperBound + " (" + currentViewState.getShowableCount().toString() + ")");
                 } else
                     labelCurrent.setText(currentViewState.getShowableCount().toString());
-                String filter = currentViewState.getFilterText();
-                labelFilter.setText(filter);
-                labelFilterDesc.setVisible(!filter.isEmpty());
-                statusBar.layout();
+                refreshSearchFilterText();
+            }
+
+            private void refreshSearchFilterText() {
+                labelFilter.setText(currentViewState.getFilterText());
+                GridData layoutData = (GridData) searchFilterLineComposite.getLayoutData();
+                int oldHeight = layoutData.heightHint;
+                int newHeight = currentViewState.getFilterText().isEmpty() ? 0 : GUI_SEARCHFILTER_HEIGHT;
+                if (oldHeight != newHeight) {
+                    layoutData.heightHint = newHeight;
+                    searchFilterLineComposite.getParent().layout();
+                }
             }
 
         });
@@ -630,6 +639,8 @@ public class MainForm extends Observable {
         centerComposite.setLayout(layout);
         centerComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
+        addSearchFilterLine(centerComposite);
+
         ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL);
         mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
         mainTable.addKeyListener(new MainTableKeyAdapter());
@@ -670,6 +681,26 @@ public class MainForm extends Observable {
         GridData layoutData = new GridData(SWT.FILL, SWT.END, true, false);
         layoutData.heightHint = 0;
         movieDetailsPanel.setLayoutData(layoutData);
+    }
+
+    private void addSearchFilterLine(Composite centerComposite) {
+        searchFilterLineComposite = new Composite(centerComposite, SWT.NONE);
+        searchFilterLineComposite.setLayout(new GridLayout(2, false));
+        GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        layoutData.heightHint = 0;
+        searchFilterLineComposite.setLayoutData(layoutData);
+        searchFilterLineComposite.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+
+        Label labelFilterDesc = new Label(searchFilterLineComposite, SWT.NONE);
+        labelFilterDesc.setText(bundle.getString("main.activeFilter"));
+        labelFilterDesc.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        labelFilterDesc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        labelFilter = new Label(searchFilterLineComposite, SWT.NONE);
+        labelFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        labelFilter.setText("");
+        labelFilter.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        labelFilter.setFont(new Font(shell.getDisplay(), SWTUtil.getSystemFontData().getName(),
+                SWTUtil.getSystemFontData().getHeight(), SWT.BOLD));
     }
 
     private void createComboZanr(Composite panCombos) {
@@ -782,10 +813,9 @@ public class MainForm extends Observable {
     private void createStatusBar() {
         statusBar = new Composite(shell, SWT.BORDER);
         statusBar.setLayoutData(new GridData(GridData.FILL, GridData.END, true, false));
-        statusBar.setLayout(new GridLayout(4, false));
+        statusBar.setLayout(new GridLayout(3, false));
         addStatusPagingCell();
         addStatusEntityFilteringCell();
-        addStatusTextSearchFilterCell();
         addStatusSortCell();
     }
 
@@ -812,18 +842,6 @@ public class MainForm extends Observable {
         createComboTipMedija(entityFilteringComposite);
         createComboPozicija(entityFilteringComposite);
         createComboZanr(entityFilteringComposite);
-    }
-
-    private void addStatusTextSearchFilterCell() {
-        Composite filterComposite = createNoMarginStatusBarCell(2, SWT.BEGINNING);
-        labelFilterDesc = new Label(filterComposite, SWT.NONE);
-        labelFilterDesc.setText(bundle.getString("main.activeFilter"));
-        labelFilterDesc.setVisible(false);
-        labelFilter = new Label(filterComposite, SWT.NONE);
-        FontData systemFontData = SWTUtil.getSystemFontData();
-        Font systemFont = new Font(shell.getDisplay(), systemFontData.getName(), systemFontData.getHeight(), SWT.BOLD);
-        labelFilter.setFont(systemFont);
-        labelFilter.setText("");
     }
 
     private void addStatusSortCell() {
