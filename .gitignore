@@ -10,6 +10,7 @@ startup/restore
 startup/cache
 startup/application-configuration.xml
 startup/configuration.xml
+lib/swt*-debug.jar
 *.iml
 *.log
 FindBugsAnalysis.html
