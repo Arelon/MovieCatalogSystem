@@ -1,11 +1,10 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.restore.DB2CyrillicToUnicodeConvertor;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.sql.*;
 
 /**
@@ -19,7 +18,7 @@ public final class DBUtil {
     public static final String STRING_WHEN_NULL = "NULL"; //NON-NLS
 
     public static void executeScriptOnConnection(InputStream stream, Connection conn) throws IOException, SQLException {
-        BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charset.forName(StreamUtil.UTF8)));
+        BufferedReader scriptStreamReader = new BufferedReader(new InputStreamReader(stream, Charsets.UTF_8));
         StringBuilder script = new StringBuilder();
         String line;
         while ((line = scriptStreamReader.readLine()) != null) {

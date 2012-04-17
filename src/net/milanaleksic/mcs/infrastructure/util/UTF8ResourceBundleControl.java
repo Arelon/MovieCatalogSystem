@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 
 import java.io.*;
 import java.net.URL;
@@ -57,7 +57,7 @@ public class UTF8ResourceBundleControl extends ResourceBundle.Control {
             if (stream.isPresent()) {
                 try {
                     // the only changed line from default implementation:
-                    return new PropertyResourceBundle(new InputStreamReader(stream.get(), StreamUtil.UTF8));
+                    return new PropertyResourceBundle(new InputStreamReader(stream.get(), Charsets.UTF_8));
                 } finally {
                     stream.get().close();
                 }

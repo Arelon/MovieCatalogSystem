@@ -1,9 +1,8 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.tmdb.impl.AbstractServiceAwareRequest;
-import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -27,7 +26,7 @@ public class MovieSearch extends AbstractServiceAwareRequest {
     protected String getUrl() {
         try {
             return apiLocation + "Movie.search/en/json/" + getApiKey() + "/" +
-                    URLEncoder.encode(searchFilter, StreamUtil.UTF8);
+                    URLEncoder.encode(searchFilter, Charsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("UTF-8 is not supported in this system? WTF?");
         }

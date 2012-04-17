@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import com.google.common.collect.ImmutableList;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
@@ -75,7 +75,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
         Optional<FileOutputStream> fos = Optional.absent();
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            PrintStream outputStream = new PrintStream(buffer, true, StreamUtil.UTF8);
+            PrintStream outputStream = new PrintStream(buffer, true, Charsets.UTF_8.name());
             outputStream.print(getScriptHeader());
 
             appendRestartCountersScript(outputStream, conn);
@@ -176,7 +176,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip"); //NON-NLS
             zos = Optional.of(new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"))); //NON-NLS
 
-            StreamUtil.writeFileToZipStream(zos.get(), renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE);
+            StreamUtil.writeFileToZipStream(zos.get(), "restore\\"+renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE); //NON-NLS
 
         } catch (Throwable t) {
             log.error("Failure while zipping restore script", t); //NON-NLS

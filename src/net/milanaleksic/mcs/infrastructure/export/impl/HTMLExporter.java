@@ -4,7 +4,7 @@ import java.awt.Desktop;
 import java.io.*;
 import java.util.Calendar;
 
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import org.apache.log4j.Logger;
@@ -18,7 +18,7 @@ public class HTMLExporter implements Exporter {
 	@Override
 	public void export(ExporterSource source) {
 		File ekspFajl = new File(source.getTargetFile());
-        try (PrintWriter writer = new PrintWriter(ekspFajl, StreamUtil.UTF8)) {
+        try (PrintWriter writer = new PrintWriter(ekspFajl, Charsets.UTF_8.name())) {
             writeHtmlHead(writer);
 
             writer.println("<body onload=\"javascript:init()\">");
@@ -117,7 +117,7 @@ public class HTMLExporter implements Exporter {
 		try {
             String tmp;
             BufferedReader bufferedReader;
-            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(css), StreamUtil.UTF8)));
+            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(css), Charsets.UTF_8.name())));
             while ((tmp = bufferedReader.readLine()) != null)
 				rez.append(tmp).append('\r').append('\n');
 		} catch (FileNotFoundException e) {
@@ -141,7 +141,7 @@ public class HTMLExporter implements Exporter {
 		try {
             String tmp;
             BufferedReader bufferedReader;
-            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(js), StreamUtil.UTF8)));
+            reader = Optional.of(bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(js), Charsets.UTF_8.name())));
 			while ((tmp = bufferedReader.readLine()) != null) {
 				tmp = tmp.replace('\t', ' ');
 				tmp = tmp.replaceAll("( ( ))+", "");

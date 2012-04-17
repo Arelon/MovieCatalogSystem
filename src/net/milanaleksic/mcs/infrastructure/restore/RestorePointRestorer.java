@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.restore.alter.AlterScript;
 import net.milanaleksic.mcs.infrastructure.util.DBUtil;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
@@ -72,7 +71,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             return 0;
         Optional<LineNumberReader> reader = Optional.absent();
         try {
-            reader = Optional.of(new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), StreamUtil.UTF8)));
+            reader = Optional.of(new LineNumberReader(new InputStreamReader(new FileInputStream(restoreFile), Charsets.UTF_8)));
             String firstLine = reader.get().readLine();
             if (firstLine != null)
                 if (firstLine.contains(MCS_VERSION_TAG))

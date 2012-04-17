@@ -21,8 +21,6 @@ public final class StreamUtil {
 
     private final static Logger log = Logger.getLogger(StreamUtil.class);
 
-    public static final String UTF8 = "UTF-8"; //NON-NLS
-
     static {
          MD5.initNativeLibrary();
     }
@@ -42,7 +40,7 @@ public final class StreamUtil {
     public static void writeFileToZipStream(ZipOutputStream zos, String fileName, String entryName) throws IOException {
         Optional<FileInputStream> fis = Optional.absent();
         try {
-            fis = Optional.of(new FileInputStream("restore\\"+fileName));
+            fis = Optional.of(new FileInputStream(fileName));
             ZipEntry zipEntry = new ZipEntry(entryName);
             zos.putNextEntry(zipEntry);
             copyStream(fis.get(), zos);
