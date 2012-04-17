@@ -574,11 +574,10 @@ public class MainForm extends Observable {
 
     private void createHeader() {
         Composite header = new Composite(sShell, SWT.NONE);
-        GridLayout layout = new GridLayout(3, false);
+        GridLayout layout = new GridLayout(2, false);
         header.setLayout(layout);
         header.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         createToolTicker(header);
-        createPanCombos(header);
         createToolBar(header);
     }
 
@@ -589,17 +588,6 @@ public class MainForm extends Observable {
         toolTicker = new Canvas(header, SWT.NONE);
         toolTicker.setLayoutData(tickerGridData);
         SWTUtil.addImagePaintListener(toolTicker, "/net/milanaleksic/mcs/application/res/db_find.png"); //NON-NLS
-    }
-
-    private void createPanCombos(Composite header) {
-        GridData gridData2 = new GridData();
-        gridData2.horizontalAlignment = GridData.END;
-        Composite panCombos = new Composite(header, SWT.NONE);
-        panCombos.setLayoutData(gridData2);
-        panCombos.setLayout(new GridLayout(1, false));
-        createComboTipMedija(panCombos);
-        createComboPozicija(panCombos);
-        createComboZanr(panCombos);
     }
 
     private void createToolBar(Composite header) {
@@ -786,38 +774,57 @@ public class MainForm extends Observable {
     private void createStatusBar() {
         statusBar = new Composite(sShell, SWT.BORDER);
         statusBar.setLayoutData(new GridData(GridData.FILL, GridData.END, true, false));
+        statusBar.setLayout(new GridLayout(4, false));
+        addStatusPagingCell();
+        addStatusEntityFilteringCell();
+        addStatusTextSearchFilterCell();
+        addStatusSortCell();
+    }
 
-        GridLayout layout = new GridLayout(8, false);
-        statusBar.setLayout(layout);
-        Button btnPrevPage = new Button(statusBar, SWT.PUSH);
+    private void addStatusPagingCell() {
+        Composite pagingComposite = createNoMarginStatusBarCell(3, SWT.BEGINNING);
+        Button btnPrevPage = new Button(pagingComposite, SWT.PUSH);
         btnPrevPage.setText("<<");
         btnPrevPage.addSelectionListener(new PreviousPageSelectionAdapter());
 
-        labelCurrent = new Label(statusBar, SWT.NONE);
+        labelCurrent = new Label(pagingComposite, SWT.NONE);
         GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, false, false);
         layoutData.widthHint = 90;
         labelCurrent.setLayoutData(layoutData);
         labelCurrent.setAlignment(SWT.CENTER);
         labelCurrent.setText("0");
 
-        Button btnNextPage = new Button(statusBar, SWT.PUSH);
+        Button btnNextPage = new Button(pagingComposite, SWT.PUSH);
         btnNextPage.setText(">>");
         btnNextPage.addSelectionListener(new NextPageSelectionAdapter());
+    }
 
-        labelFilterDesc = new Label(statusBar, SWT.NONE);
+    private void addStatusEntityFilteringCell() {
+        Composite entityFilteringComposite = createNoMarginStatusBarCell(3, SWT.BEGINNING);
+        createComboTipMedija(entityFilteringComposite);
+        createComboPozicija(entityFilteringComposite);
+        createComboZanr(entityFilteringComposite);
+    }
+
+    private void addStatusTextSearchFilterCell() {
+        Composite filterComposite = createNoMarginStatusBarCell(2, SWT.BEGINNING);
+        labelFilterDesc = new Label(filterComposite, SWT.NONE);
         labelFilterDesc.setText(bundle.getString("main.activeFilter"));
         labelFilterDesc.setVisible(false);
-        labelFilter = new Label(statusBar, SWT.NONE);
+        labelFilter = new Label(filterComposite, SWT.NONE);
         FontData systemFontData = SWTUtil.getSystemFontData();
         Font systemFont = new Font(sShell.getDisplay(), systemFontData.getName(), systemFontData.getHeight(), SWT.BOLD);
         labelFilter.setFont(systemFont);
         labelFilter.setText("");
+    }
 
-        Label sortLabel = new Label(statusBar, SWT.NONE);
+    private void addStatusSortCell() {
+        Composite sortComposite = createNoMarginStatusBarCell(3, SWT.END);
+        Label sortLabel = new Label(sortComposite, SWT.NONE);
         sortLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         sortLabel.setText(bundle.getString("main.sortOn"));
         sortLabel.setAlignment(SWT.RIGHT);
-        Combo combo = new Combo(statusBar, SWT.READ_ONLY);
+        Combo combo = new Combo(sortComposite, SWT.READ_ONLY);
         combo.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
         combo.setItems(new String[]{
                 bundle.getString("main.medium"),
@@ -832,10 +839,20 @@ public class MainForm extends Observable {
         combo.select(0);
         combo.addSelectionListener(new SortingComboSelectionListener());
 
-        Button cbAscending = new Button(statusBar, SWT.CHECK);
+        Button cbAscending = new Button(sortComposite, SWT.CHECK);
         cbAscending.setText(bundle.getString("main.ascending"));
         cbAscending.setSelection(true);
         cbAscending.addSelectionListener(new SortingCheckBoxSelectionListener());
+    }
+
+    private Composite createNoMarginStatusBarCell(int numColumns, int horizontalAlignment) {
+        Composite pagingComposite = new Composite(statusBar, SWT.NONE);
+        GridLayout layout = new GridLayout(numColumns, false);
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+        pagingComposite.setLayout(layout);
+        pagingComposite.setLayoutData(new GridData(horizontalAlignment, SWT.CENTER, horizontalAlignment==SWT.END, false));
+        return pagingComposite;
     }
 
     private void createSettingsPopupMenu() {
