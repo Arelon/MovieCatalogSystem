@@ -367,25 +367,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
             public void handledRun() {
                 boolean success = true;
                 try {
-                    Integer failureCount = failureCountMap.get(film);
-                    if (failureCount != null && failureCount >= 3) {
-                        setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.gaveUp"));
-                        return;
-                    }
-                    setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processing"));
-                    Optional<Movie[]> moviesOptional = tmdbService.searchForMovies(film.getNazivfilma());
-                    if (movieMatchesMap == null)
-                        return;
-                    if (moviesOptional.isPresent())
-                        movieMatchesMap.put(film, moviesOptional.get());
-                    if (!moviesOptional.isPresent() || moviesOptional.get().length == 0) {
-                        deleteItem(item);
-                        return;
-                    }
-                    setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
-                            + " (" + (moviesOptional.get().length) + ")");
-                    if (logger.isDebugEnabled())
-                        logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (moviesOptional.get().length) + " items"); //NON-NLS
+                    doRun();
                 } catch (TmdbException e) {
                     logger.error("Application error while processing movie: " + film.getNazivfilma(), e); //NON-NLS
                     retryForMovie(item, film);
@@ -394,6 +376,28 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                     if (success)
                         processingCounterLatch.countDown();
                 }
+            }
+
+            private void doRun() throws TmdbException {
+                Integer failureCount = failureCountMap.get(film);
+                if (failureCount != null && failureCount >= 3) {
+                    setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.gaveUp"));
+                    return;
+                }
+                setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processing"));
+                Optional<Movie[]> moviesOptional = tmdbService.searchForMovies(film.getNazivfilma());
+                if (movieMatchesMap == null)
+                    return;
+                if (moviesOptional.isPresent())
+                    movieMatchesMap.put(film, moviesOptional.get());
+                if (!moviesOptional.isPresent() || moviesOptional.get().length == 0) {
+                    deleteItem(item);
+                    return;
+                }
+                setStatusOnUnmatchedMoviesTableItem(item, bundle.getString("unmatchedMoviesTable.status.processed")
+                        + " (" + (moviesOptional.get().length) + ")");
+                if (logger.isDebugEnabled())
+                    logger.debug("Movie match for movie " + film.getNazivfilma() + " returned " + (moviesOptional.get().length) + " items"); //NON-NLS
             }
 
             private void deleteItem(final TableItem item) {
