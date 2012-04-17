@@ -322,7 +322,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         unmatchedMoviesTable.addSelectionListener(unmatchedMovieSelectedHandler);
     }
 
-    private synchronized void startProcess() {
+    private void startProcess() {
         final long begin = System.currentTimeMillis();
         int maxCount = unmatchedMoviesTable.getItemCount();
         processingCounterLatch = new CountDownLatch(maxCount);
@@ -411,12 +411,14 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
                 });
             }
 
-            private synchronized void retryForMovie(TableItem item, Film film) {
-                if (failureCountMap == null)
-                    return;
-                Integer failureCount = failureCountMap.get(film);
-                failureCountMap.put(film, failureCount == null ? 1 : failureCount + 1);
-                addProcessingWorker(item, film);
+            private void retryForMovie(TableItem item, Film film) {
+                synchronized(UnmatchedMoviesDialogForm.this) {
+                    if (failureCountMap == null)
+                        return;
+                    Integer failureCount = failureCountMap.get(film);
+                    failureCountMap.put(film, failureCount == null ? 1 : failureCount + 1);
+                    addProcessingWorker(item, film);
+                }
             }
         }));
     }
@@ -435,7 +437,7 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     }
 
     @Override
-    protected synchronized boolean onShouldShellClose() {
+    protected boolean onShouldShellClose() {
         if (thereAreUnfinishedWorkers()) {
             MessageBox messageBox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.ICON_QUESTION | SWT.YES | SWT.NO);
             messageBox.setMessage(bundle.getString("unmatchedMoviesTable.processNotFinishedConfirm"));
@@ -458,17 +460,19 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     }
 
     private void clearProcessingData() {
-        if (listOfQueuedWorkers != null) {
-            listOfQueuedWorkers.clear();
-            listOfQueuedWorkers = null;
-        }
-        if (movieMatchesMap != null) {
-            movieMatchesMap.clear();
-            movieMatchesMap = null;
-        }
-        if (failureCountMap != null) {
-            failureCountMap.clear();
-            failureCountMap = null;
+        synchronized(this) {
+            if (listOfQueuedWorkers != null) {
+                listOfQueuedWorkers.clear();
+                listOfQueuedWorkers = null;
+            }
+            if (movieMatchesMap != null) {
+                movieMatchesMap.clear();
+                movieMatchesMap = null;
+            }
+            if (failureCountMap != null) {
+                failureCountMap.clear();
+                failureCountMap = null;
+            }
         }
     }
 

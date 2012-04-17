@@ -23,17 +23,11 @@ public final class StreamUtil {
 
     public static final String UTF8 = "UTF-8"; //NON-NLS
 
-    private static boolean triedToInitNativeMD5 = false;
+    static {
+         MD5.initNativeLibrary();
+    }
 
     public static String returnMD5ForFile(File input) {
-        synchronized(StreamUtil.class) {
-            if (!triedToInitNativeMD5) {
-                boolean success = MD5.initNativeLibrary();
-                if (log.isDebugEnabled())
-                    log.debug("Native MD5 implementation library initialization success: "+success); //NON-NLS
-                triedToInitNativeMD5 = true;
-            }
-        }
         try {
             String hash = MD5.asHex(MD5.getHash(input));
             if (log.isDebugEnabled())
