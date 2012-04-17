@@ -36,6 +36,17 @@ public class MainForm extends Observable {
 
     private static final Logger log = Logger.getLogger(MainForm.class);
 
+    // some designer constants
+
+    private static final int GUI_FORM_DEFAULT_X = 20;
+    private static final int GUI_FORM_DEFAULT_Y = 20;
+    private static final int GUI_FORM_DEFAULT_WIDTH = 900;
+
+    private static final int GUI_TICKER_SIZE = 24;
+    private static final int GUI_COMBO_WIDTH = 80;
+    private static final int GUI_LABELCURRENT_WIDTH = 90;
+    public static final int GUI_MOVIEDETAILS_HEIGHT = 150;
+
     @Inject
     private NewOrEditMovieDialogForm newOrEditMovieDialogForm;
 
@@ -81,8 +92,6 @@ public class MainForm extends Observable {
     @Inject
     private ImageRepository imageRepository;
 
-    private ResourceBundle bundle;
-
     private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com"; //NON-NLS
 
     private Shell shell;
@@ -96,11 +105,12 @@ public class MainForm extends Observable {
     private Menu settingsPopupMenu;
     private Composite statusBar;
 
-    private CurrentViewState currentViewState = new CurrentViewState();
-
     private CoolMovieComposite mainTable;
-
     private MovieDetailsPanel movieDetailsPanel;
+
+    private ResourceBundle bundle;
+
+    private CurrentViewState currentViewState = new CurrentViewState();
 
     // private classes
 
@@ -258,7 +268,8 @@ public class MainForm extends Observable {
             ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration = applicationManager.getApplicationConfiguration().getInterfaceConfiguration();
             net.milanaleksic.mcs.infrastructure.config.Rectangle lastApplicationLocation = interfaceConfiguration.getLastApplicationLocation();
             if (lastApplicationLocation == null)
-                shell.setBounds(20, 20, 800, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
+                shell.setBounds(GUI_FORM_DEFAULT_X, GUI_FORM_DEFAULT_Y,
+                        GUI_FORM_DEFAULT_WIDTH, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
             else
                 shell.setBounds(lastApplicationLocation.toSWTRectangle());
             shell.setMaximized(interfaceConfiguration.isMaximized());
@@ -547,7 +558,6 @@ public class MainForm extends Observable {
     private void createShell() {
         shell = new Shell();
         shell.setText(titleConst);
-        shell.setMaximized(false);
         shell.setLayout(new GridLayout(1, false));
 
         createHeader();
@@ -561,6 +571,8 @@ public class MainForm extends Observable {
     private void createHeader() {
         Composite header = new Composite(shell, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
         header.setLayout(layout);
         header.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         createToolBar(header);
@@ -569,8 +581,8 @@ public class MainForm extends Observable {
 
     private void createToolTicker(Composite header) {
         GridData tickerGridData = new GridData(GridData.CENTER, GridData.CENTER, false, false);
-        tickerGridData.widthHint = 24;
-        tickerGridData.heightHint = 24;
+        tickerGridData.widthHint = GUI_TICKER_SIZE;
+        tickerGridData.heightHint = GUI_TICKER_SIZE;
         toolTicker = new Canvas(header, SWT.NONE);
         toolTicker.setLayoutData(tickerGridData);
         SWTUtil.addImagePaintListener(toolTicker, "/net/milanaleksic/mcs/application/res/db_find.png"); //NON-NLS
@@ -578,7 +590,6 @@ public class MainForm extends Observable {
 
     private void createToolBar(Composite header) {
         final ToolBar toolBar = new ToolBar(header, SWT.FLAT | SWT.WRAP);
-        toolBar.setBounds(new Rectangle(11, 50, 4, 50));
         toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
         ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
         toolNew.setText(bundle.getString("global.newMovie"));
@@ -611,20 +622,30 @@ public class MainForm extends Observable {
     }
 
     private void createCenterComposite() {
-        Composite centerComposite = new Composite(shell, SWT.NONE);
+        final Composite centerComposite = new Composite(shell, SWT.NONE);
+        centerComposite.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         GridLayout layout = new GridLayout(1, false);
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         centerComposite.setLayout(layout);
         centerComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
-        ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL | SWT.NO);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL);
         mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
+        mainTable.addKeyListener(new MainTableKeyAdapter());
         mainTable.addMovieSelectionListener(new MovieSelectionListener() {
 
             @Override
             public void movieSelected(MovieSelectionEvent e) {
-                movieDetailsPanel.showDataForMovie(e.film);
+                if (e.film.isPresent())
+                    movieDetailsPanel.showDataForMovie(e.film);
+                GridData layoutData = (GridData)movieDetailsPanel.getLayoutData();
+                int currentHeight = layoutData.heightHint;
+                int newHeight = e.film.isPresent() ? GUI_MOVIEDETAILS_HEIGHT : 0;
+                if (currentHeight != newHeight) {
+                    layoutData.heightHint = newHeight;
+                    centerComposite.layout();
+                }
             }
 
             @Override
@@ -639,23 +660,21 @@ public class MainForm extends Observable {
             }
 
         });
-        mainTable.addKeyListener(new MainTableKeyAdapter());
         scrolledComposite.setContent(mainTable);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
         scrolledComposite.getVerticalBar().setIncrement(10);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        scrolledComposite.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
         movieDetailsPanel = new MovieDetailsPanel(centerComposite, SWT.NONE, bundle, thumbnailManager);
         GridData layoutData = new GridData(SWT.FILL, SWT.END, true, false);
-        layoutData.heightHint = 150;
+        layoutData.heightHint = 0;
         movieDetailsPanel.setLayoutData(layoutData);
     }
 
     private void createComboZanr(Composite panCombos) {
         GridData gridData5 = new GridData();
-        gridData5.widthHint = 80;
+        gridData5.widthHint = GUI_COMBO_WIDTH;
         comboZanr = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
         comboZanr.setLayoutData(gridData5);
         comboZanr.setVisibleItemCount(16);
@@ -665,7 +684,7 @@ public class MainForm extends Observable {
 
     private void createComboTipMedija(Composite panCombos) {
         GridData gridData1 = new GridData();
-        gridData1.widthHint = 80;
+        gridData1.widthHint = GUI_COMBO_WIDTH;
         comboTipMedija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
         comboTipMedija.setLayoutData(gridData1);
         comboTipMedija.setVisibleItemCount(8);
@@ -675,7 +694,7 @@ public class MainForm extends Observable {
 
     private void createComboPozicija(Composite panCombos) {
         GridData gridData3 = new GridData();
-        gridData3.widthHint = 80;
+        gridData3.widthHint = GUI_COMBO_WIDTH;
         comboPozicija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
         comboPozicija.setLayoutData(gridData3);
         comboPozicija.setVisibleItemCount(8);
@@ -778,7 +797,7 @@ public class MainForm extends Observable {
 
         labelCurrent = new Label(pagingComposite, SWT.NONE);
         GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, false, false);
-        layoutData.widthHint = 90;
+        layoutData.widthHint = GUI_LABELCURRENT_WIDTH;
         labelCurrent.setLayoutData(layoutData);
         labelCurrent.setAlignment(SWT.CENTER);
         labelCurrent.setText("0");
