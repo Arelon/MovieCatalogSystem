@@ -4,35 +4,21 @@ import com.google.common.base.*;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
-import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionEvent;
-import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
+import net.milanaleksic.mcs.application.gui.helper.event.*;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
-import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
-import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -99,7 +85,7 @@ public class MainForm extends Observable {
 
     private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com"; //NON-NLS
 
-    private Shell sShell;
+    private Shell shell;
     private Combo comboZanr;
     private Combo comboTipMedija;
     private Combo comboPozicija;
@@ -192,7 +178,7 @@ public class MainForm extends Observable {
                         return;
                     case SWT.ESC:
                         if (allFiltersAreCleared())
-                            sShell.close();
+                            shell.close();
                         else
                             clearAllFilters();
                         return;
@@ -208,7 +194,7 @@ public class MainForm extends Observable {
                 currentViewState.setFilterText(filterText + e.character);
                 doFillMainTable();
             } finally {
-                if (!sShell.isDisposed()) {
+                if (!shell.isDisposed()) {
                     setChanged();
                     MainForm.super.notifyObservers();
                 }
@@ -260,8 +246,8 @@ public class MainForm extends Observable {
         @Override
         public void shellClosed(ShellEvent e) {
             ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration = applicationManager.getApplicationConfiguration().getInterfaceConfiguration();
-            interfaceConfiguration.setLastApplicationLocation(new net.milanaleksic.mcs.infrastructure.config.Rectangle(sShell.getBounds()));
-            interfaceConfiguration.setMaximized(sShell.getMaximized());
+            interfaceConfiguration.setLastApplicationLocation(new net.milanaleksic.mcs.infrastructure.config.Rectangle(shell.getBounds()));
+            interfaceConfiguration.setMaximized(shell.getMaximized());
         }
 
         @Override
@@ -272,10 +258,10 @@ public class MainForm extends Observable {
             ApplicationConfiguration.InterfaceConfiguration interfaceConfiguration = applicationManager.getApplicationConfiguration().getInterfaceConfiguration();
             net.milanaleksic.mcs.infrastructure.config.Rectangle lastApplicationLocation = interfaceConfiguration.getLastApplicationLocation();
             if (lastApplicationLocation == null)
-                sShell.setBounds(20, 20, 800, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
+                shell.setBounds(20, 20, 800, Display.getCurrent().getPrimaryMonitor().getBounds().height - 80);
             else
-                sShell.setBounds(lastApplicationLocation.toSWTRectangle());
-            sShell.setMaximized(interfaceConfiguration.isMaximized());
+                shell.setBounds(lastApplicationLocation.toSWTRectangle());
+            shell.setMaximized(interfaceConfiguration.isMaximized());
             if (programArgsService.getProgramArgs().isNoInitialMovieListLoading())
                 return;
             doFillMainTable();
@@ -338,7 +324,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            FileDialog dlg = new FileDialog(sShell, SWT.SAVE);
+            FileDialog dlg = new FileDialog(shell, SWT.SAVE);
             dlg.setFilterNames(new String[]{bundle.getString("main.export.html")});
             dlg.setFilterExtensions(new String[]{"*.htm"}); //NON-NLS
             final String targetFileForExport = dlg.open();
@@ -409,7 +395,7 @@ public class MainForm extends Observable {
             Optional<Film> selectedMovie = mainTable.getSelectedItem();
             if (!selectedMovie.isPresent())
                 return;
-            deleteMovieDialogForm.open(sShell, selectedMovie.get(),
+            deleteMovieDialogForm.open(shell, selectedMovie.get(),
                     new Runnable() {
 
                         @Override
@@ -435,7 +421,7 @@ public class MainForm extends Observable {
                 settingsPopupMenu.setLocation(pt.x, pt.y);
                 settingsPopupMenu.setVisible(true);
             } else {
-                settingsDialogForm.open(sShell, new Runnable() {
+                settingsDialogForm.open(shell, new Runnable() {
                     @Override
                     public void run() {
                         resetPozicije();
@@ -453,7 +439,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            sShell.close();
+            shell.close();
         }
 
     }
@@ -462,7 +448,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            aboutDialogForm.open(sShell);
+            aboutDialogForm.open(shell);
         }
 
     }
@@ -471,7 +457,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            newOrEditMovieDialogForm.open(sShell, Optional.<Film>absent(), new Runnable() {
+            newOrEditMovieDialogForm.open(shell, Optional.<Film>absent(), new Runnable() {
                 @Override
                 public void run() {
                     doFillMainTable();
@@ -485,7 +471,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent selectionEvent) {
-            unusedMediumsDialogForm.open(sShell, new Runnable() {
+            unusedMediumsDialogForm.open(shell, new Runnable() {
 
                 @Override
                 public void run() {
@@ -500,7 +486,7 @@ public class MainForm extends Observable {
 
         @Override
         public void widgetSelected(SelectionEvent selectionEvent) {
-            unmatchedMoviesDialogForm.open(sShell, new Runnable() {
+            unmatchedMoviesDialogForm.open(shell, new Runnable() {
 
                 @Override
                 public void run() {
@@ -542,38 +528,38 @@ public class MainForm extends Observable {
     public void open() {
         bundle = applicationManager.getMessagesBundle();
         checkCreated();
-        sShell.open();
+        shell.open();
         mainTable.setFocus();
     }
 
     private void checkCreated() {
-        if (sShell != null)
+        if (shell != null)
             return;
-        createSShell();
-        sShell.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/database-64.png")); //NON-NLS
+        createShell();
+        shell.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/database-64.png")); //NON-NLS
     }
 
     @SuppressWarnings({"BooleanMethodIsAlwaysInverted"})
     public boolean isDisposed() {
-        return sShell.isDisposed();
+        return shell.isDisposed();
     }
 
-    private void createSShell() {
-        sShell = new Shell();
-        sShell.setText(titleConst);
-        sShell.setMaximized(false);
-        sShell.setLayout(new GridLayout(1, false));
+    private void createShell() {
+        shell = new Shell();
+        shell.setText(titleConst);
+        shell.setMaximized(false);
+        shell.setLayout(new GridLayout(1, false));
 
         createHeader();
         createCenterComposite();
         createStatusBar();
 
         createSettingsPopupMenu();
-        sShell.addShellListener(new MainFormShellListener());
+        shell.addShellListener(new MainFormShellListener());
     }
 
     private void createHeader() {
-        Composite header = new Composite(sShell, SWT.NONE);
+        Composite header = new Composite(shell, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         header.setLayout(layout);
         header.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -625,7 +611,7 @@ public class MainForm extends Observable {
     }
 
     private void createCenterComposite() {
-        Composite centerComposite = new Composite(sShell, SWT.NONE);
+        Composite centerComposite = new Composite(shell, SWT.NONE);
         GridLayout layout = new GridLayout(1, false);
         layout.marginWidth = 0;
         layout.marginHeight = 0;
@@ -643,7 +629,7 @@ public class MainForm extends Observable {
 
             @Override
             public void movieDetailsSelected(MovieSelectionEvent e) {
-                newOrEditMovieDialogForm.open(sShell, Optional.of(filmRepository.getCompleteFilm(e.film.get())),
+                newOrEditMovieDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(e.film.get())),
                         new Runnable() {
                             @Override
                             public void run() {
@@ -659,7 +645,7 @@ public class MainForm extends Observable {
         scrolledComposite.setExpandVertical(true);
         scrolledComposite.getVerticalBar().setIncrement(10);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        scrolledComposite.setBackground(sShell.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+        scrolledComposite.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 
         movieDetailsPanel = new MovieDetailsPanel(centerComposite, SWT.NONE, bundle, thumbnailManager);
         GridData layoutData = new GridData(SWT.FILL, SWT.END, true, false);
@@ -775,7 +761,7 @@ public class MainForm extends Observable {
     }
 
     private void createStatusBar() {
-        statusBar = new Composite(sShell, SWT.BORDER);
+        statusBar = new Composite(shell, SWT.BORDER);
         statusBar.setLayoutData(new GridData(GridData.FILL, GridData.END, true, false));
         statusBar.setLayout(new GridLayout(4, false));
         addStatusPagingCell();
@@ -816,7 +802,7 @@ public class MainForm extends Observable {
         labelFilterDesc.setVisible(false);
         labelFilter = new Label(filterComposite, SWT.NONE);
         FontData systemFontData = SWTUtil.getSystemFontData();
-        Font systemFont = new Font(sShell.getDisplay(), systemFontData.getName(), systemFontData.getHeight(), SWT.BOLD);
+        Font systemFont = new Font(shell.getDisplay(), systemFontData.getName(), systemFontData.getHeight(), SWT.BOLD);
         labelFilter.setFont(systemFont);
         labelFilter.setText("");
     }
@@ -854,12 +840,12 @@ public class MainForm extends Observable {
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         pagingComposite.setLayout(layout);
-        pagingComposite.setLayoutData(new GridData(horizontalAlignment, SWT.CENTER, horizontalAlignment==SWT.END, false));
+        pagingComposite.setLayoutData(new GridData(horizontalAlignment, SWT.CENTER, horizontalAlignment == SWT.END, false));
         return pagingComposite;
     }
 
     private void createSettingsPopupMenu() {
-        settingsPopupMenu = new Menu(sShell, SWT.POP_UP);
+        settingsPopupMenu = new Menu(shell, SWT.POP_UP);
         MenuItem settingsMenuItem = new MenuItem(settingsPopupMenu, SWT.PUSH);
         settingsMenuItem.setText(bundle.getString("main.settings"));
         settingsMenuItem.addSelectionListener(new ToolSettingsSelectionAdapter());
