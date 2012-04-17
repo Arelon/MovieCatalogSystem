@@ -108,8 +108,8 @@ public abstract class AbstractDialogForm {
         if (this.parent.isPresent()) {
             Shell parentShell = this.parent.get();
             shell.setLocation(new Point(
-                    parentShell.getLocation().x + Math.abs(parentShell.getSize().x - shell.getSize().x) / 2,
-                    parentShell.getLocation().y + Math.abs(parentShell.getSize().y - shell.getSize().y) / 2)
+                    parentShell.getLocation().x + (parentShell.getSize().x - shell.getSize().x) / 2,
+                    parentShell.getLocation().y + (parentShell.getSize().y - shell.getSize().y) / 2)
             );
         }
         shell.open();
