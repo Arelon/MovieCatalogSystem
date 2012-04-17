@@ -291,7 +291,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listMediumTypes, SWT.NONE);
-                String newMediumTypeName = getNewEntityTemplateName(listMediumTypes.getItems(), bundle.getString("settings.newMediumType"));
+                String newMediumTypeName = getNewEntityText(listMediumTypes.getItems(), bundle.getString("settings.newMediumType"));
                 tableItem.setText(newMediumTypeName);
                 tipMedijaRepository.addTipMedija(newMediumTypeName);
                 runnerWhenClosingShouldRun = true;
@@ -347,7 +347,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
-                String newLocation = getNewEntityTemplateName(listLokacije.getItems(), bundle.getString("settings.newLocation"));
+                String newLocation = getNewEntityText(listLokacije.getItems(), bundle.getString("settings.newLocation"));
                 tableItem.setText(newLocation);
                 pozicijaRepository.addPozicija(new Pozicija(newLocation, false));
                 runnerWhenClosingShouldRun = true;
@@ -400,7 +400,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listZanrovi, SWT.NONE);
-                String newGenre = getNewEntityTemplateName(listZanrovi.getItems(), bundle.getString("settings.newGenre"));
+                String newGenre = getNewEntityText(listZanrovi.getItems(), bundle.getString("settings.newGenre"));
                 tableItem.setText(newGenre);
                 zanrRepository.addZanr(newGenre);
                 runnerWhenClosingShouldRun = true;
@@ -423,7 +423,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         return compositeGenres;
     }
 
-    private String getNewEntityTemplateName(TableItem[] items, String nameTemplate) {
+    private String getNewEntityText(TableItem[] items, String nameTemplate) {
         int iter = 0;
         boolean found;
         String title;
