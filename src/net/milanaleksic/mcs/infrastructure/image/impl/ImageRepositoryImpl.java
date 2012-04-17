@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.beans.BeansException;
 import org.springframework.context.*;
+import org.springframework.jmx.export.annotation.*;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -21,6 +22,11 @@ import java.util.concurrent.locks.*;
  * Date: 3/25/12
  * Time: 10:03 AM
  */
+@ManagedResource(
+        objectName = "net.milanaleksic.mcs:name=imageRepository",
+        description = "Application image repository",
+        currencyTimeLimit = -1
+)
 public class ImageRepositoryImpl implements ImageRepository, ApplicationContextAware {
 
     private static final Logger logger = Logger.getLogger(ImageRepositoryImpl.class);
@@ -101,6 +107,7 @@ public class ImageRepositoryImpl implements ImageRepository, ApplicationContextA
     }
 
     @Override
+    @ManagedOperation(description = "Explicitly cache an image using absolute path")
     public boolean cacheExternalImageFile(String absolutePath) {
         long begin = images.stats().evictionCount();
         images.put(absolutePath, new ImageLoader().load(absolutePath)[0]);
@@ -130,4 +137,25 @@ public class ImageRepositoryImpl implements ImageRepository, ApplicationContextA
     public void setMaximumSize(long maximumSize) {
         this.maximumSize = maximumSize;
     }
+
+    @ManagedAttribute(description = "Initial cache capacity")
+    public int getInitialCapacity() {
+        return initialCapacity;
+    }
+
+    @ManagedAttribute(description = "Maximum cache size")
+    public long getMaximumSize() {
+        return maximumSize;
+    }
+
+    @ManagedAttribute(description = "Approximate cache size")
+    public long getCurrentSize() {
+        return images.size();
+    }
+
+    @ManagedAttribute(description = "Cache hit rate")
+    public double getHitRate() {
+        return images.stats().hitRate();
+    }
+
 }

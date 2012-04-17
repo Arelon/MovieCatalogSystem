@@ -100,6 +100,9 @@
         <dependency org="org.springframework" name="spring-jdbc" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-jdbc" type="jar"/>
         </dependency>
+        <dependency org="org.springframework" name="spring-instrument" rev="3.1.0.RELEASE" transitive="false">
+            <artifact name="spring-instrument" type="jar"/>
+        </dependency>
         <dependency org="org.springframework" name="spring-orm" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-orm" type="jar"/>
         </dependency>

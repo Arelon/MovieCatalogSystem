@@ -4,7 +4,6 @@ import com.google.common.base.*;
 import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.application.gui.helper.event.*;
 import net.milanaleksic.mcs.domain.model.Film;
-import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.thumbnail.impl.ImageTargetWidget;
 import org.eclipse.swt.SWT;
@@ -32,8 +31,6 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private List<MovieWrapper> movies = Lists.newLinkedList();
 
     private final ThumbnailManager thumbnailManager;
-
-    private final ImageRepository imageRepository;
 
     private final int thumbnailHeight;
     private final int thumbnailWidth;
@@ -95,10 +92,9 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
     }
 
-    public CoolMovieComposite(Composite parent, int style, ThumbnailManager thumbnailManager, ImageRepository imageRepository) {
+    public CoolMovieComposite(Composite parent, int style, ThumbnailManager thumbnailManager) {
         super(parent, style | SWT.NO_BACKGROUND);
         this.thumbnailManager = thumbnailManager;
-        this.imageRepository = imageRepository;
         thumbnailWidth = thumbnailManager.getThumbnailWidth();
         thumbnailHeight = thumbnailManager.getThumbnailHeight();
         setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));

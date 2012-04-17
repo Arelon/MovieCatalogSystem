@@ -642,7 +642,7 @@ public class MainForm extends Observable {
         centerComposite.setLayout(new GridLayout(1, false));
 
         ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL | SWT.NO);
-        mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager, imageRepository);
+        mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
         mainTable.addMovieSelectionListener(new MovieSelectionListener() {
 
             @Override
