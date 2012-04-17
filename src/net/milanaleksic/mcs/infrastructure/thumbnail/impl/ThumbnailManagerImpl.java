@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.net.URI;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener {
 
