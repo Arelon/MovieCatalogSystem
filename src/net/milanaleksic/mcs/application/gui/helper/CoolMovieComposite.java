@@ -345,16 +345,16 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     private void setScrolledCompositeMinHeight() {
-        if (getParent() instanceof ScrolledComposite) {
-            if (movies.size() == 0)
-                return;
-            MovieWrapper movieWrapper = movies.get(movies.size() - 1);
-            int y = movieWrapper.y + getVerticalCellDistance();
-            ScrolledComposite scrolledParent = (ScrolledComposite) getParent();
-            if (getCellsPerRow() % movies.size() == 0)
-                y += getVerticalCellDistance();
-            scrolledParent.setMinHeight(y);
-        }
+        if (!(getParent() instanceof ScrolledComposite))
+            return;
+        if (movies.size() == 0)
+            return;
+        MovieWrapper movieWrapper = movies.get(movies.size() - 1);
+        int y = movieWrapper.y + getVerticalCellDistance();
+        ScrolledComposite scrolledParent = (ScrolledComposite) getParent();
+        if (getCellsPerRow() % movies.size() == 0)
+            y += getVerticalCellDistance();
+        scrolledParent.setMinHeight(y);
     }
 
     private void subPaintSelectionRectangle(GC gc, MovieWrapper movieWrapper) {
