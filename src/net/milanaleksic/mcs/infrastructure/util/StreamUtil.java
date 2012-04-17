@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
 import com.google.common.base.*;
+import com.google.common.io.ByteStreams;
 import com.twmacinta.util.MD5;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import org.apache.http.client.methods.HttpGet;
@@ -43,20 +44,12 @@ public final class StreamUtil {
             fis = Optional.of(new FileInputStream(fileName));
             ZipEntry zipEntry = new ZipEntry(entryName);
             zos.putNextEntry(zipEntry);
-            copyStream(fis.get(), zos);
+            ByteStreams.copy(fis.get(), zos);
         } finally {
             if (fis.isPresent()) try {
                 fis.get().close();
             } catch (Throwable ignored) {
             }
-        }
-    }
-
-    public static void copyStream(InputStream input, OutputStream output) throws IOException {
-        byte[] buffer = new byte[32 * 1024];
-        int bytesRead;
-        while ((bytesRead = input.read(buffer, 0, buffer.length)) > 0) {
-            output.write(buffer, 0, bytesRead);
         }
     }
 
