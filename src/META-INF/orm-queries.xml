@@ -137,6 +137,22 @@
         <hint name="org.hibernate.cacheable" value="false" />
     </named-query>
 
+    <!-- TAG -->
 
+    <named-query name="getTagsOrdered">
+        <query><![CDATA[
+            from Tag t
+            order by LOWER(t.naziv) ASC
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
+    <named-query name="getTagByName">
+        <query><![CDATA[
+            from Tag t
+            where t.naziv = :tagName
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
 
 </entity-mappings>

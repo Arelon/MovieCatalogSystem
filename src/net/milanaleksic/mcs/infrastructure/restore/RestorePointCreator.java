@@ -31,6 +31,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             new TableRestoreSource("DB2ADMIN.MEDIJ"),
             new TableRestoreSource("DB2ADMIN.FILM"),
             new TableRestoreSource("DB2ADMIN.ZAUZIMA"),
+            new TableRestoreSource("DB2ADMIN.TAG"),
+            new TableRestoreSource("DB2ADMIN.HASTAG"),
             new ExactSqlRestoreSource("SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'")
     );
 

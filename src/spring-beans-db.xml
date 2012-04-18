@@ -54,10 +54,11 @@
     <bean id="abstractRestorePointService" abstract="true"
           class="net.milanaleksic.mcs.infrastructure.restore.AbstractRestorePointService">
         <property name="useDB2StyleStringInScripts" value="${mcs.connection.isdb2}" />
+        <property name="dbVersion" value="${mcs.db.version}" />
     </bean>
 
     <bean id="restorePointCreator" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator"
-          parent="abstractRestorePointService"/>
+          parent="abstractRestorePointService" />
 
     <bean id="restorePointRestorer" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer"
           parent="abstractRestorePointService">
@@ -66,6 +67,6 @@
         <property name="versionScript" value="SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'" />
     </bean>
 
-    <bean id="restoreManager" class="net.milanaleksic.mcs.application.restore.RestoreManager"/>
+    <bean id="restoreManager" class="net.milanaleksic.mcs.application.restore.RestoreManager" />
 
 </beans>

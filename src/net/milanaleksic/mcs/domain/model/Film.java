@@ -49,6 +49,18 @@ public class Film implements Serializable, Comparable<Film> {
     @org.hibernate.annotations.BatchSize(size=15)
 	private Set<Medij> medijs = null;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+        name = "HASTAG",
+        schema = "DB2ADMIN",
+        joinColumns = { @JoinColumn(name = "IDFILM") },
+        inverseJoinColumns = { @JoinColumn(name = "IDTAG") }
+    )
+    @org.hibernate.annotations.Cache(region="mcs",
+        usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
+    @org.hibernate.annotations.BatchSize(size=3)
+	private Set<Tag> tags = null;
+
     @Column(name="MEDIJ_LIST")
     private String medijListAsString;
 
@@ -124,11 +136,11 @@ public class Film implements Serializable, Comparable<Film> {
         }
         this.medijs = medijs;
     }
-	
+
 	public String toString() {
 		return getNazivfilma();
 	}
-	
+
 	public void addMedij(Medij m) {
         if (medijs == null)
             medijs = Sets.newHashSet();
@@ -140,6 +152,21 @@ public class Film implements Serializable, Comparable<Film> {
     public void removeMedij(Medij medij) {
 		medijs.remove(medij);
         refreshDeNormalizedAttributes();
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+	public void addTag(Tag tag) {
+        if (tags == null)
+            tags = Sets.newHashSet();
+		tags.add(tag);
+		tag.getFilms().add(this);
+	}
+
+    public void removeTag(Tag tag) {
+		tags.remove(tag);
     }
 
     private void refreshDeNormalizedAttributes() {
@@ -164,7 +191,7 @@ public class Film implements Serializable, Comparable<Film> {
 			if (!medij.getPozicija().isDefault())
 				brojNeprisutnih++;
 		}
-		
+
 		if (brojNeprisutnih!=0) {
             StringBuilder builder = new StringBuilder();
 			for (Medij medij : getMedijs()) {

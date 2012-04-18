@@ -30,11 +30,15 @@ public class SettingsDialogForm extends AbstractDialogForm {
     @Inject
     private TipMedijaRepository tipMedijaRepository;
 
+    @Inject
+    private TagRepository tagRepository;
+
     private SelectionAdapter pozicijaDefaultButtonSelected;
 
     private Table listMediumTypes;
     private Table listLokacije;
     private Table listZanrovi;
+    private Table listTagovi;
     private Text textElementsPerPage;
     private Combo comboLanguage;
 
@@ -91,6 +95,14 @@ public class SettingsDialogForm extends AbstractDialogForm {
             tableItem.setText(zanr.getZanr());
             tableItem.setData(zanr);
         }
+
+        java.util.List<Tag> tags = tagRepository.getTags();
+        listTagovi.removeAll();
+        for (Tag tag : tags) {
+            TableItem tableItem = new TableItem(listTagovi, SWT.NONE);
+            tableItem.setText(tag.getNaziv());
+            tableItem.setData(tag);
+        }
     }
 
     @Override protected void onShellCreated() {
@@ -138,6 +150,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
         TabItem tabItem3 = new TabItem(tabFolder, SWT.NONE);
         tabItem3.setText(bundle.getString("settings.genres"));
         tabItem3.setControl(createGenresTabContents(tabFolder));
+        TabItem tabItem4 = new TabItem(tabFolder, SWT.NONE);
+        tabItem4.setText(bundle.getString("settings.tags"));
+        tabItem4.setControl(createTagsTabContents(tabFolder));
     }
 
     private Composite createSettingsTabContents(TabFolder tabFolder) {
@@ -421,6 +436,59 @@ public class SettingsDialogForm extends AbstractDialogForm {
             }
         });
         return compositeGenres;
+    }
+
+    private Composite createTagsTabContents(TabFolder tabFolder) {
+        Composite compositeTags = new Composite(tabFolder, SWT.NONE);
+        compositeTags.setLayout(new GridLayout(2, false));
+        listTagovi = new Table(compositeTags, SWT.BORDER | SWT.FULL_SELECTION);
+        listTagovi.setHeaderVisible(true);
+        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
+        listGridData.heightHint = 180;
+        listTagovi.setLayoutData(listGridData);
+        TableColumn tableColumn = new TableColumn(listTagovi, SWT.LEFT | SWT.FLAT);
+        tableColumn.setText(bundle.getString("settings.tagName"));
+        tableColumn.setWidth(370);
+
+        listTagovi.addSelectionListener(new EditableSingleColumnTableSelectionListener(
+                listTagovi, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
+            @Override
+            public void contentEditingFinished(String finalContent, Object data) {
+                runnerWhenClosingShouldRun = true;
+                Tag tag = (Tag) data;
+                tag.setNaziv(finalContent);
+                tagRepository.updateTag(tag);
+            }
+        }));
+
+        Button btnAddTag = new Button(compositeTags, SWT.NONE);
+        btnAddTag.setText(bundle.getString("settings.add"));
+        btnAddTag.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
+        btnAddTag.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                TableItem tableItem = new TableItem(listTagovi, SWT.NONE);
+                String newTag = getNewEntityText(listTagovi.getItems(), bundle.getString("settings.newTag"));
+                tableItem.setText(newTag);
+                tagRepository.addTag(newTag);
+                runnerWhenClosingShouldRun = true;
+                reReadData();
+            }
+        });
+        Button btnDeleteTag = new Button(compositeTags, SWT.NONE);
+        btnDeleteTag.setText(bundle.getString("global.delete"));
+        btnDeleteTag.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        btnDeleteTag.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                if (listTagovi.getSelectionIndex() < 0)
+                    return;
+                tagRepository.deleteTagByName(listTagovi.getItem(listTagovi.getSelectionIndex()).getText());
+                runnerWhenClosingShouldRun = true;
+                reReadData();
+            }
+        });
+        return compositeTags;
     }
 
     private String getNewEntityText(TableItem[] items, String nameTemplate) {

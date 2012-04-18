@@ -46,8 +46,6 @@ public class ApplicationConfiguration {
 
     public static class DatabaseConfiguration {
 
-        private static final int dbVersion = 6;
-
         private boolean databaseCreateRestore = true;
 
         public boolean isDatabaseCreateRestore() {
@@ -64,10 +62,6 @@ public class ApplicationConfiguration {
             return "DatabaseConfiguration{" +
                     "databaseCreateRestore=" + databaseCreateRestore +
                     '}';
-        }
-
-        public int getDbVersion() {
-            return dbVersion;
         }
     }
 

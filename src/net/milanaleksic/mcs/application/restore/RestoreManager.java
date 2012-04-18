@@ -32,8 +32,6 @@ public class RestoreManager implements LifecycleListener {
         this.configuration = configuration;
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
-        restorePointCreator.setDbVersion(configuration.getDatabaseConfiguration().getDbVersion());
-        restorePointRestorer.setDbVersion(configuration.getDatabaseConfiguration().getDbVersion());
         restorePointRestorer.restoreDatabaseIfNeeded();
     }
 
