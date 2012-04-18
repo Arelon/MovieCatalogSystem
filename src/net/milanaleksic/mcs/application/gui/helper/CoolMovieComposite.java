@@ -211,7 +211,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public Optional<Film> getSelectedItem() {
-        if (movies.size() < selectedIndex || selectedIndex == -1)
+        if (selectedIndex < 0 || selectedIndex>= movies.size())
             return Optional.absent();
         return Optional.of(movies.get(selectedIndex).getFilm());
     }
@@ -231,15 +231,15 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         if (isDisposed())
             return;
         clearMovies();
-        if (!sviFilmovi.isPresent())
-            return;
-        List<MovieWrapper> wrappers = Lists.newLinkedList();
-        for (Film film : sviFilmovi.get()) {
-            MovieWrapper movieWrapper = new MovieWrapper(film);
-            wrappers.add(movieWrapper);
+        if (sviFilmovi.isPresent()) {
+            List<MovieWrapper> wrappers = Lists.newLinkedList();
+            for (Film film : sviFilmovi.get()) {
+                MovieWrapper movieWrapper = new MovieWrapper(film);
+                wrappers.add(movieWrapper);
+            }
+            movies = wrappers;
+            recalculateOfCellLocationsNeeded = true; // we can't do it now since SWT maybe can't give us dimensions
         }
-        recalculateOfCellLocationsNeeded = true; // we can't do it now since SWT maybe can't give us dimensions
-        movies = wrappers;
         redraw();
         fireMovieSelectionEvent();
     }
@@ -347,11 +347,13 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private void setScrolledCompositeMinHeight() {
         if (!(getParent() instanceof ScrolledComposite))
             return;
-        if (movies.size() == 0)
+        ScrolledComposite scrolledParent = (ScrolledComposite) getParent();
+        if (movies.size() == 0) {
+            scrolledParent.setMinHeight(0);
             return;
+        }
         MovieWrapper movieWrapper = movies.get(movies.size() - 1);
         int y = movieWrapper.y + getVerticalCellDistance();
-        ScrolledComposite scrolledParent = (ScrolledComposite) getParent();
         if (getCellsPerRow() % movies.size() == 0)
             y += getVerticalCellDistance();
         scrolledParent.setMinHeight(y);
