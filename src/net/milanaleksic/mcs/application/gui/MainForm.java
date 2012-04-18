@@ -65,6 +65,9 @@ public class MainForm extends Observable {
     private ZanrRepository zanrRepository;
 
     @Inject
+    private TagRepository tagRepository;
+
+    @Inject
     private TipMedijaRepository tipMedijaRepository;
 
     @Inject
@@ -442,6 +445,7 @@ public class MainForm extends Observable {
                         resetPozicije();
                         resetZanrovi();
                         resetMedija();
+                        resetTagova();
                         doFillMainTable();
                     }
                 });
@@ -723,7 +727,7 @@ public class MainForm extends Observable {
         comboTag.setLayoutData(gridData);
         comboTag.setVisibleItemCount(8);
         comboTag.addSelectionListener(new ComboRefreshAdapter());
-        resetZanrovi();
+        resetTagova();
     }
 
     private void createComboTipMedija(Composite panCombos) {
@@ -817,6 +821,31 @@ public class MainForm extends Observable {
                             comboTipMedija.add(tip.toString());
                         }
                         comboTipMedija.select(0);
+                        return null;
+                    }
+                }
+        );
+    }
+
+    private void resetTagova() {
+        comboTag.setItems(new String[]{});
+        comboTag.add(bundle.getString("main.anyTags"));
+        comboTag.add("-----------");
+        workerManager.submitLongTaskWithResultProcessingInSWTThread(new Callable<List<Tag>>() {
+                    @Override
+                    public List<Tag> call() throws Exception {
+                        return tagRepository.getTags();
+                    }
+                },
+                new Function<List<Tag>, Void>() {
+                    @Override
+                    public Void apply(List<Tag> tags) {
+                        checkNotNull(tags);
+                        for (Tag tag : tags) {
+                            comboTag.setData(Integer.toString(comboTag.getItemCount()), tag);
+                            comboTag.add(tag.toString());
+                        }
+                        comboTag.select(0);
                         return null;
                     }
                 }
@@ -966,7 +995,8 @@ public class MainForm extends Observable {
                                 Optional.fromNullable(zanrFilter),
                                 Optional.fromNullable(tipMedijaFilter),
                                 Optional.fromNullable(pozicijaFilter),
-                                Optional.fromNullable(tagFilter), Optional.fromNullable(filterText),
+                                Optional.fromNullable(tagFilter),
+                                Optional.fromNullable(filterText),
                                 currentViewState.getSingularAttribute(),
                                 currentViewState.isAscending());
                         currentViewState.setShowableCount(filmsWithCount.count);

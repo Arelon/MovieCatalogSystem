@@ -71,4 +71,10 @@ public class Tag {
     public int hashCode() {
         return naziv != null ? naziv.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return naziv;
+    }
+
 }
