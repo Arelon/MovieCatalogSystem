@@ -28,10 +28,7 @@ public final class StreamUtil {
 
     public static String returnMD5ForFile(File input) {
         try {
-            String hash = MD5.asHex(MD5.getHash(input));
-            if (log.isDebugEnabled())
-                log.debug("Calculated hash for file " + input.getAbsolutePath() + " is " + hash); //NON-NLS
-            return hash;
+            return MD5.asHex(MD5.getHash(input));
         } catch (IOException e) {
             log.error("Failure while calculating MD5", e); //NON-NLS
             throw new IllegalStateException(e);

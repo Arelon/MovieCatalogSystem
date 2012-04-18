@@ -74,6 +74,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void printOutTableContentsToRestoreFile(Connection conn, File restoreFile) throws IOException, SQLException {
+        if (log.isDebugEnabled())
+            log.debug("Creating new restore script"); //NON-NLS
         Optional<FileOutputStream> fos = Optional.absent();
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -93,8 +95,6 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
-        if (log.isDebugEnabled())
-            log.debug("Working on restore script "+source.getScript()); //NON-NLS
         try (PreparedStatement preparedStatement = conn.prepareStatement(source.getScript())) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
@@ -106,6 +106,9 @@ public class RestorePointCreator extends AbstractRestorePointService {
                                     getListOfResultSetColumns(metaData)));
                 }
             }
+        } catch (SQLException e) {
+            log.error("SQL exception occurred while working on restore script "+source.getScript()); //NON-NLS
+            throw e;
         }
     }
 
@@ -175,7 +178,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
         Optional<ZipOutputStream> zos = Optional.absent();
         try {
             if (log.isDebugEnabled())
-                log.debug("Creating ZIP file " + renamedOldRestoreFile.getAbsolutePath() + ".zip"); //NON-NLS
+                log.debug("Creating ZIP file of previous restore: " + renamedOldRestoreFile.getAbsolutePath() + ".zip"); //NON-NLS
             zos = Optional.of(new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"))); //NON-NLS
 
             StreamUtil.writeFileToZipStream(zos.get(), "restore\\"+renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE); //NON-NLS
@@ -189,8 +192,6 @@ public class RestorePointCreator extends AbstractRestorePointService {
 
     @SuppressWarnings({"HardCodedStringLiteral"})
     private void appendRestartCountersScript(PrintStream outputStream, Connection conn) throws SQLException {
-        if (log.isDebugEnabled())
-            log.debug("Writing new Restart Counters script fragment...");
         outputStream.print(createRestartWithForTable("Param", "IdParam", conn));
         outputStream.print(createRestartWithForTable("Film", "IdFilm", conn));
         outputStream.print(createRestartWithForTable("Medij", "IdMedij", conn));
