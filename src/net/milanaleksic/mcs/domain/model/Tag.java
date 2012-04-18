@@ -54,4 +54,21 @@ public class Tag {
     public void setNaziv(String naziv) {
         this.naziv = naziv;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tag tag = (Tag) o;
+
+        if (naziv != null ? !naziv.equals(tag.naziv) : tag.naziv != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return naziv != null ? naziv.hashCode() : 0;
+    }
 }

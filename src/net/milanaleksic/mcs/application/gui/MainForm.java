@@ -100,6 +100,7 @@ public class MainForm extends Observable {
     private Combo comboZanr;
     private Combo comboTipMedija;
     private Combo comboPozicija;
+    private Combo comboTag;
     private Label labelCurrent;
     private Label labelFilter;
     private Canvas toolTicker;
@@ -217,6 +218,7 @@ public class MainForm extends Observable {
             comboPozicija.select(0);
             comboTipMedija.select(0);
             comboZanr.select(0);
+            comboTag.select(0);
             currentViewState.setFilterText("");
             doFillMainTable();
         }
@@ -226,6 +228,7 @@ public class MainForm extends Observable {
             return filterText.isEmpty()
                     && comboPozicija.getSelectionIndex() == 0
                     && comboTipMedija.getSelectionIndex() == 0
+                    && comboTag.getSelectionIndex() == 0
                     && comboZanr.getSelectionIndex() == 0;
         }
 
@@ -704,30 +707,40 @@ public class MainForm extends Observable {
     }
 
     private void createComboZanr(Composite panCombos) {
-        GridData gridData5 = new GridData();
-        gridData5.widthHint = GUI_COMBO_WIDTH;
+        GridData gridData = new GridData();
+        gridData.widthHint = GUI_COMBO_WIDTH;
         comboZanr = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboZanr.setLayoutData(gridData5);
+        comboZanr.setLayoutData(gridData);
         comboZanr.setVisibleItemCount(16);
         comboZanr.addSelectionListener(new ComboRefreshAdapter());
         resetZanrovi();
     }
 
+    private void createComboTag(Composite panCombos) {
+        GridData gridData = new GridData();
+        gridData.widthHint = GUI_COMBO_WIDTH;
+        comboTag = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
+        comboTag.setLayoutData(gridData);
+        comboTag.setVisibleItemCount(8);
+        comboTag.addSelectionListener(new ComboRefreshAdapter());
+        resetZanrovi();
+    }
+
     private void createComboTipMedija(Composite panCombos) {
-        GridData gridData1 = new GridData();
-        gridData1.widthHint = GUI_COMBO_WIDTH;
+        GridData gridData = new GridData();
+        gridData.widthHint = GUI_COMBO_WIDTH;
         comboTipMedija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboTipMedija.setLayoutData(gridData1);
+        comboTipMedija.setLayoutData(gridData);
         comboTipMedija.setVisibleItemCount(8);
         comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
         resetMedija();
     }
 
     private void createComboPozicija(Composite panCombos) {
-        GridData gridData3 = new GridData();
-        gridData3.widthHint = GUI_COMBO_WIDTH;
+        GridData gridData = new GridData();
+        gridData.widthHint = GUI_COMBO_WIDTH;
         comboPozicija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboPozicija.setLayoutData(gridData3);
+        comboPozicija.setLayoutData(gridData);
         comboPozicija.setVisibleItemCount(8);
         comboPozicija.addSelectionListener(new ComboRefreshAdapter());
         resetPozicije();
@@ -838,10 +851,11 @@ public class MainForm extends Observable {
     }
 
     private void addStatusEntityFilteringCell() {
-        Composite entityFilteringComposite = createNoMarginStatusBarCell(3, SWT.BEGINNING);
+        Composite entityFilteringComposite = createNoMarginStatusBarCell(4, SWT.BEGINNING);
         createComboTipMedija(entityFilteringComposite);
         createComboPozicija(entityFilteringComposite);
         createComboZanr(entityFilteringComposite);
+        createComboTag(entityFilteringComposite);
     }
 
     private void addStatusSortCell() {
@@ -936,6 +950,7 @@ public class MainForm extends Observable {
         final Zanr zanrFilter = (Zanr) comboZanr.getData(Integer.toString(comboZanr.getSelectionIndex()));
         final TipMedija tipMedijaFilter = (TipMedija) comboTipMedija.getData(Integer.toString(comboTipMedija.getSelectionIndex()));
         final Pozicija pozicijaFilter = (Pozicija) comboPozicija.getData(Integer.toString(comboPozicija.getSelectionIndex()));
+        final Tag tagFilter = (Tag) comboTag.getData(Integer.toString(comboTag.getSelectionIndex()));
         final String filterText = currentViewState.getFilterText().isEmpty() ?
                 null :
                 '%' + currentViewState.getFilterText() + '%';
@@ -951,7 +966,7 @@ public class MainForm extends Observable {
                                 Optional.fromNullable(zanrFilter),
                                 Optional.fromNullable(tipMedijaFilter),
                                 Optional.fromNullable(pozicijaFilter),
-                                Optional.fromNullable(filterText),
+                                Optional.fromNullable(tagFilter), Optional.fromNullable(filterText),
                                 currentViewState.getSingularAttribute(),
                                 currentViewState.isAscending());
                         currentViewState.setShowableCount(filmsWithCount.count);

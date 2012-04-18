@@ -26,6 +26,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     public Film getCompleteFilm(Film rawFilm) {
         rawFilm = entityManager.merge(rawFilm);
         Hibernate.initialize(rawFilm.getMedijs());
+        Hibernate.initialize(rawFilm.getTags());
         return rawFilm;
     }
 
@@ -51,14 +52,15 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     @Override
     @Transactional(propagation= Propagation.SUPPORTS, readOnly = true)
     public FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter,
-                                            Optional<Pozicija> pozicijaFilter, Optional<String> textFilter, SingularAttribute<Film,String> orderByAttribute, boolean ascending) {
+                                            Optional<Pozicija> pozicijaFilter, Optional<Tag> tagFilter, Optional<String> textFilter,
+                                            SingularAttribute<Film, String> orderByAttribute, boolean ascending) {
         return new FilmsWithCount(
                 doGetFilmsByCriteria(startFrom, maxItems, zanrFilter, tipMedijaFilter, pozicijaFilter,
-                        textFilter, orderByAttribute, ascending),
-                doGetFilmCountByCriteria(zanrFilter, tipMedijaFilter, pozicijaFilter, textFilter));
+                        tagFilter, textFilter, orderByAttribute, ascending),
+                doGetFilmCountByCriteria(zanrFilter, tipMedijaFilter, pozicijaFilter, tagFilter, textFilter));
     }
 
-    private long doGetFilmCountByCriteria(Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter, Optional<Pozicija> pozicijaFilter, Optional<String> textFilter) {
+    private long doGetFilmCountByCriteria(Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter, Optional<Pozicija> pozicijaFilter, Optional<Tag> tagFilter, Optional<String> textFilter) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = builder.createQuery(Long.class);
         Root<Film> film = cq.from(Film.class);
@@ -90,6 +92,12 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             pozicijaParameter = Optional.of(builder.parameter(String.class, "pozicija"));
             predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter.get()));
         }
+        Optional<ParameterExpression<Tag>> tagParameter = Optional.absent();
+        if (tagFilter.isPresent()) {
+            tagParameter = Optional.of(builder.parameter(Tag.class, "tag"));
+            SetJoin<Film, Tag> join = film.join(Film_.tags);
+            predicates.add(builder.equal(join, tagParameter.get()));
+        }
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -107,6 +115,8 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             query.setParameter(tipMedijaParameter.get(), '%'+tipMedijaFilter.get().getNaziv()+'%');
         if (pozicijaFilter.isPresent())
             query.setParameter(pozicijaParameter.get(), pozicijaFilter.get().getPozicija());
+        if (tagFilter.isPresent())
+            query.setParameter(tagParameter.get(), tagFilter.get());
 
         query.setHint(HIBERNATE_HINT_CACHEABLE, true);
 
@@ -114,7 +124,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     }
 
     private List<Film> doGetFilmsByCriteria(int startFrom, int maxItems, Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter, Optional<Pozicija> pozicijaFilter,
-                                            Optional<String> textFilter, SingularAttribute<Film,String> orderByAttribute, boolean ascending) {
+                                            Optional<Tag> tagFilter, Optional<String> textFilter, SingularAttribute<Film, String> orderByAttribute, boolean ascending) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Film> cq = builder.createQuery(Film.class);
         Root<Film> film = cq.from(Film.class);
@@ -146,6 +156,12 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             pozicijaParameter = Optional.of(builder.parameter(String.class, "pozicija"));
             predicates.add(builder.equal(film.<String>get(Film_.pozicija), pozicijaParameter.get()));
         }
+        Optional<ParameterExpression<Tag>> tagParameter = Optional.absent();
+        if (tagFilter.isPresent()) {
+            tagParameter = Optional.of(builder.parameter(Tag.class, "tag"));
+            SetJoin<Film, Tag> join = film.join(Film_.tags);
+            predicates.add(builder.equal(join, tagParameter.get()));
+        }
 
         if (predicates.size()==1)
             cq.where(predicates.get(0));
@@ -171,6 +187,8 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             query.setParameter(tipMedijaParameter.get(), '%'+tipMedijaFilter.get().getNaziv()+'%');
         if (pozicijaFilter.isPresent())
             query.setParameter(pozicijaParameter.get(), pozicijaFilter.get().getPozicija());
+        if (tagFilter.isPresent())
+            query.setParameter(tagParameter.get(), tagFilter.get());
         if (maxItems > 0) {
             query.setFirstResult(startFrom);
             query.setMaxResults(maxItems);

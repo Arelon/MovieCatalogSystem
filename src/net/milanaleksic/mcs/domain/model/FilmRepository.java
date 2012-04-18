@@ -29,7 +29,7 @@ public interface FilmRepository {
     void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position);
 
     FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter,
-                                     Optional<Pozicija> pozicijaFilter, Optional<String> filterText,
+                                     Optional<Pozicija> pozicijaFilter, Optional<Tag> tagFilter, Optional<String> filterText,
                                      SingularAttribute<Film, String> orderByAttribute, boolean ascending);
 
 }

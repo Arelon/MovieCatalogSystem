@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.domain.model;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
+import javax.annotation.concurrent.Immutable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -126,8 +127,12 @@ public class Film implements Serializable, Comparable<Film> {
 		this.imdbId = imdbId;
 	}
 
+    public Set<Tag> getTags() {
+		return ImmutableSet.copyOf(this.tags);
+	}
+
 	public Set<Medij> getMedijs() {
-		return this.medijs;
+		return ImmutableSet.copyOf(this.medijs);
 	}
 
 	public void setMedijs(Set<Medij> medijs) {
