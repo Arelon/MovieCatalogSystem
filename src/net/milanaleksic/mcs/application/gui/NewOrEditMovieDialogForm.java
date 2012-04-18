@@ -97,8 +97,6 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         @Override
         public boolean apply(TableItem input) {
             checkNotNull(input);
-            if (input.isDisposed())
-                return false;
             return input.getChecked();
         }
     };
