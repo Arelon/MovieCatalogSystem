@@ -3,7 +3,6 @@ package net.milanaleksic.mcs.domain.model;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
-import javax.annotation.concurrent.Immutable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;

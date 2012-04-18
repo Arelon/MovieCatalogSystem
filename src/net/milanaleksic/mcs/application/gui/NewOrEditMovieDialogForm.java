@@ -19,12 +19,15 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Table;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import javax.inject.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class NewOrEditMovieDialogForm extends AbstractDialogForm implements OfferMovieList.Receiver {
 
@@ -50,6 +53,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     private TipMedijaRepository tipMedijaRepository;
 
     @Inject
+    private TagRepository tagRepository;
+
+    @Inject
     @Named("offerMovieListForNewOrEditForm")
     private OfferMovieList offerMovieListForNewOrEditForm;
 
@@ -69,6 +75,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     private Text textImdbId;
     private Text textGodina;
     private Text textKomentar;
+    private Table tableTags;
     private ShowImageComposite posterImage;
 
     private Optional<Film> activeFilm;
@@ -76,6 +83,25 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
     private Map<String, Zanr> sviZanrovi;
     private Map<String, Pozicija> sveLokacije;
     private Map<String, Medij> sviDiskovi;
+
+    private Function<TableItem, Tag> tableItemToTagFunction = new Function<TableItem, Tag>() {
+        @Override
+        public Tag apply(TableItem input) {
+            checkNotNull(input);
+            return (Tag) input.getData();
+        }
+    };
+
+    private Predicate<TableItem> isCheckedTableItemFunction = new Predicate<TableItem>() {
+
+        @Override
+        public boolean apply(TableItem input) {
+            checkNotNull(input);
+            if (input.isDisposed())
+                return false;
+            return input.getChecked();
+        }
+    };
 
     public void open(Shell parent, Optional<Film> film, Runnable callback) {
         this.activeFilm = film;
@@ -95,6 +121,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             listDiskovi.removeAll();
             for (Medij medij : film.getMedijs())
                 listDiskovi.add(medij.toString());
+            for (Tag tag : film.getTags())
+                findAndSelectTagInTable(tableTags, tag);
             int indexOfPozicija = comboLokacija.indexOf(film.getPozicija());
             if (indexOfPozicija >= 0)
                 comboLokacija.select(indexOfPozicija);
@@ -111,16 +139,23 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         }
     }
 
+    private void findAndSelectTagInTable(Table targetTable, Tag tag) {
+        checkNotNull(tag);
+        for (TableItem tableItem : targetTable.getItems()) {
+            if (tag.equals(tableItem.getData()))
+                tableItem.setChecked(true);
+        }
+    }
+
     protected void refillCombos() {
         String previousZanr = comboZanr.getText();
         String previousLokacija = comboLokacija.getText();
         String previousDisk = comboDisk.getText();
-        if (comboZanr.getItemCount() != 0)
-            comboZanr.removeAll();
-        if (comboLokacija.getItemCount() != 0)
-            comboLokacija.removeAll();
-        if (comboDisk.getItemCount() != 0)
-            comboDisk.removeAll();
+        Iterable<Tag> previousTags = getSelectedTags();
+        comboZanr.removeAll();
+        comboLokacija.removeAll();
+        comboDisk.removeAll();
+        tableTags.removeAll();
 
         sviZanrovi = Maps.newHashMap();
         sveLokacije = Maps.newHashMap();
@@ -138,6 +173,11 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             comboDisk.add(medij.toString());
             sviDiskovi.put(medij.toString(), medij);
         }
+        for (Tag tag : tagRepository.getTags()) {
+            TableItem tableItem = new TableItem(tableTags, SWT.NONE);
+            tableItem.setText(tag.getNaziv());
+            tableItem.setData(tag);
+        }
 
         if (sviZanrovi.size() == 0 || sveLokacije.size() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
             MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
@@ -154,6 +194,8 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             comboLokacija.select(comboLokacija.indexOf(previousLokacija));
         if (!previousDisk.isEmpty() && comboDisk.indexOf(previousDisk) != -1)
             comboDisk.select(comboDisk.indexOf(previousDisk));
+        for (Tag tag : previousTags)
+            findAndSelectTagInTable(tableTags, tag);
     }
 
     protected void dodajNoviFilm() {
@@ -173,7 +215,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                 medijs.add(medij);
             }
         }
-        filmRepository.saveFilm(novFilm, zanr, medijs, position);
+        filmRepository.saveFilm(novFilm, zanr, medijs, position, getSelectedTags());
         reReadData();
     }
 
@@ -189,13 +231,16 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         for (String item : listDiskovi.getItems()) {
             selectedMediums.add(sviDiskovi.get(item));
         }
-
         filmService.updateFilmWithChanges(film,
                 sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())),
                 sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
-                selectedMediums);
+                selectedMediums, getSelectedTags());
+    }
 
-        reReadData();
+    private Iterable<Tag> getSelectedTags() {
+        return Iterables.transform(
+                Iterables.filter(Lists.newArrayList(tableTags.getItems()), isCheckedTableItemFunction),
+                tableItemToTagFunction);
     }
 
 
@@ -263,7 +308,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         labIMDB.setLayoutData(new GridData(GridData.END, GridData.CENTER, true, false));
         createImdbIdPanel(mainPanel);
         createPostersPanel();
-        createCommentaryGroup();
+        createCommentaryAndTagsComposite();
         createMediumsGroup();
     }
 
@@ -483,7 +528,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         listDiskovi = new List(groupMediums, SWT.V_SCROLL);
         GridData mediumListGridData = new GridData();
         mediumListGridData.horizontalAlignment = GridData.FILL;
-        mediumListGridData.heightHint = 50;
+        mediumListGridData.heightHint = 75;
         listDiskovi.setLayoutData(mediumListGridData);
         Button btnOduzmi = new Button(groupMediums, SWT.NONE);
         btnOduzmi.setText(bundle.getString("newOrEdit.removeMedium"));
@@ -496,30 +541,27 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         });
     }
 
-    private void createCommentaryGroup() {
-        GridData gridData = new GridData();
-        gridData.widthHint = 200;
-        gridData.verticalSpan = 2;
-        gridData.heightHint = 80;
-        Group group = new Group(mainPanel, SWT.NONE);
-        group.setLayout(new GridLayout(2, false));
-        group.setText(bundle.getString("newOrEdit.comment"));
-        textKomentar = new Text(group, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-        textKomentar.setLayoutData(gridData);
-        Button btnNeodgledano = new Button(group, SWT.NONE);
-        btnNeodgledano.setText(bundle.getString("newOrEdit.iDidNotWatch"));
-        btnNeodgledano.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + bundle.getString("newOrEdit.iDidNotWatch"));
-            }
-        });
-        Button btnLos = new Button(group, SWT.NONE);
-        btnLos.setText(bundle.getString("newOrEdit.badRecording"));
-        btnLos.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                textKomentar.setText(textKomentar.getText() + (textKomentar.getText().length() > 0 ? " " : "") + bundle.getString("newOrEdit.badRecording"));
-            }
-        });
+    private void createCommentaryAndTagsComposite() {
+        Composite commentaryAndTagsComposite = new Composite(mainPanel, SWT.NONE);
+        commentaryAndTagsComposite.setLayout(new GridLayout(2, false));
+
+        Group groupComment = new Group(commentaryAndTagsComposite, SWT.NONE);
+        GridData gridDataComment = new GridData();
+        gridDataComment.widthHint = 200;
+        gridDataComment.heightHint = 120;
+        groupComment.setLayout(new GridLayout(1, false));
+        groupComment.setText(bundle.getString("newOrEdit.comment"));
+        textKomentar = new Text(groupComment, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        textKomentar.setLayoutData(gridDataComment);
+
+        Group groupTags = new Group(commentaryAndTagsComposite, SWT.NONE);
+        GridData gridDataTags = new GridData();
+        gridDataTags.widthHint = 100;
+        gridDataTags.heightHint = 120;
+        groupTags.setLayout(new GridLayout(1, false));
+        groupTags.setText(bundle.getString("global.tags"));
+        tableTags = new Table(groupTags, SWT.CHECK | SWT.BORDER);
+        tableTags.setLayoutData(gridDataTags);
     }
 
     @Override

@@ -656,7 +656,7 @@ public class MainForm extends Observable {
             @Override
             public void movieSelected(MovieSelectionEvent e) {
                 if (e.film.isPresent())
-                    movieDetailsPanel.showDataForMovie(e.film);
+                    movieDetailsPanel.showDataForMovie(Optional.of(filmRepository.getCompleteFilm(e.film.get())));
                 GridData layoutData = (GridData)movieDetailsPanel.getLayoutData();
                 int currentHeight = layoutData.heightHint;
                 int newHeight = e.film.isPresent() ? GUI_MOVIEDETAILS_HEIGHT : 0;
@@ -927,7 +927,7 @@ public class MainForm extends Observable {
     private void createSettingsPopupMenu() {
         settingsPopupMenu = new Menu(shell, SWT.POP_UP);
         MenuItem settingsMenuItem = new MenuItem(settingsPopupMenu, SWT.PUSH);
-        settingsMenuItem.setText(bundle.getString("main.settings"));
+        settingsMenuItem.setText(bundle.getString("main.settingsWithDots"));
         settingsMenuItem.addSelectionListener(new ToolSettingsSelectionAdapter());
         settingsPopupMenu.setDefaultItem(settingsMenuItem);
         MenuItem findUnusedMediums = new MenuItem(settingsPopupMenu, SWT.PUSH);

@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.domain.model.Film;
+import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * User: Milan Aleksic
@@ -38,6 +38,8 @@ public class MovieDetailsPanel extends Composite {
     private Label genreValue;
     private Label locationLabel;
     private Label locationValue;
+    private Label tagsLabel;
+    private Label tagsValue;
     private Text commentValue;
     private Optional<Film> film = Optional.absent();
 
@@ -70,6 +72,7 @@ public class MovieDetailsPanel extends Composite {
         createMediumListRow(secondColumn);
         createGenreRow(secondColumn);
         createLocationRow(secondColumn);
+        createTagsRow(secondColumn);
         createCommentsRow(secondColumn);
     }
 
@@ -140,6 +143,15 @@ public class MovieDetailsPanel extends Composite {
         locationValue.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
     }
 
+    private void createTagsRow(Composite secondColumn) {
+        tagsLabel = new Label(secondColumn, SWT.NONE);
+        tagsLabel.setText(bundle.getString("global.tags"));
+        tagsLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        tagsValue = new Label(secondColumn, SWT.NONE);
+        tagsValue.setFont(new Font(getDisplay(), systemFontData.getName(), systemFontData.getHeight(), SWT.BOLD));
+        tagsValue.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+    }
+
     private void createCommentsRow(Composite secondColumn) {
         commentValue = new Text(secondColumn, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         commentValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -156,6 +168,8 @@ public class MovieDetailsPanel extends Composite {
         genreValue.setText("");
         locationLabel.setVisible(false);
         locationValue.setText("");
+        tagsLabel.setVisible(false);
+        tagsValue.setText("");
         commentValue.setVisible(false);
     }
 
@@ -174,9 +188,23 @@ public class MovieDetailsPanel extends Composite {
         genreValue.setText(theFilm.getZanr().getZanr());
         locationLabel.setVisible(true);
         locationValue.setText(theFilm.getPozicija());
+        tagsLabel.setVisible(true);
+        tagsValue.setText(getFilmTagsAsString(theFilm));
         commentValue.setVisible(true);
         commentValue.setText(theFilm.getKomentar());
     }
 
 
+    public String getFilmTagsAsString(Film theFilm) {
+        Set<Tag> tags = theFilm.getTags();
+        if (null == tags)
+            return "";
+        StringBuilder builder = new StringBuilder();
+        for(Tag tag : tags) {
+            builder.append(tag.getNaziv()).append(", ");
+        }
+        if (builder.length()>2)
+            return builder.toString().substring(0, builder.length()-2);
+        return builder.toString();
+    }
 }

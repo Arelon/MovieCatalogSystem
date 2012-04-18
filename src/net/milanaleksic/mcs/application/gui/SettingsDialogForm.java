@@ -151,7 +151,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
         tabItem3.setText(bundle.getString("settings.genres"));
         tabItem3.setControl(createGenresTabContents(tabFolder));
         TabItem tabItem4 = new TabItem(tabFolder, SWT.NONE);
-        tabItem4.setText(bundle.getString("settings.tags"));
+        tabItem4.setText(bundle.getString("global.tags"));
         tabItem4.setControl(createTagsTabContents(tabFolder));
     }
 

@@ -37,7 +37,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     }
 
     @Override
-    public void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position) {
+    public void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position, Iterable<Tag> selectedTags) {
         zanr = entityManager.find(Zanr.class, zanr.getIdzanr());
         position = entityManager.find(Pozicija.class, position.getIdpozicija());
         zanr.addFilm(newFilm);
@@ -45,6 +45,9 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             medij = entityManager.find(Medij.class, medij.getIdmedij());
             position.addMedij(medij);
             newFilm.addMedij(medij);
+        }
+        for (Tag tag : selectedTags) {
+            newFilm.addTag(tag);
         }
         entityManager.persist(newFilm);
     }
@@ -72,9 +75,9 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (textFilter.isPresent()) {
             textFilterParameter = Optional.of(builder.parameter(String.class, "filter"));
             predicates.add(builder.or(
-                    builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter.get()),
-                    builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter.get()),
-                    builder.like(builder.lower(film.<String>get(Film_.komentar)), textFilterParameter.get())
+                    builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), builder.lower(textFilterParameter.get())),
+                    builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), builder.lower(textFilterParameter.get())),
+                    builder.like(builder.lower(film.<String>get(Film_.komentar)), builder.lower(textFilterParameter.get()))
             ));
         }
         Optional<ParameterExpression<Zanr>> zanrParameter = Optional.absent();
@@ -136,9 +139,9 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
         if (textFilter.isPresent()) {
             textFilterParameter = Optional.of(builder.parameter(String.class, "filter"));
             predicates.add(builder.or(
-                    builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), textFilterParameter.get()),
-                    builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), textFilterParameter.get()),
-                    builder.like(builder.lower(film.<String>get(Film_.komentar)), textFilterParameter.get())
+                    builder.like(builder.lower(film.<String>get(Film_.nazivfilma)), builder.lower(textFilterParameter.get())),
+                    builder.like(builder.lower(film.<String>get(Film_.prevodnazivafilma)), builder.lower(textFilterParameter.get())),
+                    builder.like(builder.lower(film.<String>get(Film_.komentar)), builder.lower(textFilterParameter.get()))
             ));
         }
         Optional<ParameterExpression<Zanr>> zanrParameter = Optional.absent();

@@ -1,10 +1,12 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.persistence.TypedQuery;
 import java.util.*;
 
@@ -18,7 +20,7 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
     }
 
     @Override
-    public void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Pozicija newPozicija, Set<Medij> newMediums) {
+    public void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Pozicija newPozicija, Set<Medij> newMediums, Iterable<Tag> selectedTags) {
         movieToBeUpdated = entityManager.merge(movieToBeUpdated);
 
         if (!newZanr.equals(movieToBeUpdated.getZanr())) {
@@ -52,6 +54,13 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
                 log.info("Removing medium from the list of mediums: "+medij.toString());
             movieToBeUpdated.removeMedij(medij);
         }
+
+        movieToBeUpdated.setTags(Sets.newHashSet(Iterables.transform(selectedTags, new Function<Tag,Tag>() {
+            @Override
+            public Tag apply(@Nullable Tag input) {
+                return entityManager.merge(input);
+            }
+        })));
     }
 
     @Override
