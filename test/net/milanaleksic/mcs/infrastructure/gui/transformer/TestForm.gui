@@ -1,0 +1,23 @@
+{
+    "layout" : {
+        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "numColumns" : "2"
+    },
+    "text" : "[delete.deleteMovie]",
+    "size" : "431,154",
+    "_children" : [
+        {
+            "_type" : "org.eclipse.swt.Label",
+            "text" : "[delete.doYouReallyWishToDeleteMovie]",
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true
+            }
+        },
+        {
+            "_type" : "org.eclipse.swt.Label",
+            "_name" : "labFilmNaziv"
+        }
+    ]
+}
