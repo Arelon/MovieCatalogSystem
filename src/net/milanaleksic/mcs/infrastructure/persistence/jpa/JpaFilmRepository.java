@@ -37,7 +37,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
     }
 
     @Override
-    public void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position, Iterable<Tag> selectedTags) {
+    public void saveFilm(Film newFilm, Zanr zanr, Iterable<Medij> medijs, Pozicija position, Iterable<Tag> selectedTags) {
         zanr = entityManager.find(Zanr.class, zanr.getIdzanr());
         position = entityManager.find(Pozicija.class, position.getIdpozicija());
         zanr.addFilm(newFilm);

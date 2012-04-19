@@ -26,7 +26,7 @@ public interface FilmRepository {
 
     void deleteFilm(Film film);
 
-    void saveFilm(Film newFilm, Zanr zanr, List<Medij> medijs, Pozicija position, Iterable<Tag> selectedTags);
+    void saveFilm(Film newFilm, Zanr zanr, Iterable<Medij> medijs, Pozicija position, Iterable<Tag> selectedTags);
 
     FilmsWithCount getFilmByCriteria(int startFrom, int maxItems, Optional<Zanr> zanrFilter, Optional<TipMedija> tipMedijaFilter,
                                      Optional<Pozicija> pozicijaFilter, Optional<Tag> tagFilter, Optional<String> filterText,

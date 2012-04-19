@@ -80,10 +80,6 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
 
     private Optional<Film> activeFilm;
 
-    private Map<String, Zanr> sviZanrovi;
-    private Map<String, Pozicija> sveLokacije;
-    private Map<String, Medij> sviDiskovi;
-
     private Function<TableItem, Tag> tableItemToTagFunction = new Function<TableItem, Tag>() {
         @Override
         public Tag apply(TableItem input) {
@@ -155,21 +151,17 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         comboDisk.removeAll();
         tableTags.removeAll();
 
-        sviZanrovi = Maps.newHashMap();
-        sveLokacije = Maps.newHashMap();
-        sviDiskovi = Maps.newHashMap();
-
         for (Zanr zanr : zanrRepository.getZanrs()) {
             comboZanr.add(zanr.getZanr());
-            sviZanrovi.put(zanr.getZanr(), zanr);
+            comboZanr.setData(zanr.getZanr(), zanr);
         }
         for (Pozicija pozicija : pozicijaRepository.getPozicijas()) {
             comboLokacija.add(pozicija.getPozicija());
-            sveLokacije.put(pozicija.getPozicija(), pozicija);
+            comboLokacija.setData(pozicija.getPozicija(), pozicija);
         }
         for (Medij medij : medijRepository.getMedijs()) {
             comboDisk.add(medij.toString());
-            sviDiskovi.put(medij.toString(), medij);
+            comboDisk.setData(medij.toString(), medij);
         }
         for (Tag tag : tagRepository.getTags()) {
             TableItem tableItem = new TableItem(tableTags, SWT.NONE);
@@ -177,7 +169,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
             tableItem.setData(tag);
         }
 
-        if (sviZanrovi.size() == 0 || sveLokacije.size() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
+        if (comboZanr.getItemCount() == 0 || comboDisk.getItemCount() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
             MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
             box.setMessage(bundle.getString("newOrEdit.someBasicDomainElementsMissing"));
             box.setText(bundle.getString("global.information"));
@@ -204,16 +196,9 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         novFilm.setGodina(Integer.parseInt(textGodina.getText()));
         novFilm.setImdbId(textImdbId.getText().trim());
         novFilm.setKomentar(textKomentar.getText());
-        Zanr zanr = sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex()));
-        Pozicija position = sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
-        java.util.List<Medij> medijs = Lists.newLinkedList();
-        if (listDiskovi.getItemCount() != 0) {
-            for (String medijName : listDiskovi.getItems()) {
-                Medij medij = sviDiskovi.get(medijName);
-                medijs.add(medij);
-            }
-        }
-        filmRepository.saveFilm(novFilm, zanr, medijs, position, getSelectedTags());
+        Zanr zanr = (Zanr) comboZanr.getData(comboZanr.getItem(comboZanr.getSelectionIndex()));
+        Pozicija position = (Pozicija) comboLokacija.getData(comboLokacija.getItem(comboLokacija.getSelectionIndex()));
+        filmRepository.saveFilm(novFilm, zanr, getSelectedMediums(), position, getSelectedTags());
         reReadData();
     }
 
@@ -225,14 +210,10 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         film.setImdbId(textImdbId.getText().trim());
         film.setKomentar(textKomentar.getText());
 
-        Set<Medij> selectedMediums = Sets.newHashSet();
-        for (String item : listDiskovi.getItems()) {
-            selectedMediums.add(sviDiskovi.get(item));
-        }
         filmService.updateFilmWithChanges(film,
-                sviZanrovi.get(comboZanr.getItem(comboZanr.getSelectionIndex())),
-                sveLokacije.get(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
-                selectedMediums, getSelectedTags());
+                (Zanr) comboZanr.getData(comboZanr.getItem(comboZanr.getSelectionIndex())),
+                (Pozicija) comboLokacija.getData(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
+                getSelectedMediums(), getSelectedTags());
     }
 
     private Iterable<Tag> getSelectedTags() {
@@ -241,6 +222,15 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
                 tableItemToTagFunction);
     }
 
+    private Set<Medij> getSelectedMediums() {
+        Set<Medij> medijs = Sets.newHashSet();
+        for (String medijName : listDiskovi.getItems()) {
+            // only comboDisk is holding detached entities
+            Medij medij = (Medij) comboDisk.getData(medijName);
+            medijs.add(medij);
+        }
+        return medijs;
+    }
 
     @Override
     protected void onShellCreated() {
@@ -523,14 +513,14 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         });
 
         // 2nd row
-        listDiskovi = new List(groupMediums, SWT.V_SCROLL);
+        listDiskovi = new List(groupMediums, SWT.V_SCROLL | SWT.BORDER);
         GridData mediumListGridData = new GridData();
         mediumListGridData.horizontalAlignment = GridData.FILL;
         mediumListGridData.heightHint = 75;
         listDiskovi.setLayoutData(mediumListGridData);
         Button btnOduzmi = new Button(groupMediums, SWT.NONE);
         btnOduzmi.setText(bundle.getString("newOrEdit.removeMedium"));
-        btnOduzmi.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 2, 1));
+        btnOduzmi.setLayoutData(new GridData(GridData.BEGINNING, GridData.END, false, false, 2, 1));
         btnOduzmi.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 if (listDiskovi.getSelectionIndex() != -1)
@@ -549,7 +539,7 @@ public class NewOrEditMovieDialogForm extends AbstractDialogForm implements Offe
         gridDataComment.heightHint = 120;
         groupComment.setLayout(new GridLayout(1, false));
         groupComment.setText(bundle.getString("newOrEdit.comment"));
-        textKomentar = new Text(groupComment, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        textKomentar = new Text(groupComment, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
         textKomentar.setLayoutData(gridDataComment);
 
         Group groupTags = new Group(commentaryAndTagsComposite, SWT.NONE);
