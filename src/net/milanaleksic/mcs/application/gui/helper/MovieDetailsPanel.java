@@ -65,21 +65,21 @@ public class MovieDetailsPanel extends Composite {
         movieDetailsImage.setLayoutData(firstColumnData);
 
         Composite secondColumn = new Composite(this, SWT.NONE);
-        secondColumn.setLayout(new GridLayout(2, false));
+        secondColumn.setLayout(new GridLayout(4, false));
         secondColumn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         createMovieNameRow(secondColumn);
         createMediumListRow(secondColumn);
         createGenreRow(secondColumn);
-        createLocationRow(secondColumn);
         createTagsRow(secondColumn);
+        createLocationRow(secondColumn);
         createCommentsRow(secondColumn);
     }
 
     private void createMovieNameRow(Composite secondColumn) {
         movieNameValue = new Label(secondColumn, SWT.NONE);
         movieNameValue.setFont(new Font(getDisplay(), systemFontData.getName(), 12, SWT.BOLD));
-        movieNameValue.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
+        movieNameValue.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 4, 1));
         movieNameValue.addMouseTrackListener(new MouseTrackAdapter() {
             @Override
             public void mouseEnter(MouseEvent e) {
@@ -154,7 +154,7 @@ public class MovieDetailsPanel extends Composite {
 
     private void createCommentsRow(Composite secondColumn) {
         commentValue = new Text(secondColumn, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-        commentValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        commentValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
     }
 
     public void clearData() {
