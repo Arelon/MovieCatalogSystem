@@ -51,29 +51,29 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
 	}
 
 	@Override protected void onShellCreated() {
-//		GridLayout gridLayout1 = new GridLayout();
-//		gridLayout1.numColumns = 2;
-//		shell.setText(bundle.getString("delete.deleteMovie"));
-//		shell.setLayout(gridLayout1);
-//		shell.setSize(new Point(431, 154));
-        createCanvas();
+		GridLayout gridLayout1 = new GridLayout();
+		gridLayout1.numColumns = 2;
+		shell.setText(bundle.getString("delete.deleteMovie"));
+		shell.setLayout(gridLayout1);
+		shell.setSize(new Point(431, 154));
+        	createCanvas();
 
-//        GridData gridData = new GridData();
-//        gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-//        gridData.grabExcessHorizontalSpace = true;
-        Label labUpozorenje = new Label(shell, SWT.NONE);
-//		labUpozorenje.setText(bundle.getString("delete.doYouReallyWishToDeleteMovie"));
-//        labUpozorenje.setLayoutData(gridData);
-        Color color = new Color(Display.getCurrent(), 255, 0, 0);
-        labUpozorenje.setForeground(color);
-        color.dispose();
-        labUpozorenje.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 12, SWT.BOLD));
+        	GridData gridData = new GridData();
+	        gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+	        gridData.grabExcessHorizontalSpace = true;
+	        Label labUpozorenje = new Label(shell, SWT.NONE);
+		labUpozorenje.setText(bundle.getString("delete.doYouReallyWishToDeleteMovie"));
+	        labUpozorenje.setLayoutData(gridData);
+	        Color color = new Color(Display.getCurrent(), 255, 0, 0);
+	        labUpozorenje.setForeground(color);
+	        color.dispose();
+	        labUpozorenje.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 12, SWT.BOLD));
 
-        GridData gridData2 = new GridData();
-        gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
-        gridData2.grabExcessVerticalSpace = true;
-        labFilmNaziv = new Label(shell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
-        labFilmNaziv.setLayoutData(gridData2);
+	        GridData gridData2 = new GridData();
+	        gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.CENTER;
+	        gridData2.grabExcessVerticalSpace = true;
+	        labFilmNaziv = new Label(shell, SWT.WRAP | SWT.SHADOW_OUT | SWT.HORIZONTAL | SWT.CENTER);
+	        labFilmNaziv.setLayoutData(gridData2);
 		labFilmNaziv.setFont(new Font(Display.getDefault(), SWTUtil.getSystemFontData().getName(), 12, SWT.BOLD));
 		new Label(shell, SWT.NONE);
 		createComposite();
