@@ -27,8 +27,6 @@ public class DeleteMovieDialogForm extends AbstractDialogForm {
     @Inject private FilmRepository filmRepository;
 
     private final static class AlertImagePainter implements PaintListener {
-
-
         public void paintControl(final PaintEvent e) {
             SWTUtil.useImageAndThenDispose(RESOURCE_ALERT_IMAGE, new Function<Image, Void>() {
                 @Override
