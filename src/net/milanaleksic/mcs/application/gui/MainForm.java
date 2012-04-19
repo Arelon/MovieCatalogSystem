@@ -45,9 +45,9 @@ public class MainForm extends Observable {
 
     private static final int GUI_TICKER_SIZE = 24;
     private static final int GUI_COMBO_WIDTH = 80;
-    private static final int GUI_LABELCURRENT_WIDTH = 90;
-    public static final int GUI_MOVIEDETAILS_HEIGHT = 150;
-    public static final int GUI_SEARCHFILTER_HEIGHT = 25;
+    private static final int GUI_LABEL_CURRENT_WIDTH = 90;
+    public static final int GUI_MOVIE_DETAILS_HEIGHT = 150;
+    public static final int GUI_SEARCH_FILTER_HEIGHT = 25;
 
     @Inject
     private NewOrEditMovieDialogForm newOrEditMovieDialogForm;
@@ -542,7 +542,7 @@ public class MainForm extends Observable {
                 labelFilter.setText(currentViewState.getFilterText());
                 GridData layoutData = (GridData) searchFilterLineComposite.getLayoutData();
                 int oldHeight = layoutData.heightHint;
-                int newHeight = currentViewState.getFilterText().isEmpty() ? 0 : GUI_SEARCHFILTER_HEIGHT;
+                int newHeight = currentViewState.getFilterText().isEmpty() ? 0 : GUI_SEARCH_FILTER_HEIGHT;
                 if (oldHeight != newHeight) {
                     layoutData.heightHint = newHeight;
                     searchFilterLineComposite.getParent().layout();
@@ -659,7 +659,7 @@ public class MainForm extends Observable {
                     movieDetailsPanel.showDataForMovie(Optional.of(filmRepository.getCompleteFilm(e.film.get())));
                 GridData layoutData = (GridData)movieDetailsPanel.getLayoutData();
                 int currentHeight = layoutData.heightHint;
-                int newHeight = e.film.isPresent() ? GUI_MOVIEDETAILS_HEIGHT : 0;
+                int newHeight = e.film.isPresent() ? GUI_MOVIE_DETAILS_HEIGHT : 0;
                 if (currentHeight != newHeight) {
                     layoutData.heightHint = newHeight;
                     centerComposite.layout();
@@ -869,7 +869,7 @@ public class MainForm extends Observable {
 
         labelCurrent = new Label(pagingComposite, SWT.NONE);
         GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, false, false);
-        layoutData.widthHint = GUI_LABELCURRENT_WIDTH;
+        layoutData.widthHint = GUI_LABEL_CURRENT_WIDTH;
         labelCurrent.setLayoutData(layoutData);
         labelCurrent.setAlignment(SWT.CENTER);
         labelCurrent.setText("0");
