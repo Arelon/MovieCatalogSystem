@@ -1,7 +1,7 @@
 {
     "layout" : {
         "_type" : "org.eclipse.swt.layout.GridLayout",
-        "numColumns" : "2"
+        "numColumns" : 2
     },
     "text" : "[delete.deleteMovie]",
     "size" : "431,154",
@@ -11,9 +11,9 @@
             "_name" : "canvas",
             "layoutData" : {
                 "_type" : "org.eclipse.swt.layout.GridData",
-                "verticalSpan" : "2",
-                "heightHint" : "64",
-                "widthHint" : "64"
+                "verticalSpan" : 2,
+                "heightHint" : 64,
+                "widthHint" : 64
             },
             "background":"color_widget_background"
         },
@@ -25,8 +25,8 @@
                 "grabExcessHorizontalSpace" : true
             },
             "font" : {
-                "style":"BOLD",
-                "height":"12"
+                "style" : "BOLD",
+                "height" : 12
             },
             "text" : "[delete.doYouReallyWishToDeleteMovie]",
             "foreground" : "#ff0000"
@@ -39,10 +39,6 @@
                 "_type" : "org.eclipse.swt.layout.GridData",
                 "horizontalAlignment" : "{grid.center}",
                 "grabExcessVerticalSpace" : true
-            },
-            "font" : {
-                "style":"BOLD",
-                "height":"12"
             }
         },
         {
