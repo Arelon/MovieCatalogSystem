@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
@@ -48,7 +49,10 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
                 name = field.getName();
             if ((field.getModifiers() & Modifier.PRIVATE) != 0)
                 throw new IllegalStateException("Embedded components can not be private fields: "+this.getClass().getName()+"."+field.getName());
-            field.set(this, transformer.getMappedObject(name).get());
+            Optional<Object> mappedObject = transformer.getMappedObject(name);
+            if (!mappedObject.isPresent())
+                throw new IllegalStateException("Field marked as embedded could not be found: "+this.getClass().getName()+"."+field.getName());
+            field.set(this, mappedObject.get());
         }
     }
 
