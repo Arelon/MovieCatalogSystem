@@ -15,4 +15,6 @@ public interface Convertor {
 
     void setField(Field field, Object targetObject, JsonNode value) throws TransformerException;
 
+    void cleanUp() ;
+
 }

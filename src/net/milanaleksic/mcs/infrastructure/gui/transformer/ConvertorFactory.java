@@ -1,7 +1,8 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.*;
 
 import java.util.*;
 
@@ -12,26 +13,41 @@ import java.util.*;
  */
 public class ConvertorFactory {
 
-    private final Map<Class<?>, Convertor> map;
+    private final Map<Class<?>, Convertor> registeredConvertors;
 
     public static ConvertorFactory createFactory(ResourceBundle resourceBundle) {
         return new ConvertorFactory(resourceBundle);
     }
 
     public ConvertorFactory(ResourceBundle resourceBundle) {
-        map = ImmutableMap.<Class<?>, Convertor>builder()
-            .put(String.class, new StringConvertor(resourceBundle))
-            .put(boolean.class, new BooleanConvertor())
-            .put(int.class, new IntegerConvertor())
-            .put(Point.class, new PointConvertor())
-            .build();
+        registeredConvertors = ImmutableMap.<Class<?>, Convertor>builder()
+                .put(String.class, new StringConvertor(resourceBundle))
+                .put(boolean.class, new BooleanConvertor())
+                .put(int.class, new IntegerConvertor())
+                .put(Point.class, new PointConvertor())
+                .put(Color.class, new ColorConvertor())
+                .put(Font.class, new FontConvertor())
+                .build();
     }
 
     public Convertor getConvertor(final Transformer originator, final Class<?> argType) throws TransformerException {
-        Convertor convertor = map.get(argType);
+        Convertor convertor = registeredConvertors.get(argType);
         if (convertor == null)
             return new ObjectConvertor(originator, argType);
         return convertor;
+    }
+
+    public Optional<Convertor> getExactTypeConvertor(final Class<?> type) throws TransformerException {
+        Convertor convertor = registeredConvertors.get(type);
+        if (convertor == null)
+            return Optional.absent();
+        return Optional.of(convertor);
+    }
+
+    public void cleanUp() {
+        for (Convertor convertor : registeredConvertors.values()) {
+            convertor.cleanUp();
+        }
     }
 
 }

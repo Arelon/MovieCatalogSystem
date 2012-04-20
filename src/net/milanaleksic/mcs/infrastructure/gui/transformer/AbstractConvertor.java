@@ -31,4 +31,7 @@ public abstract class AbstractConvertor implements Convertor {
 
     protected abstract Object getValueFromJson(JsonNode node) throws TransformerException;
 
+    @Override
+    public void cleanUp() {}
+
 }

@@ -47,6 +47,36 @@
         },
         {
             "_type" : "org.eclipse.swt.widgets.Label"
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : "2",
+                "horizontalSpacing" : "20"
+            },
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnOk",
+                    "text" : "[delete.confirmDeletion]"
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnCancel",
+                    "text" : "[global.cancel]",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.end}",
+                        "grabExcessVerticalSpace" : true
+                    }
+                }
+            ]
         }
     ]
 }

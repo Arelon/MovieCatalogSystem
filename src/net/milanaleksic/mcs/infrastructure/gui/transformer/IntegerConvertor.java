@@ -2,10 +2,13 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.collect.ImmutableMap;
 import org.codehaus.jackson.JsonNode;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 
 import java.util.Map;
 import java.util.regex.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * User: Milan Aleksic
@@ -21,19 +24,30 @@ public class IntegerConvertor extends AbstractConvertor {
             .put("grid.center", GridData.CENTER)
             .put("grid.begin", GridData.BEGINNING)
             .put("grid.end", GridData.END)
+
+            .put("wrap", SWT.WRAP)
+            .put("shadow_out", SWT.SHADOW_OUT)
+            .put("horizontal", SWT.HORIZONTAL)
+            .put("center", SWT.CENTER)
             .build();
 
     @Override
     protected Object getValueFromJson(JsonNode node) throws TransformerException {
         String input = node.asText();
-        Matcher matcher = magicConstantsValue.matcher(input);
-        if (matcher.matches()) {
-            Integer value = magicConstants.get(matcher.group(1));
-            if (value == null)
-                throw new TransformerException("Magic constant does not exist - "+matcher.group(1));
-            return value;
+        checkNotNull(input);
+        String[] values = input.split("\\|");
+        int ofTheJedi = 0;
+        for (String value : values) {
+            Matcher matcher = magicConstantsValue.matcher(value);
+            if (matcher.matches()) {
+                Integer matchedMagicConstantValue = magicConstants.get(matcher.group(1));
+                if (matchedMagicConstantValue == null)
+                    throw new TransformerException("Magic constant does not exist - "+matcher.group(1));
+                ofTheJedi |= matchedMagicConstantValue;
+            } else
+                ofTheJedi |= Integer.parseInt(value);
         }
-        return node.asInt();
+        return ofTheJedi;
     }
 
 }
