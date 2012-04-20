@@ -6,6 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.service.FilmService;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
 import net.milanaleksic.mcs.infrastructure.network.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
@@ -14,7 +15,6 @@ import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Table;
 
@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
+public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
 
     @Inject
     private FilmService filmService;
@@ -38,9 +38,23 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     @Inject
     private HttpClientFactoryService httpClientFactoryService;
 
-    private Table unmatchedMoviesTable;
+    @EmbeddedComponent
+    Table unmatchedMoviesTable = null;
 
-    private Table possibleMatchesTable;
+    @EmbeddedComponent
+    Button btnStartMatching = null;
+
+    @EmbeddedComponent
+    Table possibleMatchesTable = null;
+
+    @EmbeddedComponent
+    ShowImageComposite matchImage = null;
+
+    @EmbeddedComponent
+    Text matchDescription = null;
+
+    @EmbeddedComponent
+    Button btnAcceptThisMatch = null;
 
     private PersistentHttpContext persistentHttpContext;
 
@@ -49,11 +63,6 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     private Map<Film, Movie[]> movieMatchesMap;
 
     private CountDownLatch processingCounterLatch;
-
-    private ShowImageComposite matchImage;
-    private Text matchDescription;
-    private Button btnAcceptThisMatch;
-    private Button btnStartMatching;
 
     private HandledSelectionAdapter unmatchedMovieSelectedHandler = new HandledSelectionAdapter(shell, bundle) {
         @Override
@@ -185,12 +194,23 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
     }
 
     @Override
-    protected void onShellCreated() {
-        GridLayout gridLayout = new GridLayout(1, true);
-        gridLayout.verticalSpacing = 10;
-        shell.setText(bundle.getString("global.unmatchedMoviesTable"));
-        shell.setLayout(gridLayout);
-        createContent();
+    protected void onTransformationComplete(Transformer transformer) {
+        unmatchedMoviesTable.addSelectionListener(unmatchedMovieSelectedHandler);
+        possibleMatchesTable.addSelectionListener(possibleMatchesSelectedHandler);
+        btnAcceptThisMatch.addSelectionListener(acceptMatchHandler);
+        btnStartMatching.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                btnStartMatching.setEnabled(false);
+                startProcess();
+            }
+        });
+        transformer.<Button>getMappedObject("btnClose").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS
+            @Override
+            public void handledSelected(SelectionEvent event) throws ApplicationException {
+                shell.close();
+            }
+        });
     }
 
     @Override
@@ -218,109 +238,6 @@ public class UnmatchedMoviesDialogForm extends AbstractDialogForm {
         matchDescription.setText("");
         btnAcceptThisMatch.setEnabled(false);
         possibleMatchesTable.removeAll();
-    }
-
-    private void createContent() {
-        final int ELEMENTS_IN_FIRST_ROW = 4;
-        Composite composite = new Composite(shell, SWT.NONE);
-        composite.setLayout(new GridLayout(ELEMENTS_IN_FIRST_ROW, false));
-
-        // first row
-        createUnmatchedMoviesTable(composite);
-        createBtnStartProcess(composite);
-        createPossibleMatchesTable(composite);
-        createMatchImageContainer(composite);
-
-        //second row
-        Composite compositeFooter = new Composite(composite, SWT.NONE);
-        compositeFooter.setLayout(new GridLayout(1, false));
-        compositeFooter.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, ELEMENTS_IN_FIRST_ROW, 1));
-        Button btnClose = new Button(compositeFooter, SWT.NONE);
-        GridData btnCloseGridData = new GridData(GridData.CENTER, GridData.CENTER, true, false);
-        btnCloseGridData.widthHint = 150;
-        btnClose.setLayoutData(btnCloseGridData);
-        btnClose.setText(bundle.getString("global.close"));
-        btnClose.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                shell.close();
-            }
-        });
-    }
-
-    private void createBtnStartProcess(Composite composite) {
-        btnStartMatching = new Button(composite, SWT.NONE);
-        btnStartMatching.setText(bundle.getString("unmatchedMoviesTable.start"));
-        btnStartMatching.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        btnStartMatching.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                btnStartMatching.setEnabled(false);
-                startProcess();
-            }
-        });
-    }
-
-    private void createMatchImageContainer(Composite composite) {
-        Composite matcherPanel = new Composite(composite, SWT.NONE);
-        matcherPanel.setLayout(new GridLayout(1, false));
-        matcherPanel.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-
-
-        TabFolder folder = new TabFolder(matcherPanel, SWT.NONE);
-        GridData folderGroupData = new GridData(GridData.FILL, GridData.FILL, true, true);
-        folderGroupData.widthHint = 200;
-        folder.setLayoutData(folderGroupData);
-        matchImage = new ShowImageComposite(folder, SWT.NONE);
-        matchImage.setBundle(bundle);
-        matchImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        matchDescription = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY);
-        matchDescription.setText(bundle.getString("global.noImagePresent"));
-
-        TabItem tabImage = new TabItem(folder, SWT.NONE);
-        tabImage.setText(bundle.getString("global.tabs.poster"));
-        tabImage.setControl(matchImage);
-        TabItem tabDescription = new TabItem(folder, SWT.NONE);
-        tabDescription.setText(bundle.getString("global.tabs.movieDescription"));
-        tabDescription.setControl(matchDescription);
-
-        btnAcceptThisMatch = new Button(matcherPanel, SWT.NONE);
-        btnAcceptThisMatch.setText(bundle.getString("unmatchedMoviesTable.acceptMatch"));
-        btnAcceptThisMatch.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        btnAcceptThisMatch.addSelectionListener(acceptMatchHandler);
-    }
-
-    private void createPossibleMatchesTable(Composite composite) {
-        possibleMatchesTable = new Table(composite, SWT.BORDER | SWT.FULL_SELECTION);
-        possibleMatchesTable.setHeaderVisible(true);
-        GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 2);
-        gridData.heightHint = 200;
-        possibleMatchesTable.setLayoutData(gridData);
-        possibleMatchesTable.addSelectionListener(possibleMatchesSelectedHandler);
-        TableColumn firstColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
-        firstColumn.setText(bundle.getString("global.columns.matchedMovieName"));
-        firstColumn.setWidth(300);
-        TableColumn yearColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
-        yearColumn.setText(bundle.getString("global.columns.movieYear"));
-        yearColumn.setWidth(50);
-        TableColumn linkColumn = new TableColumn(possibleMatchesTable, SWT.LEFT | SWT.FLAT);
-        linkColumn.setText(bundle.getString("global.columns.imdbUrl"));
-        linkColumn.setWidth(50);
-    }
-
-    private void createUnmatchedMoviesTable(Composite parent) {
-        unmatchedMoviesTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-        unmatchedMoviesTable.setHeaderVisible(true);
-        GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
-        gridData.heightHint = 350;
-        unmatchedMoviesTable.setLayoutData(gridData);
-        TableColumn firstColumn = new TableColumn(unmatchedMoviesTable, SWT.LEFT | SWT.FLAT);
-        firstColumn.setText(bundle.getString("unmatchedMoviesTable.firstColumnName"));
-        firstColumn.setWidth(300);
-        TableColumn processingColumn = new TableColumn(unmatchedMoviesTable, SWT.LEFT | SWT.FLAT);
-        processingColumn.setText(bundle.getString("unmatchedMoviesTable.processingColumnName"));
-        processingColumn.setWidth(120);
-        unmatchedMoviesTable.addSelectionListener(unmatchedMovieSelectedHandler);
     }
 
     private void startProcess() {

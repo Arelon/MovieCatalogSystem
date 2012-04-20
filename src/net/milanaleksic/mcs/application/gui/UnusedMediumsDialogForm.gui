@@ -1,0 +1,97 @@
+{
+    "layout" : {
+        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "numColumns" : 1,
+        "verticalSpacing" : 10
+    },
+    "text" : "[global.unusedMediums]",
+    "_children" : [
+        {
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 2
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Table",
+                    "_style" : "{border}|{full_selection}",
+                    "_name" : "unusedMediumTable",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : true,
+                        "horizontalSpan" : 1,
+                        "verticalSpan" : 2,
+                        "heightHint" : 180
+                    },
+                    "headerVisible" : true,
+                    "_children" : [
+                        {
+                            "_type" : "org.eclipse.swt.widgets.TableColumn",
+                            "_style" : "{left}|{flat}",
+                            "text" : "[unusedMediums.columnName]",
+                            "width" : 370
+                        }
+                    ]
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnDeleteUnusedMedium",
+                    "text" : "[global.delete]",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnDeleteAllUnusedMediums",
+                    "text" : "[global.deleteAll]",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Composite",
+                    "layout" : {
+                        "_type" : "org.eclipse.swt.layout.GridLayout",
+                        "numColumns" : 1
+                    },
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false,
+                        "horizontalSpan" : 2,
+                        "verticalSpan" : 1
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "org.eclipse.swt.widgets.Button",
+                            "_name" : "btnClose",
+                            "text" : "[global.close]",
+                            "layoutData" : {
+                                "_type" : "org.eclipse.swt.layout.GridData",
+                                "horizontalAlignment" : "{grid.center}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
