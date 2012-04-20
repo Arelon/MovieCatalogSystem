@@ -1,6 +1,6 @@
 {
     "layout" : {
-        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "_type" : "gridLayout",
         "numColumns" : 2
     },
     "text" : "[global.findMovie]",
@@ -8,13 +8,13 @@
     "_children" : [
         {
             "__comment" : "header",
-            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_type" : "composite",
             "layout" : {
-                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "_type" : "gridLayout",
                 "numColumns" : 2
             },
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.fill}",
                 "verticalAlignment" : "{grid.begin}",
                 "grabExcessHorizontalSpace" : "true",
@@ -23,10 +23,10 @@
             },
             "_children" : [
                 {
-                    "_type" : "org.eclipse.swt.widgets.Label",
+                    "_type" : "label",
                     "text" : "[findMovie.startTyping]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.begin}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : "false",
@@ -34,10 +34,10 @@
                     }
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Text",
+                    "_type" : "text",
                     "_name" : "movieName",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : "true",
@@ -47,12 +47,12 @@
             ]
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Table",
+            "_type" : "table",
             "_style" : "{border}|{full_selection}",
             "_name" : "mainTable",
             "headerVisible" : true,
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.fill}",
                 "verticalAlignment" : "{grid.fill}",
                 "grabExcessHorizontalSpace" : "true",
@@ -60,19 +60,19 @@
             },
             "_children" : [
                 {
-                    "_type" : "org.eclipse.swt.widgets.TableColumn",
+                    "_type" : "tableColumn",
                     "_style" : "{left}|{flat}",
                     "text" : "[global.columns.matchedMovieName]",
                     "width" : 300
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.TableColumn",
+                    "_type" : "tableColumn",
                     "_style" : "{left}|{flat}",
                     "text" : "[global.columns.movieYear]",
                     "width" : 50
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.TableColumn",
+                    "_type" : "tableColumn",
                     "_style" : "{left}|{flat}",
                     "text" : "[global.columns.imdbUrl]",
                     "width" : 50
@@ -80,9 +80,9 @@
             ]
         },
         {
-            "_type" : "org.eclipse.swt.widgets.TabFolder",
+            "_type" : "tabFolder",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.fill}",
                 "verticalAlignment" : "{grid.fill}",
                 "grabExcessHorizontalSpace" : "true",
@@ -92,11 +92,11 @@
             },
             "_children" : [
                 {
-                    "_type" : "net.milanaleksic.mcs.application.gui.helper.ShowImageComposite",
+                    "_type" : "showImageComposite",
                     "_name" : "matchImage",
                     "bundle" : "(bundle)",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.fill}",
                         "grabExcessHorizontalSpace" : "true",
@@ -104,18 +104,18 @@
                     }
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Text",
+                    "_type" : "text",
                     "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}",
                     "_name" : "matchDescription",
                     "text" : "[global.noImagePresent]"
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.TabItem",
+                    "_type" : "tabItem",
                     "text" : "[global.tabs.poster]",
                     "control" : "(matchImage)"
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.TabItem",
+                    "_type" : "tabItem",
                     "text" : "[global.tabs.movieDescription]",
                     "control" : "(matchDescription)"
                 }
@@ -123,13 +123,13 @@
         },
         {
             "__comment" : "footer",
-            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_type" : "composite",
             "layout" : {
-                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "_type" : "gridLayout",
                 "numColumns" : 2
             },
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.center}",
                 "verticalAlignment" : "{grid.end}",
                 "grabExcessHorizontalSpace" : "true",
@@ -139,11 +139,11 @@
             },
             "_children" : [
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnAccept",
                     "text" : "[global.save]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.center}",
                         "verticalAlignment" : "{grid.center}",
                         "grabExcessHorizontalSpace" : "false",
@@ -151,11 +151,11 @@
                     }
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnClose",
                     "text" : "[global.cancel]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.center}",
                         "verticalAlignment" : "{grid.center}",
                         "grabExcessHorizontalSpace" : "false",

@@ -1,16 +1,16 @@
 {
     "layout" : {
-        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "_type" : "gridLayout",
         "numColumns" : 2
     },
     "text" : "[delete.deleteMovie]",
     "size" : "431,154",
     "_children" : [
         {
-            "_type" : "org.eclipse.swt.widgets.Canvas",
+            "_type" : "canvas",
             "_name" : "canvas",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "verticalSpan" : 2,
                 "heightHint" : 64,
                 "widthHint" : 64
@@ -18,9 +18,9 @@
             "background":"color_widget_background"
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label",
+            "_type" : "label",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.center}",
                 "grabExcessHorizontalSpace" : true
             },
@@ -32,11 +32,11 @@
             "foreground" : "#ff0000"
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label",
+            "_type" : "label",
             "_style" : "{wrap}|{shadow_out}|{horizontal}|{center}",
             "_name" : "labFilmNaziv",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.center}",
                 "grabExcessVerticalSpace" : true
             },
@@ -46,32 +46,32 @@
             }
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label"
+            "_type" : "label"
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_type" : "composite",
             "layout" : {
-                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "_type" : "gridLayout",
                 "numColumns" : 2,
                 "horizontalSpacing" : 20
             },
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.center}",
                 "grabExcessHorizontalSpace" : true
             },
             "_children" : [
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnOk",
                     "text" : "[delete.confirmDeletion]"
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnCancel",
                     "text" : "[global.cancel]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.end}",
                         "grabExcessVerticalSpace" : true
                     }

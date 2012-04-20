@@ -50,4 +50,7 @@ public class ConvertorFactory {
         }
     }
 
+    public Class<Object> getObjectConvertor() {
+        return null;
+    }
 }

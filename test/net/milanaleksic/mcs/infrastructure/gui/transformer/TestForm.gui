@@ -1,16 +1,16 @@
 {
     "layout" : {
-        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "_type" : "gridLayout",
         "numColumns" : 2
     },
     "text" : "[delete.deleteMovie]",
     "size" : "431,154",
     "_children" : [
         {
-            "_type" : "org.eclipse.swt.widgets.Canvas",
+            "_type" : "canvas",
             "_name" : "canvas",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "verticalSpan" : 2,
                 "heightHint" : 64,
                 "widthHint" : 64
@@ -18,7 +18,7 @@
             "background":"color_widget_background"
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label",
+            "_type" : "label",
             "layoutData" : {
                 "_type" : "org.eclipse.swt.layout.GridData",
                 "horizontalAlignment" : "{grid.center}",
@@ -32,7 +32,7 @@
             "foreground" : "#ff0000"
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label",
+            "_type" : "label",
             "_style" : "{wrap}|{shadow_out}|{horizontal}|{center}",
             "_name" : "labFilmNaziv",
             "layoutData" : {
@@ -42,7 +42,7 @@
             }
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label"
+            "_type" : "label"
         }
     ]
 }

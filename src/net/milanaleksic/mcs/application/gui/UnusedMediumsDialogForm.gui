@@ -1,24 +1,24 @@
 {
     "layout" : {
-        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "_type" : "gridLayout",
         "numColumns" : 1,
         "verticalSpacing" : 10
     },
     "text" : "[global.unusedMediums]",
     "_children" : [
         {
-            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_type" : "composite",
             "layout" : {
-                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "_type" : "gridLayout",
                 "numColumns" : 2
             },
             "_children" : [
                 {
-                    "_type" : "org.eclipse.swt.widgets.Table",
+                    "_type" : "table",
                     "_style" : "{border}|{full_selection}",
                     "_name" : "unusedMediumTable",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.fill}",
                         "grabExcessHorizontalSpace" : true,
@@ -30,7 +30,7 @@
                     "headerVisible" : true,
                     "_children" : [
                         {
-                            "_type" : "org.eclipse.swt.widgets.TableColumn",
+                            "_type" : "tableColumn",
                             "_style" : "{left}|{flat}",
                             "text" : "[unusedMediums.columnName]",
                             "width" : 370
@@ -38,11 +38,11 @@
                     ]
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnDeleteUnusedMedium",
                     "text" : "[global.delete]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
@@ -50,11 +50,11 @@
                     }
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnDeleteAllUnusedMediums",
                     "text" : "[global.deleteAll]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
@@ -62,13 +62,13 @@
                     }
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Composite",
+                    "_type" : "composite",
                     "layout" : {
-                        "_type" : "org.eclipse.swt.layout.GridLayout",
+                        "_type" : "gridLayout",
                         "numColumns" : 1
                     },
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
@@ -78,11 +78,11 @@
                     },
                     "_children" : [
                         {
-                            "_type" : "org.eclipse.swt.widgets.Button",
+                            "_type" : "button",
                             "_name" : "btnClose",
                             "text" : "[global.close]",
                             "layoutData" : {
-                                "_type" : "org.eclipse.swt.layout.GridData",
+                                "_type" : "gridData",
                                 "horizontalAlignment" : "{grid.center}",
                                 "verticalAlignment" : "{grid.center}",
                                 "grabExcessHorizontalSpace" : true,

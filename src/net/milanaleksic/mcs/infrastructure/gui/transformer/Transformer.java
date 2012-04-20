@@ -18,11 +18,11 @@ import java.util.*;
  */
 public class Transformer {
 
-    private static final String KEY_SPECIAL_TYPE = "_type"; //NON-NLS
-    private static final String KEY_SPECIAL_CHILDREN = "_children"; //NON-NLS
-    private static final String KEY_SPECIAL_NAME = "_name"; //NON-NLS
-    private static final String KEY_SPECIAL_STYLE = "_style"; //NON-NLS
-    private static final String KEY_SPECIAL_COMMENT = "__comment"; //NON-NLS
+    static final String KEY_SPECIAL_TYPE = "_type"; //NON-NLS
+    static final String KEY_SPECIAL_CHILDREN = "_children"; //NON-NLS
+    static final String KEY_SPECIAL_NAME = "_name"; //NON-NLS
+    static final String KEY_SPECIAL_STYLE = "_style"; //NON-NLS
+    static final String KEY_SPECIAL_COMMENT = "__comment"; //NON-NLS
 
     private Map<String, Object> mappedObjects;
 
@@ -95,7 +95,7 @@ public class Transformer {
         }
     }
 
-    private void transformNodeToProperties(JsonNode jsonNode, Object object) throws TransformerException {
+    void transformNodeToProperties(JsonNode jsonNode, Object object) throws TransformerException {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.getFields();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
@@ -146,25 +146,11 @@ public class Transformer {
         return "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1); //NON-NLS
     }
 
-    public Object createWidgetFromResource(Class<?> widgetClass, JsonNode value) throws TransformerException {
-        try {
-            Object widget;
-            if (value.has(KEY_SPECIAL_TYPE))
-                widgetClass = Class.forName(value.get(KEY_SPECIAL_TYPE).asText());
-            widget = widgetClass.newInstance();
-            transformNodeToProperties(value, widget);
-            return widget;
-        } catch (InstantiationException | TransformerException | IllegalAccessException | ClassNotFoundException e) {
-            throw new TransformerException("Widget creation of class "+widgetClass.getName()+" failed", e);
-        }
-    }
-
     private Object createChildObject(Composite parent, JsonNode childDefinition) throws TransformerException {
         try {
-            Class<?> widgetClass;
             if (!childDefinition.has(KEY_SPECIAL_TYPE))
                 throw new IllegalArgumentException("Could not deduce the child type without explicit definition");
-            widgetClass = Class.forName(childDefinition.get(KEY_SPECIAL_TYPE).asText());
+            Class<?> widgetClass = ObjectConvertor.deduceClassFromNode(childDefinition);
             Constructor<?> chosenConstructor = null;
 
             Constructor<?>[] constructors = widgetClass.getConstructors();
@@ -194,5 +180,6 @@ public class Transformer {
             throw new TransformerException("Widget creation of class failed", e);
         }
     }
+
 
 }

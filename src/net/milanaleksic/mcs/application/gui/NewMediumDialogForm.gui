@@ -1,17 +1,17 @@
 {
     "layout" : {
-        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "_type" : "gridLayout",
         "numColumns" : 2
     },
     "text" : "[newMedium.addNewMedium]",
     "size" : "288,189",
     "_children" : [
         {
-            "_type" : "org.eclipse.swt.widgets.Label",
+            "_type" : "label",
             "_style" : "{left}",
             "text" : "[newMedium.mediumType]",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.end}",
                 "verticalAlignment" : "{grid.center}",
                 "grabExcessHorizontalSpace" : true,
@@ -19,18 +19,18 @@
             }
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Group",
+            "_type" : "group",
             "_name" : "group",
             "layout" : {
-                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "_type" : "gridLayout",
                 "numColumns" : 1
             }
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label",
+            "_type" : "label",
             "text" : "[newMedium.mediumWillHaveFollowingId]",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.end}",
                 "verticalAlignment" : "{grid.center}",
                 "grabExcessHorizontalSpace" : true,
@@ -38,19 +38,19 @@
             }
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Text",
+            "_type" : "text",
             "_name" : "textID",
             "_style" : "{border}|{read_only}"
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_type" : "composite",
             "layout" : {
-                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "_type" : "gridLayout",
                 "numColumns" : 2,
                 "horizontalSpacing" : 20
             },
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
+                "_type" : "gridData",
                 "horizontalAlignment" : "{grid.center}",
                 "verticalAlignment" : "{grid.begin}",
                 "grabExcessHorizontalSpace" : true,
@@ -60,16 +60,16 @@
             },
             "_children" : [
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnOk",
                     "text" : "[global.save]"
                 },
                 {
-                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_type" : "button",
                     "_name" : "btnCancel",
                     "text" : "[global.cancel]",
                     "layoutData" : {
-                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "_type" : "gridData",
                         "horizontalAlignment" : "{grid.end}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : false,
