@@ -79,7 +79,7 @@ public abstract class AbstractDialogForm {
         this.applicationManager = applicationManager;
     }
 
-    protected void createShell() {
+    private void createShell() {
         shell = new Shell(this.parent.orNull(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         onShellCreated();
 

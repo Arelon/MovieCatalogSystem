@@ -2,12 +2,10 @@ package net.milanaleksic.mcs.application.restore;
 
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.application.gui.ClosingDialogForm;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
-import org.eclipse.swt.widgets.Display;
 
 import javax.inject.Inject;
 
@@ -24,8 +22,6 @@ public class RestoreManager implements LifecycleListener {
 
     @Inject private RestorePointRestorer restorePointRestorer;
 
-    @Inject private ClosingDialogForm closingDialogForm;
-
     private ApplicationConfiguration configuration;
 
     @Override public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
@@ -39,11 +35,6 @@ public class RestoreManager implements LifecycleListener {
         if (programArgsService.getProgramArgs().isNoRestorationProcessing())
             return;
         if (configuration.getDatabaseConfiguration().isDatabaseCreateRestore()) {
-            Display.getDefault().asyncExec(new Runnable() {
-                public void run() {
-                    closingDialogForm.open();
-                }
-            });
             restorePointCreator.createRestorePoint();
         }
     }

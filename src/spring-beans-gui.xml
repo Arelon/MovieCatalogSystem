@@ -19,8 +19,6 @@
 
     <bean id="deleteMovieDialogForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieDialogForm" />
 
-    <bean id="closingDialogForm" class="net.milanaleksic.mcs.application.gui.ClosingDialogForm" />
-
     <bean id="unusedMediumsDialogForm" class="net.milanaleksic.mcs.application.gui.UnusedMediumsDialogForm" />
 
     <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesDialogForm" />
