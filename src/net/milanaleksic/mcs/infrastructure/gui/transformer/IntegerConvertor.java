@@ -24,6 +24,7 @@ public class IntegerConvertor extends AbstractConvertor {
             .put("grid.center", GridData.CENTER)
             .put("grid.begin", GridData.BEGINNING)
             .put("grid.end", GridData.END)
+            .put("grid.fill", GridData.FILL)
 
             .put("composition_changed", SWT.COMPOSITION_CHANGED)
             .put("composition_offset", SWT.COMPOSITION_OFFSET)

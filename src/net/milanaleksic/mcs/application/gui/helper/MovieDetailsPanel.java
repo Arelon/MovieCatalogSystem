@@ -59,7 +59,8 @@ public class MovieDetailsPanel extends Composite {
 
         setLayout(new GridLayout(2, false));
 
-        movieDetailsImage = new ShowImageComposite(this, SWT.NONE, bundle);
+        movieDetailsImage = new ShowImageComposite(this, SWT.NONE);
+        movieDetailsImage.setBundle(bundle);
         GridData firstColumnData = new GridData(SWT.BEGINNING, SWT.FILL, false, true);
         firstColumnData.widthHint = thumbnailManager.getThumbnailWidth();
         movieDetailsImage.setLayoutData(firstColumnData);

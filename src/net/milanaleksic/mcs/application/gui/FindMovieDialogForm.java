@@ -3,36 +3,34 @@ package net.milanaleksic.mcs.application.gui;
 import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
-import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.network.*;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.annotation.*;
+import javax.inject.*;
 import java.net.URI;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovieList.Receiver {
+public class FindMovieDialogForm extends AbstractTransformedDialogForm implements OfferMovieList.Receiver {
 
-    private Text matchDescription;
+    @EmbeddedComponent
+    Text matchDescription = null;
 
-    private Text movieName;
+    @EmbeddedComponent
+    Text movieName = null;
 
-    private Table mainTable;
+    @EmbeddedComponent
+    Table mainTable = null;
 
-    private ShowImageComposite matchImage;
+    @EmbeddedComponent
+    ShowImageComposite matchImage = null;
 
     private Optional<Movie> selectedMovie = Optional.absent();
 
@@ -121,37 +119,14 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
     }
 
     @Override
-    protected void onShellCreated() {
-        shell.setText(bundle.getString("global.findMovie"));
-        shell.setLayout(new GridLayout(2, false));
+    protected void onTransformationComplete(Transformer transformer) {
         shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
             public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
                 if (offerMovieListForFindMovieDialogForm != null)
                     offerMovieListForFindMovieDialogForm.cleanup();
             }
         });
-        createHeader();
-        createCenter();
-        createFooter();
-    }
-
-    @Override
-    protected void onShellReady() {
-        persistentHttpContext = httpClientFactoryService.createPersistentHttpContext();
-        if (offerMovieListForFindMovieDialogForm != null)
-            offerMovieListForFindMovieDialogForm.prepareFor(movieName);
-        removeMatchDetails();
-    }
-
-    private void createFooter() {
-        Composite footer = new Composite(shell, SWT.NONE);
-        footer.setLayoutData(new GridData(SWT.CENTER, SWT.END, true, false, 2, 1));
-        footer.setLayout(new GridLayout(2, true));
-
-        Button btnAccept = new Button(footer, SWT.PUSH);
-        btnAccept.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-        btnAccept.setText(bundle.getString("global.save"));
-        btnAccept.addSelectionListener(new SelectionAdapter() {
+        transformer.<Button>getMappedObject("btnAccept").get().addSelectionListener(new SelectionAdapter() { //NON-NLS
             @Override
             public void widgetSelected(SelectionEvent event) {
                 int selectionIndex = mainTable.getSelectionIndex();
@@ -162,62 +137,21 @@ public class FindMovieDialogForm extends AbstractDialogForm implements OfferMovi
                 shell.close();
             }
         });
-
-        Button btnClose = new Button(footer, SWT.PUSH);
-        btnClose.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-        btnClose.setText(bundle.getString("global.cancel"));
-        btnClose.addSelectionListener(new SelectionAdapter() {
+        transformer.<Button>getMappedObject("btnClose").get().addSelectionListener(new SelectionAdapter() { //NON-NLS
             @Override
             public void widgetSelected(SelectionEvent event) {
                 shell.close();
             }
         });
-    }
-
-    private void createCenter() {
-        mainTable = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
-        mainTable.setHeaderVisible(true);
-        GridData tableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        mainTable.setLayoutData(tableLayoutData);
         mainTable.addSelectionListener(matchSelectionHandler);
-        TableColumn firstColumn = new TableColumn(mainTable, SWT.LEFT | SWT.FLAT);
-        firstColumn.setText(bundle.getString("global.columns.matchedMovieName"));
-        firstColumn.setWidth(300);
-        TableColumn yearColumn = new TableColumn(mainTable, SWT.LEFT | SWT.FLAT);
-        yearColumn.setText(bundle.getString("global.columns.movieYear"));
-        yearColumn.setWidth(50);
-        TableColumn linkColumn = new TableColumn(mainTable, SWT.LEFT | SWT.FLAT);
-        linkColumn.setText(bundle.getString("global.columns.imdbUrl"));
-        linkColumn.setWidth(50);
-
-
-        TabFolder folder = new TabFolder(shell, SWT.NONE);
-        GridData folderGroupData = new GridData(GridData.FILL, GridData.FILL, true, true);
-        folderGroupData.widthHint = 200;
-        folderGroupData.heightHint = 300;
-        folder.setLayoutData(folderGroupData);
-        matchImage = new ShowImageComposite(folder, SWT.NONE, bundle);
-        matchImage.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        matchDescription = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.READ_ONLY);
-        matchDescription.setText(bundle.getString("global.noImagePresent"));
-
-        TabItem tabImage = new TabItem(folder, SWT.NONE);
-        tabImage.setText(bundle.getString("global.tabs.poster"));
-        tabImage.setControl(matchImage);
-        TabItem tabDescription = new TabItem(folder, SWT.NONE);
-        tabDescription.setText(bundle.getString("global.tabs.movieDescription"));
-        tabDescription.setControl(matchDescription);
     }
 
-    private void createHeader() {
-        Composite header = new Composite(shell, SWT.NONE);
-        header.setLayout(new GridLayout(2, false));
-        header.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 2, 1));
-        Label labEmail = new Label(header, SWT.NONE);
-        labEmail.setText(bundle.getString("findMovie.startTyping"));
-        labEmail.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-        movieName = new Text(header, SWT.BORDER);
-        movieName.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+    @Override
+    protected void onShellReady() {
+        persistentHttpContext = httpClientFactoryService.createPersistentHttpContext();
+        if (offerMovieListForFindMovieDialogForm != null)
+            offerMovieListForFindMovieDialogForm.prepareFor(movieName);
+        removeMatchDetails();
     }
 
     private void removeMatchDetails() {

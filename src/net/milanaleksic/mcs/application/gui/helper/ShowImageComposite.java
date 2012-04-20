@@ -19,12 +19,16 @@ public class ShowImageComposite extends Composite implements PaintListener {
     private Optional<Image> image;
     private Optional<String> status;
 
-    public ShowImageComposite(Composite parent, int style, ResourceBundle bundle) {
+    public ShowImageComposite(Composite parent, int style) {
         super(parent, style);
-        this.bundle = bundle;
         image = Optional.absent();
-        status = Optional.of(bundle.getString("global.noImagePresent"));
+        status = Optional.absent();
         addPaintListener(this);
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+        status = Optional.of(bundle.getString("global.noImagePresent"));
     }
 
     @Override

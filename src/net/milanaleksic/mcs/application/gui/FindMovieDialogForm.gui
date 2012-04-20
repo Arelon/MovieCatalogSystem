@@ -1,0 +1,168 @@
+{
+    "layout" : {
+        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "numColumns" : 2
+    },
+    "text" : "[global.findMovie]",
+    "size" : "288,189",
+    "_children" : [
+        {
+            "__comment" : "header",
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 2
+            },
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : "true",
+                "grabExcessVerticalSpace" : "false",
+                "horizontalSpan" : 2
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Label",
+                    "text" : "[findMovie.startTyping]",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.begin}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : "false",
+                        "grabExcessVerticalSpace" : "false"
+                    }
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Text",
+                    "_name" : "movieName",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : "true",
+                        "grabExcessVerticalSpace" : "false"
+                    }
+                }
+            ]
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Table",
+            "_style" : "{border}|{full_selection}",
+            "_name" : "mainTable",
+            "headerVisible" : true,
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : "true",
+                "grabExcessVerticalSpace" : "true"
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.TableColumn",
+                    "_style" : "{left}|{flat}",
+                    "text" : "[global.columns.matchedMovieName]",
+                    "width" : 300
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.TableColumn",
+                    "_style" : "{left}|{flat}",
+                    "text" : "[global.columns.movieYear]",
+                    "width" : 50
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.TableColumn",
+                    "_style" : "{left}|{flat}",
+                    "text" : "[global.columns.imdbUrl]",
+                    "width" : 50
+                }
+            ]
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.TabFolder",
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : "true",
+                "grabExcessVerticalSpace" : "true",
+                "widthHint" : 200,
+                "heightHint" : 300
+            },
+            "_children" : [
+                {
+                    "_type" : "net.milanaleksic.mcs.application.gui.helper.ShowImageComposite",
+                    "_name" : "matchImage",
+                    "bundle" : "(bundle)",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : "true",
+                        "grabExcessVerticalSpace" : "true"
+                    }
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Text",
+                    "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}",
+                    "_name" : "matchDescription",
+                    "text" : "[global.noImagePresent]"
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.TabItem",
+                    "text" : "[global.tabs.poster]",
+                    "control" : "(matchImage)"
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.TabItem",
+                    "text" : "[global.tabs.movieDescription]",
+                    "control" : "(matchDescription)"
+                }
+            ]
+        },
+        {
+            "__comment" : "footer",
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 2
+            },
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.center}",
+                "verticalAlignment" : "{grid.end}",
+                "grabExcessHorizontalSpace" : "true",
+                "grabExcessVerticalSpace" : "false",
+                "horizontalSpan" : 2,
+                "verticalSpan" : 1
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnAccept",
+                    "text" : "[global.save]",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.center}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : "false",
+                        "grabExcessVerticalSpace" : "false"
+                    }
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnClose",
+                    "text" : "[global.cancel]",
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.center}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : "false",
+                        "grabExcessVerticalSpace" : "false"
+                    }
+                }
+            ]
+        }
+    ]
+}

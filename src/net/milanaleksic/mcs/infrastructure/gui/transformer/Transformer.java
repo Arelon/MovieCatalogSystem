@@ -2,7 +2,6 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.*;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
@@ -19,14 +18,13 @@ import java.util.*;
  */
 public class Transformer {
 
-    private static final Logger log = Logger.getLogger(Transformer.class);
-
     private static final String KEY_SPECIAL_TYPE = "_type"; //NON-NLS
     private static final String KEY_SPECIAL_CHILDREN = "_children"; //NON-NLS
     private static final String KEY_SPECIAL_NAME = "_name"; //NON-NLS
     private static final String KEY_SPECIAL_STYLE = "_style"; //NON-NLS
+    private static final String KEY_SPECIAL_COMMENT = "__comment"; //NON-NLS
 
-    private Map<String, Object> mappedObjects = Maps.newHashMap();
+    private Map<String, Object> mappedObjects;
 
     private static final Set<String> SPECIAL_KEYS = ImmutableSet
             .<String>builder()
@@ -34,6 +32,7 @@ public class Transformer {
             .add(KEY_SPECIAL_CHILDREN)
             .add(KEY_SPECIAL_NAME)
             .add(KEY_SPECIAL_STYLE)
+            .add(KEY_SPECIAL_COMMENT)
             .build();
 
     private ObjectMapper mapper;
@@ -42,6 +41,8 @@ public class Transformer {
     public Transformer(ResourceBundle resourceBundle) {
         this.mapper = new ObjectMapper();
         this.mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        this.mappedObjects = Maps.newHashMap();
+        this.mappedObjects.put("bundle", resourceBundle); //NON-NLS
         this.convertorFactory = ConvertorFactory.createFactory(resourceBundle);
     }
 
@@ -60,12 +61,12 @@ public class Transformer {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Optional<T> getMappedObject(String name) {
         Object object = mappedObjects.get(name);
         if (object == null)
             return Optional.absent();
         else
-            //noinspection unchecked
             return Optional.of((T) object);
     }
 
@@ -124,7 +125,7 @@ public class Transformer {
     }
 
     private Optional<Field> getFieldByName(Object object, String fieldName) {
-        for (Field field: object.getClass().getFields()) {
+        for (Field field : object.getClass().getFields()) {
             if (field.getName().equals(fieldName)) {
                 return Optional.of(field);
             }
@@ -149,13 +150,12 @@ public class Transformer {
         try {
             Object widget;
             if (value.has(KEY_SPECIAL_TYPE))
-                widget = Class.forName(value.get(KEY_SPECIAL_TYPE).asText()).newInstance();
-            else
-                widget = widgetClass.newInstance();
+                widgetClass = Class.forName(value.get(KEY_SPECIAL_TYPE).asText());
+            widget = widgetClass.newInstance();
             transformNodeToProperties(value, widget);
             return widget;
         } catch (InstantiationException | TransformerException | IllegalAccessException | ClassNotFoundException e) {
-            throw new TransformerException("Widget creation of class failed", e);
+            throw new TransformerException("Widget creation of class "+widgetClass.getName()+" failed", e);
         }
     }
 
@@ -165,7 +165,23 @@ public class Transformer {
             if (!childDefinition.has(KEY_SPECIAL_TYPE))
                 throw new IllegalArgumentException("Could not deduce the child type without explicit definition");
             widgetClass = Class.forName(childDefinition.get(KEY_SPECIAL_TYPE).asText());
-            Constructor<?> constructor = widgetClass.getConstructor(Composite.class, int.class);
+            Constructor<?> chosenConstructor = null;
+
+            Constructor<?>[] constructors = widgetClass.getConstructors();
+            for (Constructor<?> constructor : constructors) {
+                Class<?>[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length == 2) {
+                    if (Composite.class.isAssignableFrom(parameterTypes[0]) &&
+                            parameterTypes[1].equals(int.class)) {
+                        chosenConstructor = constructor;
+                        break;
+                    }
+                }
+            }
+
+            if (chosenConstructor == null)
+                throw new TransformerException("Could not find adequate constructor(? extends Composite, int) in class "
+                        + widgetClass.getName());
 
             int style = SWT.NONE;
             if (childDefinition.has(KEY_SPECIAL_STYLE)) {
@@ -173,7 +189,7 @@ public class Transformer {
                 AbstractConvertor exactTypeConvertor = (AbstractConvertor) convertorFactory.getExactTypeConvertor(int.class).get();
                 style = (Integer) exactTypeConvertor.getValueFromJson(styleNode);
             }
-            return constructor.newInstance(parent, style);
+            return chosenConstructor.newInstance(parent, style);
         } catch (ReflectiveOperationException e) {
             throw new TransformerException("Widget creation of class failed", e);
         }
