@@ -1,0 +1,124 @@
+{
+    "layout" : {
+        "_type" : "org.eclipse.swt.layout.GridLayout",
+        "numColumns" : 1,
+        "verticalSpacing" : 10
+    },
+    "text" : "[global.aboutProgram]",
+    "size" : "412,326",
+    "_children" : [
+        {
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 1
+            },
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.center}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Label",
+                    "text" : "Movie Catalog System",
+                    "font" : {
+                        "height" : 12,
+                        "style" : "BOLD"
+                    },
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.center}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    },
+                    "foreground" : "#0000ff"
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Label",
+                    "text" : "[about.programAuthor]",
+                    "font" : {
+                        "height" : 10,
+                        "style" : "BOLD"
+                    },
+                    "layoutData" : {
+                        "_type" : "org.eclipse.swt.layout.GridData",
+                        "horizontalAlignment" : "{grid.center}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                }
+            ]
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_style" : "{border}",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 2
+            },
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.center}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Label",
+                    "text" : "milanaleksic@gmail.com",
+                    "foreground" : "#000000"
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnEmail",
+                    "text" : "[about.sendEmail]"
+                }
+            ]
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Composite",
+            "_style" : "{border}",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 2
+            },
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.center}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "org.eclipse.swt.widgets.Label",
+                    "text" : "www.milanaleksic.net",
+                    "foreground" : "#000000"
+                },
+                {
+                    "_type" : "org.eclipse.swt.widgets.Button",
+                    "_name" : "btnSite",
+                    "text" : "[about.visit]"
+                }
+            ]
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Text",
+            "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}|{center}|{border}",
+            "_name" : "textArea",
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true
+            }
+        }
+    ]
+}
