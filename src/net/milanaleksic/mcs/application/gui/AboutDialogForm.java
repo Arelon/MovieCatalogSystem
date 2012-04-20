@@ -1,16 +1,13 @@
 package net.milanaleksic.mcs.application.gui;
 
-import java.awt.Desktop;
-import java.net.URI;
-
 import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
-import net.milanaleksic.mcs.infrastructure.util.*;
-import org.eclipse.swt.SWT;
+import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Text;
+
+import java.awt.*;
+import java.net.URI;
 
 public class AboutDialogForm extends AbstractTransformedDialogForm {
 
