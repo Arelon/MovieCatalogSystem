@@ -1,10 +1,11 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 
 import java.lang.annotation.*;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 
 /**
  * User: Milan Aleksic
@@ -20,13 +21,14 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
     }
 
     @Override
-    @MethodTiming
-    protected void onShellCreated() {
+    @MethodTiming(name = "GUI transformation")
+    protected final void onShellCreated() {
         Transformer transformer = new Transformer(bundle);
         try {
             String thisClassNameAsResourceLocation = this.getClass().getCanonicalName().replaceAll("\\.", "/");
-            String formName = "/"+thisClassNameAsResourceLocation+".gui"; //NON-NLS
+            String formName = "/" + thisClassNameAsResourceLocation + ".gui"; //NON-NLS
             transformer.fillForm(formName, shell);
+            embedComponents(transformer);
             onTransformationComplete(transformer);
         } catch (TransformerException e) {
             logger.error("Transformation failed", e); //NON-NLS
@@ -35,7 +37,7 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
         }
     }
 
-    protected void onTransformationComplete(Transformer transformer) throws IllegalAccessException {
+    private void embedComponents(Transformer transformer) throws IllegalAccessException {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             EmbeddedComponent annotation = field.getAnnotation(EmbeddedComponent.class);
@@ -44,8 +46,13 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
             String name = annotation.name();
             if (name.isEmpty())
                 name = field.getName();
+            if ((field.getModifiers() & Modifier.PRIVATE) != 0)
+                throw new IllegalStateException("Embedded components can not be private fields: "+this.getClass().getName()+"."+field.getName());
             field.set(this, transformer.getMappedObject(name).get());
         }
+    }
+
+    protected void onTransformationComplete(Transformer transformer) {
     }
 
 }

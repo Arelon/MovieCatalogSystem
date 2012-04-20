@@ -428,7 +428,7 @@ public class IntegerConvertor extends AbstractConvertor {
             if (matcher.matches()) {
                 Integer matchedMagicConstantValue = magicConstants.get(matcher.group(1));
                 if (matchedMagicConstantValue == null)
-                    throw new TransformerException("Magic constant does not exist - "+matcher.group(1));
+                    throw new TransformerException("Magic constant does not exist - " + matcher.group(1));
                 ofTheJedi |= matchedMagicConstantValue;
             } else
                 ofTheJedi |= Integer.parseInt(value);

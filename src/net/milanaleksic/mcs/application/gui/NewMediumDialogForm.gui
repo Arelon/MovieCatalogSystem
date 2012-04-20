@@ -3,50 +3,44 @@
         "_type" : "org.eclipse.swt.layout.GridLayout",
         "numColumns" : 2
     },
-    "text" : "[delete.deleteMovie]",
-    "size" : "431,154",
+    "text" : "[newMedium.addNewMedium]",
+    "size" : "288,189",
     "_children" : [
         {
-            "_type" : "org.eclipse.swt.widgets.Canvas",
-            "_name" : "canvas",
-            "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
-                "verticalSpan" : 2,
-                "heightHint" : 64,
-                "widthHint" : 64
-            },
-            "background":"color_widget_background"
-        },
-        {
             "_type" : "org.eclipse.swt.widgets.Label",
+            "_style" : "{left}",
+            "text" : "[newMedium.mediumType]",
             "layoutData" : {
                 "_type" : "org.eclipse.swt.layout.GridData",
-                "horizontalAlignment" : "{grid.center}",
-                "grabExcessHorizontalSpace" : true
-            },
-            "font" : {
-                "style":"BOLD",
-                "height":12
-            },
-            "text" : "[delete.doYouReallyWishToDeleteMovie]",
-            "foreground" : "#ff0000"
-        },
-        {
-            "_type" : "org.eclipse.swt.widgets.Label",
-            "_style" : "{wrap}|{shadow_out}|{horizontal}|{center}",
-            "_name" : "labFilmNaziv",
-            "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
-                "horizontalAlignment" : "{grid.center}",
-                "grabExcessVerticalSpace" : true
-            },
-            "font" : {
-                "style":"BOLD",
-                "height":12
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
             }
         },
         {
-            "_type" : "org.eclipse.swt.widgets.Label"
+            "_type" : "org.eclipse.swt.widgets.Group",
+            "_name" : "group",
+            "layout" : {
+                "_type" : "org.eclipse.swt.layout.GridLayout",
+                "numColumns" : 1
+            }
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Label",
+            "text" : "[newMedium.mediumWillHaveFollowingId]",
+            "layoutData" : {
+                "_type" : "org.eclipse.swt.layout.GridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "org.eclipse.swt.widgets.Text",
+            "_name" : "textID",
+            "_style" : "{border}|{read_only}"
         },
         {
             "_type" : "org.eclipse.swt.widgets.Composite",
@@ -58,13 +52,17 @@
             "layoutData" : {
                 "_type" : "org.eclipse.swt.layout.GridData",
                 "horizontalAlignment" : "{grid.center}",
-                "grabExcessHorizontalSpace" : true
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true,
+                "horizontalSpan" : 2,
+                "verticalSpan" : 1
             },
             "_children" : [
                 {
                     "_type" : "org.eclipse.swt.widgets.Button",
                     "_name" : "btnOk",
-                    "text" : "[delete.confirmDeletion]"
+                    "text" : "[global.save]"
                 },
                 {
                     "_type" : "org.eclipse.swt.widgets.Button",
@@ -73,6 +71,8 @@
                     "layoutData" : {
                         "_type" : "org.eclipse.swt.layout.GridData",
                         "horizontalAlignment" : "{grid.end}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : false,
                         "grabExcessVerticalSpace" : true
                     }
                 }

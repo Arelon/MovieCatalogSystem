@@ -4,7 +4,7 @@ import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
@@ -50,8 +50,7 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
     }
 
     @Override
-    protected void onTransformationComplete(Transformer transformer) throws IllegalAccessException {
-        super.onTransformationComplete(transformer);
+    protected void onTransformationComplete(Transformer transformer) {
         transformer.<Canvas>getMappedObject("canvas").get().addPaintListener(new AlertImagePainter()); //NON-NLS
         transformer.<Button>getMappedObject("btnOk").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS
             @Override
