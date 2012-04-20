@@ -28,17 +28,17 @@ public class UserConfigurationManager implements LifecycleListener {
 
     public UserConfiguration loadUserConfiguration() {
         File configurationFile = new File(CONFIGURATION_FILE);
-        if (configurationFile.exists()) {
-            try {
-                jaxbContext = Optional.of(JAXBContext.newInstance(UserConfiguration.class));
+        try {
+            jaxbContext = Optional.of(JAXBContext.newInstance(UserConfiguration.class));
+            if (configurationFile.exists()) {
                 Unmarshaller u = jaxbContext.get().createUnmarshaller();
                 UserConfiguration ofTheJedi = (UserConfiguration) u.unmarshal(configurationFile);
                 if (log.isInfoEnabled())
                     log.info("UserConfiguration read: " + ofTheJedi); //NON-NLS
                 return ofTheJedi;
-            } catch (Throwable t) {
-                log.error("UserConfiguration could not have been read. Using default settings", t); //NON-NLS
             }
+        } catch (Throwable t) {
+            log.error("UserConfiguration could not have been read. Using default settings", t); //NON-NLS
         }
         log.warn("User configuration file could not have been found! Using defaults..."); //NON-NLS
         return new UserConfiguration();
