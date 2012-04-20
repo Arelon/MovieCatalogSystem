@@ -18,15 +18,6 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
     @EmbeddedComponent
     Label labFilmNaziv = null;
 
-    @EmbeddedComponent
-    Canvas canvas = null;
-
-    @EmbeddedComponent
-    Button btnOk = null;
-
-    @EmbeddedComponent
-    Button btnCancel = null;
-
     private Optional<Film> film = Optional.absent();
 
     public static final String RESOURCE_ALERT_IMAGE = "/net/milanaleksic/mcs/application/res/alert.png"; //NON-NLS
@@ -61,8 +52,8 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
     @Override
     protected void onTransformationComplete(Transformer transformer) throws IllegalAccessException {
         super.onTransformationComplete(transformer);
-        canvas.addPaintListener(new AlertImagePainter());
-        btnOk.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Canvas>getMappedObject("canvas").get().addPaintListener(new AlertImagePainter()); //NON-NLS
+        transformer.<Button>getMappedObject("btnOk").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 filmRepository.deleteFilm(film.get());
@@ -70,7 +61,7 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
                 shell.close();
             }
         });
-        btnCancel.addSelectionListener(new SelectionAdapter() {
+        transformer.<Button>getMappedObject("btnCancel").get().addSelectionListener(new SelectionAdapter() { //NON-NLS
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 shell.close();
             }
