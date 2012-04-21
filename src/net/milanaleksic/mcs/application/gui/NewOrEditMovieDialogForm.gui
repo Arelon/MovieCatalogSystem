@@ -1,0 +1,425 @@
+{
+    "layout" : {
+        "_type" : "gridLayout",
+        "numColumns" : 2,
+        "horizontalSpacing" : 10
+    },
+    "text" : "[newOrEdit.addingOrModifyingMovie]",
+    "_children" : [
+        {
+            "_type" : "label",
+            "_style" : "{right}",
+            "text" : "[newOrEdit.movieName]",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "composite",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 2,
+                "marginWidth" : 0,
+                "marginHeight" : 0
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "combo",
+                    "_style" : "{drop_down}",
+                    "_name" : "comboNaziv",
+                    "visibleItemCount" : 10,
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "button",
+                    "_name" : "btnSearchMovie",
+                    "text" : "[global.search]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                }
+            ]
+        },
+
+        {
+            "_type" : "label",
+            "text" : "[newOrEdit.movieNameTranslated]",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "text",
+            "_style" : "{border}",
+            "_name" : "textPrevod",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+
+        {
+            "_type" : "label",
+            "text" : "[newOrEdit.genre]",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "combo",
+            "_style" : "{read_only}",
+            "_name" : "comboZanr",
+            "visibleItemCount" : 10,
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}"
+            }
+        },
+
+        {
+            "_type" : "label",
+            "text" : "[newOrEdit.yearPublished]",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "text",
+            "_name" : "textGodina",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+
+        {
+            "_type" : "label",
+            "text" : "[newOrEdit.location]",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "combo",
+            "_style" : "{read_only}",
+            "_name" : "comboLokacija",
+            "visibleItemCount" : 10,
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}"
+            }
+        },
+
+        {
+            "_type" : "label",
+            "text" : "[newOrEdit.imdbIdFormat]",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.end}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            }
+        },
+        {
+            "_type" : "composite",
+            "_style" : "{read_only}",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 2,
+                "marginWidth" : 0,
+                "marginHeight" : 0
+            },
+            "_children" : [
+                {
+                    "_type" : "text",
+                    "_name" : "textImdbId",
+                    "_style" : "{border}",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "link",
+                    "text" : "<a>[newOrEdit.goToImdbPage]</a>",
+                    "_name" : "imdbLink",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    },
+                    "enabled" : false
+                }
+            ]
+        },
+
+        {
+            "_type" : "composite",
+            "_style" : "{read_only}",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true,
+                "horizontalSpan" : 1,
+                "verticalSpan" : 2
+            },
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 1
+            },
+            "_children" : [
+                {
+                    "_type" : "showImageComposite",
+                    "_name" : "posterImage",
+                    "bundle" : "(bundle)",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.center}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false,
+                        "widthHint" : 100,
+                        "heightHint" : 140
+                    }
+                }
+            ]
+        },
+        {
+            "_type" : "composite",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 2
+            },
+            "_children" : [
+                {
+                    "_type" : "group",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 1
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "verticalAlignment" : "{grid.begin}"
+                    },
+                    "text" : "[newOrEdit.comment]",
+                    "_children" : [
+                        {
+                            "_type" : "text",
+                            "_style" : "{multi}|{wrap}|{v_scroll}|{border}",
+                            "_name" : "textKomentar",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "widthHint" : 200,
+                                "heightHint" : 120
+                            }
+                        }
+                    ]
+
+                },
+                {
+                    "_type" : "group",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 1
+                    },
+                    "text" : "[global.tags]",
+                    "_children" : [
+                        {
+                            "_type" : "table",
+                            "_style" : "{check}|{border}",
+                            "_name" : "tableTags",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "widthHint" : 100,
+                                "heightHint" : 120
+                            }
+                        }
+                    ]
+
+                }
+            ]
+        },
+
+        {
+            "_type" : "group",
+            "text" : "[newOrEdit.mediums]",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 3
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "widthHint" : 200,
+                "heightHint" : 120
+            },
+            "_children" : [
+
+                {
+                    "_type" : "combo",
+                    "_name" : "comboDisk",
+                    "_style" : "{read_only}",
+                    "visibleItemCount" : 10,
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "button",
+                    "_name" : "btnDodajDisk",
+                    "text" : "[newOrEdit.addMedium]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.begin}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "button",
+                    "_name" : "btnNovMedij",
+                    "text" : "[newOrEdit.newMedium]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.begin}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+
+                {
+                    "_type" : "list",
+                    "_style" : "{v_scroll}|{border}",
+                    "_name" : "listDiskovi",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "heightHint" : 75
+                    }
+                },
+                {
+                    "_type" : "button",
+                    "_name" : "btnOduzmi",
+                    "text" : "[newOrEdit.removeMedium]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.begin}",
+                        "verticalAlignment" : "{grid.end}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false,
+                        "horizontalSpan" : 2,
+                        "verticalSpan" : 1
+                    }
+                }
+            ]
+        },
+
+        {
+            "_type" : "composite",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 2,
+                "verticalSpacing" : 5,
+                "marginWidth" : 5,
+                "marginHeight" : 10,
+                "horizontalSpacing" : 40
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.center}",
+                "verticalAlignment" : "{grid.center}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false,
+                "horizontalSpan" : 2,
+                "verticalSpan" : 1,
+                "widthHint" : -1,
+                "horizontalIndent" : 0
+            },
+            "_children" : [
+                {
+                    "_type" : "button",
+                    "_name" : "btnPrihvati",
+                    "text" : "[global.save]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "widthHint" : 80
+                    }
+                },
+                {
+                    "_type" : "button",
+                    "_name" : "btnOdustani",
+                    "text" : "[global.cancel]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "widthHint" : 80
+                    }
+                }
+            ]
+        }
+    ]
+}
