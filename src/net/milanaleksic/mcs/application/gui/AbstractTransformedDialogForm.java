@@ -33,12 +33,10 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
             onTransformationComplete(transformer);
         } catch (TransformerException e) {
             logger.error("Transformation failed", e); //NON-NLS
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unexpected problem while generating form", e);
         }
     }
 
-    private void embedComponents(Transformer transformer) throws IllegalAccessException {
+    private void embedComponents(Transformer transformer) throws TransformerException {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             EmbeddedComponent annotation = field.getAnnotation(EmbeddedComponent.class);
@@ -52,7 +50,11 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
             Optional<Object> mappedObject = transformer.getMappedObject(name);
             if (!mappedObject.isPresent())
                 throw new IllegalStateException("Field marked as embedded could not be found: "+this.getClass().getName()+"."+field.getName());
-            field.set(this, mappedObject.get());
+            try {
+                field.set(this, mappedObject.get());
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                throw new TransformerException("Error while embedding component field named "+field.getName(), e);
+            }
         }
     }
 

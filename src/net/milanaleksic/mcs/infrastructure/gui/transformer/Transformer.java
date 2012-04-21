@@ -117,7 +117,7 @@ public class Transformer {
                     Class<?> argType = fieldByName.get().getType();
                     convertorFactory.getConvertor(this, argType).setField(fieldByName.get(), object, field.getValue());
                 } else
-                    throw new TransformerException("No setter nor field " + field.getKey() + " could be found in class " + object.getClass());
+                    throw new TransformerException("No setter nor field " + field.getKey() + " could be found in class " + object.getClass().getName() +"; context: "+field.getValue());
             }
         } catch (Throwable t) {
             throw new TransformerException("Transformation was not successful", t);
@@ -149,7 +149,7 @@ public class Transformer {
     private Object createChildObject(Composite parent, JsonNode childDefinition) throws TransformerException {
         try {
             if (!childDefinition.has(KEY_SPECIAL_TYPE))
-                throw new IllegalArgumentException("Could not deduce the child type without explicit definition");
+                throw new IllegalArgumentException("Could not deduce the child type without explicit definition: "+childDefinition);
             Class<?> widgetClass = ObjectConvertor.deduceClassFromNode(childDefinition);
             Constructor<?> chosenConstructor = null;
 

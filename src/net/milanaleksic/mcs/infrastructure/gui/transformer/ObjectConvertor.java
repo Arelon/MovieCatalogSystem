@@ -36,7 +36,10 @@ public class ObjectConvertor extends AbstractConvertor {
                     .put("tabItem", Class.forName("org.eclipse.swt.widgets.TabItem"))
                     .put("table", Class.forName("org.eclipse.swt.widgets.Table"))
                     .put("tableColumn", Class.forName("org.eclipse.swt.widgets.TableColumn"))
+                    .put("link", Class.forName("org.eclipse.swt.widgets.Link"))
+                    .put("list", Class.forName("org.eclipse.swt.widgets.List"))
                     .put("text", Class.forName("org.eclipse.swt.widgets.Text"))
+                    .put("combo", Class.forName("org.eclipse.swt.widgets.Combo"))
                     .build();
         } catch (ClassNotFoundException e) {
             Logger.getLogger(ObjectConvertor.class).error("At least one class was not found on classpath", e);
