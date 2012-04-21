@@ -2,24 +2,22 @@ package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
 import net.milanaleksic.mcs.infrastructure.util.StringUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkElementIndex;
 
-public class SettingsDialogForm extends AbstractDialogForm {
+public class SettingsDialogForm extends AbstractTransformedDialogForm {
 
     @Inject
     private PozicijaRepository pozicijaRepository;
@@ -33,32 +31,55 @@ public class SettingsDialogForm extends AbstractDialogForm {
     @Inject
     private TagRepository tagRepository;
 
-    private SelectionAdapter pozicijaDefaultButtonSelected;
+    private SelectionAdapter pozicijaDefaultButtonSelected = new HandledSelectionAdapter(shell, bundle) {
+        @Override
+        public void handledSelected(SelectionEvent event) throws ApplicationException {
+            Pozicija pozicija = (Pozicija) event.widget.getData();
+            pozicija.setDefault(true);
+            pozicijaRepository.updatePozicija(pozicija);
+            runnerWhenClosingShouldRun = true;
+        }
+    };
 
-    private Table listMediumTypes;
-    private Table listLokacije;
-    private Table listZanrovi;
-    private Table listTagovi;
-    private Text textElementsPerPage;
-    private Combo comboLanguage;
+    @EmbeddedComponent
+    Table listMediumTypes;
+
+    @EmbeddedComponent
+    Table listLokacije;
+
+    @EmbeddedComponent
+    Table listZanrovi;
+
+    @EmbeddedComponent
+    Table listTagovi;
+
+    @EmbeddedComponent
+    Text textElementsPerPage;
+
+    @EmbeddedComponent
+    Combo comboLanguage;
+
+    @EmbeddedComponent
+    Text textProxyServer;
+
+    @EmbeddedComponent
+    Text textProxyServerPort;
+
+    @EmbeddedComponent
+    Text textProxyServerUsername;
+
+    @EmbeddedComponent
+    Text textProxyServerPassword;
+
+    @EmbeddedComponent
+    Button chkProxyServerUsesNtlm;
 
     private Optional<UserConfiguration> userConfiguration = Optional.absent();
 
-    @Override public void open(Shell parent, Runnable callback) {
+    @Override
+    public void open(Shell parent, Runnable callback) {
         this.userConfiguration = Optional.of(applicationManager.getUserConfiguration());
         super.open(parent, callback);
-    }
-
-    private void createDefaultButtonSelectionListener() {
-        pozicijaDefaultButtonSelected = new HandledSelectionAdapter(shell, bundle) {
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                Pozicija pozicija = (Pozicija) event.widget.getData();
-                pozicija.setDefault(true);
-                pozicijaRepository.updatePozicija(pozicija);
-                runnerWhenClosingShouldRun = true;
-            }
-        };
     }
 
     private void reReadData() {
@@ -105,75 +126,25 @@ public class SettingsDialogForm extends AbstractDialogForm {
         }
     }
 
-    @Override protected void onShellCreated() {
-        shell.setText(bundle.getString("settings.programSettings"));
-        shell.setLayout(new GridLayout(1, false));
-        shell.setSize(new Point(500, 350));
-        createTabFolder();
-        createComposite();
-        createDefaultButtonSelectionListener();
+    @Override
+    protected void onTransformationComplete(Transformer transformer) {
+        setupMainTab(transformer);
+        setupMediumTypeTab(transformer);
+        setupLocationTab(transformer);
+        setupGenreTab(transformer);
+        setupTagsTab(transformer);
     }
 
-    @Override protected void onShellReady() {
-        reReadData();
-    }
-
-    private void createComposite() {
-        GridLayout gridLayout = new GridLayout(1, false);
-        gridLayout.horizontalSpacing = 20;
-        Composite composite = new Composite(shell, SWT.NONE);
-        composite.setLayout(gridLayout);
-        composite.setLayoutData(new GridData(GridData.CENTER, GridData.END, true, false));
-        Button btnCancel = new Button(composite, SWT.NONE);
-        btnCancel.setText(bundle.getString("global.close"));
-        btnCancel.setLayoutData(new GridData(GridData.END, GridData.CENTER, false, true));
-        btnCancel.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+    private void setupMainTab(Transformer transformer) {
+        transformer.<Button>getMappedObject("btnCancel").get().addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
                 shell.close();
             }
         });
-    }
-
-    private void createTabFolder() {
-        TabFolder tabFolder = new TabFolder(shell, SWT.NONE);
-        tabFolder.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, true));
-
-        TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-        tabItem.setText(bundle.getString("settings.basicSettings"));
-        tabItem.setControl(createSettingsTabContents(tabFolder));
-        TabItem tabItem1 = new TabItem(tabFolder, SWT.NONE);
-        tabItem1.setText(bundle.getString("settings.mediumTypes"));
-        tabItem1.setControl(createMediumTypeTabContents(tabFolder));
-        TabItem tabItem2 = new TabItem(tabFolder, SWT.NONE);
-        tabItem2.setText(bundle.getString("settings.locations"));
-        tabItem2.setControl(createLocationTabContents(tabFolder));
-        TabItem tabItem3 = new TabItem(tabFolder, SWT.NONE);
-        tabItem3.setText(bundle.getString("settings.genres"));
-        tabItem3.setControl(createGenresTabContents(tabFolder));
-        TabItem tabItem4 = new TabItem(tabFolder, SWT.NONE);
-        tabItem4.setText(bundle.getString("global.tags"));
-        tabItem4.setControl(createTagsTabContents(tabFolder));
-    }
-
-    private Composite createSettingsTabContents(TabFolder tabFolder) {
-        Composite compositeSettings = new Composite(tabFolder, SWT.NONE);
-        compositeSettings.setLayout(new GridLayout(1, false));
-        compositeSettings.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, true));
-
-        Group groupGlobal = new Group(compositeSettings, SWT.NONE);
-        groupGlobal.setText(bundle.getString("settings.globalSettings"));
-        groupGlobal.setLayout(new GridLayout(2, true));
-        groupGlobal.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-
-        // language
-        Label labelLang = new Label(groupGlobal, SWT.NONE);
-        labelLang.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, true, false));
-        labelLang.setText(bundle.getString("settings.language"));
-        comboLanguage = new Combo(groupGlobal, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboLanguage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         for (Language language : Language.values())
             comboLanguage.add(bundle.getString("language.name." + language.getName())); //NON-NLS
-        comboLanguage.select(Language.ordinalForName(userConfiguration.get().getLocaleLanguage()));
+        if (userConfiguration.isPresent())
+            comboLanguage.select(Language.ordinalForName(userConfiguration.get().getLocaleLanguage()));
         comboLanguage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
@@ -183,14 +154,8 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 runnerWhenClosingShouldRun = true;
             }
         });
-
-        //elementsPerPage
-        Label label = new Label(groupGlobal, SWT.NONE);
-        label.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, true, false));
-        label.setText(bundle.getString("settings.numberOfElementsPerPage"));
-        textElementsPerPage = new Text(groupGlobal, SWT.BORDER);
-        textElementsPerPage.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
+        if (userConfiguration.isPresent())
+            textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
         textElementsPerPage.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
@@ -214,36 +179,6 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 runnerWhenClosingShouldRun = true;
             }
         });
-
-        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
-        Group groupProxyServer = new Group(compositeSettings, SWT.NONE);
-        groupProxyServer.setText(bundle.getString("settings.proxyServer"));
-        groupProxyServer.setLayout(new GridLayout(2, false));
-        groupProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        Label labelServer = new Label(groupProxyServer, SWT.NONE);
-        labelServer.setText(bundle.getString("settings.proxyServerAddress"));
-        labelServer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        final Text textProxyServer = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServer.setText(Strings.nullToEmpty(proxyConfiguration.getServer()));
-        textProxyServer.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        Label labelPort = new Label(groupProxyServer, SWT.NONE);
-        labelPort.setText(bundle.getString("settings.proxyServerPort"));
-        labelPort.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        final Text textProxyServerPort = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServerPort.setText(StringUtil.emptyIfNullOtherwiseConvert(proxyConfiguration.getPort()));
-        textProxyServerPort.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        Label labelUsername = new Label(groupProxyServer, SWT.NONE);
-        labelUsername.setText(bundle.getString("settings.username"));
-        labelUsername.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        final Text textProxyServerUsername = new Text(groupProxyServer, SWT.BORDER);
-        textProxyServerUsername.setText(Strings.nullToEmpty(proxyConfiguration.getUsername()));
-        textProxyServerUsername.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        Label labelPassword = new Label(groupProxyServer, SWT.NONE);
-        labelPassword.setText(bundle.getString("settings.password"));
-        labelPassword.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        final Text textProxyServerPassword = new Text(groupProxyServer, SWT.BORDER | SWT.PASSWORD);
-        textProxyServerPassword.setText(Strings.nullToEmpty(proxyConfiguration.getPassword()));
-        textProxyServerPassword.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         ModifyListener proxySettingsModifyListener = new HandledModifyListener(shell, bundle) {
             @Override
             public void handledModifyText() {
@@ -259,13 +194,6 @@ public class SettingsDialogForm extends AbstractDialogForm {
         textProxyServerPort.addModifyListener(proxySettingsModifyListener);
         textProxyServerUsername.addModifyListener(proxySettingsModifyListener);
         textProxyServerPassword.addModifyListener(proxySettingsModifyListener);
-
-        Label labelSpacer = new Label(groupProxyServer, SWT.NONE);
-        labelSpacer.setLayoutData(new GridData(GridData.END, GridData.BEGINNING, true, false));
-        final Button chkProxyServerUsesNtlm = new Button(groupProxyServer, SWT.CHECK);
-        chkProxyServerUsesNtlm.setText(bundle.getString("settings.proxyUsesNtlm"));
-        chkProxyServerUsesNtlm.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false));
-        chkProxyServerUsesNtlm.setSelection(proxyConfiguration.isNtlm());
         chkProxyServerUsesNtlm.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
@@ -273,21 +201,17 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 proxyConfiguration.setNtlm(chkProxyServerUsesNtlm.getSelection());
             }
         });
-        return compositeSettings;
+        if (userConfiguration.isPresent()) {
+            UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
+            textProxyServer.setText(Strings.nullToEmpty(proxyConfiguration.getServer()));
+            textProxyServerPassword.setText(Strings.nullToEmpty(proxyConfiguration.getPassword()));
+            textProxyServerPort.setText(StringUtil.emptyIfNullOtherwiseConvert(proxyConfiguration.getPort()));
+            textProxyServerUsername.setText(Strings.nullToEmpty(proxyConfiguration.getUsername()));
+            chkProxyServerUsesNtlm.setSelection(proxyConfiguration.isNtlm());
+        }
     }
 
-    private Composite createMediumTypeTabContents(TabFolder tabFolder) {
-        Composite compositeGenres = new Composite(tabFolder, SWT.NONE);
-        compositeGenres.setLayout(new GridLayout(2, false));
-        listMediumTypes = new Table(compositeGenres, SWT.BORDER | SWT.FULL_SELECTION);
-        listMediumTypes.setHeaderVisible(true);
-        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
-        listGridData.heightHint = 180;
-        listMediumTypes.setLayoutData(listGridData);
-        TableColumn tableColumn = new TableColumn(listMediumTypes, SWT.LEFT | SWT.FLAT);
-        tableColumn.setText(bundle.getString("settings.mediumTypeName"));
-        tableColumn.setWidth(370);
-
+    private void setupMediumTypeTab(Transformer transformer) {
         listMediumTypes.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listMediumTypes, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -298,11 +222,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 tipMedijaRepository.updateTipMedija(tipMedija);
             }
         }));
-
-        Button btnAddMediumType = new Button(compositeGenres, SWT.NONE);
-        btnAddMediumType.setText(bundle.getString("settings.add"));
-        btnAddMediumType.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddMediumType.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnAddMediumType").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listMediumTypes, SWT.NONE);
@@ -313,10 +233,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        Button btnDeleteMediumType = new Button(compositeGenres, SWT.NONE);
-        btnDeleteMediumType.setText(bundle.getString("global.delete"));
-        btnDeleteMediumType.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteMediumType.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnDeleteMediumType").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listMediumTypes.getSelectionIndex() < 0)
@@ -326,24 +243,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        return compositeGenres;
     }
 
-    private Composite createLocationTabContents(TabFolder tabFolder) {
-        Composite compositeLocations = new Composite(tabFolder, SWT.NONE);
-        compositeLocations.setLayout(new GridLayout(2, false));
-        listLokacije = new Table(compositeLocations, SWT.BORDER | SWT.FULL_SELECTION);
-        listLokacije.setHeaderVisible(true);
-        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
-        listGridData.heightHint = 180;
-        listLokacije.setLayoutData(listGridData);
-        TableColumn tableColumn = new TableColumn(listLokacije, SWT.LEFT);
-        tableColumn.setText(bundle.getString("settings.locationName"));
-        tableColumn.setWidth(320);
-        TableColumn tableColumn1 = new TableColumn(listLokacije, SWT.LEFT | SWT.FLAT);
-        tableColumn1.setText(bundle.getString("settings.locationDefault"));
-        tableColumn1.setWidth(50);
-
+    private void setupLocationTab(Transformer transformer) {
         listLokacije.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listLokacije, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -354,11 +256,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 pozicijaRepository.updatePozicija(pozicija);
             }
         }));
-
-        Button btnAddLocation = new Button(compositeLocations, SWT.NONE);
-        btnAddLocation.setText(bundle.getString("settings.add"));
-        btnAddLocation.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddLocation.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnAddLocation").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
@@ -369,10 +267,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        Button btnDeleteLocation = new Button(compositeLocations, SWT.NONE);
-        btnDeleteLocation.setText(bundle.getString("global.delete"));
-        btnDeleteLocation.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteLocation.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnDeleteLocation").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listLokacije.getSelectionIndex() < 0)
@@ -382,21 +277,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        return compositeLocations;
     }
 
-    private Composite createGenresTabContents(TabFolder tabFolder) {
-        Composite compositeGenres = new Composite(tabFolder, SWT.NONE);
-        compositeGenres.setLayout(new GridLayout(2, false));
-        listZanrovi = new Table(compositeGenres, SWT.BORDER | SWT.FULL_SELECTION);
-        listZanrovi.setHeaderVisible(true);
-        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
-        listGridData.heightHint = 180;
-        listZanrovi.setLayoutData(listGridData);
-        TableColumn tableColumn = new TableColumn(listZanrovi, SWT.LEFT | SWT.FLAT);
-        tableColumn.setText(bundle.getString("settings.genreName"));
-        tableColumn.setWidth(370);
-
+    private void setupGenreTab(Transformer transformer) {
         listZanrovi.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listZanrovi, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -407,11 +290,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 zanrRepository.updateZanr(zanr);
             }
         }));
-
-        Button btnAddGenre = new Button(compositeGenres, SWT.NONE);
-        btnAddGenre.setText(bundle.getString("settings.add"));
-        btnAddGenre.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddGenre.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnAddGenre").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listZanrovi, SWT.NONE);
@@ -422,10 +301,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        Button btnDeleteGenre = new Button(compositeGenres, SWT.NONE);
-        btnDeleteGenre.setText(bundle.getString("global.delete"));
-        btnDeleteGenre.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteGenre.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnDeleteGenre").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listZanrovi.getSelectionIndex() < 0)
@@ -435,21 +311,9 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        return compositeGenres;
     }
 
-    private Composite createTagsTabContents(TabFolder tabFolder) {
-        Composite compositeTags = new Composite(tabFolder, SWT.NONE);
-        compositeTags.setLayout(new GridLayout(2, false));
-        listTagovi = new Table(compositeTags, SWT.BORDER | SWT.FULL_SELECTION);
-        listTagovi.setHeaderVisible(true);
-        GridData listGridData = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 3);
-        listGridData.heightHint = 180;
-        listTagovi.setLayoutData(listGridData);
-        TableColumn tableColumn = new TableColumn(listTagovi, SWT.LEFT | SWT.FLAT);
-        tableColumn.setText(bundle.getString("settings.tagName"));
-        tableColumn.setWidth(370);
-
+    private void setupTagsTab(Transformer transformer) {
         listTagovi.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listTagovi, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -460,11 +324,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 tagRepository.updateTag(tag);
             }
         }));
-
-        Button btnAddTag = new Button(compositeTags, SWT.NONE);
-        btnAddTag.setText(bundle.getString("settings.add"));
-        btnAddTag.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, false, false));
-        btnAddTag.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnAddTag").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listTagovi, SWT.NONE);
@@ -475,10 +335,7 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        Button btnDeleteTag = new Button(compositeTags, SWT.NONE);
-        btnDeleteTag.setText(bundle.getString("global.delete"));
-        btnDeleteTag.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
-        btnDeleteTag.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformer.<Button>getMappedObject("btnDeleteTag").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listTagovi.getSelectionIndex() < 0)
@@ -488,7 +345,11 @@ public class SettingsDialogForm extends AbstractDialogForm {
                 reReadData();
             }
         });
-        return compositeTags;
+    }
+
+    @Override
+    protected void onShellReady() {
+        reReadData();
     }
 
     private String getNewEntityText(TableItem[] items, String nameTemplate) {
