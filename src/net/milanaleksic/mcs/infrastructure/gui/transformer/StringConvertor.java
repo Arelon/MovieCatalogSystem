@@ -26,9 +26,10 @@ public class StringConvertor extends AbstractConvertor {
         if (Strings.isNullOrEmpty(fieldValue))
             return fieldValue;
 
+        // TODO: this should be done better with state machine instead of regex - to allow multiple replacements of different templates
         Matcher matcher = resourceMessage.matcher(fieldValue);
-        if (matcher.matches())
-            fieldValue = resourceBundle.getString(matcher.group(1));
+        if (matcher.find())
+            return matcher.replaceAll(resourceBundle.getString(matcher.group(1)));
         return fieldValue;
     }
 }
