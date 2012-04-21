@@ -1,0 +1,527 @@
+{
+    "text" : "[settings.programSettings]",
+    "layout" : {
+        "_type" : "gridLayout",
+        "numColumns" : 1
+    },
+    "size" : "500,350" ,
+    "_children" : [
+        {
+            "_type" : "tabFolder",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : false,
+                "grabExcessVerticalSpace" : true
+            },
+            "_children" : [
+                {
+                    "_type" : "composite",
+                    "_name" : "settingsTab",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 1
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "group",
+                            "text" : "[settings.globalSettings]",
+                            "layout" : {
+                                "_type" : "gridLayout",
+                                "numColumns" : 2,
+                                "makeColumnsEqualWidth" : true
+                            },
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.begin}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            },
+                            "_children" : [
+                                {
+                                    "_type" : "label",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.begin}",
+                                        "verticalAlignment" : "{grid.center}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    },
+                                    "text" : "[settings.language]"
+                                },
+                                {
+                                    "_type" : "combo",
+                                    "_style" : "{drop_down}|{border}|{read_only}",
+                                    "_name" : "comboLanguage"
+                                },
+
+                                {
+                                    "_type" : "label",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.begin}",
+                                        "verticalAlignment" : "{grid.center}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    },
+                                    "text" : "[settings.numberOfElementsPerPage]"
+                                },
+                                {
+                                    "_type" : "text",
+                                    "_name" : "textElementsPerPage",
+                                    "_style" : "{border}",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.fill}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "_type" : "group",
+                            "text" : "[settings.proxyServer]",
+                            "layout" : {
+                                "_type" : "gridLayout",
+                                "numColumns" : 2
+                            },
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.begin}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            },
+                            "_children" : [
+                                {
+                                    "_type" : "label",
+                                    "text" : "[settings.proxyServerAddress]",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.end}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+                                {
+                                    "_type" : "text",
+                                    "_style" : "{border}",
+                                    "_name" : "textProxyServer",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.fill}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+
+                                {
+                                    "_type" : "label",
+                                    "text" : "[settings.proxyServerPort]",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.end}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+                                {
+                                    "_type" : "text",
+                                    "_style" : "{border}",
+                                    "_name" : "textProxyServerPort",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.fill}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+
+                                {
+                                    "_type" : "label",
+                                    "text" : "[settings.username]",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.end}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+                                {
+                                    "_type" : "text",
+                                    "_style" : "{border}",
+                                    "_name" : "textProxyServerUsername",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.fill}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+
+                                {
+                                    "_type" : "label",
+                                    "text" : "[settings.password]",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.end}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+                                {
+                                    "_type" : "text",
+                                    "_style" : "{border}",
+                                    "_name" : "textProxyServerPassword",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.fill}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+
+                                {
+                                    "_type" : "label",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.end}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                },
+                                {
+                                    "_type" : "button",
+                                    "_style" : "{check}",
+                                    "_name" : "chkProxyServerUsesNtlm",
+                                    "text" : "[settings.proxyUsesNtlm]",
+                                    "layoutData" : {
+                                        "_type" : "gridData",
+                                        "horizontalAlignment" : "{grid.begin}",
+                                        "verticalAlignment" : "{grid.begin}",
+                                        "grabExcessHorizontalSpace" : true,
+                                        "grabExcessVerticalSpace" : false
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+
+                {
+                    "_type" : "composite",
+                    "_name" : "mediumTypeTab",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 2
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "table",
+                            "_style" : "{border}|{full_selection}",
+                            "_name" : "listMediumTypes",
+                            "headerVisible" : true,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.fill}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : true,
+                                "horizontalSpan" : 1,
+                                "verticalSpan" : 3,
+                                "heightHint" : 180
+                            },
+                            "_children" : [
+                                {
+                                    "_type" : "tableColumn",
+                                    "_style" : "{left}|{flat}",
+                                    "text" : "[settings.mediumTypeName]",
+                                    "width" : 370
+                                }
+                            ]
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[settings.add]",
+                            "_name" : "btnAddMediumType",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[global.delete]",
+                            "_name" : "btnDeleteMediumType",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        }
+                    ]
+                },
+
+                {
+                    "_type" : "composite",
+                    "_name" : "locationTab",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 2
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "table",
+                            "_style" : "{border}|{full_selection}",
+                            "_name" : "listLokacije",
+                            "headerVisible" : true,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.fill}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : true,
+                                "horizontalSpan" : 1,
+                                "verticalSpan" : 3,
+                                "heightHint" : 180
+                            },
+                            "_children" : [
+                                {
+                                    "_type" : "tableColumn",
+                                    "_style" : "{left}|{flat}",
+                                    "text" : "[settings.locationName]",
+                                    "width" : 320
+                                },
+                                {
+                                    "_type" : "tableColumn",
+                                    "_style" : "{left}|{flat}",
+                                    "text" : "[settings.locationDefault]",
+                                    "width" : 50
+                                }
+                            ]
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[settings.add]",
+                            "_name" : "btnAddLocation",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[global.delete]",
+                            "_name" : "btnDeleteLocation",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        }
+                    ]
+                },
+
+                {
+                    "_type" : "composite",
+                    "_name" : "genresTab",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 2
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "table",
+                            "_style" : "{border}|{full_selection}",
+                            "_name" : "listZanrovi",
+                            "headerVisible" : true,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.fill}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : true,
+                                "horizontalSpan" : 1,
+                                "verticalSpan" : 3,
+                                "heightHint" : 180
+                            },
+                            "_children" : [
+                                {
+                                    "_type" : "tableColumn",
+                                    "_style" : "{left}|{flat}",
+                                    "text" : "[settings.genreName]",
+                                    "width" : 370
+                                }
+                            ]
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[settings.add]",
+                            "_name" : "btnAddGenre",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[global.delete]",
+                            "_name" : "btnDeleteGenre",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        }
+                    ]
+                },
+
+                {
+                    "_type" : "composite",
+                    "_name" : "tagsTab",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 2
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "table",
+                            "_style" : "{border}|{full_selection}",
+                            "_name" : "listTagovi",
+                            "headerVisible" : true,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.fill}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : true,
+                                "horizontalSpan" : 1,
+                                "verticalSpan" : 3,
+                                "heightHint" : 180
+                            },
+                            "_children" : [
+                                {
+                                    "_type" : "tableColumn",
+                                    "_style" : "{left}|{flat}",
+                                    "text" : "[settings.tagName]",
+                                    "width" : 370
+                                }
+                            ]
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[settings.add]",
+                            "_name" : "btnAddTag",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        },
+                        {
+                            "_type" : "button",
+                            "text" : "[global.delete]",
+                            "_name" : "btnDeleteTag",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        }
+                    ]
+                },
+
+
+                {
+                    "_type" : "tabItem",
+                    "text" : "[settings.basicSettings]",
+                    "control" : "(settingsTab)"
+                },
+                {
+                    "_type" : "tabItem",
+                    "text" : "[settings.mediumTypes]",
+                    "control" : "(mediumTypeTab)"
+                },
+                {
+                    "_type" : "tabItem",
+                    "text" : "[settings.locations]",
+                    "control" : "(locationTab)"
+                },
+                {
+                    "_type" : "tabItem",
+                    "text" : "[settings.genres]",
+                    "control" : "(genresTab)"
+                },
+                {
+                    "_type" : "tabItem",
+                    "text" : "[global.tags]",
+                    "control" : "(tagsTab)"
+                }
+            ]
+        },
+
+        {
+            "__comment" : "Footer",
+            "_type" : "composite",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 1,
+                "horizontalSpacing" : 20
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.center}",
+                "verticalAlignment" : "{grid.end}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "button",
+                    "_name" : "btnCancel",
+                    "text" : "[global.close]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.end}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : true,
+                        "widthHint" : 100
+                    }
+                }
+            ]
+        }
+    ]
+}
