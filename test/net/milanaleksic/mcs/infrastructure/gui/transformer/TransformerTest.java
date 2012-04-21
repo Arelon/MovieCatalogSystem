@@ -1,12 +1,18 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
+import net.milanaleksic.mcs.application.ApplicationManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.util.ResourceBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,14 +23,18 @@ import static org.hamcrest.Matchers.*;
  * Date: 4/19/12
  * Time: 11:37 AM
  */
-@SuppressWarnings({"HardCodedStringLiteral"})
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:spring-beans.xml"})
 public class TransformerTest {
+
+    @Inject
+    Transformer transformer;
 
     @Test
     public void form_creation() throws TransformerException {
-        Transformer transformer = new Transformer(ResourceBundle.getBundle("messages"));
-        Shell form = transformer
+        TransformationContext context = transformer
                 .createFormFromResource("/net/milanaleksic/mcs/infrastructure/gui/transformer/TestForm.gui");
+        Shell form = context.getShell();
         assertThat(form, not(nullValue()));
         assertThat(form.getText(), equalTo("Delete movie"));
         assertThat(form.getSize(), equalTo(new Point(431,154)));
@@ -53,7 +63,7 @@ public class TransformerTest {
 
         assertThat(children[2], Matchers.<Object>instanceOf(Label.class));
         assertThat(((Label)children[2]).getText(), equalTo(""));
-        assertThat((Control)transformer.getMappedObject("labFilmNaziv").get(), equalTo(children[2]));
+        assertThat((Control)context.getMappedObject("labFilmNaziv").get(), equalTo(children[2]));
 
         assertThat(children[3], Matchers.instanceOf(Label.class));
         assertThat(((Label)children[3]).getText(), equalTo(""));

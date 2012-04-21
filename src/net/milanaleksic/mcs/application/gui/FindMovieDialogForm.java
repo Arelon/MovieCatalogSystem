@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.application.gui;
 import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.network.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
@@ -119,7 +119,7 @@ public class FindMovieDialogForm extends AbstractTransformedDialogForm implement
     }
 
     @Override
-    protected void onTransformationComplete(Transformer transformer) {
+    protected void onTransformationComplete(TransformationContext transformer) {
         shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
             public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
                 if (offerMovieListForFindMovieDialogForm != null)

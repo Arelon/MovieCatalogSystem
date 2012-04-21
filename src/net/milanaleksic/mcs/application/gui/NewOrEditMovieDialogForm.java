@@ -6,7 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
@@ -255,7 +255,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     }
 
     @Override
-    protected void onTransformationComplete(Transformer transformer) {
+    protected void onTransformationComplete(TransformationContext transformer) {
         shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
             public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
                 if (offerMovieListForNewOrEditForm != null)

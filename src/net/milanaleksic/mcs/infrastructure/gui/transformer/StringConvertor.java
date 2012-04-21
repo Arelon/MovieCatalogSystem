@@ -1,10 +1,12 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.base.Strings;
+import net.milanaleksic.mcs.application.ApplicationManager;
 import org.codehaus.jackson.JsonNode;
 
-import java.util.ResourceBundle;
-import java.util.regex.*;
+import javax.inject.Inject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * User: Milan Aleksic
@@ -13,12 +15,10 @@ import java.util.regex.*;
  */
 public class StringConvertor extends AbstractConvertor {
 
-    private static final Pattern resourceMessage = Pattern.compile("\\[(.*)\\]");
-    private ResourceBundle resourceBundle;
+    @Inject
+    private ApplicationManager applicationManager;
 
-    public StringConvertor(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
-    }
+    private static final Pattern resourceMessage = Pattern.compile("\\[(.*)\\]");
 
     @Override
     protected Object getValueFromJson(JsonNode node) throws TransformerException {
@@ -29,7 +29,8 @@ public class StringConvertor extends AbstractConvertor {
         // TODO: this should be done better with state machine instead of regex - to allow multiple replacements of different templates
         Matcher matcher = resourceMessage.matcher(fieldValue);
         if (matcher.find())
-            return matcher.replaceAll(resourceBundle.getString(matcher.group(1)));
+            return matcher.replaceAll(applicationManager.getMessagesBundle().getString(matcher.group(1)));
         return fieldValue;
     }
+
 }

@@ -6,7 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.service.FilmService;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.network.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
@@ -194,7 +194,7 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
     }
 
     @Override
-    protected void onTransformationComplete(Transformer transformer) {
+    protected void onTransformationComplete(TransformationContext transformer) {
         unmatchedMoviesTable.addSelectionListener(unmatchedMovieSelectedHandler);
         possibleMatchesTable.addSelectionListener(possibleMatchesSelectedHandler);
         btnAcceptThisMatch.addSelectionListener(acceptMatchHandler);

@@ -1,10 +1,10 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 
+import javax.inject.Inject;
 import java.lang.annotation.*;
 import java.lang.reflect.*;
 
@@ -15,28 +15,34 @@ import java.lang.reflect.*;
  */
 public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
 
+    @Inject
+    private Transformer transformer;
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface EmbeddedComponent {
         String name() default "";
     }
 
+    public void setTransformer(Transformer transformer) {
+        this.transformer = transformer;
+    }
+
     @Override
     @MethodTiming(name = "GUI transformation")
     protected final void onShellCreated() {
-        Transformer transformer = new Transformer(bundle);
         try {
             String thisClassNameAsResourceLocation = this.getClass().getCanonicalName().replaceAll("\\.", "/");
             String formName = "/" + thisClassNameAsResourceLocation + ".gui"; //NON-NLS
-            transformer.fillForm(formName, shell);
-            embedComponents(transformer);
-            onTransformationComplete(transformer);
+            TransformationContext transformationContext = transformer.fillForm(formName, shell);
+            embedComponents(transformationContext);
+            onTransformationComplete(transformationContext);
         } catch (TransformerException e) {
             logger.error("Transformation failed", e); //NON-NLS
         }
     }
 
-    private void embedComponents(Transformer transformer) throws TransformerException {
+    private void embedComponents(TransformationContext transformationContext) throws TransformerException {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             EmbeddedComponent annotation = field.getAnnotation(EmbeddedComponent.class);
@@ -46,19 +52,19 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
             if (name.isEmpty())
                 name = field.getName();
             if ((field.getModifiers() & Modifier.PRIVATE) != 0)
-                throw new IllegalStateException("Embedded components can not be private fields: "+this.getClass().getName()+"."+field.getName());
-            Optional<Object> mappedObject = transformer.getMappedObject(name);
+                throw new IllegalStateException("Embedded components can not be private fields: " + this.getClass().getName() + "." + field.getName());
+            Optional<Object> mappedObject = transformationContext.getMappedObject(name);
             if (!mappedObject.isPresent())
-                throw new IllegalStateException("Field marked as embedded could not be found: "+this.getClass().getName()+"."+field.getName());
+                throw new IllegalStateException("Field marked as embedded could not be found: " + this.getClass().getName() + "." + field.getName());
             try {
                 field.set(this, mappedObject.get());
             } catch (IllegalAccessException | IllegalArgumentException e) {
-                throw new TransformerException("Error while embedding component field named "+field.getName(), e);
+                throw new TransformerException("Error while embedding component field named " + field.getName(), e);
             }
         }
     }
 
-    protected void onTransformationComplete(Transformer transformer) {
+    protected void onTransformationComplete(TransformationContext transformationContext) {
     }
 
 }

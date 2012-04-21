@@ -1,39 +1,29 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
-import org.eclipse.swt.graphics.*;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
+import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * User: Milan Aleksic
  * Date: 4/19/12
  * Time: 2:19 PM
  */
-public class ConvertorFactory {
+class ConvertorFactory implements LifecycleListener {
 
-    private final Map<Class<?>, Convertor> registeredConvertors;
+    private Map<Class<?>, Convertor> registeredConvertors;
 
-    public static ConvertorFactory createFactory(ResourceBundle resourceBundle) {
-        return new ConvertorFactory(resourceBundle);
+    public void setRegisteredConvertors(Map<Class<?>, Convertor> registeredConvertors) {
+        this.registeredConvertors = registeredConvertors;
     }
 
-    public ConvertorFactory(ResourceBundle resourceBundle) {
-        registeredConvertors = ImmutableMap.<Class<?>, Convertor>builder()
-                .put(String.class, new StringConvertor(resourceBundle))
-                .put(boolean.class, new BooleanConvertor())
-                .put(int.class, new IntegerConvertor())
-                .put(Point.class, new PointConvertor())
-                .put(Color.class, new ColorConvertor())
-                .put(Font.class, new FontConvertor())
-                .build();
-    }
-
-    public Convertor getConvertor(final Transformer originator, final Class<?> argType) throws TransformerException {
+    public Convertor getConvertor(final Transformer originator, final Class<?> argType, Map<String, Object> mappedObjects) throws TransformerException {
         Convertor convertor = registeredConvertors.get(argType);
         if (convertor == null)
-            return new ObjectConvertor(originator, argType);
+            return new ObjectConvertor(originator, argType, mappedObjects);
         return convertor;
     }
 
@@ -44,13 +34,14 @@ public class ConvertorFactory {
         return Optional.of(convertor);
     }
 
-    public void cleanUp() {
+    @Override
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
+    }
+
+    @Override
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
         for (Convertor convertor : registeredConvertors.values()) {
             convertor.cleanUp();
         }
-    }
-
-    public Class<Object> getObjectConvertor() {
-        return null;
     }
 }

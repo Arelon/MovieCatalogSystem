@@ -14,6 +14,8 @@
 
     <import resource="spring-beans-jmx.xml" />
 
+    <import resource="spring-beans-transformer.xml" />
+
     <bean id="programArgsManager" class="net.milanaleksic.mcs.application.config.ProgramArgsService" />
 
     <bean id="workerManager" class="net.milanaleksic.mcs.infrastructure.worker.impl.WorkerManagerImpl" />
@@ -36,6 +38,7 @@
                 <ref bean="offerMovieListForFindMovieDialogForm" />
                 <ref bean="offerMovieListForNewOrEditForm" />
                 <ref bean="tmdbService" />
+                <ref bean="convertorFactory" />
             </set>
         </property>
 	</bean>

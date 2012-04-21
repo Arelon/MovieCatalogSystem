@@ -1,6 +1,5 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
@@ -40,6 +39,8 @@ public class ObjectConvertor extends AbstractConvertor {
                     .put("list", Class.forName("org.eclipse.swt.widgets.List"))
                     .put("text", Class.forName("org.eclipse.swt.widgets.Text"))
                     .put("combo", Class.forName("org.eclipse.swt.widgets.Combo"))
+                    .put("toolBar", Class.forName("org.eclipse.swt.widgets.ToolBar"))
+                    .put("toolItem", Class.forName("org.eclipse.swt.widgets.ToolItem"))
                     .build();
         } catch (ClassNotFoundException e) {
             Logger.getLogger(ObjectConvertor.class).error("At least one class was not found on classpath", e);
@@ -47,12 +48,14 @@ public class ObjectConvertor extends AbstractConvertor {
         }
     }
 
-    private Transformer transformer;
-    private Class<?> argType;
+    private final Transformer transformer;
+    private final Class<?> argType;
+    private final Map<String, Object> mappedObjects;
 
-    public ObjectConvertor(Transformer transformer, Class<?> argType) {
+    public ObjectConvertor(Transformer transformer, Class<?> argType, Map<String, Object> mappedObjects) {
         this.transformer = transformer;
         this.argType = argType;
+        this.mappedObjects = mappedObjects;
     }
 
     @Override
@@ -61,10 +64,10 @@ public class ObjectConvertor extends AbstractConvertor {
             String originalValue = node.asText();
             Matcher matcher = magicConstantsValue.matcher(originalValue);
             if (matcher.matches()) {
-                Optional<Object> mappedObject = transformer.getMappedObject(matcher.group(1));
-                if (!mappedObject.isPresent())
+                Object mappedObject = mappedObjects.get(matcher.group(1));
+                if (mappedObject == null)
                     throw new TransformerException("Object does not exist - " + node.asText());
-                return mappedObject.get();
+                return mappedObject;
             } else
                 throw new TransformerException("Invalid syntax for magical value - " + originalValue);
         }
@@ -78,7 +81,7 @@ public class ObjectConvertor extends AbstractConvertor {
             if (deducedClass != null)
                 widgetClass = deducedClass;
             widget = widgetClass.newInstance();
-            transformer.transformNodeToProperties(value, widget);
+            transformer.transformNodeToProperties(value, widget, mappedObjects);
             return widget;
         } catch (InstantiationException | TransformerException | IllegalAccessException e) {
             throw new TransformerException("Widget creation of class " + widgetClass.getName() + " failed", e);

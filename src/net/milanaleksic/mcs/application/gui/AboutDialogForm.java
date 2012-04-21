@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Button;
@@ -54,7 +54,7 @@ public class AboutDialogForm extends AbstractTransformedDialogForm {
     };
 
     @Override
-    protected void onTransformationComplete(Transformer transformer) {
+    protected void onTransformationComplete(TransformationContext transformer) {
         transformer.<Button>getMappedObject("btnEmail").get().addSelectionListener(emailSender);
         transformer.<Button>getMappedObject("btnSite").get().addSelectionListener(webSiteVisitor);
         transformer.<Text>getMappedObject("textArea").get().setText("Copyright 2007-2012 by Milan Aleksic\n\n" +

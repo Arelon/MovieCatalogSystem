@@ -6,7 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.util.StringUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -127,16 +127,16 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
     }
 
     @Override
-    protected void onTransformationComplete(Transformer transformer) {
-        setupMainTab(transformer);
-        setupMediumTypeTab(transformer);
-        setupLocationTab(transformer);
-        setupGenreTab(transformer);
-        setupTagsTab(transformer);
+    protected void onTransformationComplete(TransformationContext transformationContext) {
+        setupMainTab(transformationContext);
+        setupMediumTypeTab(transformationContext);
+        setupLocationTab(transformationContext);
+        setupGenreTab(transformationContext);
+        setupTagsTab(transformationContext);
     }
 
-    private void setupMainTab(Transformer transformer) {
-        transformer.<Button>getMappedObject("btnCancel").get().addSelectionListener(new SelectionAdapter() {
+    private void setupMainTab(TransformationContext transformationContext) {
+        transformationContext.<Button>getMappedObject("btnCancel").get().addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 shell.close();
             }
@@ -211,7 +211,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
         }
     }
 
-    private void setupMediumTypeTab(Transformer transformer) {
+    private void setupMediumTypeTab(TransformationContext transformationContext) {
         listMediumTypes.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listMediumTypes, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -222,7 +222,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 tipMedijaRepository.updateTipMedija(tipMedija);
             }
         }));
-        transformer.<Button>getMappedObject("btnAddMediumType").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnAddMediumType").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listMediumTypes, SWT.NONE);
@@ -233,7 +233,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 reReadData();
             }
         });
-        transformer.<Button>getMappedObject("btnDeleteMediumType").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnDeleteMediumType").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listMediumTypes.getSelectionIndex() < 0)
@@ -245,7 +245,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
         });
     }
 
-    private void setupLocationTab(Transformer transformer) {
+    private void setupLocationTab(TransformationContext transformationContext) {
         listLokacije.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listLokacije, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -256,7 +256,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 pozicijaRepository.updatePozicija(pozicija);
             }
         }));
-        transformer.<Button>getMappedObject("btnAddLocation").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnAddLocation").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
@@ -267,7 +267,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 reReadData();
             }
         });
-        transformer.<Button>getMappedObject("btnDeleteLocation").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnDeleteLocation").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listLokacije.getSelectionIndex() < 0)
@@ -279,7 +279,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
         });
     }
 
-    private void setupGenreTab(Transformer transformer) {
+    private void setupGenreTab(TransformationContext transformationContext) {
         listZanrovi.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listZanrovi, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -290,7 +290,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 zanrRepository.updateZanr(zanr);
             }
         }));
-        transformer.<Button>getMappedObject("btnAddGenre").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnAddGenre").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listZanrovi, SWT.NONE);
@@ -301,7 +301,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 reReadData();
             }
         });
-        transformer.<Button>getMappedObject("btnDeleteGenre").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnDeleteGenre").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listZanrovi.getSelectionIndex() < 0)
@@ -313,7 +313,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
         });
     }
 
-    private void setupTagsTab(Transformer transformer) {
+    private void setupTagsTab(TransformationContext transformationContext) {
         listTagovi.addSelectionListener(new EditableSingleColumnTableSelectionListener(
                 listTagovi, shell, bundle, new EditableSingleColumnTableSelectionListener.ContentEditingFinishedListener() {
             @Override
@@ -324,7 +324,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 tagRepository.updateTag(tag);
             }
         }));
-        transformer.<Button>getMappedObject("btnAddTag").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnAddTag").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 TableItem tableItem = new TableItem(listTagovi, SWT.NONE);
@@ -335,7 +335,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
                 reReadData();
             }
         });
-        transformer.<Button>getMappedObject("btnDeleteTag").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
+        transformationContext.<Button>getMappedObject("btnDeleteTag").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
             @Override
             public void handledSelected(SelectionEvent event) throws ApplicationException {
                 if (listTagovi.getSelectionIndex() < 0)
