@@ -43,15 +43,20 @@ public class MovieDetailsPanel extends Composite {
     private Text commentValue;
     private Optional<Film> film = Optional.absent();
 
-    public MovieDetailsPanel(Composite parent, int style, ResourceBundle bundle, ThumbnailManager thumbnailManager) {
+    public MovieDetailsPanel(Composite parent, int style) {
         super(parent, style);
-        this.bundle = bundle;
-        this.thumbnailManager = thumbnailManager;
         systemFontData = getDisplay().getSystemFont().getFontData()[0];
-        createLayout();
     }
 
-    private void createLayout() {
+    public void setThumbnailManager(ThumbnailManager thumbnailManager) {
+        this.thumbnailManager = thumbnailManager;
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public void prepareLayout() {
         // -----------------------------------------------------
         // moviedetailsimage |           secondColumn          |
         //                   |            movieName            |

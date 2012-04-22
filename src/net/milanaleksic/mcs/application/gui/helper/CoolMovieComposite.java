@@ -30,10 +30,10 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     @Nonnull
     private List<MovieWrapper> movies = Lists.newLinkedList();
 
-    private final ThumbnailManager thumbnailManager;
+    private ThumbnailManager thumbnailManager;
 
-    private final int thumbnailHeight;
-    private final int thumbnailWidth;
+    private int thumbnailHeight;
+    private int thumbnailWidth;
 
     private int selectedIndex = -1;
     private boolean recalculateOfCellLocationsNeeded = false;
@@ -92,13 +92,16 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         }
     }
 
-    public CoolMovieComposite(Composite parent, int style, ThumbnailManager thumbnailManager) {
+    public CoolMovieComposite(Composite parent, int style) {
         super(parent, style | SWT.NO_BACKGROUND);
+        setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        addListeners();
+    }
+
+    public void setThumbnailManager(ThumbnailManager thumbnailManager) {
         this.thumbnailManager = thumbnailManager;
         thumbnailWidth = thumbnailManager.getThumbnailWidth();
         thumbnailHeight = thumbnailManager.getThumbnailHeight();
-        setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-        addListeners();
     }
 
     private void fireMovieSelectionEvent() {
