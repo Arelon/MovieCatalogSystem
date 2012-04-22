@@ -82,7 +82,7 @@ public class FindMovieDialogForm extends AbstractTransformedDialogForm implement
                             new Function<Image, Void>() {
                                 @Override
                                 public Void apply(@Nullable final Image image) {
-                                    setStatusAndImage(Optional.<String>absent(), Optional.<Image>absent());
+                                    setStatusAndImage(Optional.<String>absent(), Optional.of(image));
                                     return null;
                                 }
                             }
