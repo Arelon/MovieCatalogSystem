@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.springframework.context.ApplicationContext;
 
@@ -14,44 +13,37 @@ import java.util.regex.Pattern;
  * Date: 4/19/12
  * Time: 3:03 PM
  */
-public class ObjectConvertor extends AbstractConvertor  {
+public class ObjectConvertor extends AbstractConvertor {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\((.*)\\)");
 
-    private static Map<String, Class<?>> knownClasses = ImmutableMap.of();
+    private static Map<String, Class<?>> knownClasses = ImmutableMap
+            .<String, Class<?>>builder()
+            .put("showImageComposite", net.milanaleksic.mcs.application.gui.helper.ShowImageComposite.class)
 
-    static {
-        try {
-            knownClasses = ImmutableMap
-                    .<String, Class<?>>builder()
-                    .put("showImageComposite", Class.forName("net.milanaleksic.mcs.application.gui.helper.ShowImageComposite"))
+            .put("gridData", org.eclipse.swt.layout.GridData.class)
+            .put("gridLayout", org.eclipse.swt.layout.GridLayout.class)
 
-                    .put("gridData", Class.forName("org.eclipse.swt.layout.GridData"))
-                    .put("gridLayout", Class.forName("org.eclipse.swt.layout.GridLayout"))
+            .put("button", org.eclipse.swt.widgets.Button.class)
+            .put("canvas", org.eclipse.swt.widgets.Canvas.class)
+            .put("composite", org.eclipse.swt.widgets.Composite.class)
+            .put("group", org.eclipse.swt.widgets.Group.class)
+            .put("label", org.eclipse.swt.widgets.Label.class)
+            .put("tabFolder", org.eclipse.swt.widgets.TabFolder.class)
+            .put("tabItem", org.eclipse.swt.widgets.TabItem.class)
+            .put("table", org.eclipse.swt.widgets.Table.class)
+            .put("tableColumn", org.eclipse.swt.widgets.TableColumn.class)
+            .put("link", org.eclipse.swt.widgets.Link.class)
+            .put("list", org.eclipse.swt.widgets.List.class)
+            .put("text", org.eclipse.swt.widgets.Text.class)
+            .put("combo", org.eclipse.swt.widgets.Combo.class)
+            .put("toolBar", org.eclipse.swt.widgets.ToolBar.class)
+            .put("toolItem", org.eclipse.swt.widgets.ToolItem.class)
+            .put("menu", org.eclipse.swt.widgets.Menu.class)
+            .put("menuItem", org.eclipse.swt.widgets.MenuItem.class)
 
-                    .put("button", Class.forName("org.eclipse.swt.widgets.Button"))
-                    .put("canvas", Class.forName("org.eclipse.swt.widgets.Canvas"))
-                    .put("composite", Class.forName("org.eclipse.swt.widgets.Composite"))
-                    .put("group", Class.forName("org.eclipse.swt.widgets.Group"))
-                    .put("label", Class.forName("org.eclipse.swt.widgets.Label"))
-                    .put("tabFolder", Class.forName("org.eclipse.swt.widgets.TabFolder"))
-                    .put("tabItem", Class.forName("org.eclipse.swt.widgets.TabItem"))
-                    .put("table", Class.forName("org.eclipse.swt.widgets.Table"))
-                    .put("tableColumn", Class.forName("org.eclipse.swt.widgets.TableColumn"))
-                    .put("link", Class.forName("org.eclipse.swt.widgets.Link"))
-                    .put("list", Class.forName("org.eclipse.swt.widgets.List"))
-                    .put("text", Class.forName("org.eclipse.swt.widgets.Text"))
-                    .put("combo", Class.forName("org.eclipse.swt.widgets.Combo"))
-                    .put("toolBar", Class.forName("org.eclipse.swt.widgets.ToolBar"))
-                    .put("toolItem", Class.forName("org.eclipse.swt.widgets.ToolItem"))
-
-                    .put("scrolledComposite", Class.forName("org.eclipse.swt.custom.ScrolledComposite"))
-                    .build();
-        } catch (ClassNotFoundException e) {
-            Logger.getLogger(ObjectConvertor.class).error("At least one class was not found on classpath", e);
-            e.printStackTrace();
-        }
-    }
+            .put("scrolledComposite", org.eclipse.swt.custom.ScrolledComposite.class)
+            .build();
 
     private final Transformer transformer;
     private final Class<?> argType;
@@ -107,7 +99,7 @@ public class ObjectConvertor extends AbstractConvertor  {
                 try {
                     return Class.forName(classIdentifier);
                 } catch (ClassNotFoundException e) {
-                    throw new TransformerException("Class was not found: "+classIdentifier, e);
+                    throw new TransformerException("Class was not found: " + classIdentifier, e);
                 }
         }
         return null;
