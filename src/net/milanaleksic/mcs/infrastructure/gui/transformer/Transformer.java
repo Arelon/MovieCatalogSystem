@@ -66,8 +66,8 @@ public class Transformer {
         return transformationContext;
     }
 
-    private void embedComponents(Object targetClass, TransformationContext transformationContext) throws TransformerException {
-        Field[] fields = targetClass.getClass().getDeclaredFields();
+    private void embedComponents(Object targetObject, TransformationContext transformationContext) throws TransformerException {
+        Field[] fields = targetObject.getClass().getDeclaredFields();
         for (Field field : fields) {
             EmbeddedComponent annotation = field.getAnnotation(EmbeddedComponent.class);
             if (annotation == null)
@@ -80,9 +80,9 @@ public class Transformer {
                 field.setAccessible(true);
             Optional<Object> mappedObject = transformationContext.getMappedObject(name);
             if (!mappedObject.isPresent())
-                throw new IllegalStateException("Field marked as embedded could not be found: " + this.getClass().getName() + "." + field.getName());
+                throw new IllegalStateException("Field marked as embedded could not be found: " + targetObject.getClass().getName() + "." + field.getName());
             try {
-                field.set(targetClass, mappedObject.get());
+                field.set(targetObject, mappedObject.get());
             } catch (IllegalAccessException | IllegalArgumentException e) {
                 throw new TransformerException("Error while embedding component field named " + field.getName(), e);
             } finally {
