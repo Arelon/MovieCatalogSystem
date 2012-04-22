@@ -62,7 +62,8 @@ public class FindMovieDialogForm extends AbstractTransformedDialogForm implement
             }
             TableItem item = mainTable.getItem(selectionIndex);
             Movie movie = (Movie) item.getData();
-            checkNotNull(movie);
+            if (movie == null)
+                return;
             Optional<String> appropriateImageUrl = getAppropriateImageUrl(movie);
             matchDescription.setText(Strings.nullToEmpty(movie.getOverview()));
             if (appropriateImageUrl.isPresent())

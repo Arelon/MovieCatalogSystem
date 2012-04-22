@@ -35,6 +35,7 @@
                 },
                 {
                     "_type" : "text",
+                    "_style" : "{border}",
                     "_name" : "movieName",
                     "layoutData" : {
                         "_type" : "gridData",

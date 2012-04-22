@@ -121,6 +121,7 @@
         },
         {
             "_type" : "text",
+            "_style" : "{border}",
             "_name" : "textGodina",
             "layoutData" : {
                 "_type" : "gridData",
@@ -183,6 +184,7 @@
             "_children" : [
                 {
                     "_type" : "text",
+                    "_style" : "{border}",
                     "_name" : "textImdbId",
                     "_style" : "{border}",
                     "layoutData" : {
