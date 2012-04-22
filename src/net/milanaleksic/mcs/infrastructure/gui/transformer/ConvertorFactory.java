@@ -4,6 +4,9 @@ import com.google.common.base.Optional;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
 
@@ -12,8 +15,9 @@ import java.util.Map;
  * Date: 4/19/12
  * Time: 2:19 PM
  */
-class ConvertorFactory implements LifecycleListener {
+class ConvertorFactory implements LifecycleListener, ApplicationContextAware {
 
+    private ApplicationContext applicationContext;
     private Map<Class<?>, Convertor> registeredConvertors;
 
     public void setRegisteredConvertors(Map<Class<?>, Convertor> registeredConvertors) {
@@ -23,7 +27,7 @@ class ConvertorFactory implements LifecycleListener {
     public Convertor getConvertor(final Transformer originator, final Class<?> argType, Map<String, Object> mappedObjects) throws TransformerException {
         Convertor convertor = registeredConvertors.get(argType);
         if (convertor == null)
-            return new ObjectConvertor(originator, argType, mappedObjects);
+            return new ObjectConvertor(originator, argType, mappedObjects, applicationContext);
         return convertor;
     }
 
@@ -43,5 +47,10 @@ class ConvertorFactory implements LifecycleListener {
         for (Convertor convertor : registeredConvertors.values()) {
             convertor.cleanUp();
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

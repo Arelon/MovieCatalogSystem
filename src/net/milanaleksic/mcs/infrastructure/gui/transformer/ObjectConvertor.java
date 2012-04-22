@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
  * Date: 4/19/12
  * Time: 3:03 PM
  */
-public class ObjectConvertor extends AbstractConvertor {
+public class ObjectConvertor extends AbstractConvertor  {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\((.*)\\)");
 
@@ -24,8 +25,10 @@ public class ObjectConvertor extends AbstractConvertor {
             knownClasses = ImmutableMap
                     .<String, Class<?>>builder()
                     .put("showImageComposite", Class.forName("net.milanaleksic.mcs.application.gui.helper.ShowImageComposite"))
+
                     .put("gridData", Class.forName("org.eclipse.swt.layout.GridData"))
                     .put("gridLayout", Class.forName("org.eclipse.swt.layout.GridLayout"))
+
                     .put("button", Class.forName("org.eclipse.swt.widgets.Button"))
                     .put("canvas", Class.forName("org.eclipse.swt.widgets.Canvas"))
                     .put("composite", Class.forName("org.eclipse.swt.widgets.Composite"))
@@ -41,6 +44,8 @@ public class ObjectConvertor extends AbstractConvertor {
                     .put("combo", Class.forName("org.eclipse.swt.widgets.Combo"))
                     .put("toolBar", Class.forName("org.eclipse.swt.widgets.ToolBar"))
                     .put("toolItem", Class.forName("org.eclipse.swt.widgets.ToolItem"))
+
+                    .put("scrolledComposite", Class.forName("org.eclipse.swt.custom.ScrolledComposite"))
                     .build();
         } catch (ClassNotFoundException e) {
             Logger.getLogger(ObjectConvertor.class).error("At least one class was not found on classpath", e);
@@ -51,11 +56,13 @@ public class ObjectConvertor extends AbstractConvertor {
     private final Transformer transformer;
     private final Class<?> argType;
     private final Map<String, Object> mappedObjects;
+    private final ApplicationContext applicationContext;
 
-    public ObjectConvertor(Transformer transformer, Class<?> argType, Map<String, Object> mappedObjects) {
+    public ObjectConvertor(Transformer transformer, Class<?> argType, Map<String, Object> mappedObjects, ApplicationContext applicationContext) {
         this.transformer = transformer;
         this.argType = argType;
         this.mappedObjects = mappedObjects;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -65,6 +72,8 @@ public class ObjectConvertor extends AbstractConvertor {
             Matcher matcher = magicConstantsValue.matcher(originalValue);
             if (matcher.matches()) {
                 Object mappedObject = mappedObjects.get(matcher.group(1));
+                if (mappedObject == null)
+                    mappedObject = applicationContext.getBean(matcher.group(1));
                 if (mappedObject == null)
                     throw new TransformerException("Object does not exist - " + node.asText());
                 return mappedObject;
@@ -103,6 +112,5 @@ public class ObjectConvertor extends AbstractConvertor {
         }
         return null;
     }
-
 
 }
