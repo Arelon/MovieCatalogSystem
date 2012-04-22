@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.collect.ImmutableMap;
 import org.codehaus.jackson.JsonNode;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
@@ -64,10 +65,13 @@ public class ObjectConvertor extends AbstractConvertor {
             Matcher matcher = magicConstantsValue.matcher(originalValue);
             if (matcher.matches()) {
                 Object mappedObject = mappedObjects.get(matcher.group(1));
-                if (mappedObject == null)
-                    mappedObject = applicationContext.getBean(matcher.group(1));
-                if (mappedObject == null)
-                    throw new TransformerException("Object does not exist - " + node.asText());
+                if (mappedObject == null) {
+                    try {
+                        mappedObject = applicationContext.getBean(matcher.group(1));
+                    } catch (NoSuchBeanDefinitionException e) {
+                        throw new TransformerException("Object does not exist - " + node.asText());
+                    }
+                }
                 return mappedObject;
             } else
                 throw new TransformerException("Invalid syntax for magical value - " + originalValue);

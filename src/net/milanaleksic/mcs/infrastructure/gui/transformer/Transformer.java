@@ -9,8 +9,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -108,23 +107,19 @@ public class Transformer {
     }
 
     private void deserializeObjectFromNode(JsonNode jsonNode, Object object, Map<String, Object> mappedObjects) throws TransformerException {
-        transformNodeToProperties(jsonNode, object, mappedObjects);
-        createChildrenIfTheyExist(jsonNode, object, mappedObjects);
         if (jsonNode.has(KEY_SPECIAL_NAME)) {
             String objectName = jsonNode.get(KEY_SPECIAL_NAME).asText();
             mappedObjects.put(objectName, object);
         }
+        transformNodeToProperties(jsonNode, object, mappedObjects);
     }
 
-    private void createChildrenIfTheyExist(JsonNode parentNode, Object object, Map<String, Object> mappedObjects) throws TransformerException {
-        if (!parentNode.has(KEY_SPECIAL_CHILDREN))
-            return;
-        if (!(object instanceof Composite))
-            throw new IllegalStateException("Can not create children for parent which is not Composite");
-        Composite compositeParent = (Composite) object;
+    private void transformChildren(JsonNode childrenNodes, Object parentWidget, Map<String, Object> mappedObjects) throws TransformerException {
+        if (!(parentWidget instanceof Composite) && !(parentWidget instanceof Menu))
+            throw new IllegalStateException("Can not create children for parent which is not Composite nor Menu (" + parentWidget.getClass().getName() + " in this case)");
         try {
-            for (JsonNode node : mapper.readValue(parentNode.get(KEY_SPECIAL_CHILDREN), JsonNode[].class)) {
-                Object childObject = createChildObject(compositeParent, node);
+            for (JsonNode node : mapper.readValue(childrenNodes, JsonNode[].class)) {
+                Object childObject = createChildObject(parentWidget, node);
                 deserializeObjectFromNode(node, childObject, mappedObjects);
             }
         } catch (IOException e) {
@@ -136,7 +131,10 @@ public class Transformer {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.getFields();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
-            transformSingleJsonNode(object, field, mappedObjects);
+            if (field.getKey().equals(KEY_SPECIAL_CHILDREN))
+                transformChildren(field.getValue(), object, mappedObjects);
+            else
+                transformSingleJsonNode(object, field, mappedObjects);
         }
     }
 
@@ -183,7 +181,7 @@ public class Transformer {
         return "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1); //NON-NLS
     }
 
-    private Object createChildObject(Composite parent, JsonNode childDefinition) throws TransformerException {
+    private Object createChildObject(Object parent, JsonNode childDefinition) throws TransformerException {
         try {
             if (!childDefinition.has(KEY_SPECIAL_TYPE))
                 throw new IllegalArgumentException("Could not deduce the child type without explicit definition: " + childDefinition);
@@ -194,7 +192,8 @@ public class Transformer {
             for (Constructor<?> constructor : constructors) {
                 Class<?>[] parameterTypes = constructor.getParameterTypes();
                 if (parameterTypes.length == 2) {
-                    if (Composite.class.isAssignableFrom(parameterTypes[0]) &&
+                    if ((Composite.class.isAssignableFrom(parameterTypes[0]) ||
+                            Menu.class.isAssignableFrom(parameterTypes[0])) &&
                             parameterTypes[1].equals(int.class)) {
                         chosenConstructor = constructor;
                         break;
