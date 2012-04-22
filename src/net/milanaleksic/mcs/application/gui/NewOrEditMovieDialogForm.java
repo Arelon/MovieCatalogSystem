@@ -6,6 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
@@ -65,40 +66,40 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     FindMovieDialogForm findMovieDialogForm;
 
     @EmbeddedComponent
-    Combo comboLokacija;
+    private Combo comboLokacija = null;
 
     @EmbeddedComponent
-    Combo comboZanr;
+    private Combo comboZanr = null;
 
     @EmbeddedComponent
-    Combo comboDisk;
+    private Combo comboDisk = null;
 
     @EmbeddedComponent
-    List listDiskovi;
+    private List listDiskovi = null;
 
     @EmbeddedComponent
-    Combo comboNaziv;
+    private Combo comboNaziv = null;
 
     @EmbeddedComponent
-    Text textPrevod;
+    private Text textPrevod = null;
 
     @EmbeddedComponent
-    Text textImdbId;
+    private Text textImdbId = null;
 
     @EmbeddedComponent
-    Link imdbLink;
+    private Link imdbLink = null;
 
     @EmbeddedComponent
-    Text textGodina;
+    private Text textGodina = null;
 
     @EmbeddedComponent
-    Text textKomentar;
+    private Text textKomentar = null;
 
     @EmbeddedComponent
-    Table tableTags;
+    private Table tableTags = null;
 
     @EmbeddedComponent
-    ShowImageComposite posterImage;
+    private ShowImageComposite posterImage = null;
 
     private Optional<Film> activeFilm;
 

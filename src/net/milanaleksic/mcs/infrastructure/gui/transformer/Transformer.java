@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import net.milanaleksic.mcs.application.ApplicationManager;
+import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -52,11 +53,50 @@ public class Transformer {
         this.mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
     }
 
-    public TransformationContext createFormFromResource(String fullName) throws TransformerException {
+    public TransformationContext fillManagedForm(Object formObject) throws TransformerException {
+        return fillManagedForm(formObject, new Shell());
+    }
+
+    @MethodTiming(name = "GUI transformation")
+    public TransformationContext fillManagedForm(Object formObject, Shell shell) throws TransformerException {
+        String thisClassNameAsResourceLocation = formObject.getClass().getCanonicalName().replaceAll("\\.", "/");
+        String formName = "/" + thisClassNameAsResourceLocation + ".gui"; //NON-NLS
+        TransformationContext transformationContext = fillForm(formName, shell);
+        embedComponents(formObject, transformationContext);
+        return transformationContext;
+    }
+
+    private void embedComponents(Object targetClass, TransformationContext transformationContext) throws TransformerException {
+        Field[] fields = targetClass.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            EmbeddedComponent annotation = field.getAnnotation(EmbeddedComponent.class);
+            if (annotation == null)
+                continue;
+            String name = annotation.name();
+            if (name.isEmpty())
+                name = field.getName();
+            boolean wasPublic = Modifier.isPublic(field.getModifiers());
+            if (!wasPublic)
+                field.setAccessible(true);
+            Optional<Object> mappedObject = transformationContext.getMappedObject(name);
+            if (!mappedObject.isPresent())
+                throw new IllegalStateException("Field marked as embedded could not be found: " + this.getClass().getName() + "." + field.getName());
+            try {
+                field.set(targetClass, mappedObject.get());
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                throw new TransformerException("Error while embedding component field named " + field.getName(), e);
+            } finally {
+                if (!wasPublic)
+                    field.setAccessible(false);
+            }
+        }
+    }
+
+    TransformationContext createFormFromResource(String fullName) throws TransformerException {
         return fillForm(fullName, new Shell());
     }
 
-    public TransformationContext fillForm(String fullName, Shell shell) throws TransformerException {
+    private TransformationContext fillForm(String fullName, Shell shell) throws TransformerException {
         Map<String, Object> mappedObjects = Maps.newHashMap();
         mappedObjects.put("bundle", applicationManager.getMessagesBundle());
         try (InputStream resourceAsStream = getClass().getResourceAsStream(fullName)) {
@@ -114,7 +154,7 @@ public class Transformer {
                     Class<?> argType = fieldByName.get().getType();
                     convertorFactory.getConvertor(this, argType, mappedObjects).setField(fieldByName.get(), object, field.getValue());
                 } else
-                    throw new TransformerException("No setter nor field " + field.getKey() + " could be found in class " + object.getClass().getName() +"; context: "+field.getValue());
+                    throw new TransformerException("No setter nor field " + field.getKey() + " could be found in class " + object.getClass().getName() + "; context: " + field.getValue());
             }
         } catch (Throwable t) {
             throw new TransformerException("Transformation was not successful", t);
@@ -146,7 +186,7 @@ public class Transformer {
     private Object createChildObject(Composite parent, JsonNode childDefinition) throws TransformerException {
         try {
             if (!childDefinition.has(KEY_SPECIAL_TYPE))
-                throw new IllegalArgumentException("Could not deduce the child type without explicit definition: "+childDefinition);
+                throw new IllegalArgumentException("Could not deduce the child type without explicit definition: " + childDefinition);
             Class<?> widgetClass = ObjectConvertor.deduceClassFromNode(childDefinition);
             Constructor<?> chosenConstructor = null;
 

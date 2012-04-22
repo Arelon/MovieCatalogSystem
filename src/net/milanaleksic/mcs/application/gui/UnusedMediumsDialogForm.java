@@ -4,6 +4,7 @@ import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.MedijService;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,7 +19,7 @@ public class UnusedMediumsDialogForm extends AbstractTransformedDialogForm {
     @Inject private MedijService medijService;
 
     @EmbeddedComponent
-    Table unusedMediumTable = null;
+    private Table unusedMediumTable = null;
 
     @Override protected void onTransformationComplete(TransformationContext transformer) {
         transformer.<Button>getMappedObject("btnDeleteUnusedMedium").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS

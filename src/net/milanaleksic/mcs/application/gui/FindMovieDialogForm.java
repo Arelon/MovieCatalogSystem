@@ -3,17 +3,23 @@ package net.milanaleksic.mcs.application.gui;
 import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
-import net.milanaleksic.mcs.infrastructure.network.*;
-import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
+import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
+import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
+import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 
-import javax.annotation.*;
-import javax.inject.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.net.URI;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,16 +27,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FindMovieDialogForm extends AbstractTransformedDialogForm implements OfferMovieList.Receiver {
 
     @EmbeddedComponent
-    Text matchDescription = null;
+    private Text matchDescription = null;
 
     @EmbeddedComponent
-    Text movieName = null;
+    private Text movieName = null;
 
     @EmbeddedComponent
-    Table mainTable = null;
+    private Table mainTable = null;
 
     @EmbeddedComponent
-    ShowImageComposite matchImage = null;
+    private ShowImageComposite matchImage = null;
 
     private Optional<Movie> selectedMovie = Optional.absent();
 

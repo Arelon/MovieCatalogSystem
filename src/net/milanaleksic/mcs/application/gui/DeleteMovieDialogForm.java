@@ -1,9 +1,12 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.*;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.domain.model.Film;
+import net.milanaleksic.mcs.domain.model.FilmRepository;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.events.*;
@@ -16,7 +19,7 @@ import javax.inject.Inject;
 public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
 
     @EmbeddedComponent
-    Label labFilmNaziv = null;
+    private Label labFilmNaziv = null;
 
     private Optional<Film> film = Optional.absent();
 

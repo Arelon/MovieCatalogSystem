@@ -5,6 +5,7 @@ import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.MedijService;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -24,10 +25,10 @@ public class NewMediumDialogForm extends AbstractTransformedDialogForm {
     private Optional<TipMedija> selectedMediumType = Optional.absent();
 
     @EmbeddedComponent
-    Text textID = null;
+    private Text textID = null;
 
     @EmbeddedComponent
-    Group group = null;
+    private Group group = null;
 
 	@Override protected void onTransformationComplete(TransformationContext transformer) {
         transformer.<Button>getMappedObject("btnOk").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS

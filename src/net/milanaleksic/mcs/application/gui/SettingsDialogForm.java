@@ -6,6 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.util.StringUtil;
 import org.eclipse.swt.SWT;
@@ -42,37 +43,37 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
     };
 
     @EmbeddedComponent
-    Table listMediumTypes;
+    private Table listMediumTypes = null;
 
     @EmbeddedComponent
-    Table listLokacije;
+    private Table listLokacije = null;
 
     @EmbeddedComponent
-    Table listZanrovi;
+    private Table listZanrovi = null;
 
     @EmbeddedComponent
-    Table listTagovi;
+    private Table listTagovi = null;
 
     @EmbeddedComponent
-    Text textElementsPerPage;
+    private Text textElementsPerPage = null;
 
     @EmbeddedComponent
-    Combo comboLanguage;
+    private Combo comboLanguage = null;
 
     @EmbeddedComponent
-    Text textProxyServer;
+    private Text textProxyServer = null;
 
     @EmbeddedComponent
-    Text textProxyServerPort;
+    private Text textProxyServerPort = null;
 
     @EmbeddedComponent
-    Text textProxyServerUsername;
+    private Text textProxyServerUsername = null;
 
     @EmbeddedComponent
-    Text textProxyServerPassword;
+    private Text textProxyServerPassword = null;
 
     @EmbeddedComponent
-    Button chkProxyServerUsesNtlm;
+    private Button chkProxyServerUsesNtlm = null;
 
     private Optional<UserConfiguration> userConfiguration = Optional.absent();
 

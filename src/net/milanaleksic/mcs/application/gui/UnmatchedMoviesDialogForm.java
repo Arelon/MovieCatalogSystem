@@ -6,6 +6,7 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.service.FilmService;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
 import net.milanaleksic.mcs.infrastructure.network.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.*;
@@ -39,22 +40,22 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
     private HttpClientFactoryService httpClientFactoryService;
 
     @EmbeddedComponent
-    Table unmatchedMoviesTable = null;
+    private Table unmatchedMoviesTable = null;
 
     @EmbeddedComponent
-    Button btnStartMatching = null;
+    private Button btnStartMatching = null;
 
     @EmbeddedComponent
-    Table possibleMatchesTable = null;
+    private Table possibleMatchesTable = null;
 
     @EmbeddedComponent
-    ShowImageComposite matchImage = null;
+    private ShowImageComposite matchImage = null;
 
     @EmbeddedComponent
-    Text matchDescription = null;
+    private Text matchDescription = null;
 
     @EmbeddedComponent
-    Button btnAcceptThisMatch = null;
+    private Button btnAcceptThisMatch = null;
 
     private PersistentHttpContext persistentHttpContext;
 
