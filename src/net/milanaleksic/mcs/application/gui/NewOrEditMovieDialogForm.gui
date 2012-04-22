@@ -186,7 +186,6 @@
                     "_type" : "text",
                     "_style" : "{border}",
                     "_name" : "textImdbId",
-                    "_style" : "{border}",
                     "layoutData" : {
                         "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
