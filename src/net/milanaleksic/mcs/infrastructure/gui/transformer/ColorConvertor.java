@@ -25,6 +25,7 @@ public class ColorConvertor extends AbstractConvertor {
     @SuppressWarnings({"HardCodedStringLiteral"})
     private static final Map<String, Integer> systemColors = ImmutableMap
             .<String, Integer>builder()
+            .put("color_white", SWT.COLOR_WHITE)
             .put("color_black", SWT.COLOR_BLACK)
             .put("color_red", SWT.COLOR_RED)
             .put("color_dark_red", SWT.COLOR_DARK_RED)
