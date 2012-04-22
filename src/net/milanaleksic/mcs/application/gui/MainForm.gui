@@ -1,0 +1,401 @@
+{
+    "text" : "Movie Catalog System (C) by Milan.Aleksic@gmail.com",
+    "layout" : {
+        "_type" : "gridLayout",
+        "numColumns" : 1
+    },
+    "image" : "/net/milanaleksic/mcs/application/res/database-64.png",
+    "_children" : [
+        {
+            "_type" : "composite",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 2,
+                "marginWidth" : 0,
+                "marginHeight" : 0
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "toolBar",
+                    "_style" : "{flat}|{wrap}",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false,
+                        "horizontalSpan" : 1,
+                        "verticalSpan" : 1
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "toolItem",
+                            "_style" : "{push}",
+                            "_name" : "toolNew",
+                            "text" : "[global.newMovie]",
+                            "image" : "/net/milanaleksic/mcs/application/res/media.png"
+                        },
+                        {
+                            "_type" : "toolItem",
+                            "_style" : "{push}",
+                            "_name" : "toolErase",
+                            "text" : "[global.deleteMovie]",
+                            "image" : "/net/milanaleksic/mcs/application/res/alert.png"
+                        },
+                        {
+                            "_type" : "toolItem",
+                            "_style" : "{push}",
+                            "_name" : "toolExport",
+                            "text" : "[main.export]",
+                            "image" : "/net/milanaleksic/mcs/application/res/folder_outbox.png"
+                        },
+                        {
+                            "_type" : "toolItem",
+                            "_style" : "{drop_down}",
+                            "_name" : "toolSettings",
+                            "text" : "[main.settings]",
+                            "image" : "/net/milanaleksic/mcs/application/res/advancedsettings.png",
+                            "width": 90
+                        },
+                        {
+                            "_type" : "toolItem",
+                            "_style" : "{push}",
+                            "_name" : "toolAbout",
+                            "text" : "[global.aboutProgram]",
+                            "image" : "/net/milanaleksic/mcs/application/res/jabber_protocol.png"
+                        },
+                        {
+                            "_type" : "toolItem",
+                            "_style" : "{push}",
+                            "_name" : "toolExit",
+                            "text" : "[main.exit]",
+                            "image" : "/net/milanaleksic/mcs/application/res/shutdown.png"
+                        }
+                    ]
+                },
+                {
+                    "_type" : "canvas",
+                    "_name" : "toolTicker",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.center}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false,
+                        "widthHint" : 24,
+                        "heightHint" : 24
+                    }
+                }
+            ]
+        },
+
+        {
+            "_type" : "composite",
+            "background" : "color_white",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 1,
+                "marginWidth" : 0,
+                "marginHeight" : 0
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true
+            },
+            "_children" : [
+                {
+                    "_type" : "composite",
+                    "_name" : "searchFilterLineComposite",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 2
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false,
+                        "heightHint" : 0
+                    },
+                    "background" : "color_info_background",
+                    "_children" : [
+                        {
+                            "_type" : "label",
+                            "text" : "[main.activeFilter]",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.begin}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false
+                            },
+                            "background" : "color_info_background"
+                        },
+                        {
+                            "_type" : "label",
+                            "_name" : "labelFilter",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            },
+                            "background" : "color_info_background",
+                            "font" : {
+                                "style" : "BOLD"
+                            }
+                        }
+                    ]
+                },
+
+                {
+                    "_type" : "scrolledComposite",
+                    "_style" : "{v_scroll}",
+                    "_name" : "mainTableWrapper",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : true
+                    },
+                    "expandHorizontal" : true,
+                    "expandVertical" : true,
+                    "_children" : [
+                        {
+                            "_type" : "net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite",
+                            "_name" : "mainTable",
+                            "thumbnailManager" : "(thumbnailManager)"
+                        }
+                    ],
+                    "content" : "(mainTable)"
+                },
+
+                {
+                    "_type" : "net.milanaleksic.mcs.application.gui.helper.MovieDetailsPanel",
+                    "_name" : "movieDetailsPanel",
+                    "thumbnailManager" : "(thumbnailManager)",
+                    "bundle" : "(bundle)",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.end}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false,
+                        "heightHint" : 0
+                    }
+                }
+            ]
+        },
+
+        {
+            "_type" : "composite",
+            "_style" : "{border}",
+            "_name" : "statusBar",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 3
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.end}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : false
+            },
+            "_children" : [
+                {
+                    "_type" : "composite",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 3,
+                        "marginWidth" : 0,
+                        "marginHeight" : 0
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.begin}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "button",
+                            "_style" : "{push}",
+                            "_name" : "btnPrevPage",
+                            "text" : "<<"
+                        },
+                        {
+                            "_type" : "label",
+                            "_name" : "labelCurrent",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false,
+                                "widthHint" : 90
+                            },
+                            "alignment" : "{center}",
+                            "text" : "0"
+                        },
+                        {
+                            "_type" : "button",
+                            "_style" : "{push}",
+                            "_name" : "btnNextPage",
+                            "text" : ">>"
+                        }
+                    ]
+                },
+                {
+                    "_type" : "composite",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 4,
+                        "marginWidth" : 0,
+                        "marginHeight" : 0
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.begin}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "combo",
+                            "_style" : "{drop_down}|{border}|{read_only}",
+                            "_name" : "comboTipMedija",
+                            "visibleItemCount" : 8,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "widthHint" : 80
+                            }
+                        },
+                        {
+                            "_type" : "combo",
+                            "_style" : "{drop_down}|{border}|{read_only}",
+                            "_name" : "comboPozicija",
+                            "visibleItemCount" : 8,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "widthHint" : 80
+                            }
+                        },
+                        {
+                            "_type" : "combo",
+                            "_style" : "{drop_down}|{border}|{read_only}",
+                            "_name" : "comboZanr",
+                            "visibleItemCount" : 16,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "widthHint" : 80
+                            }
+                        },
+                        {
+                            "_type" : "combo",
+                            "_style" : "{drop_down}|{border}|{read_only}",
+                            "_name" : "comboTag",
+                            "visibleItemCount" : 8,
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "widthHint" : 80
+                            }
+                        }
+                    ]
+                },
+                {
+                    "_type" : "composite",
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 3,
+                        "marginWidth" : 0,
+                        "marginHeight" : 0
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.end}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    },
+                    "_children" : [
+                        {
+                            "_type" : "label",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.fill}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : true,
+                                "grabExcessVerticalSpace" : false
+                            },
+                            "text" : "[main.sortOn]",
+                            "alignment" : "{right}"
+                        },
+                        {
+                            "_type" : "combo",
+                            "_style" : "{read_only}",
+                            "_name" : "comboSort",
+                            "layoutData" : {
+                                "_type" : "gridData",
+                                "horizontalAlignment" : "{grid.end}",
+                                "verticalAlignment" : "{grid.center}",
+                                "grabExcessHorizontalSpace" : false,
+                                "grabExcessVerticalSpace" : false
+                            }
+                        },
+                        {
+                            "_type" : "button",
+                            "_style" : "{check}",
+                            "_name" : "cbAscending",
+                            "text" : "[main.ascending]",
+                            "selection" : true
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "_type" : "menu",
+            "_style" : "{pop_up}",
+            "_name" : "settingsPopupMenu",
+            "_children" : [
+                {
+                    "_type" : "menuItem",
+                    "_style" : "{push}",
+                    "_name" : "settingsMenuItem",
+                    "text" : "[main.settingsWithDots]"
+                },
+                {
+                    "_type" : "menuItem",
+                    "_style" : "{push}",
+                    "_name" : "findUnusedMediums",
+                    "text" : "[main.findUnusedMediums]"
+                },
+                {
+                    "_type" : "menuItem",
+                    "_style" : "{push}",
+                    "_name" : "findUmatchedImdbMovies",
+                    "text" : "[main.findUmatchedImdbMovies]"
+                }
+            ],
+            "defaultItem" : "(settingsMenuItem)"
+        }
+    ]
+
+}

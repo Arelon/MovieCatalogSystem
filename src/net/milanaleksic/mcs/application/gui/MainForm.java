@@ -1,29 +1,35 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.*;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
-import net.milanaleksic.mcs.application.gui.helper.*;
-import net.milanaleksic.mcs.application.gui.helper.event.*;
+import net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite;
+import net.milanaleksic.mcs.application.gui.helper.MovieDetailsPanel;
+import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionEvent;
+import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.export.*;
-import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
-import net.milanaleksic.mcs.infrastructure.util.*;
+import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
+import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
+import javax.swing.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -43,9 +49,6 @@ public class MainForm extends Observable {
     private static final int GUI_FORM_DEFAULT_Y = 20;
     private static final int GUI_FORM_DEFAULT_WIDTH = 900;
 
-    private static final int GUI_TICKER_SIZE = 24;
-    private static final int GUI_COMBO_WIDTH = 80;
-    private static final int GUI_LABEL_CURRENT_WIDTH = 90;
     public static final int GUI_MOVIE_DETAILS_HEIGHT = 150;
     public static final int GUI_SEARCH_FILTER_HEIGHT = 25;
 
@@ -95,28 +98,46 @@ public class MainForm extends Observable {
     private WorkerManager workerManager;
 
     @Inject
-    private ImageRepository imageRepository;
-
-    private final static String titleConst = "Movie Catalog System (C) by Milan.Aleksic@gmail.com"; //NON-NLS
+    private Transformer transformer;
 
     private Shell shell;
-    private Combo comboZanr;
-    private Combo comboTipMedija;
-    private Combo comboPozicija;
-    private Combo comboTag;
-    private Label labelCurrent;
-    private Label labelFilter;
-    private Canvas toolTicker;
-    private Menu settingsPopupMenu;
-    private Composite statusBar;
 
-    private CoolMovieComposite mainTable;
-    private MovieDetailsPanel movieDetailsPanel;
+    @EmbeddedComponent
+    private Combo comboZanr = null;
+
+    @EmbeddedComponent
+    private Combo comboTipMedija = null;
+
+    @EmbeddedComponent
+    private Combo comboPozicija = null;
+
+    @EmbeddedComponent
+    private Combo comboTag = null;
+
+    @EmbeddedComponent
+    private Label labelCurrent = null;
+
+    @EmbeddedComponent
+    private Label labelFilter = null;
+
+    @EmbeddedComponent
+    private Canvas toolTicker = null;
+
+    @EmbeddedComponent
+    private Menu settingsPopupMenu = null;
+
+    @EmbeddedComponent
+    private CoolMovieComposite mainTable = null;
+
+    @EmbeddedComponent
+    private MovieDetailsPanel movieDetailsPanel = null;
 
     private ResourceBundle bundle;
 
     private CurrentViewState currentViewState = new CurrentViewState();
-    private Composite searchFilterLineComposite;
+
+    @EmbeddedComponent
+    private Composite searchFilterLineComposite = null;
 
     // private classes
 
@@ -563,7 +584,6 @@ public class MainForm extends Observable {
         if (shell != null)
             return;
         createShell();
-        shell.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/database-64.png")); //NON-NLS
     }
 
     @SuppressWarnings({"BooleanMethodIsAlwaysInverted"})
@@ -572,84 +592,47 @@ public class MainForm extends Observable {
     }
 
     private void createShell() {
-        shell = new Shell();
-        shell.setText(titleConst);
-        shell.setLayout(new GridLayout(1, false));
-
-        createHeader();
-        createCenterComposite();
-        createStatusBar();
-
-        createSettingsPopupMenu();
-        shell.addShellListener(new MainFormShellListener());
+        try {
+            TransformationContext transformationContext = transformer.fillManagedForm(this);
+            shell = transformationContext.getShell();
+            setupHeader(transformationContext);
+            setupCenterComposite(transformationContext);
+            setupStatusBar(transformationContext);
+            shell.addShellListener(new MainFormShellListener());
+        } catch (TransformerException e) {
+            log.error("Main form creation failure!", e);
+            javax.swing.JOptionPane.showMessageDialog(null,
+                    String.format(bundle.getString("global.applicationErrorTemplate"), e.getClass().getCanonicalName(), e.getMessage()),
+                    bundle.getString("global.error"),
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void createHeader() {
-        Composite header = new Composite(shell, SWT.NONE);
-        GridLayout layout = new GridLayout(2, false);
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        header.setLayout(layout);
-        header.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-        createToolBar(header);
-        createToolTicker(header);
-    }
+    private void setupHeader(TransformationContext transformationContext) {
+        transformationContext.<ToolItem>getMappedObject("toolNew").get().addSelectionListener(
+                new ToolNewSelectionAdapter());
+        transformationContext.<ToolItem>getMappedObject("toolErase").get().addSelectionListener(
+                new ToolEraseSelectionAdapter());
+        transformationContext.<ToolItem>getMappedObject("toolExport").get().addSelectionListener(
+                new ToolExportSelectionAdapter());
+        transformationContext.<ToolItem>getMappedObject("toolSettings").get().addSelectionListener(
+                new ToolSettingsSelectionAdapter());
+        transformationContext.<ToolItem>getMappedObject("toolAbout").get().addSelectionListener(
+                new ToolAboutSelectionAdapter());
+        transformationContext.<ToolItem>getMappedObject("toolExit").get().addSelectionListener(
+                new ToolExitSelectionAdapter());
 
-    private void createToolTicker(Composite header) {
-        GridData tickerGridData = new GridData(GridData.CENTER, GridData.CENTER, false, false);
-        tickerGridData.widthHint = GUI_TICKER_SIZE;
-        tickerGridData.heightHint = GUI_TICKER_SIZE;
-        toolTicker = new Canvas(header, SWT.NONE);
-        toolTicker.setLayoutData(tickerGridData);
+        transformationContext.<MenuItem>getMappedObject("settingsMenuItem").get().addSelectionListener(
+                new ToolSettingsSelectionAdapter());
+        transformationContext.<MenuItem>getMappedObject("findUnusedMediums").get().addSelectionListener(
+                new ShowUnusedMediumsForm());
+        transformationContext.<MenuItem>getMappedObject("findUmatchedImdbMovies").get().addSelectionListener(
+                new ShowUnmatchedMoviesForm());
+
         SWTUtil.addImagePaintListener(toolTicker, "/net/milanaleksic/mcs/application/res/db_find.png"); //NON-NLS
     }
 
-    private void createToolBar(Composite header) {
-        final ToolBar toolBar = new ToolBar(header, SWT.FLAT | SWT.WRAP);
-        toolBar.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
-        ToolItem toolNew = new ToolItem(toolBar, SWT.PUSH);
-        toolNew.setText(bundle.getString("global.newMovie"));
-        toolNew.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/media.png")); //NON-NLS
-        ToolItem toolErase = new ToolItem(toolBar, SWT.PUSH);
-        toolErase.setText(bundle.getString("global.deleteMovie"));
-        toolErase.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/alert.png")); //NON-NLS
-        ToolItem toolExport = new ToolItem(toolBar, SWT.PUSH);
-        toolExport.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/folder_outbox.png")); //NON-NLS
-        toolExport.setText(bundle.getString("main.export"));
-        final ToolItem toolSettings = new ToolItem(toolBar, SWT.DROP_DOWN);
-        toolSettings.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/advancedsettings.png")); //NON-NLS
-        toolSettings.setWidth(90);
-        toolSettings.setText(bundle.getString("main.settings"));
-        new ToolItem(toolBar, SWT.SEPARATOR);
-        ToolItem toolAbout = new ToolItem(toolBar, SWT.PUSH);
-        toolAbout.setText(bundle.getString("global.aboutProgram"));
-        toolAbout.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/jabber_protocol.png")); //NON-NLS
-        new ToolItem(toolBar, SWT.SEPARATOR);
-        ToolItem toolExit = new ToolItem(toolBar, SWT.PUSH);
-        toolExit.setText(bundle.getString("main.exit"));
-        toolExit.setImage(imageRepository.getResourceImage("/net/milanaleksic/mcs/application/res/shutdown.png")); //NON-NLS
-
-        toolNew.addSelectionListener(new ToolNewSelectionAdapter());
-        toolErase.addSelectionListener(new ToolEraseSelectionAdapter());
-        toolExport.addSelectionListener(new ToolExportSelectionAdapter());
-        toolSettings.addSelectionListener(new ToolSettingsSelectionAdapter());
-        toolAbout.addSelectionListener(new ToolAboutSelectionAdapter());
-        toolExit.addSelectionListener(new ToolExitSelectionAdapter());
-    }
-
-    private void createCenterComposite() {
-        final Composite centerComposite = new Composite(shell, SWT.NONE);
-        centerComposite.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-        GridLayout layout = new GridLayout(1, false);
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        centerComposite.setLayout(layout);
-        centerComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-
-        addSearchFilterLine(centerComposite);
-
-        ScrolledComposite scrolledComposite = new ScrolledComposite(centerComposite, SWT.V_SCROLL);
-        mainTable = new CoolMovieComposite(scrolledComposite, SWT.NONE, thumbnailManager);
+    private void setupCenterComposite(TransformationContext transformationContext) {
         mainTable.addKeyListener(new MainTableKeyAdapter());
         mainTable.addMovieSelectionListener(new MovieSelectionListener() {
 
@@ -657,12 +640,12 @@ public class MainForm extends Observable {
             public void movieSelected(MovieSelectionEvent e) {
                 if (e.film.isPresent())
                     movieDetailsPanel.showDataForMovie(Optional.of(filmRepository.getCompleteFilm(e.film.get())));
-                GridData layoutData = (GridData)movieDetailsPanel.getLayoutData();
+                GridData layoutData = (GridData) movieDetailsPanel.getLayoutData();
                 int currentHeight = layoutData.heightHint;
                 int newHeight = e.film.isPresent() ? GUI_MOVIE_DETAILS_HEIGHT : 0;
                 if (currentHeight != newHeight) {
                     layoutData.heightHint = newHeight;
-                    centerComposite.layout();
+                    mainTable.getParent().getParent().layout();
                 }
             }
 
@@ -678,76 +661,39 @@ public class MainForm extends Observable {
             }
 
         });
-        scrolledComposite.setContent(mainTable);
-        scrolledComposite.setExpandHorizontal(true);
-        scrolledComposite.setExpandVertical(true);
-        scrolledComposite.getVerticalBar().setIncrement(10);
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        movieDetailsPanel = new MovieDetailsPanel(centerComposite, SWT.NONE, bundle, thumbnailManager);
-        GridData layoutData = new GridData(SWT.FILL, SWT.END, true, false);
-        layoutData.heightHint = 0;
-        movieDetailsPanel.setLayoutData(layoutData);
+        transformationContext.<ScrolledComposite>getMappedObject("mainTableWrapper")
+                .get().getVerticalBar().setIncrement(10);
+        movieDetailsPanel.prepareLayout();
     }
 
-    private void addSearchFilterLine(Composite centerComposite) {
-        searchFilterLineComposite = new Composite(centerComposite, SWT.NONE);
-        searchFilterLineComposite.setLayout(new GridLayout(2, false));
-        GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        layoutData.heightHint = 0;
-        searchFilterLineComposite.setLayoutData(layoutData);
-        searchFilterLineComposite.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-
-        Label labelFilterDesc = new Label(searchFilterLineComposite, SWT.NONE);
-        labelFilterDesc.setText(bundle.getString("main.activeFilter"));
-        labelFilterDesc.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        labelFilterDesc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        labelFilter = new Label(searchFilterLineComposite, SWT.NONE);
-        labelFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        labelFilter.setText("");
-        labelFilter.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        labelFilter.setFont(new Font(shell.getDisplay(), SWTUtil.getSystemFontData().getName(),
-                SWTUtil.getSystemFontData().getHeight(), SWT.BOLD));
-    }
-
-    private void createComboZanr(Composite panCombos) {
-        GridData gridData = new GridData();
-        gridData.widthHint = GUI_COMBO_WIDTH;
-        comboZanr = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboZanr.setLayoutData(gridData);
-        comboZanr.setVisibleItemCount(16);
-        comboZanr.addSelectionListener(new ComboRefreshAdapter());
-        resetZanrovi();
-    }
-
-    private void createComboTag(Composite panCombos) {
-        GridData gridData = new GridData();
-        gridData.widthHint = GUI_COMBO_WIDTH;
-        comboTag = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboTag.setLayoutData(gridData);
-        comboTag.setVisibleItemCount(8);
-        comboTag.addSelectionListener(new ComboRefreshAdapter());
-        resetTagova();
-    }
-
-    private void createComboTipMedija(Composite panCombos) {
-        GridData gridData = new GridData();
-        gridData.widthHint = GUI_COMBO_WIDTH;
-        comboTipMedija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboTipMedija.setLayoutData(gridData);
-        comboTipMedija.setVisibleItemCount(8);
+    private void setupStatusBar(TransformationContext transformationContext) {
+        transformationContext.<Button>getMappedObject("btnPrevPage").get().addSelectionListener(
+                new PreviousPageSelectionAdapter());
+        transformationContext.<Button>getMappedObject("btnNextPage").get().addSelectionListener(
+                new NextPageSelectionAdapter());
+        Combo comboSort = transformationContext.<Combo>getMappedObject("comboSort").get();
+        comboSort.setItems(new String[]{
+                bundle.getString("main.medium"),
+                bundle.getString("main.movieTitle"),
+                bundle.getString("main.movieTitleTranslation"),
+        });
+        comboSort.setData(new SingularAttribute[]{
+                Film_.medijListAsString,
+                Film_.nazivfilma,
+                Film_.prevodnazivafilma
+        });
+        comboSort.select(0);
+        comboSort.addSelectionListener(new SortingComboSelectionListener());
+        transformationContext.<Button>getMappedObject("cbAscending").get().addSelectionListener(
+                new SortingCheckBoxSelectionListener());
         comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
         resetMedija();
-    }
-
-    private void createComboPozicija(Composite panCombos) {
-        GridData gridData = new GridData();
-        gridData.widthHint = GUI_COMBO_WIDTH;
-        comboPozicija = new Combo(panCombos, SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        comboPozicija.setLayoutData(gridData);
-        comboPozicija.setVisibleItemCount(8);
         comboPozicija.addSelectionListener(new ComboRefreshAdapter());
         resetPozicije();
+        comboZanr.addSelectionListener(new ComboRefreshAdapter());
+        resetZanrovi();
+        comboTag.addSelectionListener(new ComboRefreshAdapter());
+        resetTagova();
     }
 
     private void resetZanrovi() {
@@ -850,92 +796,6 @@ public class MainForm extends Observable {
                     }
                 }
         );
-    }
-
-    private void createStatusBar() {
-        statusBar = new Composite(shell, SWT.BORDER);
-        statusBar.setLayoutData(new GridData(GridData.FILL, GridData.END, true, false));
-        statusBar.setLayout(new GridLayout(3, false));
-        addStatusPagingCell();
-        addStatusEntityFilteringCell();
-        addStatusSortCell();
-    }
-
-    private void addStatusPagingCell() {
-        Composite pagingComposite = createNoMarginStatusBarCell(3, SWT.BEGINNING);
-        Button btnPrevPage = new Button(pagingComposite, SWT.PUSH);
-        btnPrevPage.setText("<<");
-        btnPrevPage.addSelectionListener(new PreviousPageSelectionAdapter());
-
-        labelCurrent = new Label(pagingComposite, SWT.NONE);
-        GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, false, false);
-        layoutData.widthHint = GUI_LABEL_CURRENT_WIDTH;
-        labelCurrent.setLayoutData(layoutData);
-        labelCurrent.setAlignment(SWT.CENTER);
-        labelCurrent.setText("0");
-
-        Button btnNextPage = new Button(pagingComposite, SWT.PUSH);
-        btnNextPage.setText(">>");
-        btnNextPage.addSelectionListener(new NextPageSelectionAdapter());
-    }
-
-    private void addStatusEntityFilteringCell() {
-        Composite entityFilteringComposite = createNoMarginStatusBarCell(4, SWT.BEGINNING);
-        createComboTipMedija(entityFilteringComposite);
-        createComboPozicija(entityFilteringComposite);
-        createComboZanr(entityFilteringComposite);
-        createComboTag(entityFilteringComposite);
-    }
-
-    private void addStatusSortCell() {
-        Composite sortComposite = createNoMarginStatusBarCell(3, SWT.END);
-        Label sortLabel = new Label(sortComposite, SWT.NONE);
-        sortLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        sortLabel.setText(bundle.getString("main.sortOn"));
-        sortLabel.setAlignment(SWT.RIGHT);
-        Combo combo = new Combo(sortComposite, SWT.READ_ONLY);
-        combo.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-        combo.setItems(new String[]{
-                bundle.getString("main.medium"),
-                bundle.getString("main.movieTitle"),
-                bundle.getString("main.movieTitleTranslation"),
-        });
-        combo.setData(new SingularAttribute[]{
-                Film_.medijListAsString,
-                Film_.nazivfilma,
-                Film_.prevodnazivafilma
-        });
-        combo.select(0);
-        combo.addSelectionListener(new SortingComboSelectionListener());
-
-        Button cbAscending = new Button(sortComposite, SWT.CHECK);
-        cbAscending.setText(bundle.getString("main.ascending"));
-        cbAscending.setSelection(true);
-        cbAscending.addSelectionListener(new SortingCheckBoxSelectionListener());
-    }
-
-    private Composite createNoMarginStatusBarCell(int numColumns, int horizontalAlignment) {
-        Composite pagingComposite = new Composite(statusBar, SWT.NONE);
-        GridLayout layout = new GridLayout(numColumns, false);
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        pagingComposite.setLayout(layout);
-        pagingComposite.setLayoutData(new GridData(horizontalAlignment, SWT.CENTER, horizontalAlignment == SWT.END, false));
-        return pagingComposite;
-    }
-
-    private void createSettingsPopupMenu() {
-        settingsPopupMenu = new Menu(shell, SWT.POP_UP);
-        MenuItem settingsMenuItem = new MenuItem(settingsPopupMenu, SWT.PUSH);
-        settingsMenuItem.setText(bundle.getString("main.settingsWithDots"));
-        settingsMenuItem.addSelectionListener(new ToolSettingsSelectionAdapter());
-        settingsPopupMenu.setDefaultItem(settingsMenuItem);
-        MenuItem findUnusedMediums = new MenuItem(settingsPopupMenu, SWT.PUSH);
-        findUnusedMediums.setText(bundle.getString("main.findUnusedMediums"));
-        findUnusedMediums.addSelectionListener(new ShowUnusedMediumsForm());
-        MenuItem findUmatchedImdbMovies = new MenuItem(settingsPopupMenu, SWT.PUSH);
-        findUmatchedImdbMovies.setText(bundle.getString("main.findUmatchedImdbMovies"));
-        findUmatchedImdbMovies.addSelectionListener(new ShowUnmatchedMoviesForm());
     }
 
 
