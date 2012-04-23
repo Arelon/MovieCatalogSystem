@@ -137,7 +137,7 @@ public class Transformer {
     private TransformationContext fillForm(String fullName, Shell shell) throws TransformerException {
         Map<String, Object> mappedObjects = Maps.newHashMap();
         mappedObjects.put("bundle", applicationManager.getMessagesBundle()); //NON-NLS
-        try (InputStream resourceAsStream = getClass().getResourceAsStream(fullName)) {
+        try (InputStream resourceAsStream = Transformer.class.getResourceAsStream(fullName)) {
             deserializeObjectFromNode(mapper.readValue(resourceAsStream, JsonNode.class), shell, mappedObjects);
             return new TransformationContext(shell, mappedObjects);
         } catch (IOException e) {
@@ -217,7 +217,7 @@ public class Transformer {
     }
 
     private String getSetterForField(String fieldName) {
-        return "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1); //NON-NLS
+        return "set" + fieldName.substring(0, 1).toUpperCase(Locale.getDefault()) + fieldName.substring(1); //NON-NLS
     }
 
     private Object createChildObject(Object parent, JsonNode childDefinition) throws TransformerException {

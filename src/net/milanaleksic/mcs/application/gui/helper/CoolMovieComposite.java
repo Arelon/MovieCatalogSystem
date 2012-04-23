@@ -2,7 +2,6 @@ package net.milanaleksic.mcs.application.gui.helper;
 
 import com.google.common.base.*;
 import com.google.common.collect.Lists;
-import net.milanaleksic.mcs.application.gui.helper.event.*;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.thumbnail.impl.ImageTargetWidget;
@@ -23,9 +22,9 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     public static final int EventMovieSelected = SWT.Gesture + 1;
     public static final int EventMovieDetailsSelected = EventMovieSelected + 1;
 
-    private final int PADDING_BETWEEN_COLUMNS = 10;
-    private final int PADDING_BETWEEN_ROWS = 10;
-    private final int PADDING_BETWEEN_ROWS_TEXT = 15;
+    private static final int PADDING_BETWEEN_COLUMNS = 10;
+    private static final int PADDING_BETWEEN_ROWS = 10;
+    private static final int PADDING_BETWEEN_ROWS_TEXT = 15;
 
     @Nonnull
     private List<MovieWrapper> movies = Lists.newLinkedList();
@@ -114,14 +113,6 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         Event event = new Event();
         event.data = getSelectedItem();
         super.notifyListeners(EventMovieDetailsSelected, event);
-    }
-
-    public void addMovieSelectionListener(MovieSelectionListener listener) {
-        checkWidget();
-        checkNotNull(listener);
-        CustomTypedListener typedListener = new CustomTypedListener(listener);
-        addListener(EventMovieSelected, typedListener);
-        addListener(EventMovieDetailsSelected, typedListener);
     }
 
     private void addListeners() {

@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Set;
 @Cacheable
 @org.hibernate.annotations.Cache(region = "mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class Tag {
+public class Tag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

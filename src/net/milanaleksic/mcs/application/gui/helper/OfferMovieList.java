@@ -100,7 +100,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
         executorService = Optional.of((ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3));
     }
 
-    public void cleanup() {
+    public void cleanUp() {
         if (executorService.isPresent() && !executorService.get().isShutdown())
             executorService.get().shutdownNow();
     }
@@ -112,7 +112,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     @Override
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
-        cleanup();
+        cleanUp();
     }
 
     public void prepareFor(Combo movieName) {

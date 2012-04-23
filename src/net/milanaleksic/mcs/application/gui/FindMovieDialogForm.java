@@ -50,7 +50,7 @@ public class FindMovieDialogForm extends AbstractTransformedDialogForm implement
         @Override
         public void safeHandleEvent(Event event) throws ApplicationException {
             if (offerMovieListForFindMovieDialogForm != null)
-                offerMovieListForFindMovieDialogForm.cleanup();
+                offerMovieListForFindMovieDialogForm.cleanUp();
         }
     };
 

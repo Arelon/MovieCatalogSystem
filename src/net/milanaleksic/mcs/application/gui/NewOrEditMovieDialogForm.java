@@ -105,7 +105,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
         @Override
         public void safeHandleEvent(Event event) throws ApplicationException {
             if (offerMovieListForNewOrEditForm != null)
-                offerMovieListForNewOrEditForm.cleanup();
+                offerMovieListForNewOrEditForm.cleanUp();
         }
     };
 

@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.export.impl;
 
-import com.google.common.base.Function;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.util.StreamUtil;
 import org.dom4j.Document;
@@ -26,7 +26,9 @@ public class HTMLExporter extends XmlSourceExporter {
                         DocumentResult result = new DocumentResult();
                         transformer.transform(source, result);
 
-                        XMLWriter writer = new XMLWriter(new FileWriter(exporterSource.getTargetFile()), OutputFormat.createPrettyPrint());
+                        File outputFile = new File(exporterSource.getTargetFile());
+                        XMLWriter writer = new XMLWriter(new OutputStreamWriter(new FileOutputStream(outputFile), Charsets.UTF_8),
+                                OutputFormat.createPrettyPrint());
                         writer.write(result.getDocument());
                         writer.close();
                     } catch (TransformerException | IOException e) {
