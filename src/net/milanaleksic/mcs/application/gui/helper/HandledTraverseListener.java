@@ -15,7 +15,7 @@ public abstract class HandledTraverseListener implements TraverseListener {
 
     private final Shell parent;
 
-    private static final Logger logger = Logger.getLogger(HandledModifyListener.class);
+    private static final Logger logger = Logger.getLogger(HandledTraverseListener.class);
 
     public abstract void handledKeyTraversed(TraverseEvent traverseEvent) throws ApplicationException;
 
