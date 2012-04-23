@@ -1,30 +1,24 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import com.google.common.io.Files;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
-import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionEvent;
-import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
-import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
-import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
+import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Shell;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
