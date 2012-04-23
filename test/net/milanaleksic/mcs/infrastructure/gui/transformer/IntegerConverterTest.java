@@ -14,13 +14,13 @@ import static org.junit.Assert.fail;
  * Time: 9:44 AM
  */
 @SuppressWarnings({"HardCodedStringLiteral"})
-public class IntegerConvertorTest {
+public class IntegerConverterTest {
 
     @Test
     public void convert_simple_value() {
-        IntegerConvertor integerConvertor = new IntegerConvertor();
+        IntegerConverter integerConverter = new IntegerConverter();
         try {
-            assertThat((Integer) integerConvertor.getValueFromJson(new TextNode("173")), equalTo(173));
+            assertThat((Integer) integerConverter.getValueFromJson(new TextNode("173")), equalTo(173));
         } catch (TransformerException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -29,9 +29,9 @@ public class IntegerConvertorTest {
 
     @Test
     public void convert_magic_value() {
-        IntegerConvertor integerConvertor = new IntegerConvertor();
+        IntegerConverter integerConverter = new IntegerConverter();
         try {
-            assertThat((Integer) integerConvertor.getValueFromJson(new TextNode("{grid.center}")), equalTo(GridData.CENTER));
+            assertThat((Integer) integerConverter.getValueFromJson(new TextNode("{grid.center}")), equalTo(GridData.CENTER));
         } catch (TransformerException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -40,10 +40,10 @@ public class IntegerConvertorTest {
 
     @Test
     public void convert_multiple_magic_value() {
-        IntegerConvertor integerConvertor = new IntegerConvertor();
+        IntegerConverter integerConverter = new IntegerConverter();
         try {
-            assertThat((Integer) integerConvertor.getValueFromJson(new TextNode("1|2")), equalTo(1 | 2));
-            assertThat((Integer) integerConvertor.getValueFromJson(new TextNode("{grid.center}|{grid.begin}")), equalTo(GridData.CENTER | GridData.BEGINNING));
+            assertThat((Integer) integerConverter.getValueFromJson(new TextNode("1|2")), equalTo(1 | 2));
+            assertThat((Integer) integerConverter.getValueFromJson(new TextNode("{grid.center}|{grid.begin}")), equalTo(GridData.CENTER | GridData.BEGINNING));
         } catch (TransformerException e) {
             e.printStackTrace();
             fail(e.getMessage());

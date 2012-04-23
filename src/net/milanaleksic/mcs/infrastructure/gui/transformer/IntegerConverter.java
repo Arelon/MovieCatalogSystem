@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 4/19/12
  * Time: 3:23 PM
  */
-public class IntegerConvertor extends AbstractConvertor {
+public class IntegerConverter extends AbstractConverter {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\{(.*)\\}");
 

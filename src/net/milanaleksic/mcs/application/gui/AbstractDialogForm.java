@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ResourceBundle;
 
-public abstract class AbstractDialogForm {
+public abstract class AbstractDialogForm implements Form {
 
     protected final Logger logger = Logger.getLogger(this.getClass());
 
@@ -121,5 +121,15 @@ public abstract class AbstractDialogForm {
 
     public void setNoReadyEvent(boolean noReadyEvent) {
         this.noReadyEvent = noReadyEvent;
+    }
+
+    @Override
+    public ResourceBundle getResourceBundle() {
+        return bundle;
+    }
+
+    @Override
+    public Shell getShell() {
+        return shell;
     }
 }

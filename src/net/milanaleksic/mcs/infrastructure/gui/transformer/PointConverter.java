@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Point;
  * Date: 4/19/12
  * Time: 2:58 PM
  */
-public class PointConvertor extends AbstractConvertor {
+public class PointConverter extends AbstractConverter {
 
     @Override
     protected Object getValueFromJson(JsonNode value) {

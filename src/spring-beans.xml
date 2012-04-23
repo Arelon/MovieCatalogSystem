@@ -38,7 +38,7 @@
                 <ref bean="offerMovieListForFindMovieDialogForm" />
                 <ref bean="offerMovieListForNewOrEditForm" />
                 <ref bean="tmdbService" />
-                <ref bean="convertorFactory" />
+                <ref bean="converterFactory" />
             </set>
         </property>
 	</bean>

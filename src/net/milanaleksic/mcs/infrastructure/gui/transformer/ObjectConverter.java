@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * Date: 4/19/12
  * Time: 3:03 PM
  */
-public class ObjectConvertor extends AbstractConvertor {
+public class ObjectConverter extends AbstractConverter {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\((.*)\\)");
 
@@ -51,7 +51,7 @@ public class ObjectConvertor extends AbstractConvertor {
     private final Map<String, Object> mappedObjects;
     private final ApplicationContext applicationContext;
 
-    public ObjectConvertor(Transformer transformer, Class<?> argType, Map<String, Object> mappedObjects, ApplicationContext applicationContext) {
+    public ObjectConverter(Transformer transformer, Class<?> argType, Map<String, Object> mappedObjects, ApplicationContext applicationContext) {
         this.transformer = transformer;
         this.argType = argType;
         this.mappedObjects = mappedObjects;

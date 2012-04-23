@@ -9,7 +9,7 @@ import java.util.HashMap;
  * 06.04.2008.
  */
 @SuppressWarnings({"HardCodedStringLiteral"})
-public class DB2CyrillicToUnicodeConvertor {
+public class DB2CyrillicToUnicodeConverter {
 
     //TODO: deprecated approach, should be updated with dynamic calculation!
 	

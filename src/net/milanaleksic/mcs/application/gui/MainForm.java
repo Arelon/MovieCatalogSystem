@@ -5,8 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
-import net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite;
-import net.milanaleksic.mcs.application.gui.helper.MovieDetailsPanel;
+import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionEvent;
 import net.milanaleksic.mcs.application.gui.helper.event.MovieSelectionListener;
 import net.milanaleksic.mcs.domain.model.*;
@@ -25,6 +24,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Shell;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 // do not allow java.awt.* to be added to import list because SWT's FileDialog
 // will not work in some cases(https://bugs.eclipse.org/bugs/show_bug.cgi?id=349387)
 
-public class MainForm extends Observable {
+public class MainForm extends Observable implements Form {
 
     private static final Logger log = Logger.getLogger(MainForm.class);
 
@@ -139,6 +139,16 @@ public class MainForm extends Observable {
     @EmbeddedComponent
     private Composite searchFilterLineComposite = null;
 
+    @Override
+    public ResourceBundle getResourceBundle() {
+        return bundle;
+    }
+
+    @Override
+    public Shell getShell() {
+        return shell;
+    }
+
     // private classes
 
     private static class CurrentViewState {
@@ -200,10 +210,11 @@ public class MainForm extends Observable {
         }
     }
 
-    private class MainTableKeyAdapter extends KeyAdapter {
+    @EmbeddedEventListener(component = "mainTable", event = SWT.KeyDown)
+    private final Listener mainTableKeyPressed = new HandledListener(this) {
 
         @Override
-        public void keyPressed(KeyEvent e) {
+        public void safeHandleEvent(Event e) {
             try {
                 String filterText = currentViewState.getFilterText();
                 switch (e.keyCode) {
@@ -256,27 +267,29 @@ public class MainForm extends Observable {
                     && comboZanr.getSelectionIndex() == 0;
         }
 
-    }
+    };
 
-    private class NextPageSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListener(component = "btnNextPage", event = SWT.Selection)
+    private final Listener btnNextPageSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             nextPage();
             mainTable.setFocus();
         }
 
-    }
+    };
 
-    private class PreviousPageSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListener(component = "btnPrevPage", event = SWT.Selection)
+    private final Listener btnPrevPageSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             previousPage();
             mainTable.setFocus();
         }
 
-    }
+    };
 
     private class MainFormShellListener extends ShellAdapter {
 
@@ -309,9 +322,16 @@ public class MainForm extends Observable {
         }
     }
 
-    private class ComboRefreshAdapter extends SelectionAdapter {
+    @EmbeddedEventListeners({
+            @EmbeddedEventListener(component = "comboTipMedija", event = SWT.Selection),
+            @EmbeddedEventListener(component = "comboPozicija", event = SWT.Selection),
+            @EmbeddedEventListener(component = "comboZanr", event = SWT.Selection),
+            @EmbeddedEventListener(component = "comboTag", event = SWT.Selection)
+    })
+    private final Listener comboRefreshAdapter = new HandledListener(this) {
 
-        public void widgetSelected(SelectionEvent e) {
+        @Override
+        public void safeHandleEvent(Event e) {
             Combo combo = (Combo) e.widget;
             if (combo.getSelectionIndex() == 1)
                 combo.select(0);
@@ -320,12 +340,14 @@ public class MainForm extends Observable {
             mainTable.setFocus();
         }
 
-    }
+    };
 
-    private class SortingComboSelectionListener extends SelectionAdapter {
+    @EmbeddedEventListener(component = "comboSort", event = SWT.Selection)
+    private Listener sortingComboSelectionListener = new HandledListener(this) {
 
         @SuppressWarnings({"unchecked"})
-        public void widgetSelected(SelectionEvent e) {
+        @Override
+        public void safeHandleEvent(Event e) {
             Combo combo = (Combo) e.widget;
             int selectionIndex = combo.getSelectionIndex();
             SingularAttribute singularAttribute = ((SingularAttribute[]) combo.getData())[selectionIndex];
@@ -334,36 +356,28 @@ public class MainForm extends Observable {
             mainTable.setFocus();
         }
 
-    }
+    };
 
-    private class SortingCheckBoxSelectionListener extends SelectionAdapter {
+    @EmbeddedEventListener(component = "cbAscending", event = SWT.Selection)
+    private final Listener cbAscendingSelectionListener = new HandledListener(this) {
 
-        public void widgetSelected(SelectionEvent e) {
+        @Override
+        public void safeHandleEvent(Event e) {
             Button ascending = (Button) e.widget;
             currentViewState.setAscending(ascending.getSelection());
             doFillMainTable();
             mainTable.setFocus();
         }
 
-    }
+    };
 
-    private class ToolExportSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListener(component = "toolExport", event = SWT.Selection)
+    private final Listener toolExportSelectionAdapter = new HandledListener(this) {
 
         private String[] columnNames;
 
-        public ToolExportSelectionAdapter() {
-            columnNames = new String[]{
-                    bundle.getString("main.medium"),
-                    bundle.getString("main.movieTitle"),
-                    bundle.getString("main.movieTitleTranslation"),
-                    bundle.getString("main.genre"),
-                    bundle.getString("main.location"),
-                    bundle.getString("main.comment"),
-            };
-        }
-
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             FileDialog dlg = new FileDialog(shell, SWT.SAVE);
             dlg.setFilterNames(new String[]{bundle.getString("main.export.html")});
             dlg.setFilterExtensions(new String[]{"*.htm"}); //NON-NLS
@@ -402,7 +416,7 @@ public class MainForm extends Observable {
                         @Override
                         public String getData(int row, int column) {
                             if (row == -1)
-                                return columnNames[column];
+                                return getColumnNames()[column];
                             switch (column) {
                                 case 0:
                                     return allFilms[row].getMedijListAsString();
@@ -425,12 +439,26 @@ public class MainForm extends Observable {
             });
         }
 
-    }
+        private String[] getColumnNames() {
+            if (columnNames != null)
+                return columnNames;
+            return columnNames = new String[]{
+                    bundle.getString("main.medium"),
+                    bundle.getString("main.movieTitle"),
+                    bundle.getString("main.movieTitleTranslation"),
+                    bundle.getString("main.genre"),
+                    bundle.getString("main.location"),
+                    bundle.getString("main.comment"),
+            };
+        }
 
-    private class ToolEraseSelectionAdapter extends SelectionAdapter {
+    };
+
+    @EmbeddedEventListener(component = "toolErase", event = SWT.Selection)
+    private final Listener toolEraseSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             Optional<Film> selectedMovie = mainTable.getSelectedItem();
             if (!selectedMovie.isPresent())
                 return;
@@ -445,12 +473,16 @@ public class MainForm extends Observable {
                     });
         }
 
-    }
+    };
 
-    private class ToolSettingsSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListeners({
+            @EmbeddedEventListener(component = "settingsMenuItem", event = SWT.Selection),
+            @EmbeddedEventListener(component = "toolSettings", event = SWT.Selection)
+    })
+    private final Listener toolSettingsSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             if (e.detail == SWT.ARROW) {
                 ToolItem toolItem = (ToolItem) e.widget;
                 ToolBar toolBar = toolItem.getParent();
@@ -473,30 +505,33 @@ public class MainForm extends Observable {
             }
         }
 
-    }
+    };
 
-    private class ToolExitSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListener(component = "toolExit", event = SWT.Selection)
+    private final Listener toolExitSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             shell.close();
         }
 
-    }
+    };
 
-    private class ToolAboutSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListener(component = "toolAbout", event = SWT.Selection)
+    private final Listener toolAboutSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             aboutDialogForm.open(shell);
         }
 
-    }
+    };
 
-    private class ToolNewSelectionAdapter extends SelectionAdapter {
+    @EmbeddedEventListener(component = "toolNew", event = SWT.Selection)
+    private final Listener toolNewSelectionAdapter = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent e) {
+        public void safeHandleEvent(Event e) {
             newOrEditMovieDialogForm.open(shell, Optional.<Film>absent(), new Runnable() {
                 @Override
                 public void run() {
@@ -505,12 +540,13 @@ public class MainForm extends Observable {
             });
         }
 
-    }
+    };
 
-    private class ShowUnusedMediumsForm extends SelectionAdapter {
+    @EmbeddedEventListener(component = "findUnusedMediums", event = SWT.Selection)
+    private final Listener findUnusedMediumsSelectionListener = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent selectionEvent) {
+        public void safeHandleEvent(Event e) {
             unusedMediumsDialogForm.open(shell, new Runnable() {
 
                 @Override
@@ -520,12 +556,13 @@ public class MainForm extends Observable {
 
             });
         }
-    }
+    };
 
-    private class ShowUnmatchedMoviesForm extends SelectionAdapter {
+    @EmbeddedEventListener(component = "findUmatchedImdbMovies", event = SWT.Selection)
+    private final Listener findUmatchedImdbMoviesSelectionListener = new HandledListener(this) {
 
         @Override
-        public void widgetSelected(SelectionEvent selectionEvent) {
+        public void safeHandleEvent(Event e) {
             unmatchedMoviesDialogForm.open(shell, new Runnable() {
 
                 @Override
@@ -535,7 +572,7 @@ public class MainForm extends Observable {
 
             });
         }
-    }
+    };
 
 
     // DESIGN
@@ -595,12 +632,14 @@ public class MainForm extends Observable {
         try {
             TransformationContext transformationContext = transformer.fillManagedForm(this);
             shell = transformationContext.getShell();
-            setupHeader(transformationContext);
+
+            SWTUtil.addImagePaintListener(toolTicker, "/net/milanaleksic/mcs/application/res/db_find.png"); //NON-NLS
+
             setupCenterComposite(transformationContext);
             setupStatusBar(transformationContext);
             shell.addShellListener(new MainFormShellListener());
         } catch (TransformerException e) {
-            log.error("Main form creation failure!", e);
+            log.error("Main form creation failure!", e); //NON-NLS
             javax.swing.JOptionPane.showMessageDialog(null,
                     String.format(bundle.getString("global.applicationErrorTemplate"), e.getClass().getCanonicalName(), e.getMessage()),
                     bundle.getString("global.error"),
@@ -608,32 +647,8 @@ public class MainForm extends Observable {
         }
     }
 
-    private void setupHeader(TransformationContext transformationContext) {
-        transformationContext.<ToolItem>getMappedObject("toolNew").get().addSelectionListener(
-                new ToolNewSelectionAdapter());
-        transformationContext.<ToolItem>getMappedObject("toolErase").get().addSelectionListener(
-                new ToolEraseSelectionAdapter());
-        transformationContext.<ToolItem>getMappedObject("toolExport").get().addSelectionListener(
-                new ToolExportSelectionAdapter());
-        transformationContext.<ToolItem>getMappedObject("toolSettings").get().addSelectionListener(
-                new ToolSettingsSelectionAdapter());
-        transformationContext.<ToolItem>getMappedObject("toolAbout").get().addSelectionListener(
-                new ToolAboutSelectionAdapter());
-        transformationContext.<ToolItem>getMappedObject("toolExit").get().addSelectionListener(
-                new ToolExitSelectionAdapter());
-
-        transformationContext.<MenuItem>getMappedObject("settingsMenuItem").get().addSelectionListener(
-                new ToolSettingsSelectionAdapter());
-        transformationContext.<MenuItem>getMappedObject("findUnusedMediums").get().addSelectionListener(
-                new ShowUnusedMediumsForm());
-        transformationContext.<MenuItem>getMappedObject("findUmatchedImdbMovies").get().addSelectionListener(
-                new ShowUnmatchedMoviesForm());
-
-        SWTUtil.addImagePaintListener(toolTicker, "/net/milanaleksic/mcs/application/res/db_find.png"); //NON-NLS
-    }
-
     private void setupCenterComposite(TransformationContext transformationContext) {
-        mainTable.addKeyListener(new MainTableKeyAdapter());
+        //TODO: map to @EmbeddedEventListener
         mainTable.addMovieSelectionListener(new MovieSelectionListener() {
 
             @Override
@@ -661,17 +676,13 @@ public class MainForm extends Observable {
             }
 
         });
-        transformationContext.<ScrolledComposite>getMappedObject("mainTableWrapper")
+        transformationContext.<ScrolledComposite>getMappedObject("mainTableWrapper") //NON-NLS
                 .get().getVerticalBar().setIncrement(10);
         movieDetailsPanel.prepareLayout();
     }
 
     private void setupStatusBar(TransformationContext transformationContext) {
-        transformationContext.<Button>getMappedObject("btnPrevPage").get().addSelectionListener(
-                new PreviousPageSelectionAdapter());
-        transformationContext.<Button>getMappedObject("btnNextPage").get().addSelectionListener(
-                new NextPageSelectionAdapter());
-        Combo comboSort = transformationContext.<Combo>getMappedObject("comboSort").get();
+        Combo comboSort = transformationContext.<Combo>getMappedObject("comboSort").get(); //NON-NLS
         comboSort.setItems(new String[]{
                 bundle.getString("main.medium"),
                 bundle.getString("main.movieTitle"),
@@ -683,16 +694,9 @@ public class MainForm extends Observable {
                 Film_.prevodnazivafilma
         });
         comboSort.select(0);
-        comboSort.addSelectionListener(new SortingComboSelectionListener());
-        transformationContext.<Button>getMappedObject("cbAscending").get().addSelectionListener(
-                new SortingCheckBoxSelectionListener());
-        comboTipMedija.addSelectionListener(new ComboRefreshAdapter());
         resetMedija();
-        comboPozicija.addSelectionListener(new ComboRefreshAdapter());
         resetPozicije();
-        comboZanr.addSelectionListener(new ComboRefreshAdapter());
         resetZanrovi();
-        comboTag.addSelectionListener(new ComboRefreshAdapter());
         resetTagova();
     }
 

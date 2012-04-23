@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.util;
 
 import com.google.common.base.*;
-import net.milanaleksic.mcs.infrastructure.restore.DB2CyrillicToUnicodeConvertor;
+import net.milanaleksic.mcs.infrastructure.restore.DB2CyrillicToUnicodeConverter;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -51,7 +51,7 @@ public final class DBUtil {
     public static String getSQLStringForDB2(Optional<String> input) {
         if (!input.isPresent())
             return STRING_WHEN_NULL;
-        return DB2CyrillicToUnicodeConvertor.obradiTekst('\'' + input.get() + '\'');
+        return DB2CyrillicToUnicodeConverter.obradiTekst('\'' + input.get() + '\'');
     }
 
 }

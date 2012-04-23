@@ -9,7 +9,7 @@ import java.lang.reflect.*;
  * Date: 4/19/12
  * Time: 2:10 PM
  */
-public interface Convertor {
+public interface Converter {
 
     void invoke(Method method, Object targetObject, JsonNode value) throws TransformerException;
 

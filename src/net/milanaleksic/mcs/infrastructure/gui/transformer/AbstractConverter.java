@@ -9,7 +9,7 @@ import java.lang.reflect.*;
  * Date: 4/19/12
  * Time: 2:59 PM
  */
-public abstract class AbstractConvertor implements Convertor {
+public abstract class AbstractConverter implements Converter {
 
     @Override
     public final void invoke(Method method, Object targetObject, JsonNode value) throws TransformerException {

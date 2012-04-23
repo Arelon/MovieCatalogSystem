@@ -10,7 +10,7 @@ import javax.inject.Inject;
  * Date: 4/21/12
  * Time: 7:30 PM
  */
-public class ImageConvertor extends AbstractConvertor {
+public class ImageConverter extends AbstractConverter {
 
     @Inject
     ImageRepository imageRepository;

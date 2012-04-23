@@ -2,14 +2,13 @@ package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.application.gui.helper.HandledSelectionAdapter;
+import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 
@@ -28,8 +27,10 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
     @Inject
     private FilmRepository filmRepository;
 
-    private final static class AlertImagePainter implements PaintListener {
-        public void paintControl(final PaintEvent e) {
+    @EmbeddedEventListener(component = "canvas", event = SWT.Paint)
+    private static final Listener paintListener = new Listener() {
+        @Override
+        public void handleEvent(final Event e) {
             SWTUtil.useImageAndThenDispose(RESOURCE_ALERT_IMAGE, new Function<Image, Void>() {
                 @Override
                 public Void apply(@Nullable Image image) {
@@ -38,7 +39,25 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
                 }
             });
         }
-    }
+    };
+
+    @EmbeddedEventListener(component = "btnOk", event = SWT.Selection)
+    private final Listener btnOkSelectionListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            filmRepository.deleteFilm(film.get());
+            runnerWhenClosingShouldRun = true;
+            shell.close();
+        }
+    };
+
+    @EmbeddedEventListener(component = "btnCancel", event = SWT.Selection)
+    private final Listener btnCancelSelectionListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            shell.close();
+        }
+    };
 
     public void open(Shell parent, Film film, Runnable callback) {
         this.film = Optional.of(film);
@@ -50,24 +69,6 @@ public class DeleteMovieDialogForm extends AbstractTransformedDialogForm {
         if (film.isPresent()) {
             labFilmNaziv.setText(film.get().getNazivfilma() + "\n(" + film.get().getPrevodnazivafilma() + ")");
         }
-    }
-
-    @Override
-    protected void onTransformationComplete(TransformationContext transformer) {
-        transformer.<Canvas>getMappedObject("canvas").get().addPaintListener(new AlertImagePainter()); //NON-NLS
-        transformer.<Button>getMappedObject("btnOk").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                filmRepository.deleteFilm(film.get());
-                runnerWhenClosingShouldRun = true;
-                shell.close();
-            }
-        });
-        transformer.<Button>getMappedObject("btnCancel").get().addSelectionListener(new SelectionAdapter() { //NON-NLS
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                shell.close();
-            }
-        });
     }
 
     @Override

@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Display;
  * Date: 4/20/12
  * Time: 10:18 AM
  */
-public class FontConvertor extends AbstractConvertor {
+public class FontConverter extends AbstractConverter {
 
     public static final String FIELD_NAME = "name"; //NON-NLS
     public static final String FIELD_HEIGHT = "height"; //NON-NLS

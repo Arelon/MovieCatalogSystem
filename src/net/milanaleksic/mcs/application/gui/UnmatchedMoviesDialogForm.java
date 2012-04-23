@@ -6,15 +6,13 @@ import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.service.FilmService;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.network.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.*;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Table;
@@ -65,9 +63,10 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
 
     private CountDownLatch processingCounterLatch;
 
-    private HandledSelectionAdapter unmatchedMovieSelectedHandler = new HandledSelectionAdapter(shell, bundle) {
+    @EmbeddedEventListener(component = "unmatchedMoviesTable", event = SWT.Selection)
+    private final Listener unmatchedMoviesTableSelectionListener = new HandledListener(this) {
         @Override
-        public void handledSelected(SelectionEvent event) throws ApplicationException {
+        public void safeHandleEvent(Event event) throws ApplicationException {
             removeMatchDetails();
             int selectionIndex = unmatchedMoviesTable.getSelectionIndex();
             if (selectionIndex < 0)
@@ -95,9 +94,10 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
         }
     };
 
-    private HandledSelectionAdapter possibleMatchesSelectedHandler = new HandledSelectionAdapter(shell, bundle) {
+    @EmbeddedEventListener(component = "possibleMatchesTable", event = SWT.Selection)
+    private final HandledListener possibleMatchesTableSelectionListener = new HandledListener(this) {
         @Override
-        public void handledSelected(SelectionEvent event) throws ApplicationException {
+        public void safeHandleEvent(Event event) throws ApplicationException {
             int selectionIndex = possibleMatchesTable.getSelectionIndex();
             if (selectionIndex < 0) {
                 removeMatchDetails();
@@ -159,9 +159,10 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
         }
     };
 
-    private HandledSelectionAdapter acceptMatchHandler = new HandledSelectionAdapter(shell, bundle) {
+    @EmbeddedEventListener(component = "btnAcceptThisMatch", event = SWT.Selection)
+    private final HandledListener btnAcceptThisMatchSelectionListener = new HandledListener(this) {
         @Override
-        public void handledSelected(SelectionEvent event) throws ApplicationException {
+        public void safeHandleEvent(Event event) throws ApplicationException {
             int unmatchedMovieIndex = unmatchedMoviesTable.getSelectionIndex();
             if (unmatchedMovieIndex < 0)
                 throw new ApplicationException("No item has been selected in unmatched movies table");
@@ -180,6 +181,23 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
         }
     };
 
+    @EmbeddedEventListener(component = "btnStartMatching", event = SWT.Selection)
+    private HandledListener btnStartMatchingSelectionListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            btnStartMatching.setEnabled(false);
+            startProcess();
+        }
+    };
+
+    @EmbeddedEventListener(component = "btnClose", event = SWT.Selection)
+    private final HandledListener btnCloseSelectionListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            shell.close();
+        }
+    };
+
     private void selectNextMovieWithMatches(int startFromIndex) {
         int i = startFromIndex;
         while (i < unmatchedMoviesTable.getItemCount()) {
@@ -192,26 +210,6 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
             }
             i++;
         }
-    }
-
-    @Override
-    protected void onTransformationComplete(TransformationContext transformer) {
-        unmatchedMoviesTable.addSelectionListener(unmatchedMovieSelectedHandler);
-        possibleMatchesTable.addSelectionListener(possibleMatchesSelectedHandler);
-        btnAcceptThisMatch.addSelectionListener(acceptMatchHandler);
-        btnStartMatching.addSelectionListener(new HandledSelectionAdapter(shell, bundle) {
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                btnStartMatching.setEnabled(false);
-                startProcess();
-            }
-        });
-        transformer.<Button>getMappedObject("btnClose").get().addSelectionListener(new HandledSelectionAdapter(shell, bundle) { //NON-NLS
-            @Override
-            public void handledSelected(SelectionEvent event) throws ApplicationException {
-                shell.close();
-            }
-        });
     }
 
     @Override
@@ -331,7 +329,7 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
             }
 
             private void retryForMovie(TableItem item, Film film) {
-                synchronized(UnmatchedMoviesDialogForm.this) {
+                synchronized (UnmatchedMoviesDialogForm.this) {
                     if (failureCountMap == null)
                         return;
                     Integer failureCount = failureCountMap.get(film);
@@ -379,7 +377,7 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
     }
 
     private void clearProcessingData() {
-        synchronized(this) {
+        synchronized (this) {
             if (listOfQueuedWorkers != null) {
                 listOfQueuedWorkers.clear();
                 listOfQueuedWorkers = null;

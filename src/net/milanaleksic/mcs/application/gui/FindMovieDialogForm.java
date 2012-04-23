@@ -3,16 +3,13 @@ package net.milanaleksic.mcs.application.gui;
 import com.google.common.base.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 
@@ -21,8 +18,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.URI;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FindMovieDialogForm extends AbstractTransformedDialogForm implements OfferMovieList.Receiver {
 
@@ -50,11 +45,42 @@ public class FindMovieDialogForm extends AbstractTransformedDialogForm implement
     @Nullable
     private OfferMovieList offerMovieListForFindMovieDialogForm;
 
+    @EmbeddedEventListener(event = SWT.Close)
+    private final Listener shellCloseListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            if (offerMovieListForFindMovieDialogForm != null)
+                offerMovieListForFindMovieDialogForm.cleanup();
+        }
+    };
+
+    @EmbeddedEventListener(component = "btnAccept", event = SWT.Selection)
+    private final Listener btnAcceptSelectionListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            int selectionIndex = mainTable.getSelectionIndex();
+            if (selectionIndex < 0)
+                return;
+            selectedMovie = Optional.of((Movie) mainTable.getItem(selectionIndex).getData());
+            FindMovieDialogForm.super.runnerWhenClosingShouldRun = true;
+            shell.close();
+        }
+    };
+
+    @EmbeddedEventListener(component = "btnClose", event = SWT.Selection)
+    private final Listener btnCloseSelectionListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            shell.close();
+        }
+    };
+
     private String initialText = "";
 
-    private HandledSelectionAdapter matchSelectionHandler = new HandledSelectionAdapter(shell, bundle) {
+    @EmbeddedEventListener(component = "mainTable", event = SWT.Selection)
+    private final Listener matchSelectionHandler = new HandledListener(this) {
         @Override
-        public void handledSelected(SelectionEvent event) throws ApplicationException {
+        public void safeHandleEvent(Event event) throws ApplicationException {
             int selectionIndex = mainTable.getSelectionIndex();
             if (selectionIndex < 0) {
                 removeMatchDetails();
@@ -123,34 +149,6 @@ public class FindMovieDialogForm extends AbstractTransformedDialogForm implement
 
     Optional<Movie> getSelectedMovie() {
         return selectedMovie;
-    }
-
-    @Override
-    protected void onTransformationComplete(TransformationContext transformer) {
-        shell.addShellListener(new org.eclipse.swt.events.ShellAdapter() {
-            public void shellClosed(org.eclipse.swt.events.ShellEvent e) {
-                if (offerMovieListForFindMovieDialogForm != null)
-                    offerMovieListForFindMovieDialogForm.cleanup();
-            }
-        });
-        transformer.<Button>getMappedObject("btnAccept").get().addSelectionListener(new SelectionAdapter() { //NON-NLS
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                int selectionIndex = mainTable.getSelectionIndex();
-                if (selectionIndex < 0)
-                    return;
-                selectedMovie = Optional.of((Movie) mainTable.getItem(selectionIndex).getData());
-                FindMovieDialogForm.super.runnerWhenClosingShouldRun = true;
-                shell.close();
-            }
-        });
-        transformer.<Button>getMappedObject("btnClose").get().addSelectionListener(new SelectionAdapter() { //NON-NLS
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                shell.close();
-            }
-        });
-        mainTable.addSelectionListener(matchSelectionHandler);
     }
 
     @Override

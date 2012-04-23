@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * Date: 4/19/12
  * Time: 3:23 PM
  */
-public class StringConvertor extends AbstractConvertor {
+public class StringConverter extends AbstractConverter {
 
     @Inject
     private ApplicationManager applicationManager;

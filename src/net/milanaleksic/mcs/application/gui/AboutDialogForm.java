@@ -1,18 +1,20 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformationContext;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.*;
 
 import java.awt.*;
 import java.net.URI;
 
 public class AboutDialogForm extends AbstractTransformedDialogForm {
 
-    private static final SelectionAdapter emailSender = new SelectionAdapter() {
-        public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+    @EmbeddedEventListener(component="btnEmail", event= SWT.Selection)
+    private static final Listener emailSender = new Listener() {
+        @Override
+        public void handleEvent(Event event) {
             new Thread(new Runnable() {
 
                 public void run() {
@@ -32,8 +34,10 @@ public class AboutDialogForm extends AbstractTransformedDialogForm {
         }
     };
 
-    private static final SelectionAdapter webSiteVisitor = new SelectionAdapter() {
-        public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+    @EmbeddedEventListener(component="btnSite", event= SWT.Selection)
+    private static final Listener webSiteVisitor  = new Listener() {
+        @Override
+        public void handleEvent(Event event) {
             new Thread(new Runnable() {
 
                 public void run() {
@@ -53,11 +57,12 @@ public class AboutDialogForm extends AbstractTransformedDialogForm {
         }
     };
 
+    @EmbeddedComponent
+    private Text textArea = null;
+
     @Override
     protected void onTransformationComplete(TransformationContext transformer) {
-        transformer.<Button>getMappedObject("btnEmail").get().addSelectionListener(emailSender);
-        transformer.<Button>getMappedObject("btnSite").get().addSelectionListener(webSiteVisitor);
-        transformer.<Text>getMappedObject("textArea").get().setText("Copyright 2007-2012 by Milan Aleksic\n\n" +
+        textArea.setText("Copyright 2007-2012 by Milan Aleksic\n\n" + //NON-NLS
                 bundle.getString("about.programVersion") + " " + VersionInformation.getVersion() + "\n\n" +
                 bundle.getString("about.technologyDetails"));
     }

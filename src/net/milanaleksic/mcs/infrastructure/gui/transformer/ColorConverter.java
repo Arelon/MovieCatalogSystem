@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 4/20/12
  * Time: 9:59 AM
  */
-public class ColorConvertor extends AbstractConvertor {
+public class ColorConverter extends AbstractConverter {
 
     private static final Pattern properValue = Pattern.compile("#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})", Pattern.CASE_INSENSITIVE); //NON-NLS
 

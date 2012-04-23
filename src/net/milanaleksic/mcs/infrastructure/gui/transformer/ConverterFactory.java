@@ -15,27 +15,27 @@ import java.util.Map;
  * Date: 4/19/12
  * Time: 2:19 PM
  */
-class ConvertorFactory implements LifecycleListener, ApplicationContextAware {
+class ConverterFactory implements LifecycleListener, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
-    private Map<Class<?>, Convertor> registeredConvertors;
+    private Map<Class<?>, Converter> registeredConverters;
 
-    public void setRegisteredConvertors(Map<Class<?>, Convertor> registeredConvertors) {
-        this.registeredConvertors = registeredConvertors;
+    public void setRegisteredConverters(Map<Class<?>, Converter> registeredConverters) {
+        this.registeredConverters = registeredConverters;
     }
 
-    public Convertor getConvertor(final Transformer originator, final Class<?> argType, Map<String, Object> mappedObjects) throws TransformerException {
-        Convertor convertor = registeredConvertors.get(argType);
-        if (convertor == null)
-            return new ObjectConvertor(originator, argType, mappedObjects, applicationContext);
-        return convertor;
+    public Converter getConverter(final Transformer originator, final Class<?> argType, Map<String, Object> mappedObjects) throws TransformerException {
+        Converter converter = registeredConverters.get(argType);
+        if (converter == null)
+            return new ObjectConverter(originator, argType, mappedObjects, applicationContext);
+        return converter;
     }
 
-    public Optional<Convertor> getExactTypeConvertor(final Class<?> type) throws TransformerException {
-        Convertor convertor = registeredConvertors.get(type);
-        if (convertor == null)
+    public Optional<Converter> getExactTypeConverter(final Class<?> type) throws TransformerException {
+        Converter converter = registeredConverters.get(type);
+        if (converter == null)
             return Optional.absent();
-        return Optional.of(convertor);
+        return Optional.of(converter);
     }
 
     @Override
@@ -44,8 +44,8 @@ class ConvertorFactory implements LifecycleListener, ApplicationContextAware {
 
     @Override
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
-        for (Convertor convertor : registeredConvertors.values()) {
-            convertor.cleanUp();
+        for (Converter converter : registeredConverters.values()) {
+            converter.cleanUp();
         }
     }
 

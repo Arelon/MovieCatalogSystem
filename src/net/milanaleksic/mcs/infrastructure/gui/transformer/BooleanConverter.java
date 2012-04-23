@@ -7,7 +7,7 @@ import org.codehaus.jackson.JsonNode;
  * Date: 4/19/12
  * Time: 4:32 PM
  */
-public class BooleanConvertor extends AbstractConvertor {
+public class BooleanConverter extends AbstractConverter {
 
     @Override
     protected Object getValueFromJson(JsonNode node) {

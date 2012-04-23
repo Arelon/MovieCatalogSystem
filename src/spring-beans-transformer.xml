@@ -5,29 +5,29 @@
     <bean id="transformer" class="net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer">
     </bean>
 
-    <bean id="convertorFactory" class="net.milanaleksic.mcs.infrastructure.gui.transformer.ConvertorFactory">
-        <property name="registeredConvertors">
+    <bean id="converterFactory" class="net.milanaleksic.mcs.infrastructure.gui.transformer.ConverterFactory">
+        <property name="registeredConverters">
             <map>
                 <entry key="#{ T(java.lang.String) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.StringConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.StringConverter"/>
                 </entry>
                 <entry key="#{ T(boolean) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.BooleanConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.BooleanConverter"/>
                 </entry>
                 <entry key="#{ T(int) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.IntegerConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.IntegerConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Point) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.PointConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.PointConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Color) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.ColorConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.ColorConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Font) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.FontConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.FontConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Image) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.ImageConvertor"/>
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.ImageConverter"/>
                 </entry>
             </map>
         </property>

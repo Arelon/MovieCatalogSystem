@@ -3,7 +3,6 @@ package net.milanaleksic.mcs.application.gui;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 
 import javax.inject.Inject;
-import java.lang.annotation.*;
 
 /**
  * User: Milan Aleksic
@@ -14,6 +13,8 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
 
     @Inject
     private Transformer transformer;
+
+    private boolean formTransformationComplete = false;
 
     public void setTransformer(Transformer transformer) {
         this.transformer = transformer;
@@ -26,7 +27,13 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
             onTransformationComplete(transformationContext);
         } catch (TransformerException e) {
             logger.error("Transformation failed", e); //NON-NLS
+        } finally {
+            formTransformationComplete = true;
         }
+    }
+
+    protected boolean isFormTransformationComplete() {
+        return formTransformationComplete;
     }
 
     protected void onTransformationComplete(TransformationContext transformationContext) {

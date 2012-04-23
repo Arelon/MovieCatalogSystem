@@ -1,8 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.codehaus.jackson.JsonNode;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * User: Milan Aleksic
@@ -45,7 +45,7 @@ public class Transformer {
     private ObjectMapper mapper;
 
     @Inject
-    private ConvertorFactory convertorFactory;
+    private ConverterFactory converterFactory;
 
     public Transformer() {
         this.mapper = new ObjectMapper();
@@ -62,6 +62,7 @@ public class Transformer {
         String formName = "/" + thisClassNameAsResourceLocation + ".gui"; //NON-NLS
         TransformationContext transformationContext = fillForm(formName, shell);
         embedComponents(formObject, transformationContext);
+        embedEvents(formObject, transformationContext);
         return transformationContext;
     }
 
@@ -91,13 +92,51 @@ public class Transformer {
         }
     }
 
+    private void embedEvents(Object targetObject, TransformationContext transformationContext) throws TransformerException {
+        Field[] fields = targetObject.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            List<EmbeddedEventListener> allListeners = Lists.newArrayList();
+            EmbeddedEventListeners annotations = field.getAnnotation(EmbeddedEventListeners.class);
+            if (annotations != null)
+                allListeners.addAll(Arrays.asList(annotations.value()));
+            else {
+                EmbeddedEventListener annotation = field.getAnnotation(EmbeddedEventListener.class);
+                if (annotation != null)
+                    allListeners.add(annotation);
+            }
+            for (EmbeddedEventListener listenerAnnotation : allListeners) {
+                String componentName = listenerAnnotation.component();
+                Optional<Object> mappedObject = componentName.isEmpty()
+                        ? Optional.<Object>of(transformationContext.getShell())
+                        : transformationContext.getMappedObject(componentName);
+                if (!mappedObject.isPresent())
+                    throw new IllegalStateException("Event source could not be found in the GUI definition: " + targetObject.getClass().getName() + "." + field.getName());
+                handleSingleEventDelegation(targetObject, field, listenerAnnotation.event(), (Widget) mappedObject.get());
+            }
+        }
+    }
+
+    private void handleSingleEventDelegation(Object targetObject, Field field, int event, Widget mappedObject) throws TransformerException {
+        boolean wasPublic = Modifier.isPublic(field.getModifiers());
+        if (!wasPublic)
+            field.setAccessible(true);
+        try {
+            mappedObject.addListener(event, (Listener) field.get(targetObject));
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+            throw new TransformerException("Error while embedding component field named " + field.getName(), e);
+        } finally {
+            if (!wasPublic)
+                field.setAccessible(false);
+        }
+    }
+
     TransformationContext createFormFromResource(String fullName) throws TransformerException {
         return fillForm(fullName, new Shell());
     }
 
     private TransformationContext fillForm(String fullName, Shell shell) throws TransformerException {
         Map<String, Object> mappedObjects = Maps.newHashMap();
-        mappedObjects.put("bundle", applicationManager.getMessagesBundle());
+        mappedObjects.put("bundle", applicationManager.getMessagesBundle()); //NON-NLS
         try (InputStream resourceAsStream = getClass().getResourceAsStream(fullName)) {
             deserializeObjectFromNode(mapper.readValue(resourceAsStream, JsonNode.class), shell, mappedObjects);
             return new TransformationContext(shell, mappedObjects);
@@ -145,12 +184,12 @@ public class Transformer {
             Optional<Method> method = getSetterByName(object, getSetterForField(field.getKey()));
             if (method.isPresent()) {
                 Class<?> argType = method.get().getParameterTypes()[0];
-                convertorFactory.getConvertor(this, argType, mappedObjects).invoke(method.get(), object, field.getValue());
+                converterFactory.getConverter(this, argType, mappedObjects).invoke(method.get(), object, field.getValue());
             } else {
                 Optional<Field> fieldByName = getFieldByName(object, field.getKey());
                 if (fieldByName.isPresent()) {
                     Class<?> argType = fieldByName.get().getType();
-                    convertorFactory.getConvertor(this, argType, mappedObjects).setField(fieldByName.get(), object, field.getValue());
+                    converterFactory.getConverter(this, argType, mappedObjects).setField(fieldByName.get(), object, field.getValue());
                 } else
                     throw new TransformerException("No setter nor field " + field.getKey() + " could be found in class " + object.getClass().getName() + "; context: " + field.getValue());
             }
@@ -185,7 +224,7 @@ public class Transformer {
         try {
             if (!childDefinition.has(KEY_SPECIAL_TYPE))
                 throw new IllegalArgumentException("Could not deduce the child type without explicit definition: " + childDefinition);
-            Class<?> widgetClass = ObjectConvertor.deduceClassFromNode(childDefinition);
+            Class<?> widgetClass = ObjectConverter.deduceClassFromNode(childDefinition);
             Constructor<?> chosenConstructor = null;
 
             Constructor<?>[] constructors = widgetClass.getConstructors();
@@ -208,8 +247,8 @@ public class Transformer {
             int style = SWT.NONE;
             if (childDefinition.has(KEY_SPECIAL_STYLE)) {
                 JsonNode styleNode = childDefinition.get(KEY_SPECIAL_STYLE);
-                AbstractConvertor exactTypeConvertor = (AbstractConvertor) convertorFactory.getExactTypeConvertor(int.class).get();
-                style = (Integer) exactTypeConvertor.getValueFromJson(styleNode);
+                AbstractConverter exactTypeConverter = (AbstractConverter) converterFactory.getExactTypeConverter(int.class).get();
+                style = (Integer) exactTypeConverter.getValueFromJson(styleNode);
             }
             return chosenConstructor.newInstance(parent, style);
         } catch (ReflectiveOperationException e) {
