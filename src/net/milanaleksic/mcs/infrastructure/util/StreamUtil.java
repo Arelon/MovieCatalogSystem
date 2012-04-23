@@ -65,12 +65,16 @@ public final class StreamUtil {
         });
     }
 
-    public static <T> T useClasspathResource(String classpathEntry, Function<InputStream, ? extends T> function) throws IOException {
-        try (InputStream stream = StreamUtil.class.getResourceAsStream(classpathEntry)) {
+    public static <T> T useClasspathResource(Class<?> originatingClass, String classpathEntry, Function<InputStream, ? extends T> function) throws IOException {
+        try (InputStream stream = originatingClass.getResourceAsStream(classpathEntry)) {
             if (stream == null)
                 throw new IOException("Resource not found: "+classpathEntry);
             return function.apply(stream);
         }
+    }
+
+    public static <T> T useClasspathResource(String classpathEntry, Function<InputStream, ? extends T> function) throws IOException {
+        return useClasspathResource(StreamUtil.class, classpathEntry, function);
     }
 
     public static <T> T useURIResource(URI uri, PersistentHttpContext persistentHttpContext, Function<InputStream, ? extends T> function) throws IOException {

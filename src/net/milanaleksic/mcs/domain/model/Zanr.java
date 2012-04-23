@@ -25,7 +25,11 @@ public class Zanr implements java.io.Serializable {
 	public Zanr() {
 	}
 
-	public int getIdzanr() {
+    public Zanr(String zanr) {
+        this.zanr = zanr;
+    }
+
+    public int getIdzanr() {
 		return this.idzanr;
 	}
 

@@ -41,7 +41,13 @@ public class Medij implements java.io.Serializable, Comparable<Medij> {
 	public Medij() {
 	}
 
-	public int getIdmedij() {
+    public Medij(int indeks, TipMedija tipMedija, Pozicija pozicija) {
+        this.indeks = indeks;
+        this.tipMedija = tipMedija;
+        this.pozicija = pozicija;
+    }
+
+    public int getIdmedij() {
 		return this.idmedij;
 	}
 

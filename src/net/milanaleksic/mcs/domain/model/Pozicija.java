@@ -30,7 +30,11 @@ public class Pozicija implements java.io.Serializable {
     @org.hibernate.annotations.BatchSize(size=15)
     private Set<Medij> medijs = null;
 
-	public Pozicija() {
+    public Pozicija() {
+	}
+
+	public Pozicija(String naziv) {
+        this.pozicija = naziv;
 	}
 
     public Pozicija(String pozicija, boolean isDefault) {

@@ -16,14 +16,23 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.*;
+import java.io.File;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -386,7 +395,9 @@ public class MainForm extends Observable implements Form {
                 return;
             }
             getAllFilms(0, new Function<List<Film>, Void>() {
+
                 @Override
+                @MethodTiming(name="Export process")
                 public Void apply(List<Film> filmList) {
                     checkNotNull(filmList);
                     final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
@@ -428,9 +439,23 @@ public class MainForm extends Observable implements Form {
                         }
 
                     });
+                    openInDefaultBrowser(targetFileForExport);
                     return null;
                 }
             });
+        }
+
+        private void openInDefaultBrowser(String targetFileForExport) {
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+                if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
+                    try {
+                        desktop.open(new File(targetFileForExport));
+                    } catch (Exception exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
         }
 
         private String[] getColumnNames() {

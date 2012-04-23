@@ -25,7 +25,11 @@ public class TipMedija implements java.io.Serializable {
 	public TipMedija() {
 	}
 
-	public int getIdtip() {
+    public TipMedija(String naziv) {
+        this.naziv = naziv;
+    }
+
+    public int getIdtip() {
 		return this.idtip;
 	}
 
