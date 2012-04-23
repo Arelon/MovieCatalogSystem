@@ -98,16 +98,7 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
             TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
             tableItem.setText(pozicija.getPozicija());
             tableItem.setData(pozicija);
-            TableEditor editor = new TableEditor(listLokacije);
-            Button button = new Button(listLokacije, SWT.RADIO);
-            button.setSelection(pozicija.isDefault());
-            button.addSelectionListener(pozicijaDefaultButtonSelected);
-            button.setData(pozicija);
-            button.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-            button.pack();
-            editor.minimumWidth = button.getSize().x;
-            editor.horizontalAlignment = SWT.LEFT;
-            editor.setEditor(button, tableItem, 1);
+            createRadioButtonForLocation(pozicija, tableItem);
         }
 
         java.util.List<Zanr> zanrs = zanrRepository.getZanrs();
@@ -125,6 +116,25 @@ public class SettingsDialogForm extends AbstractTransformedDialogForm {
             tableItem.setText(tag.getNaziv());
             tableItem.setData(tag);
         }
+    }
+
+    private void createRadioButtonForLocation(Pozicija pozicija, TableItem tableItem) {
+        TableEditor editor = new TableEditor(listLokacije);
+        final Button button = new Button(listLokacije, SWT.RADIO);
+        button.setSelection(pozicija.isDefault());
+        button.addSelectionListener(pozicijaDefaultButtonSelected);
+        button.setData(pozicija);
+        button.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        button.pack();
+        editor.minimumWidth = button.getSize().x;
+        editor.horizontalAlignment = SWT.LEFT;
+        editor.setEditor(button, tableItem, 1);
+        tableItem.addDisposeListener(new DisposeListener() {
+            @Override
+            public void widgetDisposed(DisposeEvent disposeEvent) {
+                button.dispose();
+            }
+        });
     }
 
     @Override
