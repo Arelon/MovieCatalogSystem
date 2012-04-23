@@ -574,6 +574,42 @@ public class MainForm extends Observable implements Form {
         }
     };
 
+    @EmbeddedEventListener(component = "mainTable", event = CoolMovieComposite.EventMovieSelected)
+    private final Listener mainTableMovieSelectedListener = new HandledListener(this) {
+
+        @SuppressWarnings({"unchecked"})
+        @Override
+        public void safeHandleEvent(Event e) {
+            Optional<Film> film = (Optional<Film>) e.data;
+            if (film.isPresent())
+                movieDetailsPanel.showDataForMovie(Optional.of(filmRepository.getCompleteFilm(film.get())));
+            GridData layoutData = (GridData) movieDetailsPanel.getLayoutData();
+            int currentHeight = layoutData.heightHint;
+            int newHeight = film.isPresent() ? GUI_MOVIE_DETAILS_HEIGHT : 0;
+            if (currentHeight != newHeight) {
+                layoutData.heightHint = newHeight;
+                mainTable.getParent().getParent().layout();
+            }
+        }
+    };
+
+    @EmbeddedEventListener(component = "mainTable", event = CoolMovieComposite.EventMovieDetailsSelected)
+    private final Listener mainTableMovieDetailsSelectedListener = new HandledListener(this) {
+
+        @SuppressWarnings({"unchecked"})
+        @Override
+        public void safeHandleEvent(Event e) {
+            Optional<Film> film = (Optional<Film>) e.data;
+            newOrEditMovieDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get())),
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            doFillMainTable();
+                        }
+                    });
+        }
+    };
+
 
     // DESIGN
 
@@ -648,34 +684,6 @@ public class MainForm extends Observable implements Form {
     }
 
     private void setupCenterComposite(TransformationContext transformationContext) {
-        //TODO: map to @EmbeddedEventListener
-        mainTable.addMovieSelectionListener(new MovieSelectionListener() {
-
-            @Override
-            public void movieSelected(MovieSelectionEvent e) {
-                if (e.film.isPresent())
-                    movieDetailsPanel.showDataForMovie(Optional.of(filmRepository.getCompleteFilm(e.film.get())));
-                GridData layoutData = (GridData) movieDetailsPanel.getLayoutData();
-                int currentHeight = layoutData.heightHint;
-                int newHeight = e.film.isPresent() ? GUI_MOVIE_DETAILS_HEIGHT : 0;
-                if (currentHeight != newHeight) {
-                    layoutData.heightHint = newHeight;
-                    mainTable.getParent().getParent().layout();
-                }
-            }
-
-            @Override
-            public void movieDetailsSelected(MovieSelectionEvent e) {
-                newOrEditMovieDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(e.film.get())),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                doFillMainTable();
-                            }
-                        });
-            }
-
-        });
         transformationContext.<ScrolledComposite>getMappedObject("mainTableWrapper") //NON-NLS
                 .get().getVerticalBar().setIncrement(10);
         movieDetailsPanel.prepareLayout();
