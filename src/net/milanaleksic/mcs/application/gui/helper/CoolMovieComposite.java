@@ -326,16 +326,26 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
     private void recalculateCellLocations() {
         int x = PADDING_BETWEEN_COLUMNS, y = PADDING_BETWEEN_ROWS;
+        int maxWidth = getParent().getBounds().width - getVerticalScrollBarWidthIfVisible();
         for (MovieWrapper movieWrapper : movies) {
             movieWrapper.x = x;
             movieWrapper.y = y;
             x += thumbnailWidth + PADDING_BETWEEN_COLUMNS;
-            if (x + thumbnailWidth > getParent().getBounds().width) {
+            if (x + thumbnailWidth > maxWidth) {
                 x = PADDING_BETWEEN_COLUMNS;
                 y += thumbnailHeight + PADDING_BETWEEN_ROWS + PADDING_BETWEEN_ROWS_TEXT;
             }
         }
         recalculateOfCellLocationsNeeded = false;
+    }
+
+    private int getVerticalScrollBarWidthIfVisible() {
+        if (!(getParent() instanceof ScrolledComposite))
+            return 0;
+        ScrolledComposite scrolledParent = (ScrolledComposite) getParent();
+        if (!scrolledParent.getVerticalBar().isVisible())
+            return 0;
+        return scrolledParent.getVerticalBar().getSize().x;
     }
 
     private void setScrolledCompositeMinHeight() {
