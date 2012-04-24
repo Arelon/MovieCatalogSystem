@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.*;
 import javax.inject.Inject;
 import java.util.List;
 
-public class NewMediumForm extends AbstractTransformedForm {
+public class NewMediumDialogForm extends AbstractTransformedForm {
 
     @Inject
     private TipMedijaRepository tipMedijaRepository;

@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
 
-public class UnusedMediumsForm extends AbstractTransformedForm {
+public class UnusedMediumsDialogForm extends AbstractTransformedForm {
 
     @Inject
     private MedijRepository medijRepository;
@@ -30,7 +30,7 @@ public class UnusedMediumsForm extends AbstractTransformedForm {
             Medij medij = (Medij) unusedMediumTable.getItem(unusedMediumTable.getSelectionIndex()).getData();
             logger.warn("Deleting medium: " + medij); //NON-NLS
             medijRepository.deleteMediumType(medij);
-            UnusedMediumsForm.super.runnerWhenClosingShouldRun = true;
+            UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
             readData();
         }
     };
@@ -43,7 +43,7 @@ public class UnusedMediumsForm extends AbstractTransformedForm {
                 Medij medij = (Medij) unusedMediumTable.getItem(i).getData();
                 logger.warn("Deleting medium: " + medij); //NON-NLS
                 medijRepository.deleteMediumType(medij);
-                UnusedMediumsForm.super.runnerWhenClosingShouldRun = true;
+                UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
             }
             readData();
         }

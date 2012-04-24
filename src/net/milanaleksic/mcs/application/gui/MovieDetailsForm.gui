@@ -4,37 +4,23 @@
     "background" : "color_info_background",
     "layout" : {
         "_type" : "gridLayout",
-        "numColumns" : 2
+        "numColumns" : 1
     },
     "_children" : [
-        {
-            "_type" : "showImageComposite",
-            "_name" : "movieDetailsImage",
-            "background" : "color_info_background",
-            "bundle" : "(bundle)",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.begin}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : false,
-                "grabExcessVerticalSpace" : false,
-                "widthHint" : 100,
-                "heightHint" : 150
-            }
-        },
         {
             "_type" : "composite",
             "background" : "color_info_background",
             "layout" : {
                 "_type" : "gridLayout",
-                "numColumns" : 4
+                "numColumns" : 2
             },
             "layoutData" : {
                 "_type" : "gridData",
                 "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.begin}",
+                "widthHint" : 300,
                 "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : true
+                "grabExcessVerticalSpace" : false
             },
             "_children" : [
                 {
@@ -47,7 +33,6 @@
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : false,
-                        "widthHint" : 300,
                         "horizontalSpan" : 4,
                         "verticalSpan" : 1
                     },
@@ -59,7 +44,6 @@
 
                 {
                     "_type" : "label",
-                    "_name" : "mediumListLabel",
                     "background" : "color_info_background",
                     "text" : "[main.medium]",
                     "layoutData" : {
@@ -85,10 +69,8 @@
                         "grabExcessVerticalSpace" : false
                     }
                 },
-
                 {
                     "_type" : "label",
-                    "_name" : "genreLabel",
                     "background" : "color_info_background",
                     "text" : "[main.genre]",
                     "layoutData" : {
@@ -117,7 +99,6 @@
 
                 {
                     "_type" : "label",
-                    "_name" : "tagsLabel",
                     "background" : "color_info_background",
                     "text" : "[global.tags]",
                     "layoutData" : {
@@ -143,10 +124,8 @@
                         "grabExcessVerticalSpace" : false
                     }
                 },
-
                 {
                     "_type" : "label",
-                    "_name" : "locationLabel",
                     "background" : "color_info_background",
                     "text" : "[main.location]",
                     "layoutData" : {
@@ -184,9 +163,8 @@
                         "verticalAlignment" : "{grid.fill}",
                         "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : true,
-                        "horizontalSpan" : 4,
-                        "verticalSpan" : 1,
-                        "heightHint" : 100
+                        "horizontalSpan" : 2,
+                        "verticalSpan" : 1
                     }
                 }
             ]

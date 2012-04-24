@@ -68,11 +68,9 @@ public abstract class AbstractForm implements Form {
     }
 
     public void open(@Nullable Shell parent, @Nullable Function<AbstractForm, Void> runWhenClosing) {
-        this.parent = Optional.fromNullable(parent);
         this.runWhenClosing = Optional.fromNullable(runWhenClosing);
         this.runnerWhenClosingShouldRun = false;
-        bundle = applicationManager.getMessagesBundle();
-        prepareShell();
+        prepareShell(parent);
         shell.open();
     }
 
@@ -80,7 +78,10 @@ public abstract class AbstractForm implements Form {
         this.applicationManager = applicationManager;
     }
 
-    private void prepareShell() {
+    protected void prepareShell(Shell parent) {
+        bundle = applicationManager.getMessagesBundle();
+        this.parent = Optional.fromNullable(parent);
+
         createShell();
 
         onShellCreated();

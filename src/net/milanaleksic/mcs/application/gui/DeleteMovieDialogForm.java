@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.*;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-public class DeleteMovieForm extends AbstractTransformedForm {
+public class DeleteMovieDialogForm extends AbstractTransformedForm {
 
     @EmbeddedComponent
     private Label labFilmNaziv = null;

@@ -26,10 +26,10 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class NewOrEditMovieForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
+public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
     @Inject
-    private NewMediumForm newMediumDialogForm;
+    private NewMediumDialogForm newMediumDialogDialogForm;
 
     @Inject
     private ThumbnailManager thumbnailManager;
@@ -158,7 +158,7 @@ public class NewOrEditMovieForm extends AbstractTransformedForm implements Offer
     private final Listener btnNovMedijSelectionListener = new HandledListener(this) {
         @Override
         public void safeHandleEvent(Event event) throws ApplicationException {
-            newMediumDialogForm.open(shell, new Runnable() {
+            newMediumDialogDialogForm.open(shell, new Runnable() {
                 @Override
                 public void run() {
                     refillCombos();

@@ -16,17 +16,9 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -35,7 +27,7 @@ import javax.swing.*;
 import java.io.File;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,13 +47,13 @@ public class MainForm extends Observable implements Form {
     public static final int GUI_SEARCH_FILTER_HEIGHT = 25;
 
     @Inject
-    private NewOrEditMovieForm newOrEditMovieDialogForm;
+    private NewOrEditMovieDialogForm newOrEditMovieDialogDialogForm;
 
     @Inject
-    private SettingsForm settingsDialogForm;
+    private SettingsDialogForm settingsDialogDialogForm;
 
     @Inject
-    private AboutForm aboutDialogForm;
+    private AboutDialogForm aboutDialogDialogForm;
 
     @Inject
     private MovieDetailsForm movieDetailsForm;
@@ -82,7 +74,7 @@ public class MainForm extends Observable implements Form {
     private PozicijaRepository pozicijaRepository;
 
     @Inject
-    private DeleteMovieForm deleteMovieDialogForm;
+    private DeleteMovieDialogForm deleteMovieDialogDialogForm;
 
     @Inject
     private FilmRepository filmRepository;
@@ -91,10 +83,10 @@ public class MainForm extends Observable implements Form {
     private ProgramArgsService programArgsService;
 
     @Inject
-    private UnusedMediumsForm unusedMediumsDialogForm;
+    private UnusedMediumsDialogForm unusedMediumsDialogDialogForm;
 
     @Inject
-    private UnmatchedMoviesForm unmatchedMoviesDialogForm;
+    private UnmatchedMoviesDialogForm unmatchedMoviesDialogDialogForm;
 
     @Inject
     private ThumbnailManager thumbnailManager;
@@ -134,12 +126,12 @@ public class MainForm extends Observable implements Form {
     @EmbeddedComponent
     private CoolMovieComposite mainTable = null;
 
+    @EmbeddedComponent
+    private Composite searchFilterLineComposite = null;
+
     private ResourceBundle bundle;
 
     private CurrentViewState currentViewState = new CurrentViewState();
-
-    @EmbeddedComponent
-    private Composite searchFilterLineComposite = null;
 
     @Override
     public ResourceBundle getResourceBundle() {
@@ -396,7 +388,7 @@ public class MainForm extends Observable implements Form {
             getAllFilms(0, new Function<List<Film>, Void>() {
 
                 @Override
-                @MethodTiming(name="Export process")
+                @MethodTiming(name = "Export process")
                 public Void apply(List<Film> filmList) {
                     checkNotNull(filmList);
                     final Film[] allFilms = filmList.toArray(new Film[filmList.size()]);
@@ -480,7 +472,7 @@ public class MainForm extends Observable implements Form {
             Optional<Film> selectedMovie = mainTable.getSelectedItem();
             if (!selectedMovie.isPresent())
                 return;
-            deleteMovieDialogForm.open(shell, selectedMovie.get(),
+            deleteMovieDialogDialogForm.open(shell, selectedMovie.get(),
                     new Runnable() {
 
                         @Override
@@ -510,7 +502,7 @@ public class MainForm extends Observable implements Form {
                 settingsPopupMenu.setLocation(pt.x, pt.y);
                 settingsPopupMenu.setVisible(true);
             } else {
-                settingsDialogForm.open(shell, new Runnable() {
+                settingsDialogDialogForm.open(shell, new Runnable() {
                     @Override
                     public void run() {
                         resetPozicije();
@@ -540,7 +532,7 @@ public class MainForm extends Observable implements Form {
 
         @Override
         public void safeHandleEvent(Event e) {
-            aboutDialogForm.open(shell);
+            aboutDialogDialogForm.open(shell);
         }
 
     };
@@ -550,7 +542,7 @@ public class MainForm extends Observable implements Form {
 
         @Override
         public void safeHandleEvent(Event e) {
-            newOrEditMovieDialogForm.open(shell, Optional.<Film>absent(), new Runnable() {
+            newOrEditMovieDialogDialogForm.open(shell, Optional.<Film>absent(), new Runnable() {
                 @Override
                 public void run() {
                     doFillMainTable();
@@ -565,7 +557,7 @@ public class MainForm extends Observable implements Form {
 
         @Override
         public void safeHandleEvent(Event e) {
-            unusedMediumsDialogForm.open(shell, new Runnable() {
+            unusedMediumsDialogDialogForm.open(shell, new Runnable() {
 
                 @Override
                 public void run() {
@@ -581,7 +573,7 @@ public class MainForm extends Observable implements Form {
 
         @Override
         public void safeHandleEvent(Event e) {
-            unmatchedMoviesDialogForm.open(shell, new Runnable() {
+            unmatchedMoviesDialogDialogForm.open(shell, new Runnable() {
 
                 @Override
                 public void run() {
@@ -592,15 +584,16 @@ public class MainForm extends Observable implements Form {
         }
     };
 
-    @EmbeddedEventListener(component = "mainTable", event = CoolMovieComposite.EventMovieSelected)
-    private final Listener mainTableMovieSelectedListener = new HandledListener(this) {
+    @EmbeddedEventListener(component = "mainTable", event = SWT.MouseHover)
+    private final Listener mainTableMouseEnterListener = new HandledListener(this) {
 
         @SuppressWarnings({"unchecked"})
         @Override
         public void safeHandleEvent(Event e) {
-            Optional<Film> film = (Optional<Film>) e.data;
-            if (film.isPresent())
-                movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get())));
+            Optional<Film> film = mainTable.getItemAtLocation(e.x, e.y);
+            if (!film.isPresent())
+                return;
+            movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get())));
             mainTable.setFocus();
         }
     };
@@ -612,7 +605,7 @@ public class MainForm extends Observable implements Form {
         @Override
         public void safeHandleEvent(Event e) {
             Optional<Film> film = (Optional<Film>) e.data;
-            newOrEditMovieDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get())),
+            newOrEditMovieDialogDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get())),
                     new Runnable() {
                         @Override
                         public void run() {

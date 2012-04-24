@@ -1,30 +1,42 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
 import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
-import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.*;
 
-import javax.inject.Inject;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.*;
 
 /**
  * User: Milan Aleksic
  * Date: 4/24/12
  * Time: 8:20 AM
  */
-public class MovieDetailsForm extends AbstractTransformedForm {
+public class MovieDetailsForm extends AbstractTransformedForm implements LifecycleListener {
 
-    @Inject
-    private ThumbnailManager thumbnailManager;
+    private ScheduledExecutorService hiderPool = Executors.newScheduledThreadPool(1);;
+    private Optional<ScheduledFuture<?>> hiderScheduledFuture = Optional.absent();
+
+    private Runnable hideMovieDetailsForm = new Runnable() {
+        @Override
+        public void run() {
+            if (!shell.getDisplay().getThread().equals(Thread.currentThread())) {
+                shell.getDisplay().syncExec(this);
+                return;
+            }
+            hide();
+        }
+    };
 
     @EmbeddedEventListener(component = "movieNameValue", event = SWT.MouseEnter)
     private final Listener movieNameValueMouseEnter = new Listener() {
@@ -69,31 +81,16 @@ public class MovieDetailsForm extends AbstractTransformedForm {
     };
 
     @EmbeddedComponent
-    private ShowImageComposite movieDetailsImage;
-
-    @EmbeddedComponent
     private Label movieNameValue;
-
-    @EmbeddedComponent
-    private Label mediumListLabel;
 
     @EmbeddedComponent
     private Label mediumListValue;
 
     @EmbeddedComponent
-    private Label genreLabel;
-
-    @EmbeddedComponent
     private Label genreValue;
 
     @EmbeddedComponent
-    private Label locationLabel;
-
-    @EmbeddedComponent
     private Label locationValue;
-
-    @EmbeddedComponent
-    private Label tagsLabel;
 
     @EmbeddedComponent
     private Label tagsValue;
@@ -103,43 +100,38 @@ public class MovieDetailsForm extends AbstractTransformedForm {
 
     private Optional<Film> film = Optional.absent();
 
-    public void clearData() {
-        this.film = Optional.absent();
-        movieDetailsImage.setStatus(Optional.of(bundle.getString("global.noImagePresent")));
-        movieDetailsImage.setImage(Optional.<org.eclipse.swt.graphics.Image>absent());
-        movieNameValue.setText(bundle.getString("global.selectAMovie"));
-        mediumListLabel.setVisible(false);
-        mediumListValue.setText("");
-        genreLabel.setVisible(false);
-        genreValue.setText("");
-        locationLabel.setVisible(false);
-        locationValue.setText("");
-        tagsLabel.setVisible(false);
-        tagsValue.setText("");
-        commentValue.setVisible(false);
-    }
-
     public void showDataForMovie(Shell parent, Optional<Film> film) {
-        if (shell == null)
-            open(parent);
-        shell.setLocation(shell.getDisplay().getCursorLocation());
+        if (hiderScheduledFuture.isPresent())
+            hiderScheduledFuture.get().cancel(true);
+
+        boolean wasNull = false;
+        if (shell == null) {
+            prepareShell(parent);
+            wasNull = true;
+        }
+        final Point cursorLocation = shell.getDisplay().getCursorLocation();
+        shell.setLocation(cursorLocation.x + 1, cursorLocation.y + 1);
         this.film = film;
         if (!this.film.isPresent()) {
-            clearData();
             return;
         }
+        fillFormData(film);
+        shell.pack();
+        if (wasNull)
+            shell.open();
+        else
+            shell.setVisible(true);
+
+        hiderScheduledFuture = Optional.<ScheduledFuture<?>>of(hiderPool.schedule(hideMovieDetailsForm, 3000, TimeUnit.MILLISECONDS));
+    }
+
+    private void fillFormData(Optional<Film> film) {
         Film theFilm = film.get();
-        thumbnailManager.setThumbnailForShowImageComposite(movieDetailsImage, theFilm.getImdbId());
         movieNameValue.setText(theFilm.getNazivfilma());
-        mediumListLabel.setVisible(true);
         mediumListValue.setText(theFilm.getMedijListAsString());
-        genreLabel.setVisible(true);
         genreValue.setText(theFilm.getZanr().getZanr());
-        locationLabel.setVisible(true);
         locationValue.setText(theFilm.getPozicija());
-        tagsLabel.setVisible(true);
         tagsValue.setText(getFilmTagsAsString(theFilm));
-        commentValue.setVisible(true);
         commentValue.setText(theFilm.getKomentar());
     }
 
@@ -154,5 +146,20 @@ public class MovieDetailsForm extends AbstractTransformedForm {
         if (builder.length() > 2)
             return builder.toString().substring(0, builder.length() - 2);
         return builder.toString();
+    }
+
+    private void hide() {
+        if (shell == null)
+            return;
+        shell.setVisible(false);
+    }
+
+    @Override
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
+    }
+
+    @Override
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
+        hiderPool.shutdownNow();
     }
 }
