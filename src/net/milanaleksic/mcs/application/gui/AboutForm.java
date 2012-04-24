@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.*;
 import java.awt.*;
 import java.net.URI;
 
-public class AboutDialogForm extends AbstractTransformedDialogForm {
+public class AboutForm extends AbstractTransformedForm {
 
     @EmbeddedEventListener(component="btnEmail", event= SWT.Selection)
     private static final Listener emailSender = new Listener() {

@@ -183,21 +183,6 @@
                         }
                     ],
                     "content" : "(mainTable)"
-                },
-
-                {
-                    "_type" : "net.milanaleksic.mcs.application.gui.helper.MovieDetailsPanel",
-                    "_name" : "movieDetailsPanel",
-                    "thumbnailManager" : "(thumbnailManager)",
-                    "bundle" : "(bundle)",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.end}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
-                        "heightHint" : 0
-                    }
                 }
             ]
         },

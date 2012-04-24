@@ -9,7 +9,7 @@ import javax.inject.Inject;
  * Date: 4/20/12
  * Time: 11:35 AM
  */
-public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
+public abstract class AbstractTransformedForm extends AbstractForm {
 
     @Inject
     private Transformer transformer;

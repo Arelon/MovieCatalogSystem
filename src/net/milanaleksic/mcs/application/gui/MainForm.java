@@ -52,17 +52,19 @@ public class MainForm extends Observable implements Form {
     private static final int GUI_FORM_DEFAULT_Y = 20;
     private static final int GUI_FORM_DEFAULT_WIDTH = 900;
 
-    public static final int GUI_MOVIE_DETAILS_HEIGHT = 150;
     public static final int GUI_SEARCH_FILTER_HEIGHT = 25;
 
     @Inject
-    private NewOrEditMovieDialogForm newOrEditMovieDialogForm;
+    private NewOrEditMovieForm newOrEditMovieDialogForm;
 
     @Inject
-    private SettingsDialogForm settingsDialogForm;
+    private SettingsForm settingsDialogForm;
 
     @Inject
-    private AboutDialogForm aboutDialogForm;
+    private AboutForm aboutDialogForm;
+
+    @Inject
+    private MovieDetailsForm movieDetailsForm;
 
     @Inject
     private ApplicationManager applicationManager;
@@ -80,7 +82,7 @@ public class MainForm extends Observable implements Form {
     private PozicijaRepository pozicijaRepository;
 
     @Inject
-    private DeleteMovieDialogForm deleteMovieDialogForm;
+    private DeleteMovieForm deleteMovieDialogForm;
 
     @Inject
     private FilmRepository filmRepository;
@@ -89,10 +91,10 @@ public class MainForm extends Observable implements Form {
     private ProgramArgsService programArgsService;
 
     @Inject
-    private UnusedMediumsDialogForm unusedMediumsDialogForm;
+    private UnusedMediumsForm unusedMediumsDialogForm;
 
     @Inject
-    private UnmatchedMoviesDialogForm unmatchedMoviesDialogForm;
+    private UnmatchedMoviesForm unmatchedMoviesDialogForm;
 
     @Inject
     private ThumbnailManager thumbnailManager;
@@ -131,9 +133,6 @@ public class MainForm extends Observable implements Form {
 
     @EmbeddedComponent
     private CoolMovieComposite mainTable = null;
-
-    @EmbeddedComponent
-    private MovieDetailsPanel movieDetailsPanel = null;
 
     private ResourceBundle bundle;
 
@@ -601,14 +600,8 @@ public class MainForm extends Observable implements Form {
         public void safeHandleEvent(Event e) {
             Optional<Film> film = (Optional<Film>) e.data;
             if (film.isPresent())
-                movieDetailsPanel.showDataForMovie(Optional.of(filmRepository.getCompleteFilm(film.get())));
-            GridData layoutData = (GridData) movieDetailsPanel.getLayoutData();
-            int currentHeight = layoutData.heightHint;
-            int newHeight = film.isPresent() ? GUI_MOVIE_DETAILS_HEIGHT : 0;
-            if (currentHeight != newHeight) {
-                layoutData.heightHint = newHeight;
-                mainTable.getParent().getParent().layout();
-            }
+                movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get())));
+            mainTable.setFocus();
         }
     };
 
@@ -705,7 +698,6 @@ public class MainForm extends Observable implements Form {
     private void setupCenterComposite(TransformationContext transformationContext) {
         transformationContext.<ScrolledComposite>getMappedObject("mainTableWrapper") //NON-NLS
                 .get().getVerticalBar().setIncrement(10);
-        movieDetailsPanel.prepareLayout();
     }
 
     private void setupStatusBar(TransformationContext transformationContext) {

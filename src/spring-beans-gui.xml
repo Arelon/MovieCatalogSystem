@@ -9,21 +9,23 @@
 
     <!-- Dialogs -->
 
-    <bean id="aboutDialogForm" class="net.milanaleksic.mcs.application.gui.AboutDialogForm" />
+    <bean id="aboutDialogForm" class="net.milanaleksic.mcs.application.gui.AboutForm" />
 
-    <bean id="newMediumDialogForm" class="net.milanaleksic.mcs.application.gui.NewMediumDialogForm" />
+    <bean id="newMediumDialogForm" class="net.milanaleksic.mcs.application.gui.NewMediumForm" />
 
-    <bean id="newOrEditMovieDialogForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieDialogForm" />
+    <bean id="newOrEditMovieDialogForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieForm" />
 
-    <bean id="settingsDialogForm" class="net.milanaleksic.mcs.application.gui.SettingsDialogForm" />
+    <bean id="settingsDialogForm" class="net.milanaleksic.mcs.application.gui.SettingsForm" />
 
-    <bean id="deleteMovieDialogForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieDialogForm" />
+    <bean id="deleteMovieDialogForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieForm" />
 
-    <bean id="unusedMediumsDialogForm" class="net.milanaleksic.mcs.application.gui.UnusedMediumsDialogForm" />
+    <bean id="unusedMediumsDialogForm" class="net.milanaleksic.mcs.application.gui.UnusedMediumsForm" />
 
-    <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesDialogForm" />
+    <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesForm" />
 
-    <bean id="findMovieDialogForm" class="net.milanaleksic.mcs.application.gui.FindMovieDialogForm" />
+    <bean id="findMovieDialogForm" class="net.milanaleksic.mcs.application.gui.FindMovieForm" />
+
+    <bean id="movieDetailsForm" class="net.milanaleksic.mcs.application.gui.MovieDetailsForm" />
 
 
     <!-- GUI Helper classes -->

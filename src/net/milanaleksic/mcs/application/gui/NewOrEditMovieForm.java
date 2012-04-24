@@ -26,10 +26,10 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm implements OfferMovieList.Receiver {
+public class NewOrEditMovieForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
     @Inject
-    private NewMediumDialogForm newMediumDialogForm;
+    private NewMediumForm newMediumDialogForm;
 
     @Inject
     private ThumbnailManager thumbnailManager;
@@ -60,7 +60,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     private FilmService filmService;
 
     @Inject
-    FindMovieDialogForm findMovieDialogForm;
+    FindMovieForm findMovieDialogForm;
 
     @EmbeddedComponent
     private Combo comboLokacija = null;

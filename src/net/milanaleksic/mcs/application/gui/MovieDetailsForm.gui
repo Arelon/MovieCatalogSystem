@@ -1,0 +1,194 @@
+{
+    "_type" : "shell",
+    "_style" : "{no_trim}|{no_focus}",
+    "background" : "color_info_background",
+    "layout" : {
+        "_type" : "gridLayout",
+        "numColumns" : 2
+    },
+    "_children" : [
+        {
+            "_type" : "showImageComposite",
+            "_name" : "movieDetailsImage",
+            "background" : "color_info_background",
+            "bundle" : "(bundle)",
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.begin}",
+                "verticalAlignment" : "{grid.begin}",
+                "grabExcessHorizontalSpace" : false,
+                "grabExcessVerticalSpace" : false,
+                "widthHint" : 100,
+                "heightHint" : 150
+            }
+        },
+        {
+            "_type" : "composite",
+            "background" : "color_info_background",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 4
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true
+            },
+            "_children" : [
+                {
+                    "_type" : "label",
+                    "_name" : "movieNameValue",
+                    "background" : "color_info_background",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false,
+                        "widthHint" : 300,
+                        "horizontalSpan" : 4,
+                        "verticalSpan" : 1
+                    },
+                    "font" : {
+                        "height" : 12,
+                        "style" : "BOLD"
+                    }
+                },
+
+                {
+                    "_type" : "label",
+                    "_name" : "mediumListLabel",
+                    "background" : "color_info_background",
+                    "text" : "[main.medium]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "label",
+                    "_name" : "mediumListValue",
+                    "background" : "color_info_background",
+                    "font" : {
+                        "style" : "BOLD"
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+
+                {
+                    "_type" : "label",
+                    "_name" : "genreLabel",
+                    "background" : "color_info_background",
+                    "text" : "[main.genre]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "label",
+                    "_name" : "genreValue",
+                    "background" : "color_info_background",
+                    "font" : {
+                        "style" : "BOLD"
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+
+                {
+                    "_type" : "label",
+                    "_name" : "tagsLabel",
+                    "background" : "color_info_background",
+                    "text" : "[global.tags]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "label",
+                    "_name" : "tagsValue",
+                    "background" : "color_info_background",
+                    "font" : {
+                        "style" : "BOLD"
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+
+                {
+                    "_type" : "label",
+                    "_name" : "locationLabel",
+                    "background" : "color_info_background",
+                    "text" : "[main.location]",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.center}",
+                        "grabExcessHorizontalSpace" : false,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+                {
+                    "_type" : "label",
+                    "_name" : "locationValue",
+                    "background" : "color_info_background",
+                    "font" : {
+                        "style" : "BOLD"
+                    },
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : false
+                    }
+                },
+
+                {
+                    "_type" : "label",
+                    "_name" : "commentValue",
+                    "_style" : "{wrap}",
+                    "background" : "color_info_background",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : true,
+                        "horizontalSpan" : 4,
+                        "verticalSpan" : 1
+                    }
+                }
+            ]
+        }
+    ]
+}

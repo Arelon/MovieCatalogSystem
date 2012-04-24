@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
+public class UnmatchedMoviesForm extends AbstractTransformedForm {
 
     @Inject
     private FilmService filmService;
@@ -175,7 +175,7 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
             film.copyFromMovie(match);
             filmService.updateFilmWithChanges(film);
             unmatchedMoviesTable.remove(unmatchedMovieIndex);
-            UnmatchedMoviesDialogForm.super.runnerWhenClosingShouldRun = true;
+            UnmatchedMoviesForm.super.runnerWhenClosingShouldRun = true;
             removeMatchDetails();
             selectNextMovieWithMatches(unmatchedMovieIndex);
         }
@@ -329,7 +329,7 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
             }
 
             private void retryForMovie(TableItem item, Film film) {
-                synchronized (UnmatchedMoviesDialogForm.this) {
+                synchronized (UnmatchedMoviesForm.this) {
                     if (failureCountMap == null)
                         return;
                     Integer failureCount = failureCountMap.get(film);
