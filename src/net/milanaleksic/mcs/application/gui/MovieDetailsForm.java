@@ -1,6 +1,8 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
+import net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.LifecycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
@@ -84,7 +86,7 @@ public class MovieDetailsForm extends AbstractTransformedForm implements Lifecyc
     private Label movieNameValue;
 
     @EmbeddedComponent
-    private Label mediumListValue;
+    private DynamicSelectorText mediumListValue;
 
     @EmbeddedComponent
     private Label genreValue;
@@ -128,7 +130,12 @@ public class MovieDetailsForm extends AbstractTransformedForm implements Lifecyc
     private void fillFormData(Optional<Film> film) {
         Film theFilm = film.get();
         movieNameValue.setText(theFilm.getNazivfilma());
-        mediumListValue.setText(theFilm.getMedijListAsString());
+        final Set<Medij> medijs = theFilm.getMedijs();
+        final Set<String> medijNames = Sets.newHashSet();
+        for (Medij medij : medijs) {
+            medijNames.add(medij.toString());
+        }
+        mediumListValue.setSelectedItems(medijNames);
         genreValue.setText(theFilm.getZanr().getZanr());
         locationValue.setText(theFilm.getPozicija());
         tagsValue.setText(getFilmTagsAsString(theFilm));

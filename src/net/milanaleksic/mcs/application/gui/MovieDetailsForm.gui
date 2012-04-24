@@ -55,18 +55,17 @@
                     }
                 },
                 {
-                    "_type" : "label",
+                    "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
+                    "_style" : "{read_only}",
                     "_name" : "mediumListValue",
                     "background" : "color_info_background",
-                    "font" : {
-                        "style" : "bold"
-                    },
                     "layoutData" : {
                         "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
+                        "grabExcessVerticalSpace" : false,
+                        "heightHint" : 23
                     }
                 },
                 {
