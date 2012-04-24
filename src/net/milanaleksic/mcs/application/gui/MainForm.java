@@ -204,6 +204,19 @@ public class MainForm extends Observable implements Form {
         }
     }
 
+    @EmbeddedEventListener(component = "mainTable", event = SWT.MouseWheel)
+    private final Listener mainTableMouseWheel = new HandledListener(this) {
+
+        @Override
+        public void safeHandleEvent(Event e) {
+            if (e.count < 0)
+                nextPage();
+            else if (e.count > 0)
+                previousPage();
+        }
+
+    };
+
     @EmbeddedEventListener(component = "mainTable", event = SWT.KeyDown)
     private final Listener mainTableKeyPressed = new HandledListener(this) {
 
@@ -821,6 +834,7 @@ public class MainForm extends Observable implements Form {
     private void doFillMainTable() {
         toolTicker.setVisible(true);
         toolTicker.update();
+        movieDetailsForm.hide();
         getAllFilms(applicationManager.getUserConfiguration().getElementsPerPage(), new Function<List<Film>, Void>() {
             @Override
             public Void apply(@Nullable List<Film> films) {

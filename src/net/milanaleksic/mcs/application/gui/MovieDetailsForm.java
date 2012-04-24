@@ -24,7 +24,7 @@ import java.util.concurrent.*;
  */
 public class MovieDetailsForm extends AbstractTransformedForm implements LifecycleListener {
 
-    private ScheduledExecutorService hiderPool = Executors.newScheduledThreadPool(1);;
+    private ScheduledExecutorService hiderPool = Executors.newScheduledThreadPool(1);
     private Optional<ScheduledFuture<?>> hiderScheduledFuture = Optional.absent();
 
     private Runnable hideMovieDetailsForm = new Runnable() {
@@ -148,7 +148,7 @@ public class MovieDetailsForm extends AbstractTransformedForm implements Lifecyc
         return builder.toString();
     }
 
-    private void hide() {
+    public void hide() {
         if (shell == null)
             return;
         shell.setVisible(false);
