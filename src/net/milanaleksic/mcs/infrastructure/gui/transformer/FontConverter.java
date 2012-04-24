@@ -16,8 +16,8 @@ public class FontConverter extends AbstractConverter {
     public static final String FIELD_NAME = "name"; //NON-NLS
     public static final String FIELD_HEIGHT = "height"; //NON-NLS
     public static final String FIELD_STYLE = "style"; //NON-NLS
-    public static final String FIELD_STYLE_BOLD = "BOLD"; //NON-NLS
-    public static final String FIELD_STYLE_ITALIC = "ITALIC"; //NON-NLS
+    public static final String FIELD_STYLE_BOLD = "bold"; //NON-NLS
+    public static final String FIELD_STYLE_ITALIC = "italic"; //NON-NLS
 
     @Override
     protected Object getValueFromJson(JsonNode node) throws TransformerException {

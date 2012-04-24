@@ -27,7 +27,7 @@
                     "text" : "Movie Catalog System",
                     "font" : {
                         "height" : 12,
-                        "style" : "BOLD"
+                        "style" : "bold"
                     },
                     "layoutData" : {
                         "_type" : "gridData",
@@ -43,7 +43,7 @@
                     "text" : "[about.programAuthor]",
                     "font" : {
                         "height" : 10,
-                        "style" : "BOLD"
+                        "style" : "bold"
                     },
                     "layoutData" : {
                         "_type" : "gridData",

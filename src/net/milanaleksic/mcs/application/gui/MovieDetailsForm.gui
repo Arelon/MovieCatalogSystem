@@ -53,7 +53,7 @@
                     },
                     "font" : {
                         "height" : 12,
-                        "style" : "BOLD"
+                        "style" : "bold"
                     }
                 },
 
@@ -75,7 +75,7 @@
                     "_name" : "mediumListValue",
                     "background" : "color_info_background",
                     "font" : {
-                        "style" : "BOLD"
+                        "style" : "bold"
                     },
                     "layoutData" : {
                         "_type" : "gridData",
@@ -104,7 +104,7 @@
                     "_name" : "genreValue",
                     "background" : "color_info_background",
                     "font" : {
-                        "style" : "BOLD"
+                        "style" : "bold"
                     },
                     "layoutData" : {
                         "_type" : "gridData",
@@ -133,7 +133,7 @@
                     "_name" : "tagsValue",
                     "background" : "color_info_background",
                     "font" : {
-                        "style" : "BOLD"
+                        "style" : "bold"
                     },
                     "layoutData" : {
                         "_type" : "gridData",
@@ -162,7 +162,7 @@
                     "_name" : "locationValue",
                     "background" : "color_info_background",
                     "font" : {
-                        "style" : "BOLD"
+                        "style" : "bold"
                     },
                     "layoutData" : {
                         "_type" : "gridData",
@@ -185,7 +185,8 @@
                         "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : true,
                         "horizontalSpan" : 4,
-                        "verticalSpan" : 1
+                        "verticalSpan" : 1,
+                        "heightHint" : 100
                     }
                 }
             ]

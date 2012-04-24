@@ -26,7 +26,7 @@
                 "grabExcessHorizontalSpace" : true
             },
             "font" : {
-                "style":"BOLD",
+                "style":"bold",
                 "height":12
             },
             "text" : "[delete.doYouReallyWishToDeleteMovie]",
@@ -42,7 +42,7 @@
                 "grabExcessVerticalSpace" : true
             },
             "font" : {
-                "style":"BOLD",
+                "style":"bold",
                 "height":12
             }
         },
