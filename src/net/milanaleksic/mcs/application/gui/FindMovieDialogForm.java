@@ -19,7 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.URI;
 
-public class FindMovieForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
+public class FindMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
     @EmbeddedComponent
     private Text matchDescription = null;
@@ -62,7 +62,7 @@ public class FindMovieForm extends AbstractTransformedForm implements OfferMovie
             if (selectionIndex < 0)
                 return;
             selectedMovie = Optional.of((Movie) mainTable.getItem(selectionIndex).getData());
-            FindMovieForm.super.runnerWhenClosingShouldRun = true;
+            FindMovieDialogForm.super.runnerWhenClosingShouldRun = true;
             shell.close();
         }
     };

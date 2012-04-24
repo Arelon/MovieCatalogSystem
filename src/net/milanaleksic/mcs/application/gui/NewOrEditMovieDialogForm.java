@@ -60,7 +60,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     private FilmService filmService;
 
     @Inject
-    FindMovieForm findMovieDialogForm;
+    FindMovieDialogForm findMovieDialogDialogForm;
 
     @EmbeddedComponent
     private Combo comboLokacija = null;
@@ -113,11 +113,11 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     private final Listener btnSearchMovieSelectionListener = new HandledListener(this) {
         @Override
         public void safeHandleEvent(Event event) throws ApplicationException {
-            findMovieDialogForm.setInitialText(comboNaziv.getText());
-            findMovieDialogForm.open(shell, new Runnable() {
+            findMovieDialogDialogForm.setInitialText(comboNaziv.getText());
+            findMovieDialogDialogForm.open(shell, new Runnable() {
                 @Override
                 public void run() {
-                    Optional<Movie> selectedMovie = findMovieDialogForm.getSelectedMovie();
+                    Optional<Movie> selectedMovie = findMovieDialogDialogForm.getSelectedMovie();
                     if (selectedMovie.isPresent())
                         readFromMovie(selectedMovie.get());
                 }
