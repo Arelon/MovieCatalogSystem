@@ -10,6 +10,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,9 @@ import java.util.List;
  * Time: 11:35 AM
  */
 public class Transformer {
+
+    public static final int DEFAULT_STYLE_SHELL = SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL;
+    public static final int DEFAULT_STYLE_REST = SWT.NONE;
 
     @Inject
     private ApplicationManager applicationManager;
@@ -52,15 +56,17 @@ public class Transformer {
         this.mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
     }
 
+    @MethodTiming(name = "GUI transformation")
     public TransformationContext fillManagedForm(Object formObject) throws TransformerException {
-        return fillManagedForm(formObject, new Shell());
+        return this.fillManagedForm(null, formObject);
     }
 
     @MethodTiming(name = "GUI transformation")
-    public TransformationContext fillManagedForm(Object formObject, Shell shell) throws TransformerException {
+    public TransformationContext fillManagedForm(@Nullable Shell parent, Object formObject) throws TransformerException {
         String thisClassNameAsResourceLocation = formObject.getClass().getCanonicalName().replaceAll("\\.", "/");
         String formName = "/" + thisClassNameAsResourceLocation + ".gui"; //NON-NLS
-        TransformationContext transformationContext = fillForm(formName, shell);
+
+        TransformationContext transformationContext = fillForm(parent, formName);
         embedComponents(formObject, transformationContext);
         embedEvents(formObject, transformationContext);
         return transformationContext;
@@ -131,15 +137,16 @@ public class Transformer {
     }
 
     TransformationContext createFormFromResource(String fullName) throws TransformerException {
-        return fillForm(fullName, new Shell());
+        return fillForm(null, fullName);
     }
 
-    private TransformationContext fillForm(String fullName, Shell shell) throws TransformerException {
+    private TransformationContext fillForm(@Nullable Shell parent, String fullName) throws TransformerException {
         Map<String, Object> mappedObjects = Maps.newHashMap();
         mappedObjects.put("bundle", applicationManager.getMessagesBundle()); //NON-NLS
         try (InputStream resourceAsStream = Transformer.class.getResourceAsStream(fullName)) {
-            deserializeObjectFromNode(mapper.readValue(resourceAsStream, JsonNode.class), shell, mappedObjects);
-            return new TransformationContext(shell, mappedObjects);
+            final JsonNode shellDefinition = mapper.readValue(resourceAsStream, JsonNode.class);
+            Object shellObject = createObject(parent, shellDefinition, mappedObjects);
+            return new TransformationContext((Shell) shellObject, mappedObjects);
         } catch (IOException e) {
             throw new TransformerException("IO Error while trying to find and parse required form: " + fullName, e);
         }
@@ -158,8 +165,7 @@ public class Transformer {
             throw new IllegalStateException("Can not create children for parent which is not Composite nor Menu (" + parentWidget.getClass().getName() + " in this case)");
         try {
             for (JsonNode node : mapper.readValue(childrenNodes, JsonNode[].class)) {
-                Object childObject = createChildObject(parentWidget, node);
-                deserializeObjectFromNode(node, childObject, mappedObjects);
+                createObject(parentWidget, node, mappedObjects);
             }
         } catch (IOException e) {
             throw new TransformerException("IO exception while trying to parse child nodes", e);
@@ -220,11 +226,11 @@ public class Transformer {
         return "set" + fieldName.substring(0, 1).toUpperCase(Locale.getDefault()) + fieldName.substring(1); //NON-NLS
     }
 
-    private Object createChildObject(Object parent, JsonNode childDefinition) throws TransformerException {
+    private Object createObject(Object parent, JsonNode objectDefinition, Map<String, Object> mappedObjects) throws TransformerException {
         try {
-            if (!childDefinition.has(KEY_SPECIAL_TYPE))
-                throw new IllegalArgumentException("Could not deduce the child type without explicit definition: " + childDefinition);
-            Class<?> widgetClass = ObjectConverter.deduceClassFromNode(childDefinition);
+            if (!objectDefinition.has(KEY_SPECIAL_TYPE))
+                throw new IllegalArgumentException("Could not deduce the child type without explicit definition: " + objectDefinition);
+            Class<?> widgetClass = ObjectConverter.deduceClassFromNode(objectDefinition);
             Constructor<?> chosenConstructor = null;
 
             Constructor<?>[] constructors = widgetClass.getConstructors();
@@ -244,13 +250,18 @@ public class Transformer {
                 throw new TransformerException("Could not find adequate constructor(? extends Composite, int) in class "
                         + widgetClass.getName());
 
-            int style = SWT.NONE;
-            if (childDefinition.has(KEY_SPECIAL_STYLE)) {
-                JsonNode styleNode = childDefinition.get(KEY_SPECIAL_STYLE);
+            int style = widgetClass == Shell.class ? DEFAULT_STYLE_SHELL : DEFAULT_STYLE_REST;
+            if (objectDefinition.has(KEY_SPECIAL_STYLE)) {
+                JsonNode styleNode = objectDefinition.get(KEY_SPECIAL_STYLE);
                 AbstractConverter exactTypeConverter = (AbstractConverter) converterFactory.getExactTypeConverter(int.class).get();
                 style = (Integer) exactTypeConverter.getValueFromJson(styleNode);
             }
-            return chosenConstructor.newInstance(parent, style);
+
+            final Object objectInstance = chosenConstructor.newInstance(parent, style);
+
+            deserializeObjectFromNode(objectDefinition, objectInstance, mappedObjects);
+
+            return objectInstance;
         } catch (ReflectiveOperationException e) {
             throw new TransformerException("Widget creation of class failed", e);
         }

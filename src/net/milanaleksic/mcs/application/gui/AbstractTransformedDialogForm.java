@@ -20,16 +20,20 @@ public abstract class AbstractTransformedDialogForm extends AbstractDialogForm {
         this.transformer = transformer;
     }
 
-    @Override
-    protected final void onShellCreated() {
+    @Override final protected void createShell() {
         try {
-            TransformationContext transformationContext = transformer.fillManagedForm(this, shell);
+            TransformationContext transformationContext = transformer.fillManagedForm(this.parent.orNull(), this);
+            this.shell = transformationContext.getShell();
             onTransformationComplete(transformationContext);
         } catch (TransformerException e) {
             logger.error("Transformation failed", e); //NON-NLS
         } finally {
             formTransformationComplete = true;
         }
+    }
+
+    @Override
+    protected void onShellCreated() {
     }
 
     protected boolean isFormTransformationComplete() {

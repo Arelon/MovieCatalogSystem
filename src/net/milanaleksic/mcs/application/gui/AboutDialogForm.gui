@@ -1,4 +1,5 @@
 {
+    "_type" : "shell",
     "layout" : {
         "_type" : "gridLayout",
         "numColumns" : 1,

@@ -72,15 +72,16 @@ public abstract class AbstractDialogForm implements Form {
         this.runWhenClosing = Optional.fromNullable(runWhenClosing);
         this.runnerWhenClosingShouldRun = false;
         bundle = applicationManager.getMessagesBundle();
-        createShell();
+        prepareShell();
     }
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
     }
 
-    private void createShell() {
-        shell = new Shell(this.parent.orNull(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+    private void prepareShell() {
+        createShell();
+
         onShellCreated();
 
         if (!noReadyEvent)
@@ -113,6 +114,10 @@ public abstract class AbstractDialogForm implements Form {
             );
         }
         shell.open();
+    }
+
+    protected void createShell() {
+        shell = new Shell(this.parent.orNull(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
     }
 
     public boolean isDisposed() {

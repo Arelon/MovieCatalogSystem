@@ -1,4 +1,6 @@
 {
+    "_type" : "shell",
+    "_style" : "{shell_trim}",
     "text" : "Movie Catalog System (C) by Milan.Aleksic@gmail.com",
     "layout" : {
         "_type" : "gridLayout",
