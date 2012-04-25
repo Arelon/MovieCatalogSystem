@@ -23,6 +23,8 @@ public class DynamicSelectorText extends Composite {
 
     private List<String> selectedItems;
 
+    private Map<String, Object> dataItems = Maps.newHashMap();
+
     private ControlEditor editor;
     private List<Rectangle> closingButtons;
 
@@ -168,4 +170,26 @@ public class DynamicSelectorText extends Composite {
         redraw();
     }
 
+    public Iterable<String> getSelectedItems() {
+        return Iterables.unmodifiableIterable(selectedItems);
+    }
+
+    public int getSelectedItemCount() {
+        return selectedItems.size();
+    }
+
+    public void setData(String key, Object data) {
+        this.dataItems.put(key, data);
+    }
+
+    public Object getData(String key) {
+        return this.dataItems.get(key);
+    }
+
+    public int getItemCount() {
+        if ((getStyle() & SWT.READ_ONLY) != 0) {
+            return 0;
+        }
+        return getComboEditor().getItemCount();
+    }
 }

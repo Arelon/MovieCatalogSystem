@@ -305,7 +305,7 @@
             "text" : "[newOrEdit.mediums]",
             "layout" : {
                 "_type" : "gridLayout",
-                "numColumns" : 3
+                "numColumns" : 1
             },
             "layoutData" : {
                 "_type" : "gridData",
@@ -315,32 +315,6 @@
                 "heightHint" : 120
             },
             "_children" : [
-
-                {
-                    "_type" : "combo",
-                    "_name" : "comboDisk",
-                    "_style" : "{read_only}",
-                    "visibleItemCount" : 10,
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
-                },
-                {
-                    "_type" : "button",
-                    "_name" : "btnDodajDisk",
-                    "text" : "[newOrEdit.addMedium]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.begin}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    }
-                },
                 {
                     "_type" : "button",
                     "_name" : "btnNovMedij",
@@ -355,27 +329,15 @@
                 },
 
                 {
-                    "_type" : "list",
-                    "_style" : "{v_scroll}|{border}",
-                    "_name" : "listDiskovi",
+                    "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
+                    "_style" : "{border}",
+                    "_name" : "diskSelector",
                     "layoutData" : {
                         "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
-                        "heightHint" : 75
-                    }
-                },
-                {
-                    "_type" : "button",
-                    "_name" : "btnOduzmi",
-                    "text" : "[newOrEdit.removeMedium]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.begin}",
-                        "verticalAlignment" : "{grid.end}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false,
-                        "horizontalSpan" : 2,
-                        "verticalSpan" : 1
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : true
                     }
                 }
             ]
