@@ -1,8 +1,8 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.application.gui.AbstractDialogForm;
-import net.milanaleksic.mcs.application.gui.AbstractTransformedDialogForm;
+import net.milanaleksic.mcs.application.gui.*;
+import net.milanaleksic.mcs.application.gui.AbstractForm;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,9 +28,9 @@ public class FormTester {
             applicationContext.registerShutdownHook();
 
             Class<?> clazz = Class.forName(clazzName);
-            AbstractDialogForm form = (AbstractDialogForm) clazz.newInstance();
-            if (form instanceof AbstractTransformedDialogForm) {
-                ((AbstractTransformedDialogForm) form).setTransformer(applicationContext.getBean("transformer", Transformer.class));
+            AbstractForm form = (AbstractForm) clazz.newInstance();
+            if (form instanceof AbstractTransformedForm) {
+                ((AbstractTransformedForm) form).setTransformer(applicationContext.getBean("transformer", Transformer.class));
             }
             form.setApplicationManager(applicationManager);
             form.setNoReadyEvent(true);

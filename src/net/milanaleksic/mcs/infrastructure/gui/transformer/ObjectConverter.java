@@ -18,6 +18,7 @@ public class ObjectConverter extends AbstractConverter {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\((.*)\\)");
 
+    @SuppressWarnings({"HardCodedStringLiteral"})
     private static Map<String, Class<?>> knownClasses = ImmutableMap
             .<String, Class<?>>builder()
             .put("showImageComposite", net.milanaleksic.mcs.application.gui.helper.ShowImageComposite.class)
@@ -25,6 +26,7 @@ public class ObjectConverter extends AbstractConverter {
             .put("gridData", org.eclipse.swt.layout.GridData.class)
             .put("gridLayout", org.eclipse.swt.layout.GridLayout.class)
 
+            .put("shell", org.eclipse.swt.widgets.Shell.class)
             .put("button", org.eclipse.swt.widgets.Button.class)
             .put("canvas", org.eclipse.swt.widgets.Canvas.class)
             .put("composite", org.eclipse.swt.widgets.Composite.class)

@@ -25,6 +25,8 @@
 
     <bean id="findMovieDialogForm" class="net.milanaleksic.mcs.application.gui.FindMovieDialogForm" />
 
+    <bean id="movieDetailsForm" class="net.milanaleksic.mcs.application.gui.MovieDetailsForm" />
+
 
     <!-- GUI Helper classes -->
 

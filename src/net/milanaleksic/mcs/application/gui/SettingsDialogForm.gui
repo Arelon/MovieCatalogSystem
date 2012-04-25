@@ -1,4 +1,5 @@
 {
+    "_type" : "shell",
     "text" : "[settings.programSettings]",
     "layout" : {
         "_type" : "gridLayout",

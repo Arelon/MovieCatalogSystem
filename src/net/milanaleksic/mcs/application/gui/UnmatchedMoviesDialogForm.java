@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class UnmatchedMoviesDialogForm extends AbstractTransformedDialogForm {
+public class UnmatchedMoviesDialogForm extends AbstractTransformedForm {
 
     @Inject
     private FilmService filmService;

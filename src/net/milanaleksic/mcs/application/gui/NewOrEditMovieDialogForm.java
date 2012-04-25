@@ -14,7 +14,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Table;
 
 import javax.annotation.Nonnull;
@@ -22,14 +21,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm implements OfferMovieList.Receiver {
+public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
     @Inject
-    private NewMediumDialogForm newMediumDialogForm;
+    private NewMediumDialogForm newMediumDialogDialogForm;
 
     @Inject
     private ThumbnailManager thumbnailManager;
@@ -60,19 +60,13 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     private FilmService filmService;
 
     @Inject
-    FindMovieDialogForm findMovieDialogForm;
+    FindMovieDialogForm findMovieDialogDialogForm;
 
     @EmbeddedComponent
     private Combo comboLokacija = null;
 
     @EmbeddedComponent
     private Combo comboZanr = null;
-
-    @EmbeddedComponent
-    private Combo comboDisk = null;
-
-    @EmbeddedComponent
-    private List listDiskovi = null;
 
     @EmbeddedComponent
     private Combo comboNaziv = null;
@@ -98,6 +92,9 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     @EmbeddedComponent
     private ShowImageComposite posterImage = null;
 
+    @EmbeddedComponent
+    private DynamicSelectorText diskSelector = null;
+
     private Optional<Film> activeFilm;
 
     @EmbeddedEventListener(event = SWT.Close)
@@ -113,11 +110,11 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     private final Listener btnSearchMovieSelectionListener = new HandledListener(this) {
         @Override
         public void safeHandleEvent(Event event) throws ApplicationException {
-            findMovieDialogForm.setInitialText(comboNaziv.getText());
-            findMovieDialogForm.open(shell, new Runnable() {
+            findMovieDialogDialogForm.setInitialText(comboNaziv.getText());
+            findMovieDialogDialogForm.open(shell, new Runnable() {
                 @Override
                 public void run() {
-                    Optional<Movie> selectedMovie = findMovieDialogForm.getSelectedMovie();
+                    Optional<Movie> selectedMovie = findMovieDialogDialogForm.getSelectedMovie();
                     if (selectedMovie.isPresent())
                         readFromMovie(selectedMovie.get());
                 }
@@ -158,36 +155,12 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     private final Listener btnNovMedijSelectionListener = new HandledListener(this) {
         @Override
         public void safeHandleEvent(Event event) throws ApplicationException {
-            newMediumDialogForm.open(shell, new Runnable() {
+            newMediumDialogDialogForm.open(shell, new Runnable() {
                 @Override
                 public void run() {
                     refillCombos();
-                    if (comboDisk.getItemCount() > 0)
-                        comboDisk.select(comboDisk.getItemCount() - 1);
                 }
             });
-        }
-    };
-
-    @EmbeddedEventListener(component = "btnOduzmi", event = SWT.Selection)
-    private final Listener btnOduzmiSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (listDiskovi.getSelectionIndex() != -1)
-                listDiskovi.remove(listDiskovi.getSelectionIndex());
-        }
-    };
-
-    @EmbeddedEventListener(component = "btnDodajDisk", event = SWT.Selection)
-    private final Listener btnDodajDiskSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            int index = comboDisk.getSelectionIndex();
-            if (index != -1) {
-                if (listDiskovi.indexOf(comboDisk.getItem(index)) == -1) {
-                    listDiskovi.add(comboDisk.getItem(index));
-                }
-            }
         }
     };
 
@@ -197,7 +170,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
         public void safeHandleEvent(Event event) throws ApplicationException {
             //TODO: replace with Hibernate Validator (JSR 303 implementation)
             StringBuilder razlogOtkaza = new StringBuilder();
-            if (listDiskovi.getItemCount() == 0)
+            if (diskSelector.getSelectedItemCount() == 0)
                 razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.atLeastOneMediumNeeded"));
             if (comboNaziv.getText().trim().equals(""))
                 razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveName"));
@@ -291,9 +264,10 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
             textImdbId.setText(film.getImdbId());
             textKomentar.setText(film.getKomentar());
             comboZanr.select(comboZanr.indexOf(film.getZanr().getZanr()));
-            listDiskovi.removeAll();
+            java.util.List<String> diskNames = Lists.newArrayList();
             for (Medij medij : film.getMedijs())
-                listDiskovi.add(medij.toString());
+                diskNames.add(medij.toString());
+            diskSelector.setSelectedItems(diskNames);
             for (Tag tag : film.getTags())
                 findAndSelectTagInTable(tableTags, tag);
             int indexOfPozicija = comboLokacija.indexOf(film.getPozicija());
@@ -306,8 +280,6 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
                 String nameOfDefaultPosition = defaultPozicija.get().getPozicija();
                 if (comboLokacija.indexOf(nameOfDefaultPosition) != -1)
                     comboLokacija.select(comboLokacija.indexOf(nameOfDefaultPosition));
-                if (comboDisk.getItemCount() != 0)
-                    comboDisk.select(comboDisk.getItemCount() - 1);
             }
         }
     }
@@ -323,11 +295,9 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     protected void refillCombos() {
         String previousZanr = comboZanr.getText();
         String previousLokacija = comboLokacija.getText();
-        String previousDisk = comboDisk.getText();
         Iterable<Tag> previousTags = getSelectedTags();
         comboZanr.removeAll();
         comboLokacija.removeAll();
-        comboDisk.removeAll();
         tableTags.removeAll();
 
         for (Zanr zanr : zanrRepository.getZanrs()) {
@@ -338,31 +308,22 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
             comboLokacija.add(pozicija.getPozicija());
             comboLokacija.setData(pozicija.getPozicija(), pozicija);
         }
+        List<String> allMediums = Lists.newArrayList();
         for (Medij medij : medijRepository.getMedijs()) {
-            comboDisk.add(medij.toString());
-            comboDisk.setData(medij.toString(), medij);
+            allMediums.add(medij.toString());
+            diskSelector.setData(medij.toString(), medij);
         }
+        diskSelector.setItems(allMediums);
         for (Tag tag : tagRepository.getTags()) {
             TableItem tableItem = new TableItem(tableTags, SWT.NONE);
             tableItem.setText(tag.getNaziv());
             tableItem.setData(tag);
         }
 
-        if (comboZanr.getItemCount() == 0 || comboDisk.getItemCount() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
-            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-            box.setMessage(bundle.getString("newOrEdit.someBasicDomainElementsMissing"));
-            box.setText(bundle.getString("global.information"));
-            box.open();
-            shell.close();
-            return;
-        }
-
         if (!previousZanr.isEmpty() && comboZanr.indexOf(previousZanr) != -1)
             comboZanr.select(comboZanr.indexOf(previousZanr));
         if (!previousLokacija.isEmpty() && comboLokacija.indexOf(previousLokacija) != -1)
             comboLokacija.select(comboLokacija.indexOf(previousLokacija));
-        if (!previousDisk.isEmpty() && comboDisk.indexOf(previousDisk) != -1)
-            comboDisk.select(comboDisk.indexOf(previousDisk));
         for (Tag tag : previousTags)
             findAndSelectTagInTable(tableTags, tag);
     }
@@ -403,9 +364,10 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
 
     private Set<Medij> getSelectedMediums() {
         Set<Medij> medijs = Sets.newHashSet();
-        for (String medijName : listDiskovi.getItems()) {
-            // only comboDisk is holding detached entities
-            Medij medij = (Medij) comboDisk.getData(medijName);
+        for (String medijName : diskSelector.getSelectedItems()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Medium found in selector: " + medijName); //NON-NLS
+            Medij medij = (Medij) diskSelector.getData(medijName);
             medijs.add(medij);
         }
         return medijs;
@@ -415,6 +377,15 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedDialogForm impl
     protected void onShellReady() {
         offerMovieListForNewOrEditForm.prepareFor(comboNaziv);
         reReadData();
+
+        if (comboZanr.getItemCount() == 0 || diskSelector.getItemCount() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
+            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+            box.setMessage(bundle.getString("newOrEdit.someBasicDomainElementsMissing"));
+            box.setText(bundle.getString("global.information"));
+            box.open();
+            if (!shell.isDisposed())
+                shell.close();
+        }
     }
 
     private void readFromMovie(@Nonnull Movie movie) {

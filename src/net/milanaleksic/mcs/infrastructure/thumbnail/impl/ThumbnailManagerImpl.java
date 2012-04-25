@@ -90,7 +90,6 @@ public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener
         }
         final String imdbId = imdbIdOptional.get();
         Optional<String> absoluteFileLocation = Optional.fromNullable(imdbIdToLocallyCachedImageMap.get(imdbId));
-        //TODO: use image repository instead of setimagefromresource
         if (!absoluteFileLocation.isPresent()) {
             imageTargetWidget.setImage(imageRepository.getResourceImage(defaultImageResource));
             imdbIdToLocallyCachedImageMap.put(imdbId, MAGIC_VALUE_ENQUEUED);

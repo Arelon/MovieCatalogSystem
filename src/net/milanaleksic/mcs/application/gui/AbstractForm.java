@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ResourceBundle;
 
-public abstract class AbstractDialogForm implements Form {
+public abstract class AbstractForm implements Form {
 
     protected final Logger logger = Logger.getLogger(this.getClass());
 
@@ -24,7 +24,7 @@ public abstract class AbstractDialogForm implements Form {
     protected Shell shell;
     protected Optional<Shell> parent = Optional.absent();
 
-    private Optional<Function<AbstractDialogForm, Void>> runWhenClosing = Optional.absent();
+    private Optional<Function<AbstractForm, Void>> runWhenClosing = Optional.absent();
 
     protected ResourceBundle bundle;
 
@@ -49,17 +49,17 @@ public abstract class AbstractDialogForm implements Form {
     }
 
     public void open() {
-        open(null, (Function<AbstractDialogForm, Void>)null);
+        open(null, (Function<AbstractForm, Void>)null);
     }
 
     public void open(Shell parent) {
-        open(parent, (Function<AbstractDialogForm, Void>)null);
+        open(parent, (Function<AbstractForm, Void>)null);
     }
 
     public void open(@Nullable Shell parent, @Nullable final Runnable runWhenClosing) {
-        open(parent, new Function<AbstractDialogForm, Void>() {
+        open(parent, new Function<AbstractForm, Void>() {
             @Override
-            public Void apply(@Nullable AbstractDialogForm abstractDialogForm) {
+            public Void apply(@Nullable AbstractForm abstractForm) {
                 if (runWhenClosing != null)
                     runWhenClosing.run();
                 return null;
@@ -67,20 +67,23 @@ public abstract class AbstractDialogForm implements Form {
         });
     }
 
-    public void open(@Nullable Shell parent, @Nullable Function<AbstractDialogForm, Void> runWhenClosing) {
-        this.parent = Optional.fromNullable(parent);
+    public void open(@Nullable Shell parent, @Nullable Function<AbstractForm, Void> runWhenClosing) {
         this.runWhenClosing = Optional.fromNullable(runWhenClosing);
         this.runnerWhenClosingShouldRun = false;
-        bundle = applicationManager.getMessagesBundle();
-        createShell();
+        prepareShell(parent);
+        shell.open();
     }
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
     }
 
-    private void createShell() {
-        shell = new Shell(this.parent.orNull(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+    protected void prepareShell(Shell parent) {
+        bundle = applicationManager.getMessagesBundle();
+        this.parent = Optional.fromNullable(parent);
+
+        createShell();
+
         onShellCreated();
 
         if (!noReadyEvent)
@@ -96,9 +99,9 @@ public abstract class AbstractDialogForm implements Form {
                     return;
                 }
                 if (runnerWhenClosingShouldRun) {
-                    if (!AbstractDialogForm.this.runWhenClosing.isPresent())
+                    if (!AbstractForm.this.runWhenClosing.isPresent())
                         throw new IllegalStateException("Value runnerWhenClosingShouldRun set to true, but no valid runner registered!");
-                    AbstractDialogForm.this.runWhenClosing.get().apply(AbstractDialogForm.this);
+                    AbstractForm.this.runWhenClosing.get().apply(AbstractForm.this);
                 }
                 shell.dispose();
             }
@@ -112,7 +115,10 @@ public abstract class AbstractDialogForm implements Form {
                     parentShell.getLocation().y + (parentShell.getSize().y - shell.getSize().y) / 2)
             );
         }
-        shell.open();
+    }
+
+    protected void createShell() {
+        shell = new Shell(this.parent.orNull(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
     }
 
     public boolean isDisposed() {

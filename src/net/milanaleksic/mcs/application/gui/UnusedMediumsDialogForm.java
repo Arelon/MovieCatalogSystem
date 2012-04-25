@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
 
-public class UnusedMediumsDialogForm extends AbstractTransformedDialogForm {
+public class UnusedMediumsDialogForm extends AbstractTransformedForm {
 
     @Inject
     private MedijRepository medijRepository;

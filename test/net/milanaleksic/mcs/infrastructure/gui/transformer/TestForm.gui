@@ -1,4 +1,5 @@
 {
+    "_type" : "shell",
     "layout" : {
         "_type" : "gridLayout",
         "numColumns" : 2
@@ -25,7 +26,7 @@
                 "grabExcessHorizontalSpace" : true
             },
             "font" : {
-                "style" : "BOLD",
+                "style" : "bold",
                 "height" : 12
             },
             "text" : "[delete.doYouReallyWishToDeleteMovie]",

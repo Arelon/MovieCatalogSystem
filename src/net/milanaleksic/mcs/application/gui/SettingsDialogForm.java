@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkElementIndex;
 
-public class SettingsDialogForm extends AbstractTransformedDialogForm {
+public class SettingsDialogForm extends AbstractTransformedForm {
 
     @Inject
     private PozicijaRepository pozicijaRepository;

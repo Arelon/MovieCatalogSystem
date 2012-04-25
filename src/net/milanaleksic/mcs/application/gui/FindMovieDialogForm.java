@@ -19,7 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.URI;
 
-public class FindMovieDialogForm extends AbstractTransformedDialogForm implements OfferMovieList.Receiver {
+public class FindMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
     @EmbeddedComponent
     private Text matchDescription = null;

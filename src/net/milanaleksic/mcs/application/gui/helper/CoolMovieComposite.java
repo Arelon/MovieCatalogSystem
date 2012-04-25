@@ -212,6 +212,12 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
+    public Optional<Film> getItemAtLocation(int x, int y) {
+        int index = getItemIndexAtPosition(x, y);
+        return index == -1 ? Optional.<Film>absent() : Optional.of(movies.get(index).getFilm());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
     public Iterator<Film> iterator() {
         return Lists.transform(movies, new Function<MovieWrapper, Film>() {
             @Override
@@ -241,19 +247,24 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
     // Painting algorithms
 
-    private void calculateMovieSelection(int x, int y) {
+    private int getItemIndexAtPosition(int x, int y) {
         long column = Math.round(Math.floor((x - PADDING_BETWEEN_COLUMNS / 2) / (thumbnailWidth + PADDING_BETWEEN_COLUMNS)));
         long row = Math.round(Math.floor((y - PADDING_BETWEEN_ROWS / 2) / (thumbnailHeight + PADDING_BETWEEN_ROWS + PADDING_BETWEEN_ROWS_TEXT)));
         long cellsPerRow = getCellsPerRow();
-        long itemIndex = cellsPerRow * row + column;
+        final long itemIndex = cellsPerRow * row + column;
+        if (itemIndex < movies.size() && column < cellsPerRow) {
+            return (int) itemIndex;
+        } else {
+            return -1;
+        }
+    }
+
+    private void calculateMovieSelection(int x, int y) {
+        long itemIndex = getItemIndexAtPosition(x, y);
         int prevSelectedItem = selectedIndex;
         selectedIndex = -1;
         redrawItem(prevSelectedItem);
-        if (itemIndex < movies.size() && column < cellsPerRow) {
-            setSelectedIndex((int) itemIndex);
-        } else {
-            setSelectedIndex(-1);
-        }
+        setSelectedIndex((int) itemIndex);
         redrawItem(selectedIndex);
     }
 
