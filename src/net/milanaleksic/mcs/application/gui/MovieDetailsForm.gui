@@ -65,7 +65,7 @@
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : false,
-                        "heightHint" : 23
+                        "heightHint" : 25
                     }
                 },
                 {

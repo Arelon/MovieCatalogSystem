@@ -285,12 +285,12 @@
                     "text" : "[global.tags]",
                     "_children" : [
                         {
-                            "_type" : "table",
-                            "_style" : "{check}|{border}",
-                            "_name" : "tableTags",
+                            "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
+                            "_style" : "{border}",
+                            "_name" : "tagSelector",
                             "layoutData" : {
                                 "_type" : "gridData",
-                                "widthHint" : 100,
+                                "widthHint" : 200,
                                 "heightHint" : 120
                             }
                         }
