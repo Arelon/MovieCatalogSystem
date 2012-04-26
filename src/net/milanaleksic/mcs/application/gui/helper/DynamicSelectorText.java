@@ -15,7 +15,7 @@ import java.util.List;
  * Date: 4/24/12
  * Time: 2:26 PM
  */
-public class DynamicSelectorText extends Composite {
+public class DynamicSelectorText extends Composite implements PaintListener {
 
     public static final int PADDING_IN_ITEM = 3;
     public static final int PADDING_BETWEEN_ITEMS = 5;
@@ -35,7 +35,7 @@ public class DynamicSelectorText extends Composite {
     }
 
     private void prepareComponent() {
-        if ((getStyle() & SWT.READ_ONLY) == 0)
+        if (isModifiable())
             prepareComboEditor();
         closingButtons = new LinkedList<>();
     }
@@ -56,6 +56,8 @@ public class DynamicSelectorText extends Composite {
                         final String itemText = chooser.getText();
                         if (Arrays.asList(chooser.getItems()).contains(itemText))
                             safeAddSelectItem(itemText);
+                        else
+                            chooser.select(0);
                         break;
                     case SWT.TRAVERSE_ESCAPE:
                         chooser.select(0);
@@ -92,7 +94,7 @@ public class DynamicSelectorText extends Composite {
     }
 
     private void addListeners() {
-        if ((getStyle() & SWT.READ_ONLY) == 0) {
+        if (isModifiable()) {
             this.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseDown(MouseEvent e) {
@@ -109,54 +111,75 @@ public class DynamicSelectorText extends Composite {
                 }
             });
         }
-        this.addPaintListener(new PaintListener() {
-            @Override
-            public void paintControl(PaintEvent e) {
-                closingButtons.clear();
-                int xIter = PADDING_IN_ITEM;
-                for (String itemToPaint : selectedItems) {
-                    final Point textExtent = e.gc.textExtent(itemToPaint);
-                    e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        this.addPaintListener(this);
+    }
 
-                    e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-                    int arrowSpace = (getStyle() & SWT.READ_ONLY) == 0 ? ARROW_DIMENSION + PADDING_IN_ITEM : 0;
-                    e.gc.fillRectangle(xIter, PADDING_IN_ITEM,
-                            textExtent.x + PADDING_IN_ITEM * 2 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
-                    e.gc.drawRectangle(xIter, PADDING_IN_ITEM,
-                            textExtent.x + PADDING_IN_ITEM * 2 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
-                    e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+    @Override
+    public void paintControl(PaintEvent e) {
+        closingButtons.clear();
+        int xIter = PADDING_IN_ITEM, yIter = PADDING_IN_ITEM;
+        if (selectedItems != null)
+            for (String itemToPaint : selectedItems) {
+                final Point textExtent = e.gc.textExtent(itemToPaint);
 
-                    e.gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM, 3 + PADDING_IN_ITEM);
+                drawItemRectangle(e, xIter, yIter, itemToPaint, textExtent);
+                xIter += textExtent.x + PADDING_IN_ITEM * 2;
 
-                    e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-
-                    xIter += textExtent.x + PADDING_IN_ITEM * 2;
-
-                    if ((getStyle() & SWT.READ_ONLY) == 0) {
-                        e.gc.setLineWidth(3);
-                        Rectangle closingButton = new Rectangle(xIter, PADDING_IN_ITEM + textExtent.y / 2,
-                                ARROW_DIMENSION, ARROW_DIMENSION);
-                        closingButtons.add(closingButton);
-                        e.gc.drawLine(closingButton.x, closingButton.y, closingButton.x + closingButton.width, closingButton.y + closingButton.height);
-                        e.gc.drawLine(closingButton.x + closingButton.width, closingButton.y, closingButton.x, closingButton.y + closingButton.height);
-                        e.gc.drawLine(xIter + ARROW_DIMENSION, PADDING_IN_ITEM + textExtent.y / 2,
-                                xIter, PADDING_IN_ITEM + ARROW_DIMENSION + textExtent.y / 2);
-                        e.gc.setLineWidth(1);
-
-                        xIter += ARROW_DIMENSION + PADDING_IN_ITEM;
-                    }
-                    xIter += PADDING_BETWEEN_ITEMS;
+                if (isModifiable()) {
+                    drawItemArrow(e, xIter, yIter, textExtent);
+                    xIter += ARROW_DIMENSION + PADDING_IN_ITEM;
                 }
-                if ((getStyle() & SWT.READ_ONLY) == 0)
-                    editor.getEditor().setLocation(xIter, PADDING_IN_ITEM);
+                xIter += PADDING_BETWEEN_ITEMS;
+                if ((isModifiable() && xIter + editor.minimumWidth > getBounds().width)
+                        || (!isModifiable() && xIter > getBounds().width)) {
+                    xIter = PADDING_IN_ITEM;
+                    yIter += textExtent.y + 2 * PADDING_IN_ITEM + PADDING_BETWEEN_ITEMS;
+                }
             }
-        });
+        if (isModifiable())
+            editor.getEditor().setLocation(xIter, yIter);
+    }
+
+    private void drawItemArrow(PaintEvent e, int xIter, int yIter, Point textExtent) {
+        final Color prevForeground = e.gc.getForeground();
+        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+        e.gc.setLineWidth(3);
+        Rectangle closingButton = new Rectangle(xIter, yIter + textExtent.y / 2,
+                ARROW_DIMENSION, PADDING_IN_ITEM + ARROW_DIMENSION);
+        closingButtons.add(closingButton);
+        e.gc.drawLine(closingButton.x, closingButton.y, closingButton.x + closingButton.width, closingButton.y + closingButton.height);
+        e.gc.drawLine(closingButton.x + closingButton.width, closingButton.y, closingButton.x, closingButton.y + closingButton.height);
+        e.gc.setLineWidth(1);
+        e.gc.setForeground(prevForeground);
+    }
+
+    private void drawItemRectangle(PaintEvent e, int xIter, int yIter, String itemToPaint, Point textExtent) {
+        final Color previousBackground = e.gc.getBackground();
+        final Color previousForeground = e.gc.getForeground();
+
+        e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+        int arrowSpace = isModifiable() ? ARROW_DIMENSION + PADDING_IN_ITEM : 0;
+        Rectangle itemRectangle = new Rectangle(xIter, yIter,
+                textExtent.x + PADDING_IN_ITEM * 2 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
+        e.gc.fillRectangle(itemRectangle);
+        e.gc.drawRectangle(itemRectangle);
+
+        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+        e.gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM, 3 + yIter);
+
+        e.gc.setBackground(previousBackground);
+        e.gc.setForeground(previousForeground);
+    }
+
+    private boolean isModifiable() {
+        return (getStyle() & SWT.READ_ONLY) == 0;
     }
 
     public void setItems(Iterable<String> items) {
         this.closingButtons.clear();
         this.selectedItems = Lists.newArrayList();
-        if ((getStyle() & SWT.READ_ONLY) == 0) {
+        if (isModifiable()) {
             final Combo combo = getComboEditor();
             combo.setItems(Iterables.toArray(items, String.class));
             combo.add("<choose>", 0);
@@ -187,7 +210,7 @@ public class DynamicSelectorText extends Composite {
     }
 
     public int getItemCount() {
-        if ((getStyle() & SWT.READ_ONLY) != 0) {
+        if (!isModifiable()) {
             return 0;
         }
         return getComboEditor().getItemCount();
