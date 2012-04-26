@@ -97,6 +97,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         addListeners();
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void setThumbnailManager(ThumbnailManager thumbnailManager) {
         this.thumbnailManager = thumbnailManager;
         thumbnailWidth = thumbnailManager.getThumbnailWidth();

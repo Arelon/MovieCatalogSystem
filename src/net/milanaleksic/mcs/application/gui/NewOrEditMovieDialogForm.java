@@ -14,7 +14,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Table;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -23,8 +22,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
@@ -87,10 +84,10 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     private Text textKomentar = null;
 
     @EmbeddedComponent
-    private Table tableTags = null;
+    private ShowImageComposite posterImage = null;
 
     @EmbeddedComponent
-    private ShowImageComposite posterImage = null;
+    private DynamicSelectorText tagSelector = null;
 
     @EmbeddedComponent
     private DynamicSelectorText diskSelector = null;
@@ -233,22 +230,6 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         }
     };
 
-    private Function<TableItem, Tag> tableItemToTagFunction = new Function<TableItem, Tag>() {
-        @Override
-        public Tag apply(TableItem input) {
-            checkNotNull(input);
-            return (Tag) input.getData();
-        }
-    };
-
-    private Predicate<TableItem> isCheckedTableItemFunction = new Predicate<TableItem>() {
-        @Override
-        public boolean apply(TableItem input) {
-            checkNotNull(input);
-            return input.getChecked();
-        }
-    };
-
     public void open(Shell parent, Optional<Film> film, Runnable callback) {
         this.activeFilm = film;
         super.open(parent, callback);
@@ -268,8 +249,10 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
             for (Medij medij : film.getMedijs())
                 diskNames.add(medij.toString());
             diskSelector.setSelectedItems(diskNames);
+            java.util.List<String> tagNames = Lists.newArrayList();
             for (Tag tag : film.getTags())
-                findAndSelectTagInTable(tableTags, tag);
+                tagNames.add(tag.toString());
+            tagSelector.setSelectedItems(tagNames);
             int indexOfPozicija = comboLokacija.indexOf(film.getPozicija());
             if (indexOfPozicija >= 0)
                 comboLokacija.select(indexOfPozicija);
@@ -284,21 +267,11 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         }
     }
 
-    private void findAndSelectTagInTable(Table targetTable, Tag tag) {
-        checkNotNull(tag);
-        for (TableItem tableItem : targetTable.getItems()) {
-            if (tag.equals(tableItem.getData()))
-                tableItem.setChecked(true);
-        }
-    }
-
     protected void refillCombos() {
         String previousZanr = comboZanr.getText();
         String previousLokacija = comboLokacija.getText();
-        Iterable<Tag> previousTags = getSelectedTags();
         comboZanr.removeAll();
         comboLokacija.removeAll();
-        tableTags.removeAll();
 
         for (Zanr zanr : zanrRepository.getZanrs()) {
             comboZanr.add(zanr.getZanr());
@@ -314,18 +287,17 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
             diskSelector.setData(medij.toString(), medij);
         }
         diskSelector.setItems(allMediums);
+        List<String> allTags = Lists.newArrayList();
         for (Tag tag : tagRepository.getTags()) {
-            TableItem tableItem = new TableItem(tableTags, SWT.NONE);
-            tableItem.setText(tag.getNaziv());
-            tableItem.setData(tag);
+            allTags.add(tag.toString());
+            tagSelector.setData(tag.toString(), tag);
         }
+        tagSelector.setItems(allTags);
 
         if (!previousZanr.isEmpty() && comboZanr.indexOf(previousZanr) != -1)
             comboZanr.select(comboZanr.indexOf(previousZanr));
         if (!previousLokacija.isEmpty() && comboLokacija.indexOf(previousLokacija) != -1)
             comboLokacija.select(comboLokacija.indexOf(previousLokacija));
-        for (Tag tag : previousTags)
-            findAndSelectTagInTable(tableTags, tag);
     }
 
     protected void dodajNoviFilm() {
@@ -357,16 +329,17 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     }
 
     private Iterable<Tag> getSelectedTags() {
-        return Iterables.transform(
-                Iterables.filter(Lists.newArrayList(tableTags.getItems()), isCheckedTableItemFunction),
-                tableItemToTagFunction);
+        Set<Tag> tags = Sets.newHashSet();
+        for (String tagName : tagSelector.getSelectedItems()) {
+            Tag tag = (Tag) tagSelector.getData(tagName);
+            tags.add(tag);
+        }
+        return tags;
     }
 
     private Set<Medij> getSelectedMediums() {
         Set<Medij> medijs = Sets.newHashSet();
         for (String medijName : diskSelector.getSelectedItems()) {
-            if (logger.isDebugEnabled())
-                logger.debug("Medium found in selector: " + medijName); //NON-NLS
             Medij medij = (Medij) diskSelector.getData(medijName);
             medijs.add(medij);
         }
