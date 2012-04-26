@@ -22,7 +22,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private static final int PADDING_BETWEEN_ITEMS = 5;
     private static final int BORDER_SUM_BETWEEN_ITEMS = 2;
 
-    private List<String> selectedItems;
+    private SortedSet<String> selectedItems;
 
     private Map<String, Object> dataItems = Maps.newHashMap();
 
@@ -36,7 +36,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private Color closerColor;
 
     public DynamicSelectorText(Composite parent, int style) {
-        super(parent, style);
+        super(parent, style | SWT.NO_BACKGROUND);
         prepareComponent();
         addListeners();
     }
@@ -108,13 +108,16 @@ public class DynamicSelectorText extends Composite implements PaintListener {
             this.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseDown(MouseEvent e) {
-                    for (int i = 0; i < closingButtons.size(); i++) {
-                        final Rectangle rectangle = closingButtons.get(i);
-                        if (e.x < rectangle.x || e.x > rectangle.x + rectangle.width)
+                    Iterator<String> iterator = selectedItems.iterator();
+                    if (!iterator.hasNext())
+                        return;
+                    for (Rectangle closingButton : closingButtons) {
+                        iterator.next();
+                        if (e.x < closingButton.x || e.x > closingButton.x + closingButton.width)
                             continue;
-                        if (e.y < rectangle.y || e.y > rectangle.y + rectangle.height)
+                        if (e.y < closingButton.y || e.y > closingButton.y + closingButton.height)
                             continue;
-                        selectedItems.remove(i);
+                        iterator.remove();
                         redraw();
                         return;
                     }
@@ -126,17 +129,21 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
     @Override
     public void paintControl(PaintEvent e) {
+        GC gc = e.gc;
+        gc.setAdvanced(true);
+        gc.setTextAntialias(SWT.ON);
         closingButtons.clear();
+        gc.fillRectangle(e.x, e.y, e.width, e.height);
         int xIter = PADDING_IN_ITEM, yIter = PADDING_IN_ITEM;
         if (selectedItems != null)
             for (String itemToPaint : selectedItems) {
-                final Point textExtent = e.gc.textExtent(itemToPaint);
+                final Point textExtent = gc.textExtent(itemToPaint);
 
-                drawItemRectangle(e, xIter, yIter, itemToPaint, textExtent);
+                drawItemRectangle(gc, xIter, yIter, itemToPaint, textExtent);
                 xIter += textExtent.x + PADDING_IN_ITEM * 2;
 
                 if (isModifiable()) {
-                    drawItemCloser(e, xIter, yIter, textExtent);
+                    drawItemCloser(gc, xIter, yIter, textExtent);
                     xIter += CLOSER_DIMENSION + PADDING_IN_ITEM;
                 }
                 xIter += PADDING_BETWEEN_ITEMS + BORDER_SUM_BETWEEN_ITEMS;
@@ -150,38 +157,37 @@ public class DynamicSelectorText extends Composite implements PaintListener {
             editor.getEditor().setLocation(xIter, yIter);
     }
 
-    private void drawItemCloser(PaintEvent e, int xIter, int yIter, Point textExtent) {
-        final Color prevForeground = e.gc.getForeground();
-        e.gc.setForeground(closerColor);
-        e.gc.setLineWidth(3);
+    private void drawItemCloser(GC gc, int xIter, int yIter, Point textExtent) {
+        final Color prevForeground = gc.getForeground();
+        gc.setForeground(closerColor);
+        gc.setLineWidth(3);
         Rectangle closingButton = new Rectangle(xIter, yIter + textExtent.y / 2,
                 CLOSER_DIMENSION, CLOSER_DIMENSION);
         closingButtons.add(closingButton);
-        e.gc.drawLine(closingButton.x, closingButton.y, closingButton.x + closingButton.width, closingButton.y + closingButton.height);
-        e.gc.drawLine(closingButton.x + closingButton.width, closingButton.y, closingButton.x, closingButton.y + closingButton.height);
-        e.gc.setLineWidth(1);
-        e.gc.setForeground(prevForeground);
+        gc.drawLine(closingButton.x, closingButton.y,
+                closingButton.x + closingButton.width, closingButton.y + closingButton.height);
+        gc.drawLine(closingButton.x + closingButton.width,
+                closingButton.y, closingButton.x, closingButton.y + closingButton.height);
+        gc.setLineWidth(1);
+        gc.setForeground(prevForeground);
     }
 
-    private void drawItemRectangle(PaintEvent e, int xIter, int yIter, String itemToPaint, Point textExtent) {
-        final Color previousBackground = e.gc.getBackground();
-        final Color previousForeground = e.gc.getForeground();
+    private void drawItemRectangle(GC gc, int xIter, int yIter, String itemToPaint, Point textExtent) {
+        final Color previousBackground = gc.getBackground();
+        final Color previousForeground = gc.getForeground();
 
-        e.gc.setBackground(selectedItemBackgroundColor);
-        e.gc.setForeground(selectedItemForegroundColor);
+        gc.setBackground(selectedItemBackgroundColor);
+        gc.setForeground(selectedItemForegroundColor);
         int arrowSpace = isModifiable() ? CLOSER_DIMENSION + PADDING_IN_ITEM : 0;
         Rectangle itemRectangle = new Rectangle(xIter, yIter,
                 textExtent.x + PADDING_IN_ITEM * 3 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
-        e.gc.fillRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 5, 5);
-        e.gc.drawRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 5, 5);
-//        e.gc.fillRectangle(itemRectangle);
-//        e.gc.drawRectangle(itemRectangle);
+        gc.fillRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 4, 4);
 
-        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-        e.gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM, 3 + yIter);
+        gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+        gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM, 3 + yIter);
 
-        e.gc.setBackground(previousBackground);
-        e.gc.setForeground(previousForeground);
+        gc.setBackground(previousBackground);
+        gc.setForeground(previousForeground);
     }
 
     private boolean isModifiable() {
@@ -190,7 +196,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
     public void setItems(Iterable<String> items) {
         this.closingButtons.clear();
-        this.selectedItems = Lists.newArrayList();
+        this.selectedItems = Sets.newTreeSet();
         if (isModifiable()) {
             final Combo combo = getComboEditor();
             combo.setItems(Iterables.toArray(items, String.class));
@@ -201,7 +207,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     }
 
     public void setSelectedItems(Iterable<String> selectedItems) {
-        this.selectedItems = Lists.newArrayList(selectedItems);
+        this.selectedItems = Sets.newTreeSet(selectedItems);
         redraw();
     }
 

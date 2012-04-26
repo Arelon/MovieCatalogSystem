@@ -131,7 +131,7 @@ public class MovieDetailsForm extends AbstractTransformedForm implements Lifecyc
         Film theFilm = film.get();
         movieNameValue.setText(theFilm.getNazivfilma());
         final Set<Medij> medijs = theFilm.getMedijs();
-        final Set<String> medijNames = Sets.newHashSet();
+        final Set<String> medijNames = Sets.newLinkedHashSet();
         for (Medij medij : medijs) {
             medijNames.add(medij.toString());
         }
