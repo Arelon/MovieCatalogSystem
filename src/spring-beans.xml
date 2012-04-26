@@ -27,7 +27,7 @@
 	<bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
         <property name="lifecycleListeners">
             <set>
-                <ref bean="splashScreenManager" />
+                <!--<ref bean="splashScreenManager" />--><!--Splash Screen has been removed as of 26th April, 2012-->
                 <ref bean="applicationConfigurationManager" />
                 <ref bean="userConfigurationManager" />
                 <bean class="net.milanaleksic.mcs.application.util.StatisticsManager" />

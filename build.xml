@@ -124,7 +124,6 @@
                 <include name="*.properties"/>
                 <include name=".launcher"/>
                 <include name="*.xml"/>
-                <include name="*.jpg"/>
                 <include name="MD5.dll"/>
             </fileset>
         </copy>

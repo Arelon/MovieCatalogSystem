@@ -1,7 +1,7 @@
 # Configuration file for WinLauncher. Please visit www.milanaleksic.net/project/winlauncher for syntax
 executor = java
 mainClass = net.milanaleksic.mcs.Startup
-showSplash = true
+showSplash = false
 programArgs = -c
 extraClasspathDir=out\production\MovieCatalogSystem
 extra = -javaagent:"../lib/aspectjweaver.jar"
