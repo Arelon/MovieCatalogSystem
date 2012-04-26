@@ -17,9 +17,10 @@ import java.util.List;
  */
 public class DynamicSelectorText extends Composite implements PaintListener {
 
-    public static final int PADDING_IN_ITEM = 3;
-    public static final int PADDING_BETWEEN_ITEMS = 5;
-    public static final int ARROW_DIMENSION = 6;
+    private static final int PADDING_IN_ITEM = 3;
+    private static final int CLOSER_DIMENSION = 6;
+    private static final int PADDING_BETWEEN_ITEMS = 5;
+    private static final int BORDER_SUM_BETWEEN_ITEMS = 2;
 
     private List<String> selectedItems;
 
@@ -27,6 +28,12 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
     private ControlEditor editor;
     private List<Rectangle> closingButtons;
+
+    private Color selectedItemBackgroundColor;
+
+    private Color selectedItemForegroundColor;
+
+    private Color closerColor;
 
     public DynamicSelectorText(Composite parent, int style) {
         super(parent, style);
@@ -38,6 +45,9 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         if (isModifiable())
             prepareComboEditor();
         closingButtons = new LinkedList<>();
+        selectedItemBackgroundColor = getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+        selectedItemForegroundColor = getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+        closerColor = getDisplay().getSystemColor(SWT.COLOR_GRAY);
     }
 
     private void prepareComboEditor() {
@@ -126,10 +136,10 @@ public class DynamicSelectorText extends Composite implements PaintListener {
                 xIter += textExtent.x + PADDING_IN_ITEM * 2;
 
                 if (isModifiable()) {
-                    drawItemArrow(e, xIter, yIter, textExtent);
-                    xIter += ARROW_DIMENSION + PADDING_IN_ITEM;
+                    drawItemCloser(e, xIter, yIter, textExtent);
+                    xIter += CLOSER_DIMENSION + PADDING_IN_ITEM;
                 }
-                xIter += PADDING_BETWEEN_ITEMS;
+                xIter += PADDING_BETWEEN_ITEMS + BORDER_SUM_BETWEEN_ITEMS;
                 if ((isModifiable() && xIter + editor.minimumWidth > getBounds().width)
                         || (!isModifiable() && xIter > getBounds().width)) {
                     xIter = PADDING_IN_ITEM;
@@ -140,12 +150,12 @@ public class DynamicSelectorText extends Composite implements PaintListener {
             editor.getEditor().setLocation(xIter, yIter);
     }
 
-    private void drawItemArrow(PaintEvent e, int xIter, int yIter, Point textExtent) {
+    private void drawItemCloser(PaintEvent e, int xIter, int yIter, Point textExtent) {
         final Color prevForeground = e.gc.getForeground();
-        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+        e.gc.setForeground(closerColor);
         e.gc.setLineWidth(3);
         Rectangle closingButton = new Rectangle(xIter, yIter + textExtent.y / 2,
-                ARROW_DIMENSION, PADDING_IN_ITEM + ARROW_DIMENSION);
+                CLOSER_DIMENSION, CLOSER_DIMENSION);
         closingButtons.add(closingButton);
         e.gc.drawLine(closingButton.x, closingButton.y, closingButton.x + closingButton.width, closingButton.y + closingButton.height);
         e.gc.drawLine(closingButton.x + closingButton.width, closingButton.y, closingButton.x, closingButton.y + closingButton.height);
@@ -157,13 +167,15 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         final Color previousBackground = e.gc.getBackground();
         final Color previousForeground = e.gc.getForeground();
 
-        e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-        int arrowSpace = isModifiable() ? ARROW_DIMENSION + PADDING_IN_ITEM : 0;
+        e.gc.setBackground(selectedItemBackgroundColor);
+        e.gc.setForeground(selectedItemForegroundColor);
+        int arrowSpace = isModifiable() ? CLOSER_DIMENSION + PADDING_IN_ITEM : 0;
         Rectangle itemRectangle = new Rectangle(xIter, yIter,
-                textExtent.x + PADDING_IN_ITEM * 2 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
-        e.gc.fillRectangle(itemRectangle);
-        e.gc.drawRectangle(itemRectangle);
+                textExtent.x + PADDING_IN_ITEM * 3 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
+        e.gc.fillRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 5, 5);
+        e.gc.drawRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 5, 5);
+//        e.gc.fillRectangle(itemRectangle);
+//        e.gc.drawRectangle(itemRectangle);
 
         e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
         e.gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM, 3 + yIter);
@@ -214,5 +226,29 @@ public class DynamicSelectorText extends Composite implements PaintListener {
             return 0;
         }
         return getComboEditor().getItemCount();
+    }
+
+    public Color getSelectedItemBackgroundColor() {
+        return selectedItemBackgroundColor;
+    }
+
+    public void setSelectedItemBackgroundColor(Color selectedItemBackgroundColor) {
+        this.selectedItemBackgroundColor = selectedItemBackgroundColor;
+    }
+
+    public Color getSelectedItemForegroundColor() {
+        return selectedItemForegroundColor;
+    }
+
+    public void setSelectedItemForegroundColor(Color selectedItemForegroundColor) {
+        this.selectedItemForegroundColor = selectedItemForegroundColor;
+    }
+
+    public Color getCloserColor() {
+        return closerColor;
+    }
+
+    public void setCloserColor(Color closerColor) {
+        this.closerColor = closerColor;
     }
 }
