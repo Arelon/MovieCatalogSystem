@@ -323,8 +323,8 @@
                     "layoutData" : {
                         "_type" : "gridData",
                         "horizontalAlignment" : "{grid.begin}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
+                        "verticalAlignment" : "{grid.begin}",
+                        "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : false
                     }
                 },

@@ -18,6 +18,7 @@ import java.util.List;
 public class DynamicSelectorText extends Composite implements PaintListener {
 
     private static final int PADDING_IN_ITEM = 3;
+    private static final int PADDING_IN_ITEM_LEFT = 3;
     private static final int CLOSER_DIMENSION = 6;
     private static final int PADDING_BETWEEN_ITEMS = 5;
     private static final int BORDER_SUM_BETWEEN_ITEMS = 2;
@@ -146,7 +147,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
                 final Point textExtent = gc.textExtent(itemToPaint);
 
                 drawItemRectangle(gc, xIter, yIter, itemToPaint, textExtent);
-                xIter += textExtent.x + PADDING_IN_ITEM * 2;
+                xIter += PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT + textExtent.x + PADDING_IN_ITEM;
 
                 if (isModifiable()) {
                     drawItemCloser(gc, xIter, yIter, textExtent);
@@ -186,11 +187,12 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         gc.setForeground(selectedItemForegroundColor);
         int arrowSpace = isModifiable() ? CLOSER_DIMENSION + PADDING_IN_ITEM : 0;
         Rectangle itemRectangle = new Rectangle(xIter, yIter,
-                textExtent.x + PADDING_IN_ITEM * 3 + arrowSpace, textExtent.y + PADDING_IN_ITEM * 2);
+                PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT + textExtent.x + PADDING_IN_ITEM + arrowSpace + PADDING_IN_ITEM, textExtent.y + PADDING_IN_ITEM * 2);
         gc.fillRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 4, 4);
+        gc.drawRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 4, 4);
 
         gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-        gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM, 3 + yIter);
+        gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT, 3 + yIter);
 
         gc.setBackground(previousBackground);
         gc.setForeground(previousForeground);
