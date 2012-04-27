@@ -160,8 +160,12 @@ public class DynamicSelectorText extends Composite implements PaintListener {
                     yIter += textExtent.y + 2 * PADDING_IN_ITEM + PADDING_BETWEEN_ITEMS;
                 }
             }
-        if (isModifiable())
-            editor.getEditor().setLocation(xIter, yIter);
+        if (isModifiable()) {
+            Point location = editor.getEditor().getLocation();
+            // if check to avoid redraw recursion
+            if (location.x != xIter || location.y != yIter)
+                editor.getEditor().setLocation(xIter, yIter);
+        }
     }
 
     private void drawItemCloser(GC gc, int xIter, int yIter, Point textExtent) {
