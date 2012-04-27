@@ -58,6 +58,7 @@
                     "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
                     "_style" : "{read_only}",
                     "_name" : "mediumListValue",
+                    "bundle" : "(bundle)",
                     "selectedItemBackgroundColor" : "#aaaaff",
                     "selectedItemForegroundColor" : "color_black",
                     "closerColor" : "color_white",

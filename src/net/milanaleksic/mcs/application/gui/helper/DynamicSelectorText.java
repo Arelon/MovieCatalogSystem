@@ -27,6 +27,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private Map<String, Object> dataItems = Maps.newHashMap();
 
     private ControlEditor editor;
+
     private List<Rectangle> closingButtons;
 
     private Color selectedItemBackgroundColor;
@@ -35,10 +36,16 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
     private Color closerColor;
 
+    private ResourceBundle bundle;
+
     public DynamicSelectorText(Composite parent, int style) {
         super(parent, style | SWT.NO_BACKGROUND);
         prepareComponent();
         addListeners();
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
     }
 
     private void prepareComponent() {
@@ -53,7 +60,6 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private void prepareComboEditor() {
         editor = new ControlEditor(this);
         final Combo chooser = new Combo(this, SWT.DROP_DOWN);
-        chooser.add("<choose>", 0);
         chooser.setBackground(getBackground());
         editor.minimumHeight = 20;
         editor.minimumWidth = 100;
@@ -200,7 +206,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         if (isModifiable()) {
             final Combo combo = getComboEditor();
             combo.setItems(Iterables.toArray(items, String.class));
-            combo.add("<choose>", 0);
+            combo.add(bundle.getString("global.chooseFromList"), 0);
             combo.select(0);
         }
         redraw();

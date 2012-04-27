@@ -288,6 +288,7 @@
                             "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
                             "_style" : "{border}",
                             "_name" : "tagSelector",
+                            "bundle" : "(bundle)",
                             "layoutData" : {
                                 "_type" : "gridData",
                                 "widthHint" : 200,
@@ -332,6 +333,7 @@
                     "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
                     "_style" : "{border}",
                     "_name" : "diskSelector",
+                    "bundle" : "(bundle)",
                     "layoutData" : {
                         "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
