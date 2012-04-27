@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.*;
 import com.google.common.io.Files;
+import com.google.common.math.DoubleMath;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.application.gui.helper.*;
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.*;
 import java.io.File;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.*;
@@ -225,6 +227,12 @@ public class MainForm extends Observable implements Form {
             try {
                 String filterText = currentViewState.getFilterText();
                 switch (e.keyCode) {
+                    case SWT.HOME:
+                        firstPage();
+                        return;
+                    case SWT.END:
+                        lastPage();
+                        return;
                     case SWT.PAGE_UP:
                         previousPage();
                         return;
@@ -848,6 +856,16 @@ public class MainForm extends Observable implements Form {
                 return null;
             }
         });
+    }
+
+    private void firstPage() {
+        currentViewState.setActivePage(0L);
+        doFillMainTable();
+    }
+
+    private void lastPage() {
+        currentViewState.setActivePage(DoubleMath.roundToLong(1L * currentViewState.getShowableCount() / currentViewState.getMaxItemsPerPage(), RoundingMode.FLOOR));
+        doFillMainTable();
     }
 
     private void nextPage() {
