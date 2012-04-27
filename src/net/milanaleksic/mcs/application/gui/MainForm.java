@@ -864,13 +864,13 @@ public class MainForm extends Observable implements Form {
     }
 
     private void lastPage() {
-        currentViewState.setActivePage(DoubleMath.roundToLong(1L * currentViewState.getShowableCount() / currentViewState.getMaxItemsPerPage(), RoundingMode.FLOOR));
+        currentViewState.setActivePage(DoubleMath.roundToLong(1.0 * currentViewState.getShowableCount() / currentViewState.getMaxItemsPerPage(), RoundingMode.CEILING)-1);
         doFillMainTable();
     }
 
     private void nextPage() {
         if (currentViewState.getMaxItemsPerPage() > 0)
-            if (currentViewState.getMaxItemsPerPage() * (currentViewState.getActivePage() + 1) > currentViewState.getShowableCount())
+            if (currentViewState.getMaxItemsPerPage() * (currentViewState.getActivePage() + 1) >= currentViewState.getShowableCount())
                 return;
         currentViewState.setActivePage(currentViewState.getActivePage() + 1);
         doFillMainTable();
