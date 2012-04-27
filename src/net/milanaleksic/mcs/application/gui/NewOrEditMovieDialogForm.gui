@@ -221,7 +221,7 @@
                 "grabExcessHorizontalSpace" : true,
                 "grabExcessVerticalSpace" : true,
                 "horizontalSpan" : 1,
-                "verticalSpan" : 2
+                "verticalSpan" : 3
             },
             "layout" : {
                 "_type" : "gridLayout",
@@ -244,59 +244,35 @@
                 }
             ]
         },
+
         {
-            "_type" : "composite",
+            "_type" : "group",
             "layout" : {
                 "_type" : "gridLayout",
-                "numColumns" : 2
+                "numColumns" : 1
             },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true,
+                "widthHint" : 300,
+                "heightHint" : 100
+            },
+            "text" : "[newOrEdit.comment]",
             "_children" : [
                 {
-                    "_type" : "group",
-                    "layout" : {
-                        "_type" : "gridLayout",
-                        "numColumns" : 1
-                    },
+                    "_type" : "text",
+                    "_style" : "{multi}|{wrap}|{v_scroll}|{border}",
+                    "_name" : "textKomentar",
                     "layoutData" : {
                         "_type" : "gridData",
-                        "verticalAlignment" : "{grid.begin}"
-                    },
-                    "text" : "[newOrEdit.comment]",
-                    "_children" : [
-                        {
-                            "_type" : "text",
-                            "_style" : "{multi}|{wrap}|{v_scroll}|{border}",
-                            "_name" : "textKomentar",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "widthHint" : 200,
-                                "heightHint" : 120
-                            }
-                        }
-                    ]
-
-                },
-                {
-                    "_type" : "group",
-                    "layout" : {
-                        "_type" : "gridLayout",
-                        "numColumns" : 1
-                    },
-                    "text" : "[global.tags]",
-                    "_children" : [
-                        {
-                            "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
-                            "_style" : "{border}",
-                            "_name" : "tagSelector",
-                            "bundle" : "(bundle)",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "widthHint" : 200,
-                                "heightHint" : 120
-                            }
-                        }
-                    ]
-
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : true
+                    }
                 }
             ]
         },
@@ -311,9 +287,10 @@
             "layoutData" : {
                 "_type" : "gridData",
                 "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.begin}",
-                "widthHint" : 200,
-                "heightHint" : 120
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true,
+                "heightHint" : 100
             },
             "_children" : [
                 {
@@ -333,6 +310,38 @@
                     "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
                     "_style" : "{border}",
                     "_name" : "diskSelector",
+                    "bundle" : "(bundle)",
+                    "layoutData" : {
+                        "_type" : "gridData",
+                        "horizontalAlignment" : "{grid.fill}",
+                        "verticalAlignment" : "{grid.fill}",
+                        "grabExcessHorizontalSpace" : true,
+                        "grabExcessVerticalSpace" : true
+                    }
+                }
+            ]
+        },
+
+        {
+            "_type" : "group",
+            "layout" : {
+                "_type" : "gridLayout",
+                "numColumns" : 1
+            },
+            "layoutData" : {
+                "_type" : "gridData",
+                "horizontalAlignment" : "{grid.fill}",
+                "verticalAlignment" : "{grid.fill}",
+                "grabExcessHorizontalSpace" : true,
+                "grabExcessVerticalSpace" : true,
+                "heightHint" : 80
+            },
+            "text" : "[global.tags]",
+            "_children" : [
+                {
+                    "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
+                    "_style" : "{border}",
+                    "_name" : "tagSelector",
                     "bundle" : "(bundle)",
                     "layoutData" : {
                         "_type" : "gridData",

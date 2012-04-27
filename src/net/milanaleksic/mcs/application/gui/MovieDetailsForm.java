@@ -95,7 +95,7 @@ public class MovieDetailsForm extends AbstractTransformedForm implements Lifecyc
     private Label locationValue;
 
     @EmbeddedComponent
-    private Label tagsValue;
+    private DynamicSelectorText tagsValue;
 
     @EmbeddedComponent
     private Label commentValue;
@@ -130,29 +130,19 @@ public class MovieDetailsForm extends AbstractTransformedForm implements Lifecyc
     private void fillFormData(Optional<Film> film) {
         Film theFilm = film.get();
         movieNameValue.setText(theFilm.getNazivfilma());
-        final Set<Medij> medijs = theFilm.getMedijs();
         final Set<String> medijNames = Sets.newLinkedHashSet();
-        for (Medij medij : medijs) {
+        for (Medij medij : theFilm.getMedijs()) {
             medijNames.add(medij.toString());
         }
         mediumListValue.setSelectedItems(medijNames);
         genreValue.setText(theFilm.getZanr().getZanr());
         locationValue.setText(theFilm.getPozicija());
-        tagsValue.setText(getFilmTagsAsString(theFilm));
-        commentValue.setText(theFilm.getKomentar());
-    }
-
-    public String getFilmTagsAsString(Film theFilm) {
-        Set<Tag> tags = theFilm.getTags();
-        if (null == tags)
-            return "";
-        StringBuilder builder = new StringBuilder();
-        for (Tag tag : tags) {
-            builder.append(tag.getNaziv()).append(", ");
+        final Set<String> tagNames = Sets.newLinkedHashSet();
+        for (Tag tag : theFilm.getTags()) {
+            tagNames.add(tag.toString());
         }
-        if (builder.length() > 2)
-            return builder.toString().substring(0, builder.length() - 2);
-        return builder.toString();
+        tagsValue.setSelectedItems(tagNames);
+        commentValue.setText(theFilm.getKomentar());
     }
 
     public void hide() {
