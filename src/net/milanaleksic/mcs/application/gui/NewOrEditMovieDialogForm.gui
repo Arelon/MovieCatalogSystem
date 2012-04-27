@@ -308,7 +308,7 @@
 
                 {
                     "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
-                    "_style" : "{border}",
+                    "_style" : "{border}|{v_scroll}",
                     "_name" : "diskSelector",
                     "bundle" : "(bundle)",
                     "layoutData" : {
@@ -340,7 +340,7 @@
             "_children" : [
                 {
                     "_type" : "net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText",
-                    "_style" : "{border}",
+                    "_style" : "{border}|{v_scroll}",
                     "_name" : "tagSelector",
                     "bundle" : "(bundle)",
                     "layoutData" : {

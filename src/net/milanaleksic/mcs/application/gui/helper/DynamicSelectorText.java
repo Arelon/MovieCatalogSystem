@@ -22,6 +22,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private static final int CLOSER_DIMENSION = 6;
     private static final int PADDING_BETWEEN_ITEMS = 5;
     private static final int BORDER_SUM_BETWEEN_ITEMS = 2;
+    private static final int SCROLL_BAR_MULTIPLIER = 10;
 
     private SortedSet<String> selectedItems;
 
@@ -52,6 +53,17 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private void prepareComponent() {
         if (isModifiable())
             prepareComboEditor();
+        final ScrollBar verticalScrollBar = getVerticalBar();
+        if (verticalScrollBar != null)
+            verticalScrollBar.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (verticalScrollBar.getSelection() != lastPosition) {
+                        lastPosition = verticalScrollBar.getSelection();
+                        redraw();
+                    }
+                }
+            });
         closingButtons = new LinkedList<>();
         selectedItemBackgroundColor = getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
         selectedItemForegroundColor = getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
@@ -106,10 +118,6 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         redraw();
     }
 
-    private Combo getComboEditor() {
-        return ((Combo) editor.getEditor());
-    }
-
     private void addListeners() {
         if (isModifiable()) {
             this.addMouseListener(new MouseAdapter() {
@@ -141,21 +149,35 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         gc.setTextAntialias(SWT.ON);
         closingButtons.clear();
         gc.fillRectangle(e.x, e.y, e.width, e.height);
-        int xIter = PADDING_IN_ITEM, yIter = PADDING_IN_ITEM;
+
+        int verticalBuffer = getVerticalBar() != null ? getVerticalBar().getSelection() * SCROLL_BAR_MULTIPLIER : 0;
+        int verticalBarWidth = getVerticalBar() != null ? getVerticalBar().getSize().y : 0;
+
+        int xIter = PADDING_IN_ITEM, yIter = PADDING_IN_ITEM - verticalBuffer;
+        Point textExtentGlobal = gc.textExtent("Wq");
         if (selectedItems != null)
             for (String itemToPaint : selectedItems) {
                 final Point textExtent = gc.textExtent(itemToPaint);
 
-                drawItemRectangle(gc, xIter, yIter, itemToPaint, textExtent);
-                xIter += PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT + textExtent.x + PADDING_IN_ITEM;
-
-                if (isModifiable()) {
-                    drawItemCloser(gc, xIter, yIter, textExtent);
-                    xIter += CLOSER_DIMENSION + PADDING_IN_ITEM;
+                if (getVerticalBar() == null
+                        && !isModifiable()
+                        && xIter + verticalBarWidth + getItemWidthBeforeCloser(textExtent)
+                                + getCloserWidth() + getItemWidthAfterCloser()
+                                + PADDING_IN_ITEM + gc.textExtent("...").x > getBounds().width) {
+                    gc.drawText("...", xIter + PADDING_IN_ITEM, yIter + PADDING_IN_ITEM);
+                    break;
                 }
-                xIter += PADDING_BETWEEN_ITEMS + BORDER_SUM_BETWEEN_ITEMS;
-                if ((isModifiable() && xIter + editor.minimumWidth > getBounds().width)
-                        || (!isModifiable() && xIter > getBounds().width)) {
+
+                drawItemRectangle(gc, xIter, yIter, itemToPaint, textExtent);
+                xIter += getItemWidthBeforeCloser(textExtent);
+
+                if (isModifiable())
+                    drawItemCloser(gc, xIter, yIter, textExtent);
+
+                xIter += getCloserWidth() + getItemWidthAfterCloser();
+
+                if ((isModifiable() && xIter + editor.minimumWidth + verticalBarWidth > getBounds().width)
+                        || (!isModifiable() && xIter + verticalBarWidth > getBounds().width)) {
                     xIter = PADDING_IN_ITEM;
                     yIter += textExtent.y + 2 * PADDING_IN_ITEM + PADDING_BETWEEN_ITEMS;
                 }
@@ -166,6 +188,26 @@ public class DynamicSelectorText extends Composite implements PaintListener {
             if (location.x != xIter || location.y != yIter)
                 editor.getEditor().setLocation(xIter, yIter);
         }
+        if (getVerticalBar() != null)
+            getVerticalBar().setMaximum((yIter + textExtentGlobal.y + 2 * PADDING_IN_ITEM + verticalBuffer) / SCROLL_BAR_MULTIPLIER);
+    }
+
+    private int getCloserWidth() {
+        return isModifiable() ? CLOSER_DIMENSION + PADDING_IN_ITEM : 0;
+    }
+
+    private int getItemWidthAfterCloser() {
+        return PADDING_BETWEEN_ITEMS + BORDER_SUM_BETWEEN_ITEMS;
+    }
+
+    private int getItemWidthBeforeCloser(Point textExtent) {
+        return PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT + textExtent.x + PADDING_IN_ITEM;
+    }
+
+    private int lastPosition = -1;
+
+    private Combo getComboEditor() {
+        return ((Combo) editor.getEditor());
     }
 
     private void drawItemCloser(GC gc, int xIter, int yIter, Point textExtent) {
@@ -189,14 +231,13 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
         gc.setBackground(selectedItemBackgroundColor);
         gc.setForeground(selectedItemForegroundColor);
-        int arrowSpace = isModifiable() ? CLOSER_DIMENSION + PADDING_IN_ITEM : 0;
         Rectangle itemRectangle = new Rectangle(xIter, yIter,
-                PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT + textExtent.x + PADDING_IN_ITEM + arrowSpace + PADDING_IN_ITEM, textExtent.y + PADDING_IN_ITEM * 2);
+                getItemWidthBeforeCloser(textExtent) + getCloserWidth() + PADDING_IN_ITEM, textExtent.y + PADDING_IN_ITEM * 2);
         gc.fillRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 4, 4);
         gc.drawRoundRectangle(itemRectangle.x, itemRectangle.y, itemRectangle.width, itemRectangle.height, 4, 4);
 
         gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-        gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT, 3 + yIter);
+        gc.drawText(itemToPaint, xIter + PADDING_IN_ITEM + PADDING_IN_ITEM_LEFT, PADDING_IN_ITEM + yIter);
 
         gc.setBackground(previousBackground);
         gc.setForeground(previousForeground);

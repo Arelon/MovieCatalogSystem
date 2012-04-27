@@ -125,7 +125,7 @@
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : false,
-                        "heightHint" : 25
+                        "heightHint" : 26
                     }
                 },
 
@@ -156,7 +156,7 @@
                         "verticalAlignment" : "{grid.begin}",
                         "grabExcessHorizontalSpace" : true,
                         "grabExcessVerticalSpace" : false,
-                        "heightHint" : 25
+                        "heightHint" : 26
                     }
                 },
 
