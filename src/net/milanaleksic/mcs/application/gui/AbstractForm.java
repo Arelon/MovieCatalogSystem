@@ -71,7 +71,8 @@ public abstract class AbstractForm implements Form {
         this.runWhenClosing = Optional.fromNullable(runWhenClosing);
         this.runnerWhenClosingShouldRun = false;
         prepareShell(parent);
-        shell.open();
+        if (!shell.isDisposed())
+            shell.open();
     }
 
     public void setApplicationManager(ApplicationManager applicationManager) {
