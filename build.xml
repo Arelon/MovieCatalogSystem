@@ -78,7 +78,7 @@
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
-        <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
+        <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="false" verbose="true">
             <src path="${src.dir}"/>
             <src path="${src.metamodel.dir}"/>
             <classpath refid="classpath"/>
@@ -142,7 +142,6 @@
             <zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar"/>
             <zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar"/>
             <zipfileset dir="${root.dir}" prefix="" includes="*.exe"/>
-            <zipfileset dir="${export.dir}" prefix="bin/export"/>
         </zip>
 
         <delete dir="${compile.dir}" failonerror="false"/>
