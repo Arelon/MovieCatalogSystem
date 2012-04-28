@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="MCS" basedir="." default="zip" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="MCS" basedir="." default="installation" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <property file="build.properties"/>
+    <property file="build/build.properties"/>
 
     <property environment="env"/>
 
@@ -12,13 +12,14 @@
     <target name="clean" description="Init tasks">
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
+        <delete dir="${install.dir}" failonerror="false"/>
         <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
         <condition property="ivy.should.not.download">
             <or>
                 <resourceexists>
                     <file file="${ivy.jar.file}"/>
                 </resourceexists>
-                <isset property="offline" />
+                <isset property="offline"/>
             </or>
         </condition>
 
@@ -40,8 +41,8 @@
     </target>
 
     <target name="resolve" description="Retrieve dependencies with ivy" depends="init-ivy">
-        <ivy:settings file="ivyconf.xml"/>
-        <ivy:retrieve file="ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]"/>
+        <ivy:settings file="build/ivyconf.xml"/>
+        <ivy:retrieve file="build/ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]"/>
         <copy todir="${ivy.resolved.libs.target.dir}" overwrite="true">
             <fileset dir="${explicit.lib.dir}">
                 <include name="**/*.jar"/>
@@ -59,6 +60,8 @@
     </path>
 
     <target name="init" description="Init tasks" depends="resolve">
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="classpath" />
+        <taskdef name="nsis" classname="net.sf.nsisant.Task" classpathref="classpath"/>
         <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath"/>
         <tstamp/>
     </target>
@@ -110,41 +113,58 @@
               overwrite="true"/>
     </target>
 
-    <target name="zip" description="ZIPs the whole distro" depends="jar">
+    <target name="installation" description="Creates the installation" depends="jar">
         <mkdir dir="${distro.dir}"/>
 
-        <delete>
-            <fileset dir="">
-                <include name="${ant.project.name}-${src.version}.${build.number}-${DSTAMP}*.zip"/>
-            </fileset>
-        </delete>
+        <echo message="Building NSIS Installation" level="info"/>
 
-        <copy todir="${distro.dir}" overwrite="true">
-            <fileset dir="${startup.dir}" excludes="*reveng*,*dev*">
-                <include name="*.properties"/>
-                <include name=".launcher"/>
-                <include name="*.xml"/>
-                <include name="MD5.dll"/>
-            </fileset>
+        <mkdir dir="${install.dir}"/>
+        <mkdir dir="${install.dir}/bin"/>
+        <mkdir dir="${install.dir}/lib"/>
+
+        <copy todir="${install.dir}" overwrite="false">
+            <fileset dir="${build.overrides.dir}" />
         </copy>
 
-        <delete file="${ant.project.name}-${src.version}.${build.number}-*.zip" failonerror="false"/>
-
-        <zip destfile="${zip.target.dir}/${ant.project.name}-${src.version}.${build.number}-${DSTAMP}${TSTAMP}.zip"
-             duplicate="preserve">
-            <zipfileset dir="${build.overrides.dir}" prefix=""/>
-            <zipfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
+        <copy todir="${install.dir}/lib" overwrite="false">
+            <fileset dir="${ivy.resolved.libs.target.dir}">
                 <exclude name="mcs.jar"/>
+                <exclude name="ant-contrib.jar"/>
                 <exclude name="aspectjtools.jar"/>
                 <exclude name="hamcrest*.jar"/>
                 <exclude name="hibernate-jpamodelgen.jar"/>
                 <exclude name="junit.jar"/>
+                <exclude name="nsisant-1.2.jar"/>
                 <exclude name="swt*debug.jar"/>
-            </zipfileset>
-            <zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar"/>
-            <zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar"/>
-            <zipfileset dir="${root.dir}" prefix="" includes="*.exe"/>
-        </zip>
+            </fileset>
+        </copy>
+
+        <copy todir="${install.dir}/bin" overwrite="false">
+            <fileset dir="${startup.dir}">
+                <include name=".launcher"/>
+                <include name="MD5.dll"/>
+                <include name="*.dtd"/>
+                <include name="*.properties"/>
+                <include name="*.xml"/>
+            </fileset>
+        </copy>
+
+        <property name="absolute.install.dir" location="${install.dir}" />
+
+        <nsis script="${nsis.setup.script}" verbosity="2" noconfig="yes" path="${nsis.home}">
+            <define name="VERSION" value="${src.version}.${build.number}-${DSTAMP}${TSTAMP}"/>
+            <define name="INSTALL_SOURCE_DIR" value="${absolute.install.dir}"/>
+        </nsis>
+
+        <if>
+            <equals arg1="${nsis.dont.delete.installation.files}" arg2="true"/>
+            <then>
+                <echo message="DELETION OF INSTALLATION FILES OMITTED"/>
+            </then>
+            <else>
+                <delete dir="${install.dir}" failonerror="false"/>
+            </else>
+        </if>
 
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
@@ -153,8 +173,8 @@
     <target name="findbugs" description="FindBugs" depends="compile">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
         <findbugs failonerror="true"
-                  home="${env.FINDBUGS_HOME}" output="html" outputFile="FindBugsAnalysis.html" jvmargs="-Xmx256m"
-                  reportlevel="low" excludefilter="FindBugsExclusiveFilter.xml">
+                  home="${env.FINDBUGS_HOME}" output="html" outputFile="build/FindBugsAnalysis.html" jvmargs="-Xmx256m"
+                  reportlevel="low" excludefilter="build/FindBugsExclusiveFilter.xml">
             <auxclasspath>
                 <fileset dir="${ivy.resolved.libs.target.dir}">
                     <include name="*.*"/>
@@ -164,6 +184,5 @@
             <class location="${compile.dir}"/>
         </findbugs>
     </target>
-
 
 </project>

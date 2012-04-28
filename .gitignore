@@ -1,5 +1,9 @@
 .idea
-build
+build/compile
+build/ivy
+build/lib
+build/*.html
+build/*.zip
 db
 ivy
 out
@@ -11,7 +15,6 @@ startup/cache
 startup/application-configuration.xml
 startup/configuration.xml
 lib/swt*-debug.jar
-FindBugsAnalysis.html
 MCS.lnk
 *.iml
 *.log
