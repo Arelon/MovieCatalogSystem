@@ -137,7 +137,9 @@
                 <exclude name="mcs.jar"/>
                 <exclude name="aspectjtools.jar"/>
                 <exclude name="hamcrest*.jar"/>
+                <exclude name="hibernate-jpamodelgen.jar"/>
                 <exclude name="junit.jar"/>
+                <exclude name="swt*debug.jar"/>
             </zipfileset>
             <zipfileset dir="${distro.dir}" prefix="bin" excludes="*.jar"/>
             <zipfileset dir="${distro.dir}" prefix="lib" includes="*.jar"/>
