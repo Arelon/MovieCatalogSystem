@@ -78,6 +78,7 @@
     <xsl:template name="includeJS">
         <script language="javascript"><xsl:comment>
             var singleNext=navigator.userAgent.indexOf("MSIE")>-1 || navigator.userAgent.indexOf("Mozilla/4")>-1 || navigator.userAgent.indexOf("Opera")>-1	;
+            var isIE=navigator.userAgent.indexOf("MSIE")>-1;
 
             function nextElem(elem) {
                 if (elem==null)
@@ -150,12 +151,26 @@
                 refreshChoices();
             }
 
+            function getMediumList(elem) {
+                if (isIE)
+                    return elem.firstChild.innerHTML;
+                else
+                    return elem.firstChild.nextSibling.innerHTML;
+            }
+
+            function getMovieName(elem) {
+                if (isIE)
+                    return elem.firstChild.nextSibling.innerHTML;
+                else
+                    return elem.firstChild.nextSibling.nextSibling.nextSibling.innerHTML;
+            }
+
             function refreshChoices() {
                 var text = "";
                 var elem = firstElem();
                 while (elem != null) {
                     if (isElemSelected(elem)) {
-                        var sel = elem.firstChild.nextSibling.innerHTML + " - [" + elem.firstChild.nextSibling.nextSibling.nextSibling.innerHTML + "]";
+                        var sel = getMediumList(elem) + " - [" + getMovieName(elem) + "]";
                         text = text + sel + '\n';
                     }
                     elem = nextElem(elem);
