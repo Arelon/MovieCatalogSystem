@@ -3,7 +3,7 @@ build
 db
 ivy
 out
-src-generated-metamodel
+source/java-generated-metamodel
 startup/db
 startup/log
 startup/restore
@@ -11,8 +11,8 @@ startup/cache
 startup/application-configuration.xml
 startup/configuration.xml
 lib/swt*-debug.jar
-*.iml
-*.log
 FindBugsAnalysis.html
 MCS.lnk
+*.iml
+*.log
 *.sh

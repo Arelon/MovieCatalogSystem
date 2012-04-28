@@ -2,9 +2,7 @@ package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 
 import com.google.common.base.Optional;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
-import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 import javax.annotation.Nullable;
 

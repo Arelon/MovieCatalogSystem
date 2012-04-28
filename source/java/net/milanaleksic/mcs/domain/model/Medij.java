@@ -3,7 +3,6 @@ package net.milanaleksic.mcs.domain.model;
 import com.google.common.collect.Sets;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
