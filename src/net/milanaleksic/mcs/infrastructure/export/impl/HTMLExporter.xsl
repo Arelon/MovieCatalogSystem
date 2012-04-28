@@ -127,7 +127,7 @@
                 }
                 else {
                     var currId = parent.id.substring(1);
-                    if (currId%2==0)
+                    if (currId % 2 == 1)
                         parent.style.backgroundColor = "#E5EFC4";
                     else
                         parent.style.backgroundColor = "#FFFFFF";
@@ -141,7 +141,7 @@
                 }
                 else {
                     var currId = this.id.substring(1);
-                    if (currId%2==0)
+                    if (currId % 2 == 1)
                         this.style.backgroundColor = "#E5EFC4";
                     else
                         this.style.backgroundColor = "#FFFFFF";
@@ -155,7 +155,7 @@
                 var elem = firstElem();
                 while (elem != null) {
                     if (isElemSelected(elem)) {
-                        var sel = elem.firstChild.innerHTML + " - [" + elem.firstChild.nextSibling.innerHTML + "]";
+                        var sel = elem.firstChild.nextSibling.innerHTML + " - [" + elem.firstChild.nextSibling.nextSibling.nextSibling.innerHTML + "]";
                         text = text + sel + '\n';
                     }
                     elem = nextElem(elem);
