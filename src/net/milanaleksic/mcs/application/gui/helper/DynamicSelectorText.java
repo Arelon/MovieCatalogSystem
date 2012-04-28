@@ -24,7 +24,7 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     private static final int BORDER_SUM_BETWEEN_ITEMS = 2;
     private static final int SCROLL_BAR_MULTIPLIER = 10;
 
-    private SortedSet<String> selectedItems;
+    private SortedSet<String> selectedItems = Sets.newTreeSet();
 
     private Map<String, Object> dataItems = Maps.newHashMap();
 
@@ -97,17 +97,13 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         chooser.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                addSelectedItem(chooser);
+                final int selectionIndex = chooser.getSelectionIndex();
+                if (selectionIndex <= 0 || selectionIndex > chooser.getItemCount())
+                    return;
+                final String item = chooser.getItem(selectionIndex);
+                safeAddSelectItem(item);
             }
         });
-    }
-
-    private void addSelectedItem(Combo chooser) {
-        final int selectionIndex = chooser.getSelectionIndex();
-        if (selectionIndex <= 0 || selectionIndex > chooser.getItemCount())
-            return;
-        final String item = chooser.getItem(selectionIndex);
-        safeAddSelectItem(item);
     }
 
     private void safeAddSelectItem(String item) {
@@ -155,41 +151,42 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
         int xIter = PADDING_IN_ITEM, yIter = PADDING_IN_ITEM - verticalBuffer;
         Point textExtentGlobal = gc.textExtent("Wq");
-        if (selectedItems != null)
-            for (String itemToPaint : selectedItems) {
-                final Point textExtent = gc.textExtent(itemToPaint);
+        for (String itemToPaint : selectedItems) {
+            final Point textExtent = gc.textExtent(itemToPaint);
 
-                if (getVerticalBar() == null
-                        && !isModifiable()
-                        && xIter + verticalBarWidth + getItemWidthBeforeCloser(textExtent)
-                                + getCloserWidth() + getItemWidthAfterCloser()
-                                + PADDING_IN_ITEM + gc.textExtent("...").x > getBounds().width) {
-                    gc.drawText("...", xIter + PADDING_IN_ITEM, yIter + PADDING_IN_ITEM);
-                    break;
-                }
-
-                drawItemRectangle(gc, xIter, yIter, itemToPaint, textExtent);
-                xIter += getItemWidthBeforeCloser(textExtent);
-
-                if (isModifiable())
-                    drawItemCloser(gc, xIter, yIter, textExtent);
-
-                xIter += getCloserWidth() + getItemWidthAfterCloser();
-
-                if ((isModifiable() && xIter + editor.minimumWidth + verticalBarWidth > getBounds().width)
-                        || (!isModifiable() && xIter + verticalBarWidth > getBounds().width)) {
-                    xIter = PADDING_IN_ITEM;
-                    yIter += textExtent.y + 2 * PADDING_IN_ITEM + PADDING_BETWEEN_ITEMS;
-                }
+            if (getVerticalBar() == null
+                    && !isModifiable()
+                    && xIter + verticalBarWidth + getItemWidthBeforeCloser(textExtent)
+                    + getCloserWidth() + getItemWidthAfterCloser()
+                    + PADDING_IN_ITEM + gc.textExtent("...").x > getBounds().width) {
+                gc.drawText("...", xIter + PADDING_IN_ITEM, yIter + PADDING_IN_ITEM);
+                break;
             }
+
+            drawItemRectangle(gc, xIter, yIter, itemToPaint, textExtent);
+            xIter += getItemWidthBeforeCloser(textExtent);
+
+            if (isModifiable())
+                drawItemCloser(gc, xIter, yIter, textExtent);
+
+            xIter += getCloserWidth() + getItemWidthAfterCloser();
+
+            if ((isModifiable() && xIter + editor.minimumWidth + verticalBarWidth > getBounds().width)
+                    || (!isModifiable() && xIter + verticalBarWidth > getBounds().width)) {
+                xIter = PADDING_IN_ITEM;
+                yIter += textExtent.y + 2 * PADDING_IN_ITEM + PADDING_BETWEEN_ITEMS;
+            }
+        }
         if (isModifiable()) {
             Point location = editor.getEditor().getLocation();
             // if check to avoid redraw recursion
             if (location.x != xIter || location.y != yIter)
                 editor.getEditor().setLocation(xIter, yIter);
         }
-        if (getVerticalBar() != null)
-            getVerticalBar().setMaximum((yIter + textExtentGlobal.y + 2 * PADDING_IN_ITEM + verticalBuffer) / SCROLL_BAR_MULTIPLIER);
+        if (getVerticalBar() != null) {
+            int max = (yIter + textExtentGlobal.y + 2 * PADDING_IN_ITEM + verticalBuffer) / SCROLL_BAR_MULTIPLIER;
+            getVerticalBar().setValues(lastPosition, 0, max, 2, 1, 2);
+        }
     }
 
     private int getCloserWidth() {
