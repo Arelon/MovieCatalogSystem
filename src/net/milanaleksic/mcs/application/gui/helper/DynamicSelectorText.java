@@ -245,15 +245,34 @@ public class DynamicSelectorText extends Composite implements PaintListener {
     }
 
     public void setItems(Iterable<String> items) {
-        this.closingButtons.clear();
-        this.selectedItems = Sets.newTreeSet();
         if (isModifiable()) {
             final Combo combo = getComboEditor();
             combo.setItems(Iterables.toArray(items, String.class));
             combo.add(bundle.getString("global.chooseFromList"), 0);
             combo.select(0);
+
+            HashSet<String> newItems = Sets.newHashSet(items);
+            List<String> itemsToBeDeleted = Lists.newLinkedList();
+            for (String item : this.selectedItems) {
+                if (!newItems.contains(item))
+                    itemsToBeDeleted.add(item);
+            }
+            for (String item : itemsToBeDeleted) {
+                removeItem(item);
+            }
         }
         redraw();
+    }
+
+    private void removeItem(String itemToBeDeleted) {
+        Iterator<String> iterator = selectedItems.iterator();
+        while (iterator.hasNext()) {
+            String item = iterator.next();
+            if (item.equals(itemToBeDeleted)) {
+                iterator.remove();
+                return;
+            }
+        }
     }
 
     public void setSelectedItems(Iterable<String> selectedItems) {
