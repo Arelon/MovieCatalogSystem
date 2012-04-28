@@ -22,6 +22,7 @@ public class ObjectConverter extends AbstractConverter {
     private static Map<String, Class<?>> knownClasses = ImmutableMap
             .<String, Class<?>>builder()
             .put("showImageComposite", net.milanaleksic.mcs.application.gui.helper.ShowImageComposite.class)
+            .put("dynamicSelectorText", net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText.class)
 
             .put("gridData", org.eclipse.swt.layout.GridData.class)
             .put("gridLayout", org.eclipse.swt.layout.GridLayout.class)
