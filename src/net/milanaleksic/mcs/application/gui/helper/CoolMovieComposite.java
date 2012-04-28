@@ -37,6 +37,8 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private int selectedIndex = -1;
     private boolean recalculateOfCellLocationsNeeded = false;
 
+    private ResourceBundle bundle;
+
     public class MovieWrapper implements ImageTargetWidget {
 
         private Film film;
@@ -95,6 +97,10 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         super(parent, style | SWT.NO_BACKGROUND);
         setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
         addListeners();
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -308,15 +314,21 @@ public class CoolMovieComposite extends Composite implements PaintListener {
 
         Region backgroundRegion = new Region(getDisplay());
         backgroundRegion.add(new Rectangle(e.x, e.y, e.width, e.height));
-        for (MovieWrapper wrapper : movies) {
-            if (!wrapper.getImage().isPresent() || wrapper.getImage().get().getImageData().alphaData == null)
-                backgroundRegion.subtract(wrapper.x, wrapper.y, thumbnailWidth, thumbnailHeight);
-            Point extent = gc.stringExtent(getVisibleMovieTitle(gc, wrapper));
-            backgroundRegion.subtract(new Rectangle(
-                    wrapper.x + (thumbnailWidth - extent.x) / 2,
-                    thumbnailHeight + wrapper.y,
-                    extent.x, extent.y));
+
+        if (movies.size() == 0) {
+            backgroundRegion.subtract(renderNoMoviesTextAndGetRectangle(gc));
+        } else {
+            for (MovieWrapper wrapper : movies) {
+                if (!wrapper.getImage().isPresent() || wrapper.getImage().get().getImageData().alphaData == null)
+                    backgroundRegion.subtract(wrapper.x, wrapper.y, thumbnailWidth, thumbnailHeight);
+                Point extent = gc.stringExtent(getVisibleMovieTitle(gc, wrapper));
+                backgroundRegion.subtract(new Rectangle(
+                        wrapper.x + (thumbnailWidth - extent.x) / 2,
+                        thumbnailHeight + wrapper.y,
+                        extent.x, extent.y));
+            }
         }
+
         gc.setClipping(backgroundRegion);
         gc.fillRectangle(e.x, e.y, e.width, e.height);
 
@@ -334,6 +346,15 @@ public class CoolMovieComposite extends Composite implements PaintListener {
             }
         }
         setScrolledCompositeMinHeight();
+    }
+
+    private Rectangle renderNoMoviesTextAndGetRectangle(GC gc) {
+        String msg = bundle.getString("main.noMoviesToShow");
+        Point msgRect = gc.textExtent(msg);
+        int textX = (getBounds().width - msgRect.x) / 2;
+        int textY = (getBounds().height - msgRect.y) / 2;
+        gc.drawText(msg, textX, textY);
+        return new Rectangle(textX, textY, msgRect.x, msgRect.y);
     }
 
     private void recalculateCellLocations() {

@@ -179,6 +179,7 @@
                         {
                             "_type" : "net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite",
                             "_name" : "mainTable",
+                            "bundle" : "(bundle)",
                             "thumbnailManager" : "(thumbnailManager)"
                         }
                     ],
