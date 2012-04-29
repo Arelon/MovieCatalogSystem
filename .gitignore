@@ -1,10 +1,9 @@
 .idea
 build/compile
+build/install
 build/ivy
 build/lib
-build/*.html
-build/*.zip
-build/mcs*.exe
+build/output
 db
 ivy
 out

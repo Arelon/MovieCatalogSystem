@@ -60,6 +60,7 @@
     </path>
 
     <target name="init" description="Init tasks" depends="resolve">
+        <mkdir dir="${output.dir}"/>
         <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="classpath" />
         <taskdef name="nsis" classname="net.sf.nsisant.Task" classpathref="classpath"/>
         <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath"/>
@@ -152,7 +153,7 @@
         <property name="absolute.install.dir" location="${install.dir}" />
 
         <nsis script="${nsis.setup.script}" verbosity="2" noconfig="yes" path="${nsis.home}">
-            <define name="VERSION" value="${src.version}.${build.number}-${DSTAMP}${TSTAMP}"/>
+            <define name="VERSION" value="${src.version}.${build.number}-${DSTAMP}"/>
             <define name="INSTALL_SOURCE_DIR" value="${absolute.install.dir}"/>
         </nsis>
 
@@ -166,6 +167,18 @@
             </else>
         </if>
 
+        <delete>
+            <fileset dir="${output.dir}">
+                <include name="mcs-*${DSTAMP}.exe" />
+            </fileset>
+        </delete>
+
+        <move todir="${output.dir}">
+            <fileset dir="${build.dir}">
+                <include name="mcs-*.exe" />
+            </fileset>
+        </move>
+
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${distro.dir}" failonerror="false"/>
     </target>
@@ -173,7 +186,7 @@
     <target name="findbugs" description="FindBugs" depends="compile">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
         <findbugs failonerror="true"
-                  home="${env.FINDBUGS_HOME}" output="html" outputFile="build/FindBugsAnalysis.html" jvmargs="-Xmx256m"
+                  home="${env.FINDBUGS_HOME}" output="html" outputFile="${output.dir}/FindBugsAnalysis.html" jvmargs="-Xmx256m"
                   reportlevel="low" excludefilter="build/FindBugsExclusiveFilter.xml">
             <auxclasspath>
                 <fileset dir="${ivy.resolved.libs.target.dir}">

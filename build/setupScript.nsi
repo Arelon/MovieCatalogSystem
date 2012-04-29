@@ -81,6 +81,8 @@ Section -Main SEC0000
     IfErrors 0 +3
     MessageBox MB_RETRYCANCEL|MB_ICONQUESTION "The application is currently active - press RETRY after you have closed it or CANCEL if you wish to abort installation" IDRETRY -3
     Quit
+
+    Delete $INSTDIR\lib\mcs-*.jar
   
     File ${INSTALL_SOURCE_DIR}\MCS.exe
     SetOutPath $INSTDIR\bin
