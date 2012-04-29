@@ -4,6 +4,7 @@ build/ivy
 build/lib
 build/*.html
 build/*.zip
+build/mcs*.exe
 db
 ivy
 out
