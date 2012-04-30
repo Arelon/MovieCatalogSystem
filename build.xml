@@ -129,7 +129,6 @@
 
         <copy todir="${install.dir}/lib" overwrite="false">
             <fileset dir="${ivy.resolved.libs.target.dir}">
-                <exclude name="mcs.jar"/>
                 <exclude name="ant-contrib.jar"/>
                 <exclude name="aspectjtools.jar"/>
                 <exclude name="hamcrest*.jar"/>
