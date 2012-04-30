@@ -1,6 +1,5 @@
-package net.milanaleksic.mcs.application.gui;
-
 import com.google.common.collect.Lists;
+import net.milanaleksic.mcs.application.gui.AbstractTransformedForm;
 import net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 
