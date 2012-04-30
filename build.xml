@@ -11,7 +11,6 @@
 
     <target name="clean" description="Init tasks">
         <delete dir="${compile.dir}" failonerror="false"/>
-        <delete dir="${distro.dir}" failonerror="false"/>
         <delete dir="${install.dir}" failonerror="false"/>
         <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
         <condition property="ivy.should.not.download">
@@ -61,7 +60,7 @@
 
     <target name="init" description="Init tasks" depends="resolve">
         <mkdir dir="${output.dir}"/>
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="classpath" />
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="classpath"/>
         <taskdef name="nsis" classname="net.sf.nsisant.Task" classpathref="classpath"/>
         <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="classpath"/>
         <tstamp/>
@@ -97,11 +96,10 @@
     </target>
 
     <target name="jar" description="JARs the MovieCatalogSystem" depends="compile">
-        <mkdir dir="${distro.dir}"/>
         <buildnumber file="${build.properties.file}"/>
         <property file="${build.properties.file}"/>
 
-        <jar destfile="${distro.dir}/mcs-${src.version}.${build.number}.jar">
+        <jar destfile="${ivy.resolved.libs.target.dir}/mcs-${src.version}.${build.number}.jar">
             <manifest>
                 <attribute name="Manifest-Version" value="1.0"/>
                 <attribute name="Main-Class" value="${src.mainClass}"/>
@@ -110,13 +108,12 @@
             <fileset dir="${compile.dir}"/>
         </jar>
 
-        <copy todir="${ivy.resolved.libs.target.dir}" file="${distro.dir}/mcs-${src.version}.${build.number}.jar"
+        <copy todir="${ivy.resolved.libs.target.dir}"
+              file="${ivy.resolved.libs.target.dir}/mcs-${src.version}.${build.number}.jar"
               overwrite="true"/>
     </target>
 
     <target name="installation" description="Creates the installation" depends="jar">
-        <mkdir dir="${distro.dir}"/>
-
         <echo message="Building NSIS Installation" level="info"/>
 
         <mkdir dir="${install.dir}"/>
@@ -124,7 +121,7 @@
         <mkdir dir="${install.dir}/lib"/>
 
         <copy todir="${install.dir}" overwrite="false">
-            <fileset dir="${build.overrides.dir}" />
+            <fileset dir="${build.overrides.dir}"/>
         </copy>
 
         <copy todir="${install.dir}/lib" overwrite="false">
@@ -149,13 +146,19 @@
             </fileset>
         </copy>
 
-        <property name="absolute.install.dir" location="${install.dir}" />
-
-        <nsis script="${nsis.setup.script}" verbosity="2" noconfig="yes" path="${nsis.home}">
-            <define name="VERSION" value="${src.version}.${build.number}-${DSTAMP}"/>
-            <define name="INSTALL_SOURCE_DIR" value="${absolute.install.dir}"/>
-        </nsis>
-
+        <if>
+            <equals arg1="${nsis.dont.create.installation}" arg2="true"/>
+            <then>
+                <echo message="NSIS COMPILATION OMITTED"/>
+            </then>
+            <else>
+                <property name="absolute.install.dir" location="${install.dir}"/>
+                <nsis script="${nsis.setup.script}" verbosity="2" noconfig="yes" path="${nsis.home}">
+                    <define name="VERSION" value="${src.version}.${build.number}-${DSTAMP}"/>
+                    <define name="INSTALL_SOURCE_DIR" value="${absolute.install.dir}"/>
+                </nsis>
+            </else>
+        </if>
         <if>
             <equals arg1="${nsis.dont.delete.installation.files}" arg2="true"/>
             <then>
@@ -168,24 +171,24 @@
 
         <delete>
             <fileset dir="${output.dir}">
-                <include name="mcs-*${DSTAMP}.exe" />
+                <include name="mcs-*${DSTAMP}.exe"/>
             </fileset>
         </delete>
 
         <move todir="${output.dir}">
             <fileset dir="${build.dir}">
-                <include name="mcs-*.exe" />
+                <include name="mcs-*.exe"/>
             </fileset>
         </move>
 
         <delete dir="${compile.dir}" failonerror="false"/>
-        <delete dir="${distro.dir}" failonerror="false"/>
     </target>
 
     <target name="findbugs" description="FindBugs" depends="compile">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
         <findbugs failonerror="true"
-                  home="${env.FINDBUGS_HOME}" output="html" outputFile="${output.dir}/FindBugsAnalysis.html" jvmargs="-Xmx256m"
+                  home="${env.FINDBUGS_HOME}" output="html" outputFile="${output.dir}/FindBugsAnalysis.html"
+                  jvmargs="-Xmx256m"
                   reportlevel="low" excludefilter="build/FindBugsExclusiveFilter.xml">
             <auxclasspath>
                 <fileset dir="${ivy.resolved.libs.target.dir}">
