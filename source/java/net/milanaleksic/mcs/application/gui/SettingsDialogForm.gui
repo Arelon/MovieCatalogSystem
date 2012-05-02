@@ -9,13 +9,7 @@
     "_children" : [
         {
             "_type" : "tabFolder",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
-                "grabExcessHorizontalSpace" : false,
-                "grabExcessVerticalSpace" : true
-            },
+            "layoutData" : "[gridData](fill,fill,false,true)",
             "_children" : [
                 {
                     "_type" : "composite",
@@ -33,23 +27,11 @@
                                 "numColumns" : 2,
                                 "makeColumnsEqualWidth" : true
                             },
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.begin}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            },
+                            "layoutData" : "[gridData](fill,begin,true,false)",
                             "_children" : [
                                 {
                                     "_type" : "label",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.begin}",
-                                        "verticalAlignment" : "{grid.center}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    },
+                                    "layoutData" : "[gridData](begin,center,true,false)",
                                     "text" : "[settings.language]"
                                 },
                                 {
@@ -60,26 +42,14 @@
 
                                 {
                                     "_type" : "label",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.begin}",
-                                        "verticalAlignment" : "{grid.center}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    },
+                                    "layoutData" : "[gridData](begin,center,true,false)",
                                     "text" : "[settings.numberOfElementsPerPage]"
                                 },
                                 {
                                     "_type" : "text",
                                     "_name" : "textElementsPerPage",
                                     "_style" : "{border}",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
                                 }
                             ]
                         },
@@ -90,132 +60,66 @@
                                 "_type" : "gridLayout",
                                 "numColumns" : 2
                             },
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.begin}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            },
+                            "layoutData" : "[gridData](fill,begin,true,false)",
                             "_children" : [
                                 {
                                     "_type" : "label",
                                     "text" : "[settings.proxyServerAddress]",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.end}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](end,begin,true,false)"
                                 },
                                 {
                                     "_type" : "text",
                                     "_style" : "{border}",
                                     "_name" : "textProxyServer",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
                                 {
                                     "_type" : "label",
                                     "text" : "[settings.proxyServerPort]",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.end}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](end,begin,true,false)"
                                 },
                                 {
                                     "_type" : "text",
                                     "_style" : "{border}",
                                     "_name" : "textProxyServerPort",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
                                 {
                                     "_type" : "label",
                                     "text" : "[settings.username]",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.end}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](end,begin,true,false)"
                                 },
                                 {
                                     "_type" : "text",
                                     "_style" : "{border}",
                                     "_name" : "textProxyServerUsername",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
                                 {
                                     "_type" : "label",
                                     "text" : "[settings.password]",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.end}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](end,begin,true,false)"
                                 },
                                 {
                                     "_type" : "text",
                                     "_style" : "{border}",
                                     "_name" : "textProxyServerPassword",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
                                 {
                                     "_type" : "label",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.end}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](end,begin,true,false)"
                                 },
                                 {
                                     "_type" : "button",
                                     "_style" : "{check}",
                                     "_name" : "chkProxyServerUsesNtlm",
                                     "text" : "[settings.proxyUsesNtlm]",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.begin}",
-                                        "verticalAlignment" : "{grid.begin}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : false
-                                    }
+                                    "layoutData" : "[gridData](begin,begin,true,false)"
                                 }
                             ]
                         }
@@ -236,13 +140,7 @@
                             "_name" : "listMediumTypes",
                             "headerVisible" : true,
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.fill}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : true,
-                                "horizontalSpan" : 1,
-                                "verticalSpan" : 3,
+                                "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
                             "_children" : [
@@ -258,25 +156,13 @@
                             "_type" : "button",
                             "text" : "[settings.add]",
                             "_name" : "btnAddMediumType",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,false,false)"
                         },
                         {
                             "_type" : "button",
                             "text" : "[global.delete]",
                             "_name" : "btnDeleteMediumType",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,true,false)"
                         }
                     ]
                 },
@@ -295,13 +181,7 @@
                             "_name" : "listLokacije",
                             "headerVisible" : true,
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.fill}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : true,
-                                "horizontalSpan" : 1,
-                                "verticalSpan" : 3,
+                                "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
                             "_children" : [
@@ -323,25 +203,13 @@
                             "_type" : "button",
                             "text" : "[settings.add]",
                             "_name" : "btnAddLocation",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,false,false)"
                         },
                         {
                             "_type" : "button",
                             "text" : "[global.delete]",
                             "_name" : "btnDeleteLocation",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,true,false)"
                         }
                     ]
                 },
@@ -360,13 +228,7 @@
                             "_name" : "listZanrovi",
                             "headerVisible" : true,
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.fill}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : true,
-                                "horizontalSpan" : 1,
-                                "verticalSpan" : 3,
+                                "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
                             "_children" : [
@@ -382,25 +244,13 @@
                             "_type" : "button",
                             "text" : "[settings.add]",
                             "_name" : "btnAddGenre",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,false,false)"
                         },
                         {
                             "_type" : "button",
                             "text" : "[global.delete]",
                             "_name" : "btnDeleteGenre",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,true,false)"
                         }
                     ]
                 },
@@ -419,13 +269,7 @@
                             "_name" : "listTagovi",
                             "headerVisible" : true,
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.fill}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : true,
-                                "horizontalSpan" : 1,
-                                "verticalSpan" : 3,
+                                "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
                             "_children" : [
@@ -441,25 +285,13 @@
                             "_type" : "button",
                             "text" : "[settings.add]",
                             "_name" : "btnAddTag",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,false,false)"
                         },
                         {
                             "_type" : "button",
                             "text" : "[global.delete]",
                             "_name" : "btnDeleteTag",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,center,true,false)"
                         }
                     ]
                 },
@@ -501,24 +333,14 @@
                 "numColumns" : 1,
                 "horizontalSpacing" : 20
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "verticalAlignment" : "{grid.end}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            },
+            "layoutData" : "[gridData](center,end,true,false)",
             "_children" : [
                 {
                     "_type" : "button",
                     "_name" : "btnCancel",
                     "text" : "[global.close]",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.end}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : true,
+                        "_type" : "[gridData](end,center,false,true)",
                         "widthHint" : 100
                     }
                 }

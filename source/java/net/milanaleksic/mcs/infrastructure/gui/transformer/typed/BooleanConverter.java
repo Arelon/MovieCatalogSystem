@@ -1,4 +1,4 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
 import org.codehaus.jackson.JsonNode;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 public class BooleanConverter extends TypedConverter<Boolean> {
 
     @Override
-    protected Boolean getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) {
+    public Boolean getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) {
         return node.asBoolean();
     }
 

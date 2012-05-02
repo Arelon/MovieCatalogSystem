@@ -16,11 +16,7 @@
             "closerColor" : "color_white",
             "background" : "color_info_background",
             "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : true,
+                "_type" : "[gridData](fill,fill,true,true)",
                 "heightHint" : 50,
                 "widthHint" : 200
             }

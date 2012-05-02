@@ -11,8 +11,7 @@
             "_type" : "canvas",
             "_name" : "canvas",
             "layoutData" : {
-                "_type" : "gridData",
-                "verticalSpan" : 2,
+                "_type" : "[gridData](begin,center,true,false,1,2)",
                 "heightHint" : 64,
                 "widthHint" : 64
             },
@@ -20,11 +19,7 @@
         },
         {
             "_type" : "label",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "grabExcessHorizontalSpace" : true
-            },
+            "layoutData" : "[gridData](center,center,true,false)",
             "font" : {
                 "style":"bold",
                 "height":12
@@ -36,11 +31,7 @@
             "_type" : "label",
             "_style" : "{wrap}|{shadow_out}|{horizontal}|{center}",
             "_name" : "labFilmNaziv",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "grabExcessVerticalSpace" : true
-            },
+            "layoutData" : "[gridData](center,center,false,true)",
             "font" : {
                 "style":"bold",
                 "height":12
@@ -56,11 +47,7 @@
                 "numColumns" : 2,
                 "horizontalSpacing" : 20
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "grabExcessHorizontalSpace" : true
-            },
+            "layoutData" : "[gridData](center,center,true,false)",
             "_children" : [
                 {
                     "_type" : "button",
@@ -71,11 +58,7 @@
                     "_type" : "button",
                     "_name" : "btnCancel",
                     "text" : "[global.cancel]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.end}",
-                        "grabExcessVerticalSpace" : true
-                    }
+                    "layoutData" : "[gridData](end,center,false,true)"
                 }
             ]
         }

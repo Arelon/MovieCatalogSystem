@@ -14,13 +14,7 @@
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            },
+            "layoutData" : "[gridData](center,begin,true,false)",
             "_children" : [
                 {
                     "_type" : "label",
@@ -29,13 +23,7 @@
                         "height" : 12,
                         "style" : "bold"
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.center}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    },
+                    "layoutData" : "[gridData](center,begin,true,false)",
                     "foreground" : "#0000ff"
                 },
                 {
@@ -45,13 +33,7 @@
                         "height" : 10,
                         "style" : "bold"
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.center}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](center,begin,true,false)"
                 }
             ]
         },
@@ -61,13 +43,7 @@
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            },
+            "layoutData" : "[gridData](center,begin,true,false)",
             "_children" : [
                 {
                     "_type" : "link",
@@ -83,13 +59,7 @@
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            },
+            "layoutData" : "[gridData](center,begin,true,false)",
             "_children" : [
                 {
                     "_type" : "link",
@@ -103,13 +73,7 @@
             "_type" : "text",
             "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}|{center}|{border}",
             "_name" : "textArea",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : true
-            }
+            "layoutData" : "[gridData](fill,fill,true,true)"
         }
     ]
 }

@@ -1,5 +1,6 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import org.codehaus.jackson.JsonNode;
 import org.eclipse.swt.graphics.Image;
@@ -18,7 +19,7 @@ public class ImageConverter extends TypedConverter<Image> {
     private ImageRepository imageRepository;
 
     @Override
-    protected Image getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
+    public Image getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         return imageRepository.getResourceImage(node.asText());
     }
 

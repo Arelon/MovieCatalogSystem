@@ -1,7 +1,8 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import org.codehaus.jackson.JsonNode;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -27,11 +28,6 @@ public class IntegerConverter extends TypedConverter<Integer> {
     // do not use ImmutableMap.builder() because it crashes JDK compiler
     static {
         Map<String, Integer> temp = Maps.newHashMap();
-        temp.put("grid.center", GridData.CENTER);
-        temp.put("grid.begin", GridData.BEGINNING);
-        temp.put("grid.end", GridData.END);
-        temp.put("grid.fill", GridData.FILL);
-
         temp.put("composition_changed", SWT.COMPOSITION_CHANGED);
         temp.put("composition_offset", SWT.COMPOSITION_OFFSET);
         temp.put("composition_selection", SWT.COMPOSITION_SELECTION);
@@ -426,7 +422,7 @@ public class IntegerConverter extends TypedConverter<Integer> {
     }
 
     @Override
-    protected Integer getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
+    public Integer getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         String input = node.asText();
         checkNotNull(input);
         String[] values = input.split("\\|");

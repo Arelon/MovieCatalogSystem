@@ -1,7 +1,8 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
 import com.google.common.base.Strings;
 import net.milanaleksic.mcs.application.ApplicationManager;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import org.codehaus.jackson.JsonNode;
 
 import javax.inject.Inject;
@@ -22,7 +23,7 @@ public class StringConverter extends TypedConverter<String> {
     private static final Pattern resourceMessage = Pattern.compile("\\[(.*)\\]");
 
     @Override
-    protected String getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
+    public String getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         String fieldValue = node.asText();
         if (Strings.isNullOrEmpty(fieldValue))
             return fieldValue;

@@ -15,27 +15,15 @@
                 "numColumns" : 2
             },
             "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.begin}",
-                "widthHint" : 300,
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
+                "_type" : "[gridData](fill,begin,true,false)",
+                "widthHint" : 300
             },
             "_children" : [
                 {
                     "_type" : "label",
                     "_name" : "movieNameValue",
                     "background" : "color_info_background",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
-                        "horizontalSpan" : 4,
-                        "verticalSpan" : 1
-                    },
+                    "layoutData" : "[gridData](fill,begin,true,false,4,1)",
                     "font" : {
                         "height" : 12,
                         "style" : "bold"
@@ -46,13 +34,7 @@
                     "_type" : "label",
                     "background" : "color_info_background",
                     "text" : "[main.genre]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,center,false,false)"
                 },
                 {
                     "_type" : "label",
@@ -61,26 +43,14 @@
                     "font" : {
                         "style" : "bold"
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,begin,true,false)"
                 },
 
                 {
                     "_type" : "label",
                     "background" : "color_info_background",
                     "text" : "[main.location]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,center,false,false)"
                 },
                 {
                     "_type" : "label",
@@ -89,26 +59,14 @@
                     "font" : {
                         "style" : "bold"
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,begin,true,false)"
                 },
 
                 {
                     "_type" : "label",
                     "background" : "color_info_background",
                     "text" : "[main.medium]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,center,false,false)"
                 },
                 {
                     "_type" : "dynamicSelectorText",
@@ -120,11 +78,7 @@
                     "closerColor" : "color_white",
                     "background" : "color_info_background",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
+                        "_type" : "[gridData](fill,begin,true,false)",
                         "heightHint" : 26
                     }
                 },
@@ -133,13 +87,7 @@
                     "_type" : "label",
                     "background" : "color_info_background",
                     "text" : "[global.tags]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,center,false,false)"
                 },
                 {
                     "_type" : "dynamicSelectorText",
@@ -151,11 +99,7 @@
                     "closerColor" : "color_white",
                     "background" : "color_info_background",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
+                        "_type" : "[gridData](fill,begin,true,false)",
                         "heightHint" : 26
                     }
                 },
@@ -165,15 +109,7 @@
                     "_name" : "commentValue",
                     "_style" : "{wrap}",
                     "background" : "color_info_background",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : true,
-                        "horizontalSpan" : 2,
-                        "verticalSpan" : 1
-                    }
+                    "layoutData" : "[gridData](fill,fill,true,true,2,1)"
                 }
             ]
         }

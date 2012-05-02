@@ -3,6 +3,7 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.ApplicationManager;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.typed.*;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -165,6 +166,7 @@ public class Transformer {
             throw new IllegalStateException("Can not create children for parent which is not Composite nor Menu (" + parentWidget.getClass().getName() + " in this case)");
         try {
             for (JsonNode node : mapper.readValue(childrenNodes, JsonNode[].class)) {
+                // TODO: parent hierarchy stack!
                 createObject(parentWidget, node, mappedObjects);
             }
         } catch (IOException e) {
@@ -208,12 +210,20 @@ public class Transformer {
 
     @SuppressWarnings({"unchecked"})
     private void safeCallSetField(Object object, Map.Entry<String, JsonNode> field, Map<String, Object> mappedObjects, Optional<Field> fieldByName, Class<?> argType, Converter converter) throws TransformerException {
-        converter.setField(fieldByName.get(), object, field.getValue(), mappedObjects, argType);
+        try {
+            converter.setField(fieldByName.get(), object, field.getValue(), mappedObjects, argType);
+        } catch (IncapableToExecuteTypedConversionException e) {
+            converter.setField(fieldByName.get(), object, field.getValue(), mappedObjects, Object.class);
+        }
     }
 
     @SuppressWarnings({"unchecked"})
     private void safeCallInvoke(Object object, Map.Entry<String, JsonNode> field, Map<String, Object> mappedObjects, Optional<Method> method, Class<?> argType, Converter converter) throws TransformerException {
-        converter.invoke(method.get(), object, field.getValue(), mappedObjects, argType);
+        try {
+            converter.invoke(method.get(), object, field.getValue(), mappedObjects, argType);
+        } catch (IncapableToExecuteTypedConversionException e) {
+            converter.invoke(method.get(), object, field.getValue(), mappedObjects, Object.class);
+        }
     }
 
     private Optional<Field> getFieldByName(Object object, String fieldName) {

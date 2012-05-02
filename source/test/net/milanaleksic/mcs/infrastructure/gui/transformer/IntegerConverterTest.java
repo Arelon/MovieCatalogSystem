@@ -1,8 +1,9 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.collect.Maps;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.typed.IntegerConverter;
 import org.codehaus.jackson.node.TextNode;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.SWT;
 import org.junit.*;
 
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class IntegerConverterTest {
     public void convert_magic_value() {
         IntegerConverter integerConverter = new IntegerConverter();
         try {
-            assertThat(integerConverter.getValueFromJson(new TextNode("{grid.center}"), mappedObjects), equalTo(GridData.CENTER));
+            assertThat(integerConverter.getValueFromJson(new TextNode("{center}"), mappedObjects), equalTo(SWT.CENTER));
         } catch (TransformerException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -53,7 +54,7 @@ public class IntegerConverterTest {
         IntegerConverter integerConverter = new IntegerConverter();
         try {
             assertThat(integerConverter.getValueFromJson(new TextNode("1|2"), mappedObjects), equalTo(1 | 2));
-            assertThat(integerConverter.getValueFromJson(new TextNode("{grid.center}|{grid.begin}"), mappedObjects), equalTo(GridData.CENTER | GridData.BEGINNING));
+            assertThat(integerConverter.getValueFromJson(new TextNode("{transparent}|{up}"), mappedObjects), equalTo(SWT.TRANSPARENT | SWT.UP));
         } catch (TransformerException e) {
             e.printStackTrace();
             fail(e.getMessage());

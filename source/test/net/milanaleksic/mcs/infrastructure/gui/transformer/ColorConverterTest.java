@@ -1,6 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.collect.Maps;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.typed.ColorConverter;
 import org.codehaus.jackson.node.TextNode;
 import org.eclipse.swt.graphics.Color;
 import org.junit.*;

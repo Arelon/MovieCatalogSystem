@@ -1,5 +1,6 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import org.codehaus.jackson.JsonNode;
 
 import java.lang.reflect.*;
@@ -30,7 +31,7 @@ public abstract class TypedConverter<T> implements Converter<T> {
         }
     }
 
-    protected abstract T getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException;
+    public abstract T getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException;
 
     @Override
     public void cleanUp() {}

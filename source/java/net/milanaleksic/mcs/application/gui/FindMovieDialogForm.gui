@@ -14,37 +14,18 @@
                 "_type" : "gridLayout",
                 "numColumns" : 2
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : "true",
-                "grabExcessVerticalSpace" : "false",
-                "horizontalSpan" : 2
-            },
+            "layoutData" : "[gridData](fill,begin,true,false,2,1)",
             "_children" : [
                 {
                     "_type" : "label",
                     "text" : "[findMovie.startTyping]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.begin}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : "false",
-                        "grabExcessVerticalSpace" : "false"
-                    }
+                    "layoutData" : "[gridData](begin,begin,false,false)"
                 },
                 {
                     "_type" : "text",
                     "_style" : "{border}",
                     "_name" : "movieName",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : "true",
-                        "grabExcessVerticalSpace" : "false"
-                    }
+                    "layoutData" : "[gridData](fill,begin,true,false)"
                 }
             ]
         },
@@ -53,13 +34,7 @@
             "_style" : "{border}|{full_selection}",
             "_name" : "mainTable",
             "headerVisible" : true,
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
-                "grabExcessHorizontalSpace" : "true",
-                "grabExcessVerticalSpace" : "true"
-            },
+            "layoutData" : "[gridData](fill,fill,true,true)",
             "_children" : [
                 {
                     "_type" : "tableColumn",
@@ -84,11 +59,7 @@
         {
             "_type" : "tabFolder",
             "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
-                "grabExcessHorizontalSpace" : "true",
-                "grabExcessVerticalSpace" : "true",
+                "_type" : "[gridData](fill,fill,true,true)",
                 "widthHint" : 200,
                 "heightHint" : 300
             },
@@ -97,13 +68,7 @@
                     "_type" : "showImageComposite",
                     "_name" : "matchImage",
                     "bundle" : "(bundle)",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : "true",
-                        "grabExcessVerticalSpace" : "true"
-                    }
+                    "layoutData" : "[gridData](fill,fill,true,true)"
                 },
                 {
                     "_type" : "text",
@@ -130,39 +95,19 @@
                 "_type" : "gridLayout",
                 "numColumns" : 2
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "verticalAlignment" : "{grid.end}",
-                "grabExcessHorizontalSpace" : "true",
-                "grabExcessVerticalSpace" : "false",
-                "horizontalSpan" : 2,
-                "verticalSpan" : 1
-            },
+            "layoutData" : "[gridData](center,end,true,false,2,1)",
             "_children" : [
                 {
                     "_type" : "button",
                     "_name" : "btnAccept",
                     "text" : "[global.save]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.center}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : "false",
-                        "grabExcessVerticalSpace" : "false"
-                    }
+                    "layoutData" : "[gridData](center,center,false,false)"
                 },
                 {
                     "_type" : "button",
                     "_name" : "btnClose",
                     "text" : "[global.cancel]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.center}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : "false",
-                        "grabExcessVerticalSpace" : "false"
-                    }
+                    "layoutData" : "[gridData](center,center,false,false)"
                 }
             ]
         }

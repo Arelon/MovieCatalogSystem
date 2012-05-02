@@ -16,26 +16,12 @@
                 "marginWidth" : 0,
                 "marginHeight" : 0
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            },
+            "layoutData" : "[gridData](fill,begin,true,false)",
             "_children" : [
                 {
                     "_type" : "toolBar",
                     "_style" : "{flat}|{wrap}|{right}",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
-                        "horizontalSpan" : 1,
-                        "verticalSpan" : 1
-                    },
+                    "layoutData" : "[gridData](fill,fill,true,false)",
                     "_children" : [
                         {
                             "_type" : "toolItem",
@@ -86,11 +72,7 @@
                     "_type" : "canvas",
                     "_name" : "toolTicker",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.center}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false,
+                        "_type" : "[gridData](center,center,false,false)",
                         "widthHint" : 24,
                         "heightHint" : 24
                     }
@@ -107,13 +89,7 @@
                 "marginWidth" : 0,
                 "marginHeight" : 0
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.fill}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : true
-            },
+            "layoutData" : "[gridData](fill,fill,true,true)",
             "_children" : [
                 {
                     "_type" : "composite",
@@ -123,11 +99,7 @@
                         "numColumns" : 2
                     },
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
+                        "_type" : "[gridData](fill,center,true,false)",
                         "heightHint" : 0
                     },
                     "background" : "color_info_background",
@@ -135,25 +107,13 @@
                         {
                             "_type" : "label",
                             "text" : "[main.activeFilter]",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.begin}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false
-                            },
+                            "layoutData" : "[gridData](begin,center,false,false)",
                             "background" : "color_info_background"
                         },
                         {
                             "_type" : "label",
                             "_name" : "labelFilter",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            },
+                            "layoutData" : "[gridData](fill,center,true,false)",
                             "background" : "color_info_background",
                             "font" : {
                                 "style" : "bold"
@@ -166,13 +126,7 @@
                     "_type" : "scrolledComposite",
                     "_style" : "{v_scroll}",
                     "_name" : "mainTableWrapper",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : true
-                    },
+                    "layoutData" : "[gridData](fill,fill,true,true)",
                     "expandHorizontal" : true,
                     "expandVertical" : true,
                     "_children" : [
@@ -196,13 +150,7 @@
                 "_type" : "gridLayout",
                 "numColumns" : 3
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.fill}",
-                "verticalAlignment" : "{grid.end}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            },
+            "layoutData" : "[gridData](fill,end,true,false)",
             "_children" : [
                 {
                     "_type" : "composite",
@@ -212,13 +160,7 @@
                         "marginWidth" : 0,
                         "marginHeight" : 0
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.begin}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    },
+                    "layoutData" : "[gridData](begin,center,false,false)",
                     "_children" : [
                         {
                             "_type" : "button",
@@ -230,11 +172,7 @@
                             "_type" : "label",
                             "_name" : "labelCurrent",
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false,
+                                "_type" : "[gridData](fill,center,false,false)",
                                 "widthHint" : 90
                             },
                             "alignment" : "{center}",
@@ -256,13 +194,7 @@
                         "marginWidth" : 0,
                         "marginHeight" : 0
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.begin}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : false
-                    },
+                    "layoutData" : "[gridData](begin,center,false,false)",
                     "_children" : [
                         {
                             "_type" : "combo",
@@ -314,23 +246,11 @@
                         "marginWidth" : 0,
                         "marginHeight" : 0
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.end}",
-                        "verticalAlignment" : "{grid.center}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    },
+                    "layoutData" : "[gridData](end,center,true,false)",
                     "_children" : [
                         {
                             "_type" : "label",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            },
+                            "layoutData" : "[gridData](fill,center,true,false)",
                             "text" : "[main.sortOn]",
                             "alignment" : "{right}"
                         },
@@ -338,13 +258,7 @@
                             "_type" : "combo",
                             "_style" : "{read_only}",
                             "_name" : "comboSort",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.end}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : false,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](end,center,false,false)"
                         },
                         {
                             "_type" : "button",

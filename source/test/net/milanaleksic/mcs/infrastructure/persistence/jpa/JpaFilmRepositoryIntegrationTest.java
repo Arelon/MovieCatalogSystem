@@ -89,7 +89,7 @@ public class JpaFilmRepositoryIntegrationTest {
 
     @Test
     public void get_films_with_tag() {
-        Tag tag = tagRepository.getTagByName("нисам гледао");
+        Tag tag = tagRepository.getTagByName("неодгледан");
         FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 23, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.of(tag), Optional.<String>absent(), Film_.medijListAsString, true);
         for (Film film : filmsWithCount.films) {
             film = filmRepository.getCompleteFilm(film);

@@ -19,13 +19,7 @@
                     "_style" : "{border}|{full_selection}",
                     "_name" : "unusedMediumTable",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : true,
-                        "horizontalSpan" : 1,
-                        "verticalSpan" : 2,
+                        "_type" : "[gridData](fill,fill,true,true,1,2)",
                         "heightHint" : 180
                     },
                     "headerVisible" : true,
@@ -42,25 +36,13 @@
                     "_type" : "button",
                     "_name" : "btnDeleteUnusedMedium",
                     "text" : "[global.delete]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,begin,true,false)"
                 },
                 {
                     "_type" : "button",
                     "_name" : "btnDeleteAllUnusedMediums",
                     "text" : "[global.deleteAll]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,begin,true,false)"
                 },
                 {
                     "_type" : "composite",
@@ -68,27 +50,13 @@
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
-                        "horizontalSpan" : 2,
-                        "verticalSpan" : 1
-                    },
+                    "layoutData" : "[gridData](fill,begin,true,false,2,1)",
                     "_children" : [
                         {
                             "_type" : "button",
                             "_name" : "btnClose",
                             "text" : "[global.close]",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.center}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](center,center,true,false)"
                         }
                     ]
                 }

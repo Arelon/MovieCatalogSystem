@@ -21,11 +21,7 @@
                     "_style" : "{border}|{full_selection}",
                     "_name" : "unmatchedMoviesTable",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : true,
+                        "_type" : "[gridData](fill,fill,true,true)",
                         "heightHint" : 350
                     },
                     "headerVisible" : true,
@@ -48,26 +44,14 @@
                     "_type" : "button",
                     "_name" : "btnStartMatching",
                     "text" : "[unmatchedMoviesTable.start]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false
-                    }
+                    "layoutData" : "[gridData](fill,begin,true,false)"
                 },
                 {
                     "_type" : "table",
                     "_style" : "{border}|{full_selection}",
                     "_name" : "possibleMatchesTable",
                     "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : true,
-                        "horizontalSpan" : 1,
-                        "verticalSpan" : 2,
+                        "_type" : "[gridData](fill,fill,true,true,1,2)",
                         "heightHint" : 200
                     },
                     "headerVisible" : true,
@@ -98,22 +82,12 @@
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.fill}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : true
-                    },
+                    "layoutData" : "[gridData](fill,fill,true,true)",
                     "_children" : [
                         {
                             "_type" : "tabFolder",
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.fill}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : true,
+                                "_type" : "[gridData](fill,fill,true,true)",
                                 "widthHint" : 200
                             },
                             "_children" : [
@@ -121,26 +95,14 @@
                                     "_type" : "showImageComposite",
                                     "_name" : "matchImage",
                                     "bundle" : "(bundle)",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.fill}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : true
-                                    }
+                                    "layoutData" : "[gridData](fill,fill,true,true)"
                                 },
                                 {
                                     "_type" : "text",
                                     "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}",
                                     "_name" : "matchDescription",
                                     "text" : "[global.noImagePresent]",
-                                    "layoutData" : {
-                                        "_type" : "gridData",
-                                        "horizontalAlignment" : "{grid.fill}",
-                                        "verticalAlignment" : "{grid.fill}",
-                                        "grabExcessHorizontalSpace" : true,
-                                        "grabExcessVerticalSpace" : true
-                                    }
+                                    "layoutData" : "[gridData](fill,fill,true,true)"
                                 },
                                 {
                                     "_type" : "tabItem",
@@ -158,13 +120,7 @@
                             "_type" : "button",
                             "_name" : "btnAcceptThisMatch",
                             "text" : "[unmatchedMoviesTable.acceptMatch]",
-                            "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.fill}",
-                                "verticalAlignment" : "{grid.begin}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false
-                            }
+                            "layoutData" : "[gridData](fill,begin,true,false)"
                         }
                     ]
                 },
@@ -176,26 +132,14 @@
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.fill}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : true,
-                        "grabExcessVerticalSpace" : false,
-                        "horizontalSpan" : 4,
-                        "verticalSpan" : 1
-                    },
+                    "layoutData" : "[gridData](fill,begin,true,false,4,1)",
                     "_children" : [
                         {
                             "_type" : "button",
                             "_name" : "btnClose",
                             "text" : "[global.close]",
                             "layoutData" : {
-                                "_type" : "gridData",
-                                "horizontalAlignment" : "{grid.center}",
-                                "verticalAlignment" : "{grid.center}",
-                                "grabExcessHorizontalSpace" : true,
-                                "grabExcessVerticalSpace" : false,
+                                "_type" : "[gridData](center,center,true,false)",
                                 "widthHint" : 150
                             }
                         }

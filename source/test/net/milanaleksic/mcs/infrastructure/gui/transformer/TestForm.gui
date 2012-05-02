@@ -21,8 +21,7 @@
         {
             "_type" : "label",
             "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
-                "horizontalAlignment" : "{grid.center}",
+                "_type" : "[gridData](center,begin,true,false)",
                 "grabExcessHorizontalSpace" : true
             },
             "font" : {
@@ -36,11 +35,7 @@
             "_type" : "label",
             "_style" : "{wrap}|{shadow_out}|{horizontal}|{center}",
             "_name" : "labFilmNaziv",
-            "layoutData" : {
-                "_type" : "org.eclipse.swt.layout.GridData",
-                "horizontalAlignment" : "{grid.center}",
-                "grabExcessVerticalSpace" : true
-            }
+            "layoutData" : "[gridData](center,begin,true,false)"
         },
         {
             "_type" : "label"

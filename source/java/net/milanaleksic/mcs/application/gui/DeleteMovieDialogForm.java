@@ -9,7 +9,7 @@ import net.milanaleksic.mcs.domain.model.FilmRepository;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 import javax.annotation.Nullable;
@@ -31,10 +31,15 @@ public class DeleteMovieDialogForm extends AbstractTransformedForm {
     private static final Listener paintListener = new Listener() {
         @Override
         public void handleEvent(final Event e) {
+            final Rectangle bounds = ((Canvas)e.widget).getBounds();
             SWTUtil.useImageAndThenDispose(RESOURCE_ALERT_IMAGE, new Function<Image, Void>() {
                 @Override
                 public Void apply(@Nullable Image image) {
-                    e.gc.drawImage(image, 0, 0);
+                    if (image == null)
+                        return null;
+                    e.gc.drawImage(image,
+                            (bounds.width - image.getBounds().width)/2,
+                            (bounds.height - image.getBounds().height)/2);
                     return null;
                 }
             });

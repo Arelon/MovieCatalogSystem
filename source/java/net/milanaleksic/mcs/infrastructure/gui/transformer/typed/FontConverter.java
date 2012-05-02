@@ -1,5 +1,6 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.codehaus.jackson.JsonNode;
 import org.eclipse.swt.SWT;
@@ -22,7 +23,7 @@ public class FontConverter extends TypedConverter<Font> {
     public static final String FIELD_STYLE_ITALIC = "italic"; //NON-NLS
 
     @Override
-    protected Font getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
+    public Font getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         FontData systemFontData = SWTUtil.getSystemFontData();
         int style = parseStyle(systemFontData, node);
         int height = parseHeight(systemFontData, node);

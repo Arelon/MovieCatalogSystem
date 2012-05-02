@@ -11,13 +11,7 @@
             "_type" : "label",
             "_style" : "{left}",
             "text" : "[newMedium.mediumType]",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.end}",
-                "verticalAlignment" : "{grid.center}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            }
+            "layoutData" : "[gridData](end,center,true,false)"
         },
         {
             "_type" : "group",
@@ -30,13 +24,7 @@
         {
             "_type" : "label",
             "text" : "[newMedium.mediumWillHaveFollowingId]",
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.end}",
-                "verticalAlignment" : "{grid.center}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : false
-            }
+            "layoutData" : "[gridData](end,center,true,false)"
         },
         {
             "_type" : "text",
@@ -50,15 +38,7 @@
                 "numColumns" : 2,
                 "horizontalSpacing" : 20
             },
-            "layoutData" : {
-                "_type" : "gridData",
-                "horizontalAlignment" : "{grid.center}",
-                "verticalAlignment" : "{grid.begin}",
-                "grabExcessHorizontalSpace" : true,
-                "grabExcessVerticalSpace" : true,
-                "horizontalSpan" : 2,
-                "verticalSpan" : 1
-            },
+            "layoutData" : "[gridData](center,begin,true,true,2,1)",
             "_children" : [
                 {
                     "_type" : "button",
@@ -69,13 +49,7 @@
                     "_type" : "button",
                     "_name" : "btnCancel",
                     "text" : "[global.cancel]",
-                    "layoutData" : {
-                        "_type" : "gridData",
-                        "horizontalAlignment" : "{grid.end}",
-                        "verticalAlignment" : "{grid.begin}",
-                        "grabExcessHorizontalSpace" : false,
-                        "grabExcessVerticalSpace" : true
-                    }
+                    "layoutData" : "[gridData](end,begin,false,true)"
                 }
             ]
         }

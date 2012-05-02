@@ -1,6 +1,7 @@
-package net.milanaleksic.mcs.infrastructure.gui.transformer;
+package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
 import com.google.common.collect.*;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import org.codehaus.jackson.JsonNode;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -63,7 +64,7 @@ public class ColorConverter extends TypedConverter<Color> {
             .build();
 
     @Override
-    protected Color getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
+    public Color getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         String input = node.asText();
         checkNotNull(input);
         if (systemColors.containsKey(input))
