@@ -18,10 +18,6 @@ public class FormTester {
         String clazzName = args[0];
         Display display = new Display();
 
-        ApplicationManager applicationManager = new ApplicationManager(true);
-        applicationManager.getUserConfiguration().setLocaleLanguage(args.length > 1 ? args[1] : "en"); //NON-NLS
-
-
         ClassPathXmlApplicationContext applicationContext = null;
         try {
             applicationContext = new ClassPathXmlApplicationContext("spring-beans.xml"); //NON-NLS
@@ -32,7 +28,7 @@ public class FormTester {
             if (form instanceof AbstractTransformedForm) {
                 ((AbstractTransformedForm) form).setTransformer(applicationContext.getBean("transformer", Transformer.class));
             }
-            form.setApplicationManager(applicationManager);
+            form.setApplicationManager(applicationContext.getBean("applicationManager", ApplicationManager.class));
             form.setNoReadyEvent(true);
             form.open();
             while (!form.isDisposed()) {
