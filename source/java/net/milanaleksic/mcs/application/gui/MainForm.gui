@@ -26,7 +26,7 @@
             "_children" : [
                 {
                     "_type" : "toolBar",
-                    "_style" : "{flat}|{wrap}",
+                    "_style" : "{flat}|{wrap}|{right}",
                     "layoutData" : {
                         "_type" : "gridData",
                         "horizontalAlignment" : "{grid.fill}",
