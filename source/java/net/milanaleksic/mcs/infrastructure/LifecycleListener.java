@@ -8,7 +8,7 @@ import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
  * Date: 8/4/11
  * Time: 9:15 PM
  */
-public interface LifecycleListener {
+public interface LifeCycleListener {
 
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration);
 
