@@ -6,12 +6,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
+import java.util.Map;
+
 /**
  * User: Milan Aleksic
  * Date: 4/20/12
  * Time: 10:18 AM
  */
-public class FontConverter extends AbstractConverter {
+public class FontConverter extends TypedConverter<Font> {
 
     public static final String FIELD_NAME = "name"; //NON-NLS
     public static final String FIELD_HEIGHT = "height"; //NON-NLS
@@ -20,7 +22,7 @@ public class FontConverter extends AbstractConverter {
     public static final String FIELD_STYLE_ITALIC = "italic"; //NON-NLS
 
     @Override
-    protected Object getValueFromJson(JsonNode node) throws TransformerException {
+    protected Font getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         FontData systemFontData = SWTUtil.getSystemFontData();
         int style = parseStyle(systemFontData, node);
         int height = parseHeight(systemFontData, node);

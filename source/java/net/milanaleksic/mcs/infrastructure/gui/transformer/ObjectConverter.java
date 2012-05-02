@@ -2,19 +2,21 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.collect.ImmutableMap;
 import org.codehaus.jackson.JsonNode;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.*;
 
+import javax.inject.Inject;
+import java.lang.reflect.*;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 /**
  * User: Milan Aleksic
  * Date: 4/19/12
  * Time: 3:03 PM
  */
-public class ObjectConverter extends AbstractConverter {
+public class ObjectConverter implements Converter<Object>, ApplicationContextAware {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\((.*)\\)");
 
@@ -49,20 +51,34 @@ public class ObjectConverter extends AbstractConverter {
             .put("scrolledComposite", org.eclipse.swt.custom.ScrolledComposite.class)
             .build();
 
-    private final Transformer transformer;
-    private final Class<?> argType;
-    private final Map<String, Object> mappedObjects;
-    private final ApplicationContext applicationContext;
 
-    public ObjectConverter(Transformer transformer, Class<?> argType, Map<String, Object> mappedObjects, ApplicationContext applicationContext) {
-        this.transformer = transformer;
-        this.argType = argType;
-        this.mappedObjects = mappedObjects;
-        this.applicationContext = applicationContext;
+    @Inject
+    private Transformer transformer;
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public final void invoke(Method method, Object targetObject, JsonNode value, Map<String, Object> mappedObjects, Class<Object> argType) throws TransformerException {
+        try {
+            method.invoke(targetObject, getValueFromJson(value, mappedObjects, argType));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new TransformerException("Wrapped invoke failed: ", e);
+        }
     }
 
     @Override
-    protected Object getValueFromJson(JsonNode node) throws TransformerException {
+    public final void setField(Field field, Object targetObject, JsonNode value, Map<String, Object> mappedObjects, Class<Object> argType) throws TransformerException {
+        try {
+            field.set(targetObject, getValueFromJson(value, mappedObjects, argType));
+        } catch (IllegalAccessException e) {
+            throw new TransformerException("Wrapped setField failed: ", e);
+        }
+    }
+
+    @Override
+    public void cleanUp() {}
+
+    protected Object getValueFromJson(JsonNode node, Map<String, Object> mappedObjects, Class<?> argType) throws TransformerException {
         if (node.isTextual()) {
             String originalValue = node.asText();
             Matcher matcher = magicConstantsValue.matcher(originalValue);
@@ -79,10 +95,10 @@ public class ObjectConverter extends AbstractConverter {
             } else
                 throw new TransformerException("Invalid syntax for magical value - " + originalValue);
         }
-        return createWidgetFromResource(argType, node);
+        return createWidgetFromResource(argType, node, mappedObjects);
     }
 
-    public Object createWidgetFromResource(Class<?> widgetClass, JsonNode value) throws TransformerException {
+    public Object createWidgetFromResource(Class<?> widgetClass, JsonNode value, Map<String, Object> mappedObjects) throws TransformerException {
         try {
             Object widget;
             Class<?> deducedClass = deduceClassFromNode(value);
@@ -112,4 +128,8 @@ public class ObjectConverter extends AbstractConverter {
         return null;
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }

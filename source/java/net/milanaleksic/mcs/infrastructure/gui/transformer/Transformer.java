@@ -190,18 +190,30 @@ public class Transformer {
             Optional<Method> method = getSetterByName(object, getSetterForField(field.getKey()));
             if (method.isPresent()) {
                 Class<?> argType = method.get().getParameterTypes()[0];
-                converterFactory.getConverter(this, argType, mappedObjects).invoke(method.get(), object, field.getValue());
+                Converter converter = converterFactory.getConverter(argType);
+                safeCallInvoke(object, field, mappedObjects, method, argType, converter);
             } else {
                 Optional<Field> fieldByName = getFieldByName(object, field.getKey());
                 if (fieldByName.isPresent()) {
                     Class<?> argType = fieldByName.get().getType();
-                    converterFactory.getConverter(this, argType, mappedObjects).setField(fieldByName.get(), object, field.getValue());
+                    Converter converter = converterFactory.getConverter(argType);
+                    safeCallSetField(object, field, mappedObjects, fieldByName, argType, converter);
                 } else
                     throw new TransformerException("No setter nor field " + field.getKey() + " could be found in class " + object.getClass().getName() + "; context: " + field.getValue());
             }
         } catch (Throwable t) {
             throw new TransformerException("Transformation was not successful", t);
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void safeCallSetField(Object object, Map.Entry<String, JsonNode> field, Map<String, Object> mappedObjects, Optional<Field> fieldByName, Class<?> argType, Converter converter) throws TransformerException {
+        converter.setField(fieldByName.get(), object, field.getValue(), mappedObjects, argType);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void safeCallInvoke(Object object, Map.Entry<String, JsonNode> field, Map<String, Object> mappedObjects, Optional<Method> method, Class<?> argType, Converter converter) throws TransformerException {
+        converter.invoke(method.get(), object, field.getValue(), mappedObjects, argType);
     }
 
     private Optional<Field> getFieldByName(Object object, String fieldName) {
@@ -253,8 +265,9 @@ public class Transformer {
             int style = widgetClass == Shell.class ? DEFAULT_STYLE_SHELL : DEFAULT_STYLE_REST;
             if (objectDefinition.has(KEY_SPECIAL_STYLE)) {
                 JsonNode styleNode = objectDefinition.get(KEY_SPECIAL_STYLE);
-                AbstractConverter exactTypeConverter = (AbstractConverter) converterFactory.getExactTypeConverter(int.class).get();
-                style = (Integer) exactTypeConverter.getValueFromJson(styleNode);
+                TypedConverter<Integer> exactTypeConverter = (TypedConverter<Integer>)
+                        converterFactory.getExactTypeConverter(int.class).get();
+                style = exactTypeConverter.getValueFromJson(styleNode, mappedObjects);
             }
 
             final Object objectInstance = chosenConstructor.newInstance(parent, style);

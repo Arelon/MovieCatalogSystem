@@ -5,6 +5,7 @@ import net.milanaleksic.mcs.application.ApplicationManager;
 import org.codehaus.jackson.JsonNode;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
  * Date: 4/19/12
  * Time: 3:23 PM
  */
-public class StringConverter extends AbstractConverter {
+public class StringConverter extends TypedConverter<String> {
 
     @Inject
     private ApplicationManager applicationManager;
@@ -21,7 +22,7 @@ public class StringConverter extends AbstractConverter {
     private static final Pattern resourceMessage = Pattern.compile("\\[(.*)\\]");
 
     @Override
-    protected Object getValueFromJson(JsonNode node) throws TransformerException {
+    protected String getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         String fieldValue = node.asText();
         if (Strings.isNullOrEmpty(fieldValue))
             return fieldValue;

@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 4/20/12
  * Time: 9:59 AM
  */
-public class ColorConverter extends AbstractConverter {
+public class ColorConverter extends TypedConverter<Color> {
 
     private static final Pattern properValue = Pattern.compile("#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})", Pattern.CASE_INSENSITIVE); //NON-NLS
 
@@ -63,7 +63,7 @@ public class ColorConverter extends AbstractConverter {
             .build();
 
     @Override
-    protected Object getValueFromJson(JsonNode node) throws TransformerException {
+    protected Color getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         String input = node.asText();
         checkNotNull(input);
         if (systemColors.containsKey(input))

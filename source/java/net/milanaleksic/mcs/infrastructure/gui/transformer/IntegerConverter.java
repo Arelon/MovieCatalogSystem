@@ -17,7 +17,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 4/19/12
  * Time: 3:23 PM
  */
-public class IntegerConverter extends AbstractConverter {
+@SuppressWarnings({"HardCodedStringLiteral"})
+public class IntegerConverter extends TypedConverter<Integer> {
 
     private static final Pattern magicConstantsValue = Pattern.compile("\\{(.*)\\}");
 
@@ -425,7 +426,7 @@ public class IntegerConverter extends AbstractConverter {
     }
 
     @Override
-    protected Object getValueFromJson(JsonNode node) throws TransformerException {
+    protected Integer getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
         String input = node.asText();
         checkNotNull(input);
         String[] values = input.split("\\|");

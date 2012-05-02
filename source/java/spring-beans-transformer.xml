@@ -8,6 +8,9 @@
     <bean id="converterFactory" class="net.milanaleksic.mcs.infrastructure.gui.transformer.ConverterFactory">
         <property name="registeredConverters">
             <map>
+                <entry key="#{ T(java.lang.Object) }">
+                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.ObjectConverter"/>
+                </entry>
                 <entry key="#{ T(java.lang.String) }">
                     <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.StringConverter"/>
                 </entry>
