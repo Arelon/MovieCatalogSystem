@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.util;
 
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import org.apache.commons.logging.Log;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
  * Date: 8/4/11
  * Time: 10:29 PM
  */
-public class StatisticsManager implements LifecycleListener {
+public class StatisticsManager implements LifeCycleListener {
 
     private static final Log log = LogFactory.getLog(StatisticsManager.class);
 

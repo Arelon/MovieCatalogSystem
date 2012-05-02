@@ -2,7 +2,7 @@ package net.milanaleksic.mcs.infrastructure.network.impl;
 
 import com.google.common.base.Strings;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
@@ -23,7 +23,7 @@ import org.apache.http.protocol.HttpContext;
  * Date: 3/1/12
  * Time: 12:39 PM
  */
-public class HttpClientFactoryServiceImpl implements HttpClientFactoryService, LifecycleListener {
+public class HttpClientFactoryServiceImpl implements HttpClientFactoryService, LifeCycleListener {
 
     public static final String AUTH_SCHEME_NTLM = "NTLM"; //NON-NLS
     public static final String SCHEME_HTTP = "http"; //NON-NLS

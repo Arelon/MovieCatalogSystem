@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
 
 /**
@@ -8,7 +8,7 @@ import net.milanaleksic.mcs.infrastructure.config.*;
  * Date: 8/4/11
  * Time: 11:41 PM
  */
-public class SplashScreenManager implements LifecycleListener {
+public class SplashScreenManager implements LifeCycleListener {
 
 //    private Optional<SplashScreen> splashScreen = Optional.absent();
 

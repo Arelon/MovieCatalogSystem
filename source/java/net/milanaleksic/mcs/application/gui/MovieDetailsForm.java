@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText;
 import net.milanaleksic.mcs.domain.model.*;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
@@ -24,7 +24,7 @@ import java.util.concurrent.*;
  * Date: 4/24/12
  * Time: 8:20 AM
  */
-public class MovieDetailsForm extends AbstractTransformedForm implements LifecycleListener {
+public class MovieDetailsForm extends AbstractTransformedForm implements LifeCycleListener {
 
     private ScheduledExecutorService hiderPool = Executors.newScheduledThreadPool(1);
     private Optional<ScheduledFuture<?>> hiderScheduledFuture = Optional.absent();

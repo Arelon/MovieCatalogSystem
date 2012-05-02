@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.config;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import org.apache.log4j.Logger;
@@ -14,7 +14,7 @@ import java.io.File;
  * Date: 8/4/11
  * Time: 9:52 PM
  */
-public class ApplicationConfigurationManager implements LifecycleListener {
+public class ApplicationConfigurationManager implements LifeCycleListener {
 
     private static final String CONFIGURATION_FILE = "application-configuration.xml"; //NON-NLS
 

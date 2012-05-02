@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  * Date: 4/19/12
  * Time: 2:19 PM
  */
-class ConverterFactory implements LifecycleListener {
+class ConverterFactory implements LifeCycleListener {
 
     private Map<Class<?>, Converter<?>> registeredConverters;
 

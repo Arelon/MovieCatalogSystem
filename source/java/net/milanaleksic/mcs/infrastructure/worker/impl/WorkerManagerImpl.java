@@ -2,7 +2,7 @@ package net.milanaleksic.mcs.infrastructure.worker.impl;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.*;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
 import org.apache.log4j.Logger;
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
         description = "Application work manager",
         currencyTimeLimit = -1
 )
-public class WorkerManagerImpl implements WorkerManager, LifecycleListener {
+public class WorkerManagerImpl implements WorkerManager, LifeCycleListener {
 
     protected final Logger logger = Logger.getLogger(this.getClass());
 

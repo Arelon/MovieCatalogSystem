@@ -2,7 +2,7 @@ package net.milanaleksic.mcs.application.restore;
 
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
@@ -14,7 +14,7 @@ import javax.inject.Inject;
  * Date: 8/4/11
  * Time: 10:11 PM
  */
-public class RestoreManager implements LifecycleListener {
+public class RestoreManager implements LifeCycleListener {
 
     @Inject private ProgramArgsService programArgsService;
 

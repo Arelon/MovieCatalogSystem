@@ -8,7 +8,7 @@ import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
 import net.milanaleksic.mcs.infrastructure.util.*;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.SWT;
@@ -43,7 +43,7 @@ public class ApplicationManager implements ApplicationContextAware {
 
     private UserConfiguration userConfiguration;
 
-    private Set<LifecycleListener> lifecycleListeners = Sets.newHashSet();
+    private Set<LifeCycleListener> lifeCycleListeners = Sets.newHashSet();
 
     public ApplicationManager() {
         this(false);
@@ -56,8 +56,8 @@ public class ApplicationManager implements ApplicationContextAware {
             readConfigurationsWithoutDI();
     }
 
-    public void setLifecycleListeners(Set<LifecycleListener> lifecycleListeners) {
-        this.lifecycleListeners = lifecycleListeners;
+    public void setLifeCycleListeners(Set<LifeCycleListener> lifeCycleListeners) {
+        this.lifeCycleListeners = lifeCycleListeners;
     }
 
     public UserConfiguration getUserConfiguration() {
@@ -69,18 +69,18 @@ public class ApplicationManager implements ApplicationContextAware {
     }
 
     private void fireApplicationStarted() {
-        for (LifecycleListener listener : lifecycleListeners) {
+        for (LifeCycleListener listener : lifeCycleListeners) {
             safeCallStartedOnListener(listener);
         }
     }
 
     private void fireApplicationShutdown() {
-        for (LifecycleListener listener : lifecycleListeners) {
+        for (LifeCycleListener listener : lifeCycleListeners) {
             safeCallShutdownOnListener(listener);
         }
     }
 
-    private void safeCallStartedOnListener(LifecycleListener listener) {
+    private void safeCallStartedOnListener(LifeCycleListener listener) {
         try {
             listener.applicationStarted(applicationConfiguration, userConfiguration);
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class ApplicationManager implements ApplicationContextAware {
         }
     }
 
-    private void safeCallShutdownOnListener(LifecycleListener listener) {
+    private void safeCallShutdownOnListener(LifeCycleListener listener) {
         try {
             listener.applicationShutdown(applicationConfiguration, userConfiguration);
         } catch (Exception e) {

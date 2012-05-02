@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.infrastructure.thumbnail.impl;
 import com.google.common.base.*;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.application.gui.helper.ShowImageComposite;
-import net.milanaleksic.mcs.infrastructure.LifecycleListener;
+import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.image.ImageRepository;
 import net.milanaleksic.mcs.infrastructure.network.*;
@@ -24,7 +24,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.Map;
 
-public class ThumbnailManagerImpl implements ThumbnailManager, LifecycleListener {
+public class ThumbnailManagerImpl implements ThumbnailManager, LifeCycleListener {
 
     private static final Logger logger = Logger.getLogger(ThumbnailManagerImpl.class);
 
