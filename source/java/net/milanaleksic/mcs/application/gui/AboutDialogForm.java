@@ -11,7 +11,7 @@ import java.net.URI;
 
 public class AboutDialogForm extends AbstractTransformedForm {
 
-    @EmbeddedEventListener(component="btnEmail", event= SWT.Selection)
+    @EmbeddedEventListener(component="linkEmail", event= SWT.Selection)
     private static final Listener emailSender = new Listener() {
         @Override
         public void handleEvent(Event event) {
@@ -34,7 +34,7 @@ public class AboutDialogForm extends AbstractTransformedForm {
         }
     };
 
-    @EmbeddedEventListener(component="btnSite", event= SWT.Selection)
+    @EmbeddedEventListener(component="linkSite", event= SWT.Selection)
     private static final Listener webSiteVisitor  = new Listener() {
         @Override
         public void handleEvent(Event event) {
@@ -65,6 +65,7 @@ public class AboutDialogForm extends AbstractTransformedForm {
         textArea.setText("Copyright 2007-2012 by Milan Aleksic\n\n" + //NON-NLS
                 bundle.getString("about.programVersion") + " " + VersionInformation.getVersion() + "\n\n" +
                 bundle.getString("about.technologyDetails"));
+        textArea.setFocus();
     }
 
 }

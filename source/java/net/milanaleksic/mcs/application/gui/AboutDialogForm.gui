@@ -40,7 +40,7 @@
                 },
                 {
                     "_type" : "label",
-                    "text" : "[about.programAuthor]",
+                    "text" : "[about.builtFor]",
                     "font" : {
                         "height" : 10,
                         "style" : "bold"
@@ -57,10 +57,9 @@
         },
         {
             "_type" : "composite",
-            "_style" : "{border}",
             "layout" : {
                 "_type" : "gridLayout",
-                "numColumns" : 2
+                "numColumns" : 1
             },
             "layoutData" : {
                 "_type" : "gridData",
@@ -71,23 +70,18 @@
             },
             "_children" : [
                 {
-                    "_type" : "label",
-                    "text" : "milanaleksic@gmail.com",
+                    "_type" : "link",
+                    "_name" : "linkEmail",
+                    "text" : "Email: <a>milan.aleksic@gmail.com</a>",
                     "foreground" : "#000000"
-                },
-                {
-                    "_type" : "button",
-                    "_name" : "btnEmail",
-                    "text" : "[about.sendEmail]"
                 }
             ]
         },
         {
             "_type" : "composite",
-            "_style" : "{border}",
             "layout" : {
                 "_type" : "gridLayout",
-                "numColumns" : 2
+                "numColumns" : 1
             },
             "layoutData" : {
                 "_type" : "gridData",
@@ -98,14 +92,10 @@
             },
             "_children" : [
                 {
-                    "_type" : "label",
-                    "text" : "www.milanaleksic.net",
+                    "_type" : "link",
+                    "_name" : "linkSite",
+                    "text" : "Web site: <a>www.milanaleksic.net</a>",
                     "foreground" : "#000000"
-                },
-                {
-                    "_type" : "button",
-                    "_name" : "btnSite",
-                    "text" : "[about.visit]"
                 }
             ]
         },
