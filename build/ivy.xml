@@ -112,6 +112,9 @@
         <dependency org="org.springframework" name="spring-tx" rev="3.1.0.RELEASE" transitive="false">
             <artifact name="spring-tx" type="jar"/>
         </dependency>
+        <dependency org="org.springframework" name="spring-web" rev="3.1.0.RELEASE" transitive="false">
+            <artifact name="spring-web" type="jar"/>
+        </dependency>
         <dependency org="javax.inject" name="javax.inject" rev="1" transitive="false">
             <artifact name="javax.inject" type="jar"/>
         </dependency>

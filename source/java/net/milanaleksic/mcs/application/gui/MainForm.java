@@ -10,26 +10,37 @@ import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
 import net.milanaleksic.mcs.infrastructure.export.*;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
+import net.milanaleksic.mcs.infrastructure.tenrec.TenrecService;
 import net.milanaleksic.mcs.infrastructure.thumbnail.ThumbnailManager;
 import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.worker.WorkerManager;
+import net.milanaleksic.tenrec.client.VersionInformation;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.*;
-import java.io.File;
+import java.io.*;
 import java.math.RoundingMode;
+import java.net.*;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -47,6 +58,9 @@ public class MainForm extends Observable implements Form {
     private static final int GUI_FORM_DEFAULT_WIDTH = 900;
 
     public static final int GUI_SEARCH_FILTER_HEIGHT = 25;
+
+    @Inject
+    private TenrecService tenrecService;
 
     @Inject
     private NewOrEditMovieDialogForm newOrEditMovieDialogDialogForm;
@@ -864,7 +878,7 @@ public class MainForm extends Observable implements Form {
     }
 
     private void lastPage() {
-        currentViewState.setActivePage(DoubleMath.roundToLong(1.0 * currentViewState.getShowableCount() / currentViewState.getMaxItemsPerPage(), RoundingMode.CEILING)-1);
+        currentViewState.setActivePage(DoubleMath.roundToLong(1.0 * currentViewState.getShowableCount() / currentViewState.getMaxItemsPerPage(), RoundingMode.CEILING) - 1);
         doFillMainTable();
     }
 
@@ -930,6 +944,38 @@ public class MainForm extends Observable implements Form {
     @MethodTiming
     private void doExecuteAdditionalLowPriorityPreparation() {
         thumbnailManager.preCacheThumbnails();
+        offerNewerVersionDownloadIfOneExists();
+    }
+
+    private void offerNewerVersionDownloadIfOneExists() {
+        Optional<VersionInformation> information = tenrecService.findNewerVersion();
+        if (!information.isPresent()) {
+            if (log.isDebugEnabled())
+                log.debug("No new version found"); //NON-NLS
+            return;
+        }
+        final VersionInformation versionInformation = information.get();
+        shell.getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                final MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.YES | SWT.NO);
+                messageBox.setText(bundle.getString("main.newVersionAvailable"));
+                messageBox.setText(String.format(bundle.getString("main.newVersionInformation"),
+                        versionInformation.getMajorVersion(),
+                        versionInformation.getMinorVersion(),
+                        versionInformation.getBuildNo(),
+                        versionInformation.getDateBuilt()));
+                if (messageBox.open() != SWT.YES)
+                    return;
+                if (java.awt.Desktop.isDesktopSupported()) {
+                    try {
+                        java.awt.Desktop.getDesktop().browse(new URI(versionInformation.getDirectUri()));
+                    } catch (Exception e) {
+                        log.error("Unexpected error: " + e.getMessage(), e); //NON-NLS
+                    }
+                }
+            }
+        });
     }
 
 }

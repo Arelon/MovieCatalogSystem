@@ -16,6 +16,8 @@
 
     <import resource="spring-beans-transformer.xml" />
 
+    <import resource="spring-beans-tenrec.xml" />
+
     <bean id="programArgsManager" class="net.milanaleksic.mcs.application.config.ProgramArgsService" />
 
     <bean id="workerManager" class="net.milanaleksic.mcs.infrastructure.worker.impl.WorkerManagerImpl" />

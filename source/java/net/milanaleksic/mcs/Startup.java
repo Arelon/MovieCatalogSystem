@@ -29,8 +29,8 @@ public class Startup {
             }
 
             public void couldNotRun(Exception e) {
-                JOptionPane.showMessageDialog(null, "Application error - " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); //NON-NLS
                 log.error(e.getMessage(), e);
+                JOptionPane.showMessageDialog(null, "Application error - " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); //NON-NLS
             }
         });
     }

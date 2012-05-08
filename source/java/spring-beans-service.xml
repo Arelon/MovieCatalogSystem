@@ -21,4 +21,8 @@
         <property name="initialCapacity" value="200" />
     </bean>
 
+    <bean id="tenrecService" class="net.milanaleksic.mcs.infrastructure.tenrec.impl.TenrecServiceImpl">
+        <property name="applicationIdentifier" value="MCS-#{ T(net.milanaleksic.mcs.infrastructure.util.VersionInformation).version }" />
+    </bean>
+
 </beans>
