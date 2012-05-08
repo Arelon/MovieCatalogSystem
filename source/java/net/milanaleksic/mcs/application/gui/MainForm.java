@@ -968,11 +968,16 @@ public class MainForm extends Observable implements Form {
                 if (messageBox.open() != SWT.YES)
                     return;
                 if (java.awt.Desktop.isDesktopSupported()) {
-                    try {
-                        java.awt.Desktop.getDesktop().browse(new URI(versionInformation.getDirectUri()));
-                    } catch (Exception e) {
-                        log.error("Unexpected error: " + e.getMessage(), e); //NON-NLS
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                java.awt.Desktop.getDesktop().browse(new URI(versionInformation.getDirectUri()));
+                            } catch (Exception e) {
+                                log.error("Unexpected error: " + e.getMessage(), e); //NON-NLS
+                            }
+                        }
+                    });
                 }
             }
         });
