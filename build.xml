@@ -89,6 +89,11 @@
         </javac>
 
         <copy todir="${compile.dir}" overwrite="true">
+            <fileset dir="${build.overrides.source.dir}">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${compile.dir}" overwrite="false">
             <fileset dir="${src.dir}">
                 <exclude name="**/*.java"/>
             </fileset>
@@ -121,7 +126,7 @@
         <mkdir dir="${install.dir}/lib"/>
 
         <copy todir="${install.dir}" overwrite="false">
-            <fileset dir="${build.overrides.dir}"/>
+            <fileset dir="${build.overrides.installation.dir}"/>
         </copy>
 
         <copy todir="${install.dir}/lib" overwrite="false">
