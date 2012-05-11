@@ -1,17 +1,14 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.infrastructure.IntegrationManager;
-import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbException;
-import net.milanaleksic.mcs.infrastructure.tmdb.TmdbService;
+import net.milanaleksic.mcs.infrastructure.*;
+import net.milanaleksic.mcs.infrastructure.config.*;
+import net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource;
+import net.milanaleksic.mcs.infrastructure.tmdb.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.apache.log4j.Logger;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 import javax.inject.Inject;
@@ -23,7 +20,7 @@ import java.util.concurrent.*;
  * Date: 10/8/11
  * Time: 8:26 PM
  */
-public class OfferMovieList extends KeyAdapter implements IntegrationManager {
+public class OfferMovieList extends KeyAdapter implements LifeCycleListener {
 
     public interface Receiver {
         void setCurrentQueryItems(String currentQuery, Optional<String> message, Optional<Movie[]> movies);
@@ -37,7 +34,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
     private TmdbService tmdbService;
 
     @Inject
-    private ApplicationManager applicationManager;
+    private ResourceBundleSource resourceBundleSource;
 
     private Scrollable source;
 
@@ -107,7 +104,7 @@ public class OfferMovieList extends KeyAdapter implements IntegrationManager {
 
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
-        this.bundle = applicationManager.getMessagesBundle();
+        this.bundle = resourceBundleSource.getMessagesBundle();
     }
 
     @Override

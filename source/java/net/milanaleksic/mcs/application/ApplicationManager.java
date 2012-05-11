@@ -153,15 +153,6 @@ public class ApplicationManager implements ApplicationContextAware {
         }
     }
 
-    private Optional<ResourceBundle> messageBundle = Optional.absent();
-
-    public synchronized ResourceBundle getMessagesBundle() {
-        if (!messageBundle.isPresent())
-            messageBundle = Optional.of(ResourceBundle.getBundle("messages", //NON-NLS
-                    new Locale(getUserConfiguration().getLocaleLanguage()), new UTF8ResourceBundleControl()));
-        return messageBundle.get();
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         readConfigurations();

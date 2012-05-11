@@ -10,6 +10,11 @@ import net.milanaleksic.tenrec.client.VersionInformation;
  */
 public interface TenrecService {
 
-    Optional<VersionInformation> findNewerVersion();
+    Optional<VersionInformation> findNewerVersionIfAllowed();
 
+    boolean login();
+
+    boolean saveDatabase(byte[] bytes);
+
+    void logOut();
 }

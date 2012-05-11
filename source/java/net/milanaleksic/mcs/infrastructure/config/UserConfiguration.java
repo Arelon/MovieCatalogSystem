@@ -57,6 +57,7 @@ public class UserConfiguration {
             this.password = password;
         }
 
+
         @Override
         @SuppressWarnings({"HardCodedStringLiteral"})
         public String toString() {
@@ -64,13 +65,56 @@ public class UserConfiguration {
                     "server='" + server + '\'' +
                     ", port=" + port +
                     ", username='" + username + '\'' +
-                    ", password='" + password + '\'' +
                     ", ntlm=" + ntlm +
                     '}';
         }
     }
 
+    public static class TenrecConfiguration {
+
+        private boolean checkForNewVersionsOnStartup = false;
+
+        private String username;
+
+        private String password;
+
+        public boolean isCheckForNewVersionsOnStartup() {
+            return checkForNewVersionsOnStartup;
+        }
+
+        public void setCheckForNewVersionsOnStartup(boolean checkForNewVersionsOnStartup) {
+            this.checkForNewVersionsOnStartup = checkForNewVersionsOnStartup;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        @Override
+        @SuppressWarnings({"HardCodedStringLiteral"})
+        public String toString() {
+            return "TenrecConfiguration{" +
+                    "checkForNewVersionsOnStartup=" + checkForNewVersionsOnStartup +
+                    ", username='" + username + '\'' +
+                    '}';
+        }
+    }
+
     private ProxyConfiguration proxyConfiguration;
+
+    private TenrecConfiguration tenrecConfiguration;
 
     private int elementsPerPage;
 
@@ -79,7 +123,16 @@ public class UserConfiguration {
     public UserConfiguration() {
         elementsPerPage = 28;
         proxyConfiguration = new ProxyConfiguration();
+        tenrecConfiguration = new TenrecConfiguration();
         localeLanguage = "en"; //NON-NLS
+    }
+
+    public TenrecConfiguration getTenrecConfiguration() {
+        return tenrecConfiguration;
+    }
+
+    public void setTenrecConfiguration(TenrecConfiguration tenrecConfiguration) {
+        this.tenrecConfiguration = tenrecConfiguration;
     }
 
     public void setLocaleLanguage(String localeLanguage) {
@@ -107,12 +160,12 @@ public class UserConfiguration {
     }
 
     @Override
-    @SuppressWarnings({"HardCodedStringLiteral"})
     public String toString() {
         return "UserConfiguration{" +
-                "localeLanguage='" + localeLanguage + '\'' +
-                ", proxyConfiguration=" + proxyConfiguration +
+                "proxyConfiguration=" + proxyConfiguration +
+                ", tenrecConfiguration=" + tenrecConfiguration +
                 ", elementsPerPage=" + elementsPerPage +
+                ", localeLanguage='" + localeLanguage + '\'' +
                 '}';
     }
 }

@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.tmdb;
 
 import com.google.common.base.Optional;
-import net.milanaleksic.mcs.infrastructure.IntegrationManager;
+import net.milanaleksic.mcs.infrastructure.*;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageSearchResult;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
@@ -10,7 +10,7 @@ import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
  * Date: 10/8/11
  * Time: 11:39 AM
  */
-public interface TmdbService extends IntegrationManager {
+public interface TmdbService extends LifeCycleListener {
 
     public void setApiKey(String apiKey) ;
 

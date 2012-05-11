@@ -1,12 +1,10 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import net.milanaleksic.mcs.application.ApplicationManager;
+import com.google.common.base.*;
+import net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 
@@ -19,7 +17,7 @@ public abstract class AbstractForm implements Form {
     protected final Logger logger = Logger.getLogger(this.getClass());
 
     @Inject
-    protected ApplicationManager applicationManager;
+    protected ResourceBundleSource resourceBundleSource;
 
     protected Shell shell;
     protected Optional<Shell> parent = Optional.absent();
@@ -75,12 +73,12 @@ public abstract class AbstractForm implements Form {
             shell.open();
     }
 
-    public void setApplicationManager(ApplicationManager applicationManager) {
-        this.applicationManager = applicationManager;
+    public void setResourceBundleSource(ResourceBundleSource resourceBundleSource) {
+        this.resourceBundleSource = resourceBundleSource;
     }
 
     protected void prepareShell(Shell parent) {
-        bundle = applicationManager.getMessagesBundle();
+        bundle = resourceBundleSource.getMessagesBundle();
         this.parent = Optional.fromNullable(parent);
 
         createShell();

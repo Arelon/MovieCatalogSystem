@@ -1,14 +1,13 @@
 package net.milanaleksic.mcs.infrastructure.gui.transformer.typed;
 
 import com.google.common.base.Strings;
-import net.milanaleksic.mcs.application.ApplicationManager;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
+import net.milanaleksic.mcs.infrastructure.gui.transformer.TransformerException;
+import net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource;
 import org.codehaus.jackson.JsonNode;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.inject.Inject;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 /**
  * User: Milan Aleksic
@@ -17,10 +16,10 @@ import java.util.regex.Pattern;
  */
 public class StringConverter extends TypedConverter<String> {
 
-    @Inject
-    private ApplicationManager applicationManager;
-
     private static final Pattern resourceMessage = Pattern.compile("\\[(.*)\\]");
+
+    @Autowired
+    private ResourceBundleSource resourceBundleSource;
 
     @Override
     public String getValueFromJson(JsonNode node, Map<String, Object> mappedObjects) throws TransformerException {
@@ -31,7 +30,7 @@ public class StringConverter extends TypedConverter<String> {
         // TODO: this should be done better with state machine instead of regex - to allow multiple replacements of different templates
         Matcher matcher = resourceMessage.matcher(fieldValue);
         if (matcher.find())
-            return matcher.replaceAll(applicationManager.getMessagesBundle().getString(matcher.group(1)));
+            return matcher.replaceAll(resourceBundleSource.getMessagesBundle().getString(matcher.group(1)));
         return fieldValue;
     }
 

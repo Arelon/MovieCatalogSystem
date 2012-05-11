@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
+import com.google.common.base.*;
+import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
@@ -18,6 +18,9 @@ import javax.inject.Inject;
 import static com.google.common.base.Preconditions.checkElementIndex;
 
 public class SettingsDialogForm extends AbstractTransformedForm {
+
+    @Inject
+    private ApplicationManager applicationManager;
 
     @Inject
     private PozicijaRepository pozicijaRepository;
@@ -73,6 +76,15 @@ public class SettingsDialogForm extends AbstractTransformedForm {
 
     @EmbeddedComponent
     private Button chkProxyServerUsesNtlm = null;
+
+    @EmbeddedComponent
+    private Button chkCheckForNewVersionsOnStartup = null;
+
+    @EmbeddedComponent
+    private Text textTenrecUsername = null;
+
+    @EmbeddedComponent
+    private Text textTenrecPassword = null;
 
     private Optional<UserConfiguration> userConfiguration = Optional.absent();
 
@@ -130,6 +142,23 @@ public class SettingsDialogForm extends AbstractTransformedForm {
         public void safeHandleEvent(Event event) throws ApplicationException {
             UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
             proxyConfiguration.setNtlm(chkProxyServerUsesNtlm.getSelection());
+        }
+    };
+
+    @EmbeddedEventListeners({
+            @EmbeddedEventListener(component = "chkCheckForNewVersionsOnStartup", event = SWT.Selection),
+            @EmbeddedEventListener(component = "textTenrecUsername", event = SWT.Modify),
+            @EmbeddedEventListener(component = "textTenrecPassword", event = SWT.Modify)
+    })
+    private final HandledListener tenrecSettingsModifyListener = new HandledListener(this) {
+        @Override
+        public void safeHandleEvent(Event event) throws ApplicationException {
+            if (!isFormTransformationComplete())
+                return;
+            UserConfiguration.TenrecConfiguration tenrecConfiguration = userConfiguration.get().getTenrecConfiguration();
+            tenrecConfiguration.setUsername(textTenrecUsername.getText());
+            tenrecConfiguration.setPassword(textTenrecPassword.getText());
+            tenrecConfiguration.setCheckForNewVersionsOnStartup(chkCheckForNewVersionsOnStartup.getSelection());
         }
     };
 
@@ -370,12 +399,18 @@ public class SettingsDialogForm extends AbstractTransformedForm {
         if (userConfiguration.isPresent())
             textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
         if (userConfiguration.isPresent()) {
+            //proxy
             UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
             textProxyServer.setText(Strings.nullToEmpty(proxyConfiguration.getServer()));
             textProxyServerPassword.setText(Strings.nullToEmpty(proxyConfiguration.getPassword()));
             textProxyServerPort.setText(StringUtil.emptyIfNullOtherwiseConvert(proxyConfiguration.getPort()));
             textProxyServerUsername.setText(Strings.nullToEmpty(proxyConfiguration.getUsername()));
             chkProxyServerUsesNtlm.setSelection(proxyConfiguration.isNtlm());
+            //tenrec
+            UserConfiguration.TenrecConfiguration tenrecConfiguration = userConfiguration.get().getTenrecConfiguration();
+            chkCheckForNewVersionsOnStartup.setSelection(tenrecConfiguration.isCheckForNewVersionsOnStartup());
+            textTenrecUsername.setText(Strings.nullToEmpty(tenrecConfiguration.getUsername()));
+            textTenrecPassword.setText(Strings.nullToEmpty(tenrecConfiguration.getPassword()));
         }
         listMediumTypesSelectionListener.prepare(listMediumTypes);
         listLokacijeSelectionListener.prepare(listLokacije);

@@ -4,6 +4,7 @@ import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.*;
 import net.milanaleksic.mcs.application.gui.AbstractForm;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
+import net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -28,7 +29,9 @@ public class FormTester {
             if (form instanceof AbstractTransformedForm) {
                 ((AbstractTransformedForm) form).setTransformer(applicationContext.getBean("transformer", Transformer.class));
             }
-            form.setApplicationManager(applicationContext.getBean("applicationManager", ApplicationManager.class));
+            final ResourceBundleSource resourceBundleSource = applicationContext.getBean("resourceBundleSource", ResourceBundleSource.class);
+            resourceBundleSource.init(applicationContext.getBean("applicationManager", ApplicationManager.class).getUserConfiguration());
+            form.setResourceBundleSource(resourceBundleSource);
             form.setNoReadyEvent(true);
             form.open();
             while (!form.isDisposed()) {

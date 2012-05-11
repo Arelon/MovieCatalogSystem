@@ -2,19 +2,18 @@ package net.milanaleksic.mcs.infrastructure.gui.transformer;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.infrastructure.gui.transformer.typed.*;
+import net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource;
 import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.*;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.List;
@@ -26,11 +25,11 @@ import java.util.List;
  */
 public class Transformer {
 
+    @Autowired
+    private ResourceBundleSource resourceBundleSource;
+
     public static final int DEFAULT_STYLE_SHELL = SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL;
     public static final int DEFAULT_STYLE_REST = SWT.NONE;
-
-    @Inject
-    private ApplicationManager applicationManager;
 
     static final String KEY_SPECIAL_TYPE = "_type"; //NON-NLS
     static final String KEY_SPECIAL_CHILDREN = "_children"; //NON-NLS
@@ -143,7 +142,8 @@ public class Transformer {
 
     private TransformationContext fillForm(@Nullable Shell parent, String fullName) throws TransformerException {
         Map<String, Object> mappedObjects = Maps.newHashMap();
-        mappedObjects.put("bundle", applicationManager.getMessagesBundle()); //NON-NLS
+
+        mappedObjects.put("bundle", resourceBundleSource.getMessagesBundle()); //NON-NLS
         try (InputStream resourceAsStream = Transformer.class.getResourceAsStream(fullName)) {
             final JsonNode shellDefinition = mapper.readValue(resourceAsStream, JsonNode.class);
             Object shellObject = createObject(parent, shellDefinition, mappedObjects);

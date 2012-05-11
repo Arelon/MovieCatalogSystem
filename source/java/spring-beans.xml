@@ -26,12 +26,15 @@
 
     <bean id="userConfigurationManager" class="net.milanaleksic.mcs.application.config.UserConfigurationManager" />
 
+    <bean id="tenrecManager" class="net.milanaleksic.mcs.application.tenrec.TenrecManager" />
+
 	<bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
         <property name="lifeCycleListeners">
             <set>
                 <!--<ref bean="splashScreenManager" />--><!--Splash Screen has been removed as of 26th April, 2012-->
                 <ref bean="applicationConfigurationManager" />
                 <ref bean="userConfigurationManager" />
+                <ref bean="resourceBundleSource" />
                 <bean class="net.milanaleksic.mcs.application.util.StatisticsManager" />
                 <ref bean="httpClientFactoryService" />
                 <ref bean="thumbnailManager" />
@@ -42,8 +45,13 @@
                 <ref bean="tmdbService" />
                 <ref bean="converterFactory" />
                 <ref bean="movieDetailsForm" />
+                <ref bean="tenrecService" />
+                <ref bean="tenrecManager" />
             </set>
         </property>
 	</bean>
+
+    <bean id="resourceBundleSource" class="net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource">
+    </bean>
 
 </beans>

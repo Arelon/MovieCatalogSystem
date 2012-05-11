@@ -21,7 +21,7 @@ public abstract class AbstractRestorePointService {
 
     protected static final String SCRIPT_KATALOG_RESTORE = "KATALOG_RESTORE.sql";   //NON-NLS
 
-    protected static final String SCRIPT_KATALOG_RESTORE_LOCATION = "restore" + File.separator + SCRIPT_KATALOG_RESTORE; //NON-NLS
+    public static final String SCRIPT_KATALOG_RESTORE_LOCATION = "restore" + File.separator + SCRIPT_KATALOG_RESTORE; //NON-NLS
 
     private int dbVersion;
 

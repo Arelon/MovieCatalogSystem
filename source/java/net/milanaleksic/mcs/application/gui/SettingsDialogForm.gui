@@ -105,7 +105,7 @@
                                 },
                                 {
                                     "_type" : "text",
-                                    "_style" : "{border}",
+                                    "_style" : "{border}|{password}",
                                     "_name" : "textProxyServerPassword",
                                     "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
@@ -125,6 +125,79 @@
                         }
                     ]
                 },
+
+                {
+                                    "_type" : "composite",
+                                    "_name" : "serverSettingsTab",
+                                    "layout" : {
+                                        "_type" : "gridLayout",
+                                        "numColumns" : 1
+                                    },
+                                    "_children" : [
+                                        {
+                                            "_type" : "composite",
+                                            "layout" : {
+                                                "_type" : "gridLayout",
+                                                "numColumns" : 1,
+                                                "makeColumnsEqualWidth" : true
+                                            },
+                                            "_children" : [
+                                                {
+                                                    "_type" : "button",
+                                                    "_style" : "{check}",
+                                                    "text" : "[settings.checkForNewVersionsOnStartup]",
+                                                    "_name" : "chkCheckForNewVersionsOnStartup"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "_type" : "group",
+                                            "text" : "[settings.extraServices]",
+                                            "layout" : {
+                                                "_type" : "gridLayout",
+                                                "numColumns" : 2,
+                                                "makeColumnsEqualWidth" : true
+                                            },
+                                            "layoutData" : "[gridData](fill,begin,true,false)",
+                                            "_children" : [
+                                                {
+                                                    "_type" : "label",
+                                                    "text" : "[settings.extraServicesDescription]",
+                                                    "_style" : "{wrap}",
+                                                    "alignment" : "{center}",
+                                                    "layoutData" : {
+                                                        "_type" : "[gridData](fill,fill,false,true,2,1)",
+                                                        "widthHint" : 300
+                                                    }
+                                                },
+
+                                                {
+                                                    "_type" : "label",
+                                                    "text" : "[settings.username]",
+                                                    "layoutData" : "[gridData](end,begin,true,false)"
+                                                },
+                                                {
+                                                    "_type" : "text",
+                                                    "_style" : "{border}",
+                                                    "_name" : "textTenrecUsername",
+                                                    "layoutData" : "[gridData](fill,begin,true,false)"
+                                                },
+
+                                                {
+                                                    "_type" : "label",
+                                                    "text" : "[settings.password]",
+                                                    "layoutData" : "[gridData](end,begin,true,false)"
+                                                },
+                                                {
+                                                    "_type" : "text",
+                                                    "_style" : "{border}|{password}",
+                                                    "_name" : "textTenrecPassword",
+                                                    "layoutData" : "[gridData](fill,begin,true,false)"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
 
                 {
                     "_type" : "composite",
@@ -301,6 +374,11 @@
                     "_type" : "tabItem",
                     "text" : "[settings.basicSettings]",
                     "control" : "(settingsTab)"
+                },
+                {
+                    "_type" : "tabItem",
+                    "text" : "[settings.serverSettings]",
+                    "control" : "(serverSettingsTab)"
                 },
                 {
                     "_type" : "tabItem",
