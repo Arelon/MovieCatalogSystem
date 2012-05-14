@@ -2,11 +2,11 @@ package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import net.milanaleksic.guitransformer.*;
 import net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;

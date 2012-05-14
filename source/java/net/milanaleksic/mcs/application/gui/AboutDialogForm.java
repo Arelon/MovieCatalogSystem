@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
+import net.milanaleksic.guitransformer.*;
 import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;

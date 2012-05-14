@@ -1,12 +1,12 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.*;
+import net.milanaleksic.guitransformer.*;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.StringUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;

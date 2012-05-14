@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
+import net.milanaleksic.guitransformer.*;
 
 import javax.inject.Inject;
 

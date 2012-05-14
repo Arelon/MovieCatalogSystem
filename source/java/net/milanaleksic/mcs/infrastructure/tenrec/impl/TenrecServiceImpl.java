@@ -82,10 +82,12 @@ public class TenrecServiceImpl implements TenrecService, LifeCycleListener {
             if (sessionId == null)
                 log.error("Error while logging in to Tenrec - no session identifier received"); //NON-NLS
             return sessionId != null;
+        } catch (RemoteAccessException e) {
+            log.warn("Tenrec server is unavailable - " + e.getMessage()); //NON-NLS
         } catch (Exception e) {
             log.error("Error while logging in to Tenrec", e); //NON-NLS
-            return false;
         }
+        return false;
     }
 
     @Override

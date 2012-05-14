@@ -2,11 +2,11 @@ package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import net.milanaleksic.guitransformer.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.Film;
 import net.milanaleksic.mcs.domain.model.FilmRepository;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;

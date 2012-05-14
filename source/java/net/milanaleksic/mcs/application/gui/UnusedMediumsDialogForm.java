@@ -1,10 +1,10 @@
 package net.milanaleksic.mcs.application.gui;
 
+import net.milanaleksic.guitransformer.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.MedijService;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 

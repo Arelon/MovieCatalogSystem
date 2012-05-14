@@ -1,9 +1,9 @@
 package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.*;
+import net.milanaleksic.guitransformer.*;
 import net.milanaleksic.mcs.application.gui.helper.*;
 import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.*;
 import net.milanaleksic.mcs.infrastructure.network.HttpClientFactoryService;
 import net.milanaleksic.mcs.infrastructure.network.PersistentHttpContext;
 import net.milanaleksic.mcs.infrastructure.tmdb.bean.ImageInfo;

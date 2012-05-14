@@ -1,9 +1,9 @@
 package net.milanaleksic.mcs.application.gui.helper;
 
+import net.milanaleksic.guitransformer.Transformer;
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.gui.*;
 import net.milanaleksic.mcs.application.gui.AbstractForm;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer;
 import net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource;
 import org.eclipse.swt.widgets.Display;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

@@ -2,43 +2,60 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="transformer" class="net.milanaleksic.mcs.infrastructure.gui.transformer.Transformer">
+    <bean id="resourceBundleProvider"
+          class="net.milanaleksic.mcs.infrastructure.guitransformer.providers.ResourceBundleProvider" />
+
+    <bean id="objectProvider"
+          class="net.milanaleksic.mcs.infrastructure.guitransformer.providers.ObjectProvider" />
+
+    <bean id="imagesProvider"
+          class="net.milanaleksic.mcs.infrastructure.guitransformer.providers.ImageProvider" />
+
+    <bean id="objectConverter" class="net.milanaleksic.guitransformer.ObjectConverter">
+        <property name="registeredBuilders">
+            <map>
+                <entry key="gridData">
+                    <bean class="net.milanaleksic.guitransformer.builders.GridDataBuilder"/>
+                </entry>
+            </map>
+        </property>
+        <property name="additionalRegisteredShortcuts">
+            <map>
+                <entry key="showImageComposite" value="#{ T(net.milanaleksic.mcs.application.gui.helper.ShowImageComposite) }"/>
+                <entry key="dynamicSelectorText" value="#{ T(net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText) }"/>
+            </map>
+        </property>
     </bean>
 
-    <bean id="converterFactory" class="net.milanaleksic.mcs.infrastructure.gui.transformer.ConverterFactory">
+    <bean id="transformer" class="net.milanaleksic.guitransformer.Transformer">
+    </bean>
+
+    <bean id="converterFactory" class="net.milanaleksic.guitransformer.ConverterFactory">
         <property name="registeredConverters">
             <map>
                 <entry key="#{ T(java.lang.Object) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.ObjectConverter">
-                        <property name="registeredBuilders">
-                            <map>
-                                <entry key="gridData">
-                                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.builders.GridDataBuilder"/>
-                                </entry>
-                            </map>
-                        </property>
-                    </bean>
+                    <ref bean="objectConverter" />
                 </entry>
                 <entry key="#{ T(java.lang.String) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.StringConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.StringConverter"/>
                 </entry>
                 <entry key="#{ T(boolean) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.BooleanConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.BooleanConverter"/>
                 </entry>
                 <entry key="#{ T(int) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.IntegerConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.IntegerConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Point) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.PointConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.PointConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Color) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.ColorConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.ColorConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Font) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.FontConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.FontConverter"/>
                 </entry>
                 <entry key="#{ T(org.eclipse.swt.graphics.Image) }">
-                    <bean class="net.milanaleksic.mcs.infrastructure.gui.transformer.typed.ImageConverter"/>
+                    <bean class="net.milanaleksic.guitransformer.typed.ImageConverter"/>
                 </entry>
             </map>
         </property>

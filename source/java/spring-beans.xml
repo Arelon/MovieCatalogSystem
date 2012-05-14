@@ -43,7 +43,6 @@
                 <ref bean="offerMovieListForFindMovieDialogForm" />
                 <ref bean="offerMovieListForNewOrEditForm" />
                 <ref bean="tmdbService" />
-                <ref bean="converterFactory" />
                 <ref bean="movieDetailsForm" />
                 <ref bean="tenrecService" />
                 <ref bean="tenrecManager" />

@@ -1,7 +1,7 @@
 import com.google.common.collect.Lists;
+import net.milanaleksic.guitransformer.EmbeddedComponent;
 import net.milanaleksic.mcs.application.gui.AbstractTransformedForm;
 import net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText;
-import net.milanaleksic.mcs.infrastructure.gui.transformer.EmbeddedComponent;
 
 /**
  * User: Milan Aleksic
@@ -16,7 +16,7 @@ public class TestForm extends AbstractTransformedForm {
 
     @Override
     protected void onShellCreated() {
-        mediumListValue.setItems(Lists.asList("first", new String[] {"second", "third", "fourth", "fifth"}));
-        mediumListValue.setSelectedItems(Lists.asList("first", new String[] {"second", "third", "fourth", "fifth"}));
+        mediumListValue.setItems(Lists.asList("first", new String[] {"second", "third", "fourth", "fifth"})); //NON-NLS
+        mediumListValue.setSelectedItems(Lists.asList("first", new String[] {"second", "third", "fourth", "fifth"})); //NON-NLS
     }
 }
