@@ -164,6 +164,11 @@
         <dependency org="org.aspectj" name="aspectjrt" rev="1.7.0.M1" transitive="false">
             <artifact name="aspectjrt" type="jar"/>
         </dependency>
+
+        <!-- Maven.MilanAleksic.net -->
+        <dependency org="net.milanaleksic" name="swt-gui-transformer" rev="0.1.2" transitive="false">
+            <artifact name="swt-gui-transformer" type="jar"/>
+        </dependency>
     </dependencies>
 
 </ivy-module>
