@@ -19,12 +19,6 @@
                 </entry>
             </map>
         </property>
-        <property name="additionalRegisteredShortcuts">
-            <map>
-                <entry key="showImageComposite" value="#{ T(net.milanaleksic.mcs.application.gui.helper.ShowImageComposite) }"/>
-                <entry key="dynamicSelectorText" value="#{ T(net.milanaleksic.mcs.application.gui.helper.DynamicSelectorText) }"/>
-            </map>
-        </property>
     </bean>
 
     <bean id="transformer" class="net.milanaleksic.guitransformer.Transformer">
