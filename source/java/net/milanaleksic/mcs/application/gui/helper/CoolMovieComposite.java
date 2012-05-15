@@ -106,8 +106,10 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     @SuppressWarnings({"UnusedDeclaration"})
     public void setThumbnailManager(ThumbnailManager thumbnailManager) {
         this.thumbnailManager = thumbnailManager;
-        thumbnailWidth = thumbnailManager.getThumbnailWidth();
-        thumbnailHeight = thumbnailManager.getThumbnailHeight();
+        if (thumbnailManager != null) {
+            thumbnailWidth = thumbnailManager.getThumbnailWidth();
+            thumbnailHeight = thumbnailManager.getThumbnailHeight();
+        }
     }
 
     private void fireMovieSelectionEvent() {
@@ -349,7 +351,12 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     private Rectangle renderNoMoviesTextAndGetRectangle(GC gc) {
-        String msg = bundle.getString("main.noMoviesToShow");
+        String msg = "main.noMoviesToShow";
+        try {
+            msg = bundle.getString(msg);
+        } catch (MissingResourceException ignored) {
+            /// ignored
+        }
         Point msgRect = gc.textExtent(msg);
         int textX = (getBounds().width - msgRect.x) / 2;
         int textY = (getBounds().height - msgRect.y) / 2;
