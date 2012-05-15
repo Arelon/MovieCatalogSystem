@@ -5,7 +5,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Composite;
 
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * User: Milan Aleksic
@@ -28,7 +28,11 @@ public class ShowImageComposite extends Composite implements PaintListener {
 
     public void setBundle(ResourceBundle bundle) {
         this.bundle = bundle;
-        status = Optional.of(bundle.getString("global.noImagePresent"));
+        try {
+            status = Optional.of(bundle.getString("global.noImagePresent"));
+        } catch (MissingResourceException ignored) {
+            status = Optional.of("global.noImagePresent");
+        }
     }
 
     @Override
