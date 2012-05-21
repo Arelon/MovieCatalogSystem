@@ -37,6 +37,8 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     private int selectedIndex = -1;
     private boolean recalculateOfCellLocationsNeeded = false;
 
+    private boolean moviesSetAtLeastOnce = false;
+
     private ResourceBundle bundle;
 
     public class MovieWrapper implements ImageTargetWidget {
@@ -237,6 +239,7 @@ public class CoolMovieComposite extends Composite implements PaintListener {
     }
 
     public void setMovies(@Nonnull Optional<List<Film>> sviFilmovi) {
+        moviesSetAtLeastOnce = true;
         if (isDisposed())
             return;
         clearMovies();
@@ -318,7 +321,8 @@ public class CoolMovieComposite extends Composite implements PaintListener {
         backgroundRegion.add(new Rectangle(e.x, e.y, e.width, e.height));
 
         if (movies.size() == 0) {
-            backgroundRegion.subtract(renderNoMoviesTextAndGetRectangle(gc));
+            if (moviesSetAtLeastOnce)
+                backgroundRegion.subtract(renderNoMoviesTextAndGetRectangle(gc));
         } else {
             for (MovieWrapper wrapper : movies) {
                 if (!wrapper.getImage().isPresent() || wrapper.getImage().get().getImageData().alphaData == null)
