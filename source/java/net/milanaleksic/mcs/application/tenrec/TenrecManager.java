@@ -79,12 +79,12 @@ public class TenrecManager implements LifeCycleListener {
         try {
             byte[] bytes = FileCopyUtils.copyToByteArray(restoreFile);
             if (log.isDebugEnabled())
-                log.debug("Sending DB to server");
-            tenrecService.saveDatabase(bytes);
+                log.debug("Sending DB to server"); //NON-NLS
+            final boolean success = tenrecService.saveDatabase(bytes);
             if (log.isDebugEnabled())
-                log.debug("Sending DB to server finished with success");
+                log.debug("Sending DB to server finished with " + (success ? "success" : "failure")); //NON-NLS
         } catch (IOException e) {
-            log.error("Failed to send the DB to server: "+e.getMessage(), e); //NON-NLS
+            log.error("Failed to send the DB to server: " + e.getMessage(), e); //NON-NLS
         }
     }
 }

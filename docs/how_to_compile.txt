@@ -11,3 +11,6 @@ included beside compiled Java files for app to be able to run properly).
 4. if you have problems running ant/ivy take a look at screenshots besides this manual
 
 5. (for running) startup directory must be set as ${project.dir}/startup
+
+6. (TenrecWS) if you wish to run Tenrec Web Service locally, configure your Apache
+using docs/Tenrec Localhost Apache/howto.txt

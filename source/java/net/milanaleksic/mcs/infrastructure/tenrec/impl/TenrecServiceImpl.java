@@ -33,6 +33,14 @@ public class TenrecServiceImpl implements TenrecService, LifeCycleListener {
         this.applicationIdentifier = applicationIdentifier;
     }
 
+    public void setKeyStoreFile(String keyStoreFile) {
+        System.setProperty("javax.net.ssl.trustStore", keyStoreFile); //NON-NLS
+    }
+
+    public void setKeyStorePassword(String keyStorePassword) {
+        System.setProperty("javax.net.ssl.trustStorePassword", keyStorePassword); //NON-NLS
+    }
+
     @Override
     public Optional<VersionInformation> findNewerVersionIfAllowed() {
         try {

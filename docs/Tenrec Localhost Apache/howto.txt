@@ -1,0 +1,15 @@
+These two files need to be copied and used in Apache server configuration when running 
+(closed-source) Tenrec Web Service locally. These two files "are compatible" with the 
+server.jks file used in the startup directory (for development).
+
+If you do not have access to Tenrec Web Service source code 
+(https://bitbucket.org/milanaleksic/tenrec) forget about thes files.
+
+Configuration you need to set up in virtual host part of Apache conf file is something
+like following:
+
+SSLEngine On
+SSLCertificateFile /etc/httpd/conf/server.crt
+SSLCertificateKeyFile /etc/httpd/conf/server.key
+SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
+CustomLog logs/ssl_request_log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
