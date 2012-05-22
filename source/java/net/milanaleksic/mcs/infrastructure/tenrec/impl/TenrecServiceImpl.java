@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.tenrec.impl;
 
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
 import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.tenrec.TenrecService;
@@ -124,6 +124,13 @@ public class TenrecServiceImpl implements TenrecService, LifeCycleListener {
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
         this.userConfiguration = Optional.of(userConfiguration);
+        final UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.getProxyConfiguration();
+        if (proxyConfiguration != null
+                && !Strings.isNullOrEmpty(proxyConfiguration.getServer())
+                && proxyConfiguration.getPort()>0) {
+            System.setProperty("http.proxyHost", proxyConfiguration.getServer()); //NON-NLS
+            System.setProperty("http.proxyPort", Integer.toString(proxyConfiguration.getPort(), 10)); //NON-NLS
+        }
     }
 
     @Override
