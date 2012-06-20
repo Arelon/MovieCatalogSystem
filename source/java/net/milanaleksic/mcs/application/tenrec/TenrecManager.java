@@ -73,13 +73,15 @@ public class TenrecManager implements LifeCycleListener {
 
     @Override
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
+        executeSynchronization();
+    }
+
+    private void executeSynchronization() {
         final File restoreFile = new File(AbstractRestorePointService.SCRIPT_KATALOG_RESTORE_LOCATION);
         if (!restoreFile.exists())
             return;
         try {
             byte[] bytes = FileCopyUtils.copyToByteArray(restoreFile);
-            if (log.isDebugEnabled())
-                log.debug("Sending DB to server"); //NON-NLS
             final boolean success = tenrecService.saveDatabase(bytes);
             if (log.isDebugEnabled())
                 log.debug("Sending DB to server finished with " + (success ? "success" : "failure")); //NON-NLS
