@@ -169,6 +169,11 @@
         <dependency org="net.milanaleksic" name="swt-gui-transformer-core" rev="0.1.6" transitive="false">
             <artifact name="swt-gui-transformer-core" type="jar"/>
         </dependency>
+
+        <!-- Snapshots -->
+        <dependency org="net.milanaleksic" name="tenrec-client" rev="0.1-SNAPSHOT" transitive="false">
+            <artifact name="tenrec-client" type="jar"/>
+        </dependency>
     </dependencies>
 
 </ivy-module>
