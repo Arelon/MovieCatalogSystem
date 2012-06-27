@@ -6,61 +6,48 @@
         "verticalSpacing" : 10
     },
     "text" : "[global.unusedMediums]",
-    "_children" : [
-        {
-            "_type" : "composite",
+    "_children" : {
+        "composite(_1)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2
             },
-            "_children" : [
-                {
-                    "_type" : "table",
-                    "_style" : "{border}|{full_selection}",
-                    "_name" : "unusedMediumTable",
+            "_children" : {
+                "table(unusedMediumTable,{border}|{full_selection})" : {
                     "layoutData" : {
                         "_type" : "[gridData](fill,fill,true,true,1,2)",
                         "heightHint" : 180
                     },
                     "headerVisible" : true,
-                    "_children" : [
-                        {
-                            "_type" : "tableColumn",
-                            "_style" : "{left}|{flat}",
+                    "_children" : {
+                        "tableColumn(_1,{left}|{flat})" : {
                             "text" : "[unusedMediums.columnName]",
                             "width" : 370
                         }
-                    ]
+                    }
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnDeleteUnusedMedium",
+                "button(btnDeleteUnusedMedium)" : {
                     "text" : "[global.delete]",
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnDeleteAllUnusedMediums",
+                "button(btnDeleteAllUnusedMediums)" : {
                     "text" : "[global.deleteAll]",
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 },
-                {
-                    "_type" : "composite",
+                "composite(_1)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
                     "layoutData" : "[gridData](fill,begin,true,false,2,1)",
-                    "_children" : [
-                        {
-                            "_type" : "button",
-                            "_name" : "btnClose",
+                    "_children" : {
+                        "button(btnClose)" : {
                             "text" : "[global.close]",
                             "layoutData" : "[gridData](center,center,true,false)"
                         }
-                    ]
+                    }
                 }
-            ]
+            }
         }
-    ]
+    }
 }

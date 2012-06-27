@@ -7,17 +7,15 @@
     },
     "text" : "[global.aboutProgram]",
     "size" : "412,326",
-    "_children" : [
-        {
-            "_type" : "composite",
+    "_children" : {
+		"composite(_1)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
             "layoutData" : "[gridData](center,begin,true,false)",
-            "_children" : [
-                {
-                    "_type" : "label",
+            "_children" : {
+                "label(_1)" : {
                     "text" : "Movie Catalog System",
                     "font" : {
                         "height" : 12,
@@ -26,8 +24,7 @@
                     "layoutData" : "[gridData](center,begin,true,false)",
                     "foreground" : "#0000ff"
                 },
-                {
-                    "_type" : "label",
+                "label(_2)" : {
                     "text" : "[about.builtFor]",
                     "font" : {
                         "height" : 10,
@@ -35,45 +32,36 @@
                     },
                     "layoutData" : "[gridData](center,begin,true,false)"
                 }
-            ]
-        },
-        {
-            "_type" : "composite",
+            }
+		},
+		"composite(_2)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
             "layoutData" : "[gridData](center,begin,true,false)",
-            "_children" : [
-                {
-                    "_type" : "link",
-                    "_name" : "linkEmail",
+            "_children" : {
+                "link(linkEmail)" : {
                     "text" : "Email: <a>milan.aleksic@gmail.com</a>",
                     "foreground" : "#000000"
                 }
-            ]
+            }
         },
-        {
-            "_type" : "composite",
-            "layout" : {
+		"composite(_3)" : {
+			"layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
             "layoutData" : "[gridData](center,begin,true,false)",
-            "_children" : [
-                {
-                    "_type" : "link",
-                    "_name" : "linkSite",
+			"_children" : {
+                "link(linkSite)" : {
                     "text" : "Web site: <a>www.milanaleksic.net</a>",
                     "foreground" : "#000000"
                 }
-            ]
-        },
-        {
-            "_type" : "text",
-            "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}|{center}|{border}",
-            "_name" : "textArea",
-            "layoutData" : "[gridData](fill,fill,true,true)"
-        }
-    ]
+            }
+		},
+		"text(textArea,{multi}|{wrap}|{v_scroll}|{read_only}|{center}|{border})" : {
+			"layoutData" : "[gridData](fill,fill,true,true)"
+		}
+	}
 }

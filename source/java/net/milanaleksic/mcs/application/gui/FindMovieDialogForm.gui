@@ -6,110 +6,83 @@
     },
     "text" : "[global.findMovie]",
     "size" : "288,189",
-    "_children" : [
-        {
+    "_children" : {
+        "composite(_1)" : {
             "__comment" : "header",
-            "_type" : "composite",
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2
             },
             "layoutData" : "[gridData](fill,begin,true,false,2,1)",
-            "_children" : [
-                {
-                    "_type" : "label",
+            "_children" : {
+                "label(_1)" : {
                     "text" : "[findMovie.startTyping]",
                     "layoutData" : "[gridData](begin,begin,false,false)"
                 },
-                {
-                    "_type" : "text",
-                    "_style" : "{border}",
-                    "_name" : "movieName",
+                "text(movieName,{border})" : {
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 }
-            ]
+            }
         },
-        {
-            "_type" : "table",
-            "_style" : "{border}|{full_selection}",
-            "_name" : "mainTable",
+        "table(mainTable,{border}|{full_selection})" : {
             "headerVisible" : true,
             "layoutData" : "[gridData](fill,fill,true,true)",
-            "_children" : [
-                {
-                    "_type" : "tableColumn",
-                    "_style" : "{left}|{flat}",
+            "_children" : {
+                "tableColumn(_1,{left}|{flat})" : {
                     "text" : "[global.columns.matchedMovieName]",
                     "width" : 300
                 },
-                {
-                    "_type" : "tableColumn",
-                    "_style" : "{left}|{flat}",
+                "tableColumn(_2,{left}|{flat})" : {
                     "text" : "[global.columns.movieYear]",
                     "width" : 50
                 },
-                {
-                    "_type" : "tableColumn",
-                    "_style" : "{left}|{flat}",
+                "tableColumn(_3,{left}|{flat})" : {
                     "text" : "[global.columns.imdbUrl]",
                     "width" : 50
                 }
-            ]
+            }
         },
-        {
-            "_type" : "tabFolder",
+        "tabFolder()" : {
             "layoutData" : {
                 "_type" : "[gridData](fill,fill,true,true)",
                 "widthHint" : 200,
                 "heightHint" : 300
             },
-            "_children" : [
-                {
-                    "_type" : "showImageComposite",
-                    "_name" : "matchImage",
+            "_children" : {
+                "showImageComposite(matchImage)" : {
                     "bundle" : "(bundle)",
                     "layoutData" : "[gridData](fill,fill,true,true)"
                 },
-                {
-                    "_type" : "text",
-                    "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}",
-                    "_name" : "matchDescription",
+                "text(matchDescription,{multi}|{wrap}|{v_scroll}|{read_only})" : {
                     "text" : "[global.noImagePresent]"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_1)" : {
                     "text" : "[global.tabs.poster]",
                     "control" : "(matchImage)"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_2)" : {
                     "text" : "[global.tabs.movieDescription]",
                     "control" : "(matchDescription)"
                 }
-            ]
+            }
         },
-        {
+        "composite(_2)" : {
             "__comment" : "footer",
-            "_type" : "composite",
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2
             },
             "layoutData" : "[gridData](center,end,true,false,2,1)",
-            "_children" : [
-                {
-                    "_type" : "button",
-                    "_name" : "btnAccept",
+            "_children" : {
+                "button(btnAccept)" : {
                     "text" : "[global.save]",
                     "layoutData" : "[gridData](center,center,false,false)"
-                },
-                {
-                    "_type" : "button",
-                    "_name" : "btnClose",
+				},
+                "button(btnClose)" : {
                     "text" : "[global.cancel]",
                     "layoutData" : "[gridData](center,center,false,false)"
                 }
-            ]
+            }
         }
-    ]
+    }
 }
