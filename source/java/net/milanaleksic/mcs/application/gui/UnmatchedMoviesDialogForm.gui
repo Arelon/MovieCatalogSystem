@@ -6,146 +6,109 @@
         "verticalSpacing" : 10
     },
     "text" : "[global.unmatchedMoviesTable]",
-    "_children" : [
-        {
-            "_type" : "composite",
+    "_children" : {
+        "composite(_)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 4
             },
-            "_children" : [
-
-
-                {
-                    "_type" : "table",
-                    "_style" : "{border}|{full_selection}",
-                    "_name" : "unmatchedMoviesTable",
+            "_children" : { 
+                "table(unmatchedMoviesTable, {border}|{full_selection})" : {
                     "layoutData" : {
                         "_type" : "[gridData](fill,fill,true,true)",
                         "heightHint" : 350
                     },
                     "headerVisible" : true,
-                    "_children" : [
-                        {
-                            "_type" : "tableColumn",
-                            "_style" : "{left}|{flat}",
+                    "_children" : {
+                        "tableColumn(_1, {left}|{flat})" : {
                             "text" : "[unmatchedMoviesTable.firstColumnName]",
                             "width" : 300
                         },
-                        {
-                            "_type" : "tableColumn",
-                            "_style" : "{left}|{flat}",
+                        "tableColumn(_2, {left}|{flat})" : {
                             "text" : "[unmatchedMoviesTable.processingColumnName]",
                             "width" : 120
                         }
-                    ]
+                    }
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnStartMatching",
+                "button(btnStartMatching)" : {
                     "text" : "[unmatchedMoviesTable.start]",
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 },
-                {
-                    "_type" : "table",
-                    "_style" : "{border}|{full_selection}",
-                    "_name" : "possibleMatchesTable",
+                "table(possibleMatchesTable, {border}|{full_selection})" : {
                     "layoutData" : {
                         "_type" : "[gridData](fill,fill,true,true,1,2)",
                         "heightHint" : 200
                     },
                     "headerVisible" : true,
-                    "_children" : [
-                        {
-                            "_type" : "tableColumn",
-                            "_style" : "{left}|{flat}",
+                    "_children" : {
+                        "tableColumn(_1, {left}|{flat})" : {
                             "text" : "[global.columns.matchedMovieName]",
                             "width" : 300
                         },
-                        {
-                            "_type" : "tableColumn",
-                            "_style" : "{left}|{flat}",
+                        "tableColumn(_2, {left}|{flat})" : {
                             "text" : "[global.columns.movieYear]",
                             "width" : 50
                         },
-                        {
-                            "_type" : "tableColumn",
-                            "_style" : "{left}|{flat}",
+                        "tableColumn(_3, {left}|{flat})" : {
                             "text" : "[global.columns.imdbUrl]",
                             "width" : 50
                         }
-                    ]
+                    }
                 },
-                {
-                    "_type" : "composite",
+                "composite(_1)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
                     "layoutData" : "[gridData](fill,fill,true,true)",
-                    "_children" : [
-                        {
-                            "_type" : "tabFolder",
+                    "_children" : {
+                        "tabFolder(_)" : {
                             "layoutData" : {
                                 "_type" : "[gridData](fill,fill,true,true)",
                                 "widthHint" : 200
                             },
-                            "_children" : [
-                                {
-                                    "_type" : "showImageComposite",
-                                    "_name" : "matchImage",
+                            "_children" : {
+                                "showImageComposite(matchImage)" : {
                                     "bundle" : "(bundle)",
                                     "layoutData" : "[gridData](fill,fill,true,true)"
                                 },
-                                {
-                                    "_type" : "text",
-                                    "_style" : "{multi}|{wrap}|{v_scroll}|{read_only}",
-                                    "_name" : "matchDescription",
+                                "text(matchDescription, {multi}|{wrap}|{v_scroll}|{read_only})" : {
                                     "text" : "[global.noImagePresent]",
                                     "layoutData" : "[gridData](fill,fill,true,true)"
                                 },
-                                {
-                                    "_type" : "tabItem",
+                                "tabItem(_1)" : {
                                     "text" : "[global.tabs.poster]",
                                     "control" : "(matchImage)"
                                 },
-                                {
-                                    "_type" : "tabItem",
+                                "tabItem(_2)" : {
                                     "text" : "[global.tabs.movieDescription]",
                                     "control" : "(matchDescription)"
                                 }
-                            ]
+                            }
                         },
-                        {
-                            "_type" : "button",
-                            "_name" : "btnAcceptThisMatch",
+                        "button(btnAcceptThisMatch)" : {
                             "text" : "[unmatchedMoviesTable.acceptMatch]",
                             "layoutData" : "[gridData](fill,begin,true,false)"
                         }
-                    ]
+                    }
                 },
-
-
-                {
-                    "_type" : "composite",
+                "composite(_2)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
                     "layoutData" : "[gridData](fill,begin,true,false,4,1)",
-                    "_children" : [
-                        {
-                            "_type" : "button",
-                            "_name" : "btnClose",
+                    "_children" : {
+                        "button(btnClose)" : {
                             "text" : "[global.close]",
                             "layoutData" : {
                                 "_type" : "[gridData](center,center,true,false)",
                                 "widthHint" : 150
                             }
                         }
-                    ]
+                    }
                 }
-            ]
+            }
         }
-    ]
+    }
 }

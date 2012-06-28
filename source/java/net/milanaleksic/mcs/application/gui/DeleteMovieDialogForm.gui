@@ -41,13 +41,9 @@
             "layoutData" : "[gridData](center,center,true,false)",
             "_children" : {
                 "button(btnOk)" : {
-                    "_type" : "button",
-                    "_name" : "btnOk",
                     "text" : "[delete.confirmDeletion]"
                 },
                 "button(btnCancel)" : {
-                    "_type" : "button",
-                    "_name" : "btnCancel",
                     "text" : "[global.cancel]",
                     "layoutData" : "[gridData](end,center,false,true)"
                 }
