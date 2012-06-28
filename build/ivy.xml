@@ -166,7 +166,7 @@
         </dependency>
 
         <!-- Maven.MilanAleksic.net -->
-        <dependency org="net.milanaleksic" name="swt-gui-transformer-core" rev="0.1.6" transitive="false">
+        <dependency org="net.milanaleksic" name="swt-gui-transformer-core" rev="0.1.7.1" transitive="false">
             <artifact name="swt-gui-transformer-core" type="jar"/>
         </dependency>
         <dependency org="net.milanaleksic" name="winlauncher-api" rev="20120620" transitive="false">

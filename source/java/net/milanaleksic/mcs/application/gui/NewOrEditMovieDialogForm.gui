@@ -6,15 +6,12 @@
         "horizontalSpacing" : 10
     },
     "text" : "[newOrEdit.addingOrModifyingMovie]",
-    "_children" : [
-        {
-            "_type" : "label",
-            "_style" : "{right}",
+    "_children" : {
+        "label(_1, {right})" : {
             "text" : "[newOrEdit.movieName]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "composite",
+        "composite(_1)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2,
@@ -22,81 +19,57 @@
                 "marginHeight" : 0
             },
             "layoutData" : "[gridData](fill,center,true,false)",
-            "_children" : [
-                {
-                    "_type" : "combo",
-                    "_style" : "{drop_down}",
-                    "_name" : "comboNaziv",
+            "_children" : {
+                "combo(comboNaziv, {drop_down})" : {
                     "visibleItemCount" : 10,
                     "layoutData" : "[gridData](fill,center,true,false)"
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnSearchMovie",
+                "button(btnSearchMovie)" : {
                     "text" : "[global.search]",
                     "layoutData" : "[gridData](fill,center,true,false)"
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "label",
+        "label(_2)" : {
             "text" : "[newOrEdit.movieNameTranslated]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "text",
-            "_style" : "{border}",
-            "_name" : "textPrevod",
+        "text(textPrevod, {border})" : {
             "layoutData" : "[gridData](fill,begin,true,false)"
         },
 
-        {
-            "_type" : "label",
+        "label(_3)" : {
             "text" : "[newOrEdit.genre]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "combo",
-            "_style" : "{read_only}",
-            "_name" : "comboZanr",
+        "combo(comboZanr, {read_only})" : {
             "visibleItemCount" : 10,
             "layoutData" : "[gridData](fill,begin,true,false)"
         },
 
-        {
-            "_type" : "label",
+        "label(_4)" : {
             "text" : "[newOrEdit.yearPublished]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "text",
-            "_style" : "{border}",
-            "_name" : "textGodina",
+        "text(textGodina, {border})" : {
             "layoutData" : "[gridData](fill,begin,true,false)"
         },
 
-        {
-            "_type" : "label",
+        "label(_5)" : {
             "text" : "[newOrEdit.location]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "combo",
-            "_style" : "{read_only}",
-            "_name" : "comboLokacija",
+        "combo(comboLokacija, {read_only})" : {
             "visibleItemCount" : 10,
             "layoutData" : "[gridData](fill,begin,true,false)"
         },
 
-        {
-            "_type" : "label",
+        "label(_6)" : {
             "text" : "[newOrEdit.imdbIdFormat]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "composite",
-            "_style" : "{read_only}",
+        "composite(_2, {read_only})" : {
             "layoutData" : "[gridData](fill,begin,true,false)",
             "layout" : {
                 "_type" : "gridLayout",
@@ -104,35 +77,26 @@
                 "marginWidth" : 0,
                 "marginHeight" : 0
             },
-            "_children" : [
-                {
-                    "_type" : "text",
-                    "_style" : "{border}",
-                    "_name" : "textImdbId",
+            "_children" : {
+                "text(textImdbId, {border})" : {
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 },
-                {
-                    "_type" : "link",
+                "link(imdbLink)" : {
                     "text" : "<a>[newOrEdit.goToImdbPage]</a>",
-                    "_name" : "imdbLink",
                     "layoutData" : "[gridData](fill,center,true,false)",
                     "enabled" : false
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "composite",
-            "_style" : "{read_only}",
+        "composite(_3, {read_only})" : {
             "layoutData" : "[gridData](fill,fill,true,true,1,3)",
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
             },
-            "_children" : [
-                {
-                    "_type" : "showImageComposite",
-                    "_name" : "posterImage",
+            "_children" : {
+                "showImageComposite(posterImage)" : {
                     "bundle" : "(bundle)",
                     "layoutData" : {
                         "_type" : "[gridData](center,center,true,false)",
@@ -140,11 +104,10 @@
                         "heightHint" : 140
                     }
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "group",
+        "group(_1)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
@@ -155,18 +118,14 @@
                 "heightHint" : 100
             },
             "text" : "[newOrEdit.comment]",
-            "_children" : [
-                {
-                    "_type" : "text",
-                    "_style" : "{multi}|{wrap}|{v_scroll}|{border}",
-                    "_name" : "textKomentar",
+            "_children" : {
+                "text(textKomentar, {multi}|{wrap}|{v_scroll}|{border})" : {
                     "layoutData" : "[gridData](fill,fill,true,true)"
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "group",
+        "group(_2)" : {
             "text" : "[newOrEdit.mediums]",
             "layout" : {
                 "_type" : "gridLayout",
@@ -176,26 +135,20 @@
                 "_type" : "[gridData](fill,fill,true,true)",
                 "heightHint" : 100
             },
-            "_children" : [
-                {
-                    "_type" : "button",
-                    "_name" : "btnNovMedij",
+            "_children" : {
+                "button(btnNovMedij)" : {
                     "text" : "[newOrEdit.newMedium]",
                     "layoutData" : "[gridData](begin,begin,true,false)"
                 },
 
-                {
-                    "_type" : "dynamicSelectorText",
-                    "_style" : "{border}|{v_scroll}",
-                    "_name" : "diskSelector",
+                "dynamicSelectorText(diskSelector, {border}|{v_scroll})" : {
                     "bundle" : "(bundle)",
                     "layoutData" : "[gridData](fill,fill,true,true)"
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "group",
+        "group(_3)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
@@ -205,19 +158,15 @@
                 "heightHint" : 80
             },
             "text" : "[global.tags]",
-            "_children" : [
-                {
-                    "_type" : "dynamicSelectorText",
-                    "_style" : "{border}|{v_scroll}",
-                    "_name" : "tagSelector",
+            "_children" : {
+                "dynamicSelectorText(tagSelector, {border}|{v_scroll})" : {
                     "bundle" : "(bundle)",
                     "layoutData" : "[gridData](fill,fill,true,true)"
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "composite",
+        "composite(_4)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2,
@@ -231,26 +180,22 @@
                 "widthHint" : -1,
                 "horizontalIndent" : 0
             },
-            "_children" : [
-                {
-                    "_type" : "button",
-                    "_name" : "btnPrihvati",
+            "_children" : {
+                "button(btnPrihvati)" : {
                     "text" : "[global.save]",
                     "layoutData" : {
                         "_type" : "gridData",
                         "widthHint" : 80
                     }
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnOdustani",
+                "button(btnOdustani)" : {
                     "text" : "[global.cancel]",
                     "layoutData" : {
                         "_type" : "gridData",
                         "widthHint" : 80
                     }
                 }
-            ]
+            }
         }
-    ]
+    }
 }

@@ -6,10 +6,8 @@
     },
     "text" : "[delete.deleteMovie]",
     "size" : "431,154",
-    "_children" : [
-        {
-            "_type" : "canvas",
-            "_name" : "canvas",
+    "_children" : {
+        "canvas(canvas)" : {
             "layoutData" : {
                 "_type" : "[gridData](begin,center,true,false,1,2)",
                 "heightHint" : 64,
@@ -17,8 +15,7 @@
             },
             "background":"color_widget_background"
         },
-        {
-            "_type" : "label",
+        "label(_1)" : {
             "layoutData" : "[gridData](center,center,true,false)",
             "font" : {
                 "style":"bold",
@@ -27,40 +24,30 @@
             "text" : "[delete.doYouReallyWishToDeleteMovie]",
             "foreground" : "#ff0000"
         },
-        {
-            "_type" : "label",
-            "_style" : "{wrap}|{shadow_out}|{horizontal}|{center}",
-            "_name" : "labFilmNaziv",
+        "label(labFilmNaziv,{wrap}|{shadow_out}|{horizontal}|{center})" : {
             "layoutData" : "[gridData](center,center,false,true)",
             "font" : {
                 "style":"bold",
                 "height":12
             }
         },
-        {
-            "_type" : "label"
-        },
-        {
-            "_type" : "composite",
+        "label(_2)" : {},
+        "composite(_1)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2,
                 "horizontalSpacing" : 20
             },
             "layoutData" : "[gridData](center,center,true,false)",
-            "_children" : [
-                {
-                    "_type" : "button",
-                    "_name" : "btnOk",
+            "_children" : {
+                "button(btnOk)" : {
                     "text" : "[delete.confirmDeletion]"
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnCancel",
+                "button(btnCancel)" : {
                     "text" : "[global.cancel]",
                     "layoutData" : "[gridData](end,center,false,true)"
                 }
-            ]
+            }
         }
-    ]
+    }
 }

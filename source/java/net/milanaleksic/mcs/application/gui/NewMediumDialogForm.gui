@@ -6,52 +6,38 @@
     },
     "text" : "[newMedium.addNewMedium]",
     "size" : "288,189",
-    "_children" : [
-        {
-            "_type" : "label",
-            "_style" : "{left}",
+    "_children" : {
+        "label(_1,{left})" : {
             "text" : "[newMedium.mediumType]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "group",
-            "_name" : "group",
+        "group(group)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1
             }
         },
-        {
-            "_type" : "label",
+        "label(_2)" : {
             "text" : "[newMedium.mediumWillHaveFollowingId]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        {
-            "_type" : "text",
-            "_name" : "textID",
-            "_style" : "{border}|{read_only}"
-        },
-        {
-            "_type" : "composite",
+        "text(textID,{border}|{read_only})" : {},
+        "composite(_)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2,
                 "horizontalSpacing" : 20
             },
             "layoutData" : "[gridData](center,begin,true,true,2,1)",
-            "_children" : [
-                {
-                    "_type" : "button",
-                    "_name" : "btnOk",
+            "_children" : {
+                "button(btnOk)" : {
                     "text" : "[global.save]"
                 },
-                {
-                    "_type" : "button",
-                    "_name" : "btnCancel",
+                "button(btnCancel)" : {
                     "text" : "[global.cancel]",
                     "layoutData" : "[gridData](end,begin,false,true)"
                 }
-            ]
+            }
         }
-    ]
+    }
 }

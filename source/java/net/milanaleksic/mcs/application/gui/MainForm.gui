@@ -7,9 +7,8 @@
         "numColumns" : 1
     },
     "image" : "/net/milanaleksic/mcs/application/res/database-64.png",
-    "_children" : [
-        {
-            "_type" : "composite",
+    "_children" : {
+        "composite(_com1)" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 2,
@@ -17,71 +16,48 @@
                 "marginHeight" : 0
             },
             "layoutData" : "[gridData](fill,begin,true,false)",
-            "_children" : [
-                {
-                    "_type" : "toolBar",
-                    "_style" : "{flat}|{wrap}|{right}",
+            "_children" : {
+                "toolBar(_tb,{flat}|{wrap}|{right})" : {
                     "layoutData" : "[gridData](fill,fill,true,false)",
-                    "_children" : [
-                        {
-                            "_type" : "toolItem",
-                            "_style" : "{push}",
-                            "_name" : "toolNew",
+                    "_children" : {
+                        "toolItem(toolNew,{push})" : {
                             "text" : "[global.newMovie]",
                             "image" : "/net/milanaleksic/mcs/application/res/media.png"
                         },
-                        {
-                            "_type" : "toolItem",
-                            "_style" : "{push}",
-                            "_name" : "toolErase",
+                        "toolItem(toolErase,{push})" : {
                             "text" : "[global.deleteMovie]",
                             "image" : "/net/milanaleksic/mcs/application/res/alert.png"
                         },
-                        {
-                            "_type" : "toolItem",
-                            "_style" : "{push}",
-                            "_name" : "toolExport",
+                        "toolItem(toolExport,{push})" : {
                             "text" : "[main.export]",
                             "image" : "/net/milanaleksic/mcs/application/res/folder_outbox.png"
                         },
-                        {
-                            "_type" : "toolItem",
-                            "_style" : "{drop_down}",
-                            "_name" : "toolSettings",
+                        "toolItem(toolSettings,{drop_down})" : {
                             "text" : "[main.settings]",
                             "image" : "/net/milanaleksic/mcs/application/res/advancedsettings.png",
                             "width": 90
                         },
-                        {
-                            "_type" : "toolItem",
-                            "_style" : "{push}",
-                            "_name" : "toolAbout",
+                        "toolItem(toolAbout,{push})" : {
                             "text" : "[global.aboutProgram]",
                             "image" : "/net/milanaleksic/mcs/application/res/jabber_protocol.png"
                         },
-                        {
-                            "_type" : "toolItem",
-                            "_style" : "{push}",
-                            "_name" : "toolExit",
+                        "toolItem(toolExit,{push})" : {
                             "text" : "[main.exit]",
                             "image" : "/net/milanaleksic/mcs/application/res/shutdown.png"
                         }
-                    ]
+                    }
                 },
-                {
-                    "_type" : "canvas",
-                    "_name" : "toolTicker",
+                "canvas(toolTicker)" : {
                     "layoutData" : {
                         "_type" : "[gridData](center,center,false,false)",
                         "widthHint" : 24,
                         "heightHint" : 24
                     }
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "composite",
+        "composite(_com2)" : {
             "background" : "color_white",
             "layout" : {
                 "_type" : "gridLayout",
@@ -90,10 +66,8 @@
                 "marginHeight" : 0
             },
             "layoutData" : "[gridData](fill,fill,true,true)",
-            "_children" : [
-                {
-                    "_type" : "composite",
-                    "_name" : "searchFilterLineComposite",
+            "_children" : {
+                "composite(searchFilterLineComposite)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 2
@@ -103,57 +77,45 @@
                         "heightHint" : 0
                     },
                     "background" : "color_info_background",
-                    "_children" : [
-                        {
-                            "_type" : "label",
+                    "_children" : {
+                        "label(_lab1)" : {
                             "text" : "[main.activeFilter]",
                             "layoutData" : "[gridData](begin,center,false,false)",
                             "background" : "color_info_background"
                         },
-                        {
-                            "_type" : "label",
-                            "_name" : "labelFilter",
+                        "label(labelFilter)" : {
                             "layoutData" : "[gridData](fill,center,true,false)",
                             "background" : "color_info_background",
                             "font" : {
                                 "style" : "bold"
                             }
                         }
-                    ]
+                    }
                 },
 
-                {
-                    "_type" : "scrolledComposite",
-                    "_style" : "{v_scroll}",
-                    "_name" : "mainTableWrapper",
+                "scrolledComposite(mainTableWrapper,{v_scroll})" : {
                     "layoutData" : "[gridData](fill,fill,true,true)",
                     "expandHorizontal" : true,
                     "expandVertical" : true,
-                    "_children" : [
-                        {
-                            "_type" : "net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite",
-                            "_name" : "mainTable",
+                    "_children" : {
+                        "net.milanaleksic.mcs.application.gui.helper.CoolMovieComposite(mainTable)" : {
                             "bundle" : "(bundle)",
                             "thumbnailManager" : "(thumbnailManager)"
                         }
-                    ],
+                    },
                     "content" : "(mainTable)"
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "composite",
-            "_style" : "{border}",
-            "_name" : "statusBar",
+        "composite(statusBar,{border})" : {
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 3
             },
             "layoutData" : "[gridData](fill,end,true,false)",
-            "_children" : [
-                {
-                    "_type" : "composite",
+            "_children" : {
+                "composite(_com1)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 3,
@@ -161,16 +123,11 @@
                         "marginHeight" : 0
                     },
                     "layoutData" : "[gridData](begin,center,false,false)",
-                    "_children" : [
-                        {
-                            "_type" : "button",
-                            "_style" : "{push}",
-                            "_name" : "btnPrevPage",
+                    "_children" : {
+                        "button(btnPrevPage,{push})" : {
                             "text" : "<<"
                         },
-                        {
-                            "_type" : "label",
-                            "_name" : "labelCurrent",
+                        "label(labelCurrent)" : {
                             "layoutData" : {
                                 "_type" : "[gridData](fill,center,false,false)",
                                 "widthHint" : 90
@@ -178,16 +135,12 @@
                             "alignment" : "{center}",
                             "text" : "0"
                         },
-                        {
-                            "_type" : "button",
-                            "_style" : "{push}",
-                            "_name" : "btnNextPage",
+                        "button(btnNextPage,{push})" : {
                             "text" : ">>"
                         }
-                    ]
+                    }
                 },
-                {
-                    "_type" : "composite",
+                "composite(_com2)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 4,
@@ -195,51 +148,38 @@
                         "marginHeight" : 0
                     },
                     "layoutData" : "[gridData](begin,center,false,false)",
-                    "_children" : [
-                        {
-                            "_type" : "combo",
-                            "_style" : "{drop_down}|{border}|{read_only}",
-                            "_name" : "comboTipMedija",
+                    "_children" : {
+                        "combo(comboTipMedija,{drop_down}|{border}|{read_only})" : {
                             "visibleItemCount" : 8,
                             "layoutData" : {
                                 "_type" : "gridData",
                                 "widthHint" : 80
                             }
                         },
-                        {
-                            "_type" : "combo",
-                            "_style" : "{drop_down}|{border}|{read_only}",
-                            "_name" : "comboPozicija",
+                        "combo(comboPozicija,{drop_down}|{border}|{read_only})" : {
                             "visibleItemCount" : 8,
                             "layoutData" : {
                                 "_type" : "gridData",
                                 "widthHint" : 80
                             }
                         },
-                        {
-                            "_type" : "combo",
-                            "_style" : "{drop_down}|{border}|{read_only}",
-                            "_name" : "comboZanr",
+                        "combo(comboZanr,{drop_down}|{border}|{read_only})" : {
                             "visibleItemCount" : 16,
                             "layoutData" : {
                                 "_type" : "gridData",
                                 "widthHint" : 80
                             }
                         },
-                        {
-                            "_type" : "combo",
-                            "_style" : "{drop_down}|{border}|{read_only}",
-                            "_name" : "comboTag",
+                        "combo(comboTag,{drop_down}|{border}|{read_only})" : {
                             "visibleItemCount" : 8,
                             "layoutData" : {
                                 "_type" : "gridData",
                                 "widthHint" : 80
                             }
                         }
-                    ]
+                    }
                 },
-                {
-                    "_type" : "composite",
+                "composite(_com3)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 3,
@@ -247,57 +187,37 @@
                         "marginHeight" : 0
                     },
                     "layoutData" : "[gridData](end,center,true,false)",
-                    "_children" : [
-                        {
-                            "_type" : "label",
+                    "_children" : {
+                        "label(_lab1)" : {
                             "layoutData" : "[gridData](fill,center,true,false)",
                             "text" : "[main.sortOn]",
                             "alignment" : "{right}"
                         },
-                        {
-                            "_type" : "combo",
-                            "_style" : "{read_only}",
-                            "_name" : "comboSort",
+						"combo(comboSort,{read_only})" : {
                             "layoutData" : "[gridData](end,center,false,false)"
                         },
-                        {
-                            "_type" : "button",
-                            "_style" : "{check}",
-                            "_name" : "cbAscending",
+                        "button(cbAscending,{check})" : {
                             "text" : "[main.ascending]",
                             "selection" : true
                         }
-                    ]
+                    }
                 }
-            ]
+            }
         },
 
-        {
-            "_type" : "menu",
-            "_style" : "{pop_up}",
-            "_name" : "settingsPopupMenu",
-            "_children" : [
-                {
-                    "_type" : "menuItem",
-                    "_style" : "{push}",
-                    "_name" : "settingsMenuItem",
+        "menu(settingsPopupMenu,{pop_up})" : {
+            "_children" : {
+                "menuItem(settingsMenuItem,{push})" : {
                     "text" : "[main.settingsWithDots]"
                 },
-                {
-                    "_type" : "menuItem",
-                    "_style" : "{push}",
-                    "_name" : "findUnusedMediums",
+                "menuItem(findUnusedMediums,{push})" : {
                     "text" : "[main.findUnusedMediums]"
                 },
-                {
-                    "_type" : "menuItem",
-                    "_style" : "{push}",
-                    "_name" : "findUmatchedImdbMovies",
+                "menuItem(findUmatchedImdbMovies,{push})" : {
                     "text" : "[main.findUmatchedImdbMovies]"
                 }
-            ],
+            },
             "defaultItem" : "(settingsMenuItem)"
         }
-    ]
-
+    }
 }

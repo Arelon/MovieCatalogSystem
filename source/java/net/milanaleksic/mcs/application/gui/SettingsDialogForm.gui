@@ -6,21 +6,17 @@
         "numColumns" : 1
     },
     "size" : "500,350" ,
-    "_children" : [
-        {
-            "_type" : "tabFolder",
+    "_children" : {
+        "tabFolder(_)" : {
             "layoutData" : "[gridData](fill,fill,false,true)",
-            "_children" : [
-                {
-                    "_type" : "composite",
-                    "_name" : "settingsTab",
+            "_children" : {
+                "composite(settingsTab)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 1
                     },
-                    "_children" : [
-                        {
-                            "_type" : "group",
+                    "_children" : {
+                        "group(_1)" : {
                             "text" : "[settings.globalSettings]",
                             "layout" : {
                                 "_type" : "gridLayout",
@@ -28,401 +24,299 @@
                                 "makeColumnsEqualWidth" : true
                             },
                             "layoutData" : "[gridData](fill,begin,true,false)",
-                            "_children" : [
-                                {
-                                    "_type" : "label",
+                            "_children" : {
+                                "label(_1)" : {
                                     "layoutData" : "[gridData](begin,center,true,false)",
                                     "text" : "[settings.language]"
                                 },
-                                {
-                                    "_type" : "combo",
-                                    "_style" : "{drop_down}|{border}|{read_only}",
-                                    "_name" : "comboLanguage"
-                                },
+                                "combo(comboLanguage, {drop_down}|{border}|{read_only})" : {},
 
-                                {
-                                    "_type" : "label",
+                                "label(_2)" : {
                                     "layoutData" : "[gridData](begin,center,true,false)",
                                     "text" : "[settings.numberOfElementsPerPage]"
                                 },
-                                {
-                                    "_type" : "text",
-                                    "_name" : "textElementsPerPage",
-                                    "_style" : "{border}",
+                                "text(textElementsPerPage, {border})" : {
                                     "layoutData" : "[gridData](fill,begin,true,false)"
                                 }
-                            ]
+                            }
                         },
-                        {
-                            "_type" : "group",
+                        "group(_2)" : {
                             "text" : "[settings.proxyServer]",
                             "layout" : {
                                 "_type" : "gridLayout",
                                 "numColumns" : 2
                             },
                             "layoutData" : "[gridData](fill,begin,true,false)",
-                            "_children" : [
-                                {
-                                    "_type" : "label",
+                            "_children" : {
+                                "label(_1)" : {
                                     "text" : "[settings.proxyServerAddress]",
                                     "layoutData" : "[gridData](end,begin,true,false)"
                                 },
-                                {
-                                    "_type" : "text",
-                                    "_style" : "{border}",
-                                    "_name" : "textProxyServer",
+                                "text(textProxyServer, {border})" : {
                                     "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
-                                {
-                                    "_type" : "label",
+                                "label(_2)" : {
                                     "text" : "[settings.proxyServerPort]",
                                     "layoutData" : "[gridData](end,begin,true,false)"
                                 },
-                                {
-                                    "_type" : "text",
-                                    "_style" : "{border}",
-                                    "_name" : "textProxyServerPort",
+                                "text(textProxyServerPort, {border})" : {
                                     "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
-                                {
-                                    "_type" : "label",
+                                "label(_3)" : {
                                     "text" : "[settings.username]",
                                     "layoutData" : "[gridData](end,begin,true,false)"
                                 },
-                                {
-                                    "_type" : "text",
-                                    "_style" : "{border}",
-                                    "_name" : "textProxyServerUsername",
+                                "text(textProxyServerUsername, {border})" : {
                                     "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
-                                {
-                                    "_type" : "label",
+                                "label(_4)" : {
                                     "text" : "[settings.password]",
                                     "layoutData" : "[gridData](end,begin,true,false)"
                                 },
-                                {
-                                    "_type" : "text",
-                                    "_style" : "{border}|{password}",
-                                    "_name" : "textProxyServerPassword",
+                                "text(textProxyServerPassword, {border}|{password})" : {
                                     "layoutData" : "[gridData](fill,begin,true,false)"
                                 },
 
-                                {
-                                    "_type" : "label",
+                                "label(_5)" : {
                                     "layoutData" : "[gridData](end,begin,true,false)"
                                 },
-                                {
-                                    "_type" : "button",
-                                    "_style" : "{check}",
-                                    "_name" : "chkProxyServerUsesNtlm",
+                                "button(chkProxyServerUsesNtlm, {check})" : {
                                     "text" : "[settings.proxyUsesNtlm]",
                                     "layoutData" : "[gridData](begin,begin,true,false)"
                                 }
-                            ]
+                            }
                         }
-                    ]
+                    }
                 },
 
-                {
-                                    "_type" : "composite",
-                                    "_name" : "serverSettingsTab",
-                                    "layout" : {
-                                        "_type" : "gridLayout",
-                                        "numColumns" : 1
-                                    },
-                                    "_children" : [
-                                        {
-                                            "_type" : "composite",
-                                            "layout" : {
-                                                "_type" : "gridLayout",
-                                                "numColumns" : 1,
-                                                "makeColumnsEqualWidth" : true
-                                            },
-                                            "_children" : [
-                                                {
-                                                    "_type" : "button",
-                                                    "_style" : "{check}",
-                                                    "text" : "[settings.checkForNewVersionsOnStartup]",
-                                                    "_name" : "chkCheckForNewVersionsOnStartup"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "_type" : "group",
-                                            "text" : "[settings.extraServices]",
-                                            "layout" : {
-                                                "_type" : "gridLayout",
-                                                "numColumns" : 2,
-                                                "makeColumnsEqualWidth" : true
-                                            },
-                                            "layoutData" : "[gridData](fill,begin,true,false)",
-                                            "_children" : [
-                                                {
-                                                    "_type" : "label",
-                                                    "text" : "[settings.extraServicesDescription]",
-                                                    "_style" : "{wrap}",
-                                                    "alignment" : "{center}",
-                                                    "layoutData" : {
-                                                        "_type" : "[gridData](fill,fill,false,true,2,1)",
-                                                        "widthHint" : 300
-                                                    }
-                                                },
-
-                                                {
-                                                    "_type" : "label",
-                                                    "text" : "[settings.username]",
-                                                    "layoutData" : "[gridData](end,begin,true,false)"
-                                                },
-                                                {
-                                                    "_type" : "text",
-                                                    "_style" : "{border}",
-                                                    "_name" : "textTenrecUsername",
-                                                    "layoutData" : "[gridData](fill,begin,true,false)"
-                                                },
-
-                                                {
-                                                    "_type" : "label",
-                                                    "text" : "[settings.password]",
-                                                    "layoutData" : "[gridData](end,begin,true,false)"
-                                                },
-                                                {
-                                                    "_type" : "text",
-                                                    "_style" : "{border}|{password}",
-                                                    "_name" : "textTenrecPassword",
-                                                    "layoutData" : "[gridData](fill,begin,true,false)"
-                                                }
-                                            ]
-                                        }
-                                    ]
+                "composite(serverSettingsTab)" : {
+                    "layout" : {
+                        "_type" : "gridLayout",
+                        "numColumns" : 1
+                    },
+                    "_children" : {
+                        "composite(_)" : {
+                            "layout" : {
+                                "_type" : "gridLayout",
+                                "numColumns" : 1,
+                                "makeColumnsEqualWidth" : true
+                            },
+                            "_children" : {
+                                "button(chkCheckForNewVersionsOnStartup, {check})" : {
+                                    "text" : "[settings.checkForNewVersionsOnStartup]"
+                                }
+                            }
+                        },
+                        "group(_)" : {
+                            "text" : "[settings.extraServices]",
+                            "layout" : {
+                                "_type" : "gridLayout",
+                                "numColumns" : 2,
+                                "makeColumnsEqualWidth" : true
+                            },
+                            "layoutData" : "[gridData](fill,begin,true,false)",
+                            "_children" : {
+                                "label(_1, {wrap})" : {
+                                    "text" : "[settings.extraServicesDescription]",
+                                    "alignment" : "{center}",
+                                    "layoutData" : {
+                                        "_type" : "[gridData](fill,fill,false,true,2,1)",
+                                        "widthHint" : 300
+                                    }
                                 },
 
-                {
-                    "_type" : "composite",
-                    "_name" : "mediumTypeTab",
+                                "label(_2)" : {
+                                    "text" : "[settings.username]",
+                                    "layoutData" : "[gridData](end,begin,true,false)"
+                                },
+                                "text(textTenrecUsername, {border})" : {
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
+                                },
+
+                                "label(_3)" : {
+                                    "text" : "[settings.password]",
+                                    "layoutData" : "[gridData](end,begin,true,false)"
+                                },
+                                "text(textTenrecPassword, {border}|{password})" : {
+                                    "layoutData" : "[gridData](fill,begin,true,false)"
+                                }
+                            }
+                        }
+                    }
+                },
+
+                "composite(mediumTypeTab)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 2
                     },
-                    "_children" : [
-                        {
-                            "_type" : "table",
-                            "_style" : "{border}|{full_selection}",
-                            "_name" : "listMediumTypes",
+                    "_children" : {
+                        "table(listMediumTypes, {border}|{full_selection})" : {
                             "headerVisible" : true,
                             "layoutData" : {
                                 "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
-                            "_children" : [
-                                {
-                                    "_type" : "tableColumn",
-                                    "_style" : "{left}|{flat}",
+                            "_children" : {
+                                "tableColumn(_, {left}|{flat})" : {
                                     "text" : "[settings.mediumTypeName]",
                                     "width" : 370
                                 }
-                            ]
+                            }
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnAddMediumType)" : {
                             "text" : "[settings.add]",
-                            "_name" : "btnAddMediumType",
                             "layoutData" : "[gridData](fill,center,false,false)"
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnDeleteMediumType)" : {
                             "text" : "[global.delete]",
-                            "_name" : "btnDeleteMediumType",
                             "layoutData" : "[gridData](fill,center,true,false)"
                         }
-                    ]
+                    }
                 },
 
-                {
-                    "_type" : "composite",
-                    "_name" : "locationTab",
+                "composite(locationTab)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 2
                     },
-                    "_children" : [
-                        {
-                            "_type" : "table",
-                            "_style" : "{border}|{full_selection}",
-                            "_name" : "listLokacije",
+                    "_children" : {
+                        "table(listLokacije, {border}|{full_selection})" : {
                             "headerVisible" : true,
                             "layoutData" : {
                                 "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
-                            "_children" : [
-                                {
-                                    "_type" : "tableColumn",
-                                    "_style" : "{left}|{flat}",
+                            "_children" : {
+                                "tableColumn(_1, {left}|{flat})" : {
                                     "text" : "[settings.locationName]",
                                     "width" : 320
                                 },
-                                {
-                                    "_type" : "tableColumn",
-                                    "_style" : "{left}|{flat}",
+                                "tableColumn(_2, {left}|{flat})" : {
                                     "text" : "[settings.locationDefault]",
                                     "width" : 50
                                 }
-                            ]
+                            }
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnAddLocation)" : {
                             "text" : "[settings.add]",
-                            "_name" : "btnAddLocation",
                             "layoutData" : "[gridData](fill,center,false,false)"
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnDeleteLocation)" : {
                             "text" : "[global.delete]",
-                            "_name" : "btnDeleteLocation",
                             "layoutData" : "[gridData](fill,center,true,false)"
                         }
-                    ]
+                    }
                 },
 
-                {
-                    "_type" : "composite",
-                    "_name" : "genresTab",
+                "composite(genresTab)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 2
                     },
-                    "_children" : [
-                        {
-                            "_type" : "table",
-                            "_style" : "{border}|{full_selection}",
-                            "_name" : "listZanrovi",
+                    "_children" : {
+                        "table(listZanrovi, {border}|{full_selection})" : {
                             "headerVisible" : true,
                             "layoutData" : {
                                 "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
-                            "_children" : [
-                                {
-                                    "_type" : "tableColumn",
-                                    "_style" : "{left}|{flat}",
+                            "_children" : {
+                                "tableColumn(_, {left}|{flat})" : {
                                     "text" : "[settings.genreName]",
                                     "width" : 370
                                 }
-                            ]
+                            }
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnAddGenre)" : {
                             "text" : "[settings.add]",
-                            "_name" : "btnAddGenre",
                             "layoutData" : "[gridData](fill,center,false,false)"
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnDeleteGenre)" : {
                             "text" : "[global.delete]",
-                            "_name" : "btnDeleteGenre",
                             "layoutData" : "[gridData](fill,center,true,false)"
                         }
-                    ]
+                    }
                 },
 
-                {
-                    "_type" : "composite",
-                    "_name" : "tagsTab",
+                "composite(tagsTab)" : {
                     "layout" : {
                         "_type" : "gridLayout",
                         "numColumns" : 2
                     },
-                    "_children" : [
-                        {
-                            "_type" : "table",
-                            "_style" : "{border}|{full_selection}",
-                            "_name" : "listTagovi",
+                    "_children" : {
+                        "table(listTagovi, {border}|{full_selection})" : {
                             "headerVisible" : true,
                             "layoutData" : {
                                 "_type" : "[gridData](fill,fill,true,true,1,3)",
                                 "heightHint" : 180
                             },
-                            "_children" : [
-                                {
-                                    "_type" : "tableColumn",
-                                    "_style" : "{left}|{flat}",
+                            "_children" : {
+                                "tableColumn(_,{left}|{flat})" : {
                                     "text" : "[settings.tagName]",
                                     "width" : 370
                                 }
-                            ]
+                            }
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnAddTag)" : {
                             "text" : "[settings.add]",
-                            "_name" : "btnAddTag",
                             "layoutData" : "[gridData](fill,center,false,false)"
                         },
-                        {
-                            "_type" : "button",
+                        "button(btnDeleteTag)" : {
                             "text" : "[global.delete]",
-                            "_name" : "btnDeleteTag",
                             "layoutData" : "[gridData](fill,center,true,false)"
                         }
-                    ]
+                    }
                 },
 
 
-                {
-                    "_type" : "tabItem",
+                "tabItem(_1)" : {
                     "text" : "[settings.basicSettings]",
                     "control" : "(settingsTab)"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_2)" : {
                     "text" : "[settings.serverSettings]",
                     "control" : "(serverSettingsTab)"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_3)" : {
                     "text" : "[settings.mediumTypes]",
                     "control" : "(mediumTypeTab)"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_4)" : {
                     "text" : "[settings.locations]",
                     "control" : "(locationTab)"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_5)" : {
                     "text" : "[settings.genres]",
                     "control" : "(genresTab)"
                 },
-                {
-                    "_type" : "tabItem",
+                "tabItem(_6)" : {
                     "text" : "[global.tags]",
                     "control" : "(tagsTab)"
                 }
-            ]
+            }
         },
 
-        {
+        "composite(_)" : {
             "__comment" : "Footer",
-            "_type" : "composite",
             "layout" : {
                 "_type" : "gridLayout",
                 "numColumns" : 1,
                 "horizontalSpacing" : 20
             },
             "layoutData" : "[gridData](center,end,true,false)",
-            "_children" : [
-                {
-                    "_type" : "button",
-                    "_name" : "btnCancel",
+            "_children" : {
+                "button(btnCancel)" : {
                     "text" : "[global.close]",
                     "layoutData" : {
                         "_type" : "[gridData](end,center,false,true)",
                         "widthHint" : 100
                     }
                 }
-            ]
+            }
         }
-    ]
+    }
 }

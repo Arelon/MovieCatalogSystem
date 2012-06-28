@@ -6,9 +6,8 @@
         "_type" : "gridLayout",
         "numColumns" : 1
     },
-    "_children" : [
-        {
-            "_type" : "composite",
+    "_children" : {
+        "composite(_)" : {
             "background" : "color_info_background",
             "layout" : {
                 "_type" : "gridLayout",
@@ -18,10 +17,8 @@
                 "_type" : "[gridData](fill,begin,true,false)",
                 "widthHint" : 300
             },
-            "_children" : [
-                {
-                    "_type" : "label",
-                    "_name" : "movieNameValue",
+            "_children" : {
+                "label(movieNameValue)" : {
                     "background" : "color_info_background",
                     "layoutData" : "[gridData](fill,begin,true,false,4,1)",
                     "font" : {
@@ -30,15 +27,12 @@
                     }
                 },
 
-                {
-                    "_type" : "label",
+                "label(_1)" : {
                     "background" : "color_info_background",
                     "text" : "[main.genre]",
                     "layoutData" : "[gridData](fill,center,false,false)"
                 },
-                {
-                    "_type" : "label",
-                    "_name" : "genreValue",
+                "label(genreValue)" : {
                     "background" : "color_info_background",
                     "font" : {
                         "style" : "bold"
@@ -46,15 +40,12 @@
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 },
 
-                {
-                    "_type" : "label",
+                "label(_2)" : {
                     "background" : "color_info_background",
                     "text" : "[main.location]",
                     "layoutData" : "[gridData](fill,center,false,false)"
                 },
-                {
-                    "_type" : "label",
-                    "_name" : "locationValue",
+                "label(locationValue)" : {
                     "background" : "color_info_background",
                     "font" : {
                         "style" : "bold"
@@ -62,16 +53,12 @@
                     "layoutData" : "[gridData](fill,begin,true,false)"
                 },
 
-                {
-                    "_type" : "label",
+                "label(_3)" : {
                     "background" : "color_info_background",
                     "text" : "[main.medium]",
                     "layoutData" : "[gridData](fill,center,false,false)"
                 },
-                {
-                    "_type" : "dynamicSelectorText",
-                    "_style" : "{read_only}",
-                    "_name" : "mediumListValue",
+                "dynamicSelectorText(mediumListValue,{read_only})" : {
                     "bundle" : "(bundle)",
                     "selectedItemBackgroundColor" : "#aaaaff",
                     "selectedItemForegroundColor" : "color_black",
@@ -83,16 +70,12 @@
                     }
                 },
 
-                {
-                    "_type" : "label",
+                "label(_4)" : {
                     "background" : "color_info_background",
                     "text" : "[global.tags]",
                     "layoutData" : "[gridData](fill,center,false,false)"
                 },
-                {
-                    "_type" : "dynamicSelectorText",
-                    "_style" : "{read_only}",
-                    "_name" : "tagsValue",
+                "dynamicSelectorText(tagsValue,{read_only})" : {
                     "bundle" : "(bundle)",
                     "selectedItemBackgroundColor" : "#aaaaff",
                     "selectedItemForegroundColor" : "color_black",
@@ -104,14 +87,11 @@
                     }
                 },
 
-                {
-                    "_type" : "label",
-                    "_name" : "commentValue",
-                    "_style" : "{wrap}",
+                "label(commentValue,{wrap})" : {
                     "background" : "color_info_background",
                     "layoutData" : "[gridData](fill,fill,true,true,2,1)"
                 }
-            ]
+            }
         }
-    ]
+    }
 }
