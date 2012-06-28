@@ -160,43 +160,34 @@ public class UnmatchedMoviesDialogForm extends AbstractTransformedForm {
     };
 
     @EmbeddedEventListener(component = "btnAcceptThisMatch", event = SWT.Selection)
-    private final HandledListener btnAcceptThisMatchSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            int unmatchedMovieIndex = unmatchedMoviesTable.getSelectionIndex();
-            if (unmatchedMovieIndex < 0)
-                throw new ApplicationException("No item has been selected in unmatched movies table");
-            int possibleMatchIndex = possibleMatchesTable.getSelectionIndex();
-            if (possibleMatchIndex < 0)
-                throw new ApplicationException("No item has been selected in possible matches table");
+    private void btnAcceptThisMatchSelectionListener() throws ApplicationException {
+        int unmatchedMovieIndex = unmatchedMoviesTable.getSelectionIndex();
+        if (unmatchedMovieIndex < 0)
+            throw new ApplicationException("No item has been selected in unmatched movies table");
+        int possibleMatchIndex = possibleMatchesTable.getSelectionIndex();
+        if (possibleMatchIndex < 0)
+            throw new ApplicationException("No item has been selected in possible matches table");
 
-            Film film = (Film) unmatchedMoviesTable.getItem(unmatchedMovieIndex).getData();
-            Movie match = (Movie) possibleMatchesTable.getItem(possibleMatchIndex).getData();
-            film.copyFromMovie(match);
-            filmService.updateFilmWithChanges(film);
-            unmatchedMoviesTable.remove(unmatchedMovieIndex);
-            UnmatchedMoviesDialogForm.super.runnerWhenClosingShouldRun = true;
-            removeMatchDetails();
-            selectNextMovieWithMatches(unmatchedMovieIndex);
-        }
-    };
+        Film film = (Film) unmatchedMoviesTable.getItem(unmatchedMovieIndex).getData();
+        Movie match = (Movie) possibleMatchesTable.getItem(possibleMatchIndex).getData();
+        film.copyFromMovie(match);
+        filmService.updateFilmWithChanges(film);
+        unmatchedMoviesTable.remove(unmatchedMovieIndex);
+        UnmatchedMoviesDialogForm.super.runnerWhenClosingShouldRun = true;
+        removeMatchDetails();
+        selectNextMovieWithMatches(unmatchedMovieIndex);
+    }
 
     @EmbeddedEventListener(component = "btnStartMatching", event = SWT.Selection)
-    private HandledListener btnStartMatchingSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            btnStartMatching.setEnabled(false);
-            startProcess();
-        }
-    };
+    private void btnStartMatchingSelectionListener() {
+        btnStartMatching.setEnabled(false);
+        startProcess();
+    }
 
     @EmbeddedEventListener(component = "btnClose", event = SWT.Selection)
-    private final HandledListener btnCloseSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            shell.close();
-        }
-    };
+    private void btnCloseSelectionListener() {
+        shell.close();
+    }
 
     private void selectNextMovieWithMatches(int startFromIndex) {
         int i = startFromIndex;

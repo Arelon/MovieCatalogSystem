@@ -13,15 +13,13 @@ import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Event;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
@@ -95,140 +93,110 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     private Optional<Film> activeFilm;
 
     @EmbeddedEventListener(event = SWT.Close)
-    private final Listener shellCloseListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (offerMovieListForNewOrEditForm != null)
-                offerMovieListForNewOrEditForm.cleanUp();
-        }
-    };
+    private void shellCloseListener() {
+        if (offerMovieListForNewOrEditForm != null)
+            offerMovieListForNewOrEditForm.cleanUp();
+    }
 
     @EmbeddedEventListener(component = "btnSearchMovie", event = SWT.Selection)
-    private final Listener btnSearchMovieSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            findMovieDialogDialogForm.setInitialText(comboNaziv.getText());
-            findMovieDialogDialogForm.open(shell, new Runnable() {
-                @Override
-                public void run() {
-                    Optional<Movie> selectedMovie = findMovieDialogDialogForm.getSelectedMovie();
-                    if (selectedMovie.isPresent())
-                        readFromMovie(selectedMovie.get());
-                }
-            });
-        }
-    };
+    private void btnSearchMovieSelectionListener() {
+        findMovieDialogDialogForm.setInitialText(comboNaziv.getText());
+        findMovieDialogDialogForm.open(shell, new Runnable() {
+            @Override
+            public void run() {
+                Optional<Movie> selectedMovie = findMovieDialogDialogForm.getSelectedMovie();
+                if (selectedMovie.isPresent())
+                    readFromMovie(selectedMovie.get());
+            }
+        });
+    }
 
     @EmbeddedEventListener(component = "textPrevod", event = SWT.FocusIn)
-    private final Listener textPrevodFocusInListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (textPrevod.getText().trim().equals(bundle.getString("newOrEdit.unknown")))
-                textPrevod.setText("");
-        }
-    };
+    private void textPrevodFocusInListener() {
+        if (textPrevod.getText().trim().equals(bundle.getString("newOrEdit.unknown")))
+            textPrevod.setText("");
+    }
 
     @EmbeddedEventListener(component = "textPrevod", event = SWT.FocusOut)
-    private final Listener textPrevodFocusOutListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (textPrevod.getText().trim().equals(""))
-                textPrevod.setText(bundle.getString("newOrEdit.unknown"));
-        }
-    };
+    private void textPrevodFocusOutListener() {
+        if (textPrevod.getText().trim().equals(""))
+            textPrevod.setText(bundle.getString("newOrEdit.unknown"));
+    }
 
     @EmbeddedEventListener(component = "comboNaziv", event = SWT.Selection)
-    private final Listener comboNazivSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            int index = comboNaziv.getSelectionIndex();
-            if (index != -1) {
-                readFromMovie((Movie) comboNaziv.getData(Integer.toString(index)));
-            }
+    private void comboNazivSelectionListener() {
+        int index = comboNaziv.getSelectionIndex();
+        if (index != -1) {
+            readFromMovie((Movie) comboNaziv.getData(Integer.toString(index)));
         }
-    };
+    }
 
     @EmbeddedEventListener(component = "btnNovMedij", event = SWT.Selection)
-    private final Listener btnNovMedijSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            newMediumDialogDialogForm.open(shell, new Runnable() {
-                @Override
-                public void run() {
-                    refillCombos();
-                }
-            });
-        }
-    };
+    private void btnNovMedijSelectionListener() {
+        newMediumDialogDialogForm.open(shell, new Runnable() {
+            @Override
+            public void run() {
+                refillCombos();
+            }
+        });
+    }
 
     @EmbeddedEventListener(component = "btnPrihvati", event = SWT.Selection)
-    private final Listener btnPrihvatiSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            //TODO: replace with Hibernate Validator (JSR 303 implementation)
-            StringBuilder razlogOtkaza = new StringBuilder();
-            if (diskSelector.getSelectedItemCount() == 0)
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.atLeastOneMediumNeeded"));
-            if (comboNaziv.getText().trim().equals(""))
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveName"));
-            if (comboNaziv.getText().trim().equals(""))
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveNameTranslation"));
-            if (comboZanr.getSelectionIndex() == -1)
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.genreMustBeSelected"));
-            try {
-                Integer.parseInt(textGodina.getText());
-            } catch (Throwable t) {
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.yearNotANumber"));
-            }
-            if (comboLokacija.getSelectionIndex() == -1)
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.locationMustBeSelected"));
-            if (!textImdbId.getText().isEmpty() && !IMDBUtil.isValidImdbId(textImdbId.getText()))
-                razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.imdbFormatNotOk"));
-            if (razlogOtkaza.length() != 0) {
-                MessageBox messageBox = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-                messageBox.setText(bundle.getString("newOrEdit.movieCouldNotBeAdded"));
-                messageBox.setMessage(bundle.getString("newOrEdit.cancellationCause") + "\r\n----------" + razlogOtkaza.toString());
-                messageBox.open();
-            } else {
-                if (activeFilm.isPresent())
-                    izmeniFilm();
-                else
-                    dodajNoviFilm();
-                runnerWhenClosingShouldRun = true;
-                shell.close();
-            }
+    private void btnPrihvatiSelectionListener() {
+        //TODO: replace with Hibernate Validator (JSR 303 implementation)
+        StringBuilder razlogOtkaza = new StringBuilder();
+        if (diskSelector.getSelectedItemCount() == 0)
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.atLeastOneMediumNeeded"));
+        if (comboNaziv.getText().trim().equals(""))
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveName"));
+        if (comboNaziv.getText().trim().equals(""))
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.movieMustHaveNameTranslation"));
+        if (comboZanr.getSelectionIndex() == -1)
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.genreMustBeSelected"));
+        try {
+            Integer.parseInt(textGodina.getText());
+        } catch (Throwable t) {
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.yearNotANumber"));
         }
-    };
-
-    @EmbeddedEventListener(component = "btnOdustani", event = SWT.Selection)
-    private final Listener btnOdustaniSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
+        if (comboLokacija.getSelectionIndex() == -1)
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.locationMustBeSelected"));
+        if (!textImdbId.getText().isEmpty() && !IMDBUtil.isValidImdbId(textImdbId.getText()))
+            razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.imdbFormatNotOk"));
+        if (razlogOtkaza.length() != 0) {
+            MessageBox messageBox = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+            messageBox.setText(bundle.getString("newOrEdit.movieCouldNotBeAdded"));
+            messageBox.setMessage(bundle.getString("newOrEdit.cancellationCause") + "\r\n----------" + razlogOtkaza.toString());
+            messageBox.open();
+        } else {
+            if (activeFilm.isPresent())
+                izmeniFilm();
+            else
+                dodajNoviFilm();
+            runnerWhenClosingShouldRun = true;
             shell.close();
         }
-    };
+    }
+
+    @EmbeddedEventListener(component = "btnOdustani", event = SWT.Selection)
+    private void btnOdustaniSelectionListener () {
+        shell.close();
+    }
 
     @EmbeddedEventListener(component = "imdbLink", event = SWT.Selection)
-    private final Listener imdbLinkSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            try {
-                Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(textImdbId.getText()));
-            } catch (IOException e) {
-                throw new ApplicationException("IO Exception when trying to browse to IMDB page", e);
-            }
+    private void imdbLinkSelectionListener() throws ApplicationException {
+        try {
+            Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(textImdbId.getText()));
+        } catch (IOException e) {
+            throw new ApplicationException("IO Exception when trying to browse to IMDB page", e);
         }
-    };
+    }
 
     @EmbeddedEventListener(component = "textImdbId", event = SWT.Modify)
-    private final Listener textImdbIdSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (!isFormTransformationComplete())
-                return;
-            imdbLink.setEnabled(IMDBUtil.isValidImdbId(textImdbId.getText()));
-        }
-    };
+    private void textImdbIdSelectionListener() {
+        if (!isFormTransformationComplete())
+            return;
+        imdbLink.setEnabled(IMDBUtil.isValidImdbId(textImdbId.getText()));
+    }
 
     public void open(Shell parent, Optional<Film> film, Runnable callback) {
         this.activeFilm = film;

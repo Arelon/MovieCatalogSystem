@@ -1,12 +1,8 @@
 package net.milanaleksic.mcs.application.gui;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import com.google.common.base.*;
 import net.milanaleksic.guitransformer.*;
-import net.milanaleksic.mcs.application.gui.helper.*;
-import net.milanaleksic.mcs.application.util.ApplicationException;
-import net.milanaleksic.mcs.domain.model.Film;
-import net.milanaleksic.mcs.domain.model.FilmRepository;
+import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.infrastructure.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
@@ -28,41 +24,32 @@ public class DeleteMovieDialogForm extends AbstractTransformedForm {
     private FilmRepository filmRepository;
 
     @EmbeddedEventListener(component = "canvas", event = SWT.Paint)
-    private static final Listener paintListener = new Listener() {
-        @Override
-        public void handleEvent(final Event e) {
-            final Rectangle bounds = ((Canvas)e.widget).getBounds();
-            SWTUtil.useImageAndThenDispose(RESOURCE_ALERT_IMAGE, new Function<Image, Void>() {
-                @Override
-                public Void apply(@Nullable Image image) {
-                    if (image == null)
-                        return null;
-                    e.gc.drawImage(image,
-                            (bounds.width - image.getBounds().width)/2,
-                            (bounds.height - image.getBounds().height)/2);
+    private void paintListener(final Event e) {
+        final Rectangle bounds = ((Canvas)e.widget).getBounds();
+        SWTUtil.useImageAndThenDispose(RESOURCE_ALERT_IMAGE, new Function<Image, Void>() {
+            @Override
+            public Void apply(@Nullable Image image) {
+                if (image == null)
                     return null;
-                }
-            });
-        }
-    };
+                e.gc.drawImage(image,
+                        (bounds.width - image.getBounds().width)/2,
+                        (bounds.height - image.getBounds().height)/2);
+                return null;
+            }
+        });
+    }
 
     @EmbeddedEventListener(component = "btnOk", event = SWT.Selection)
-    private final Listener btnOkSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            filmRepository.deleteFilm(film.get());
-            runnerWhenClosingShouldRun = true;
-            shell.close();
-        }
-    };
+    private void btnOkSelectionListener() {
+        filmRepository.deleteFilm(film.get());
+        runnerWhenClosingShouldRun = true;
+        shell.close();
+    }
 
     @EmbeddedEventListener(component = "btnCancel", event = SWT.Selection)
-    private final Listener btnCancelSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            shell.close();
-        }
-    };
+    private void btnCancelSelectionListener() {
+        shell.close();
+    }
 
     public void open(Shell parent, Film film, Runnable callback) {
         this.film = Optional.of(film);

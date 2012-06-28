@@ -2,8 +2,6 @@ package net.milanaleksic.mcs.application.gui;
 
 import com.google.common.base.Optional;
 import net.milanaleksic.guitransformer.*;
-import net.milanaleksic.mcs.application.gui.helper.*;
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.MedijService;
 import org.eclipse.swt.SWT;
@@ -32,29 +30,23 @@ public class NewMediumDialogForm extends AbstractTransformedForm {
     private Group group = null;
 
     @EmbeddedEventListener(component = "btnOk", event = SWT.Selection)
-    private final Listener shellCloseListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (!selectedMediumType.isPresent()) {
-                MessageBox box = new MessageBox(parent.orNull(), SWT.ICON_ERROR);
-                box.setMessage(bundle.getString("global.youHaveToSelectMediumType"));
-                box.setText(bundle.getString("global.error"));
-                box.open();
-                return;
-            }
-            medijRepository.saveMedij(Integer.parseInt(textID.getText()), selectedMediumType.get());
-            runnerWhenClosingShouldRun = true;
-            shell.close();
+    private void shellCloseListener() {
+        if (!selectedMediumType.isPresent()) {
+            MessageBox box = new MessageBox(parent.orNull(), SWT.ICON_ERROR);
+            box.setMessage(bundle.getString("global.youHaveToSelectMediumType"));
+            box.setText(bundle.getString("global.error"));
+            box.open();
+            return;
         }
-    };
+        medijRepository.saveMedij(Integer.parseInt(textID.getText()), selectedMediumType.get());
+        runnerWhenClosingShouldRun = true;
+        shell.close();
+    }
 
     @EmbeddedEventListener(component = "btnCancel", event = SWT.Selection)
-    private final Listener btnCloseSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            shell.close();
-        }
-    };
+    private void btnCloseSelectionListener()  {
+        shell.close();
+    }
 
     @Override
     protected void onShellReady() {

@@ -89,78 +89,63 @@ public class SettingsDialogForm extends AbstractTransformedForm {
     private Optional<UserConfiguration> userConfiguration = Optional.absent();
 
     @EmbeddedEventListener(component = "btnCancel", event = SWT.Selection)
-    private final HandledListener btnCancelSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            shell.close();
-        }
-    };
+    private void btnCancelSelectionListener() {
+        shell.close();
+    }
 
     @EmbeddedEventListener(component = "comboLanguage", event = SWT.Modify)
-    private final HandledListener comboLanguageModifyListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (!isFormTransformationComplete())
-                return;
-            int index = comboLanguage.getSelectionIndex();
-            checkElementIndex(index, Language.values().length);
-            userConfiguration.get().setLocaleLanguage(Language.values()[index].getName());
-            runnerWhenClosingShouldRun = true;
-        }
-    };
+    private void comboLanguageModifyListener() {
+        if (!isFormTransformationComplete())
+            return;
+        int index = comboLanguage.getSelectionIndex();
+        checkElementIndex(index, Language.values().length);
+        userConfiguration.get().setLocaleLanguage(Language.values()[index].getName());
+        runnerWhenClosingShouldRun = true;
+    }
 
     @EmbeddedEventListener(component = "textElementsPerPage", event = SWT.Modify)
-    private final HandledListener textElementsPerPageModifyListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (!isFormTransformationComplete())
-                return;
-            String data = textElementsPerPage.getText();
-            if (data.isEmpty()) {
-                textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
-                return;
-            }
-            int elementsPerPage;
-            try {
-                elementsPerPage = Integer.parseInt(data);
-            } catch (NumberFormatException e) {
-                textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
-                return;
-            }
-            if (elementsPerPage < 0) {
-                textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
-                return;
-            }
-            userConfiguration.get().setElementsPerPage(elementsPerPage);
-            runnerWhenClosingShouldRun = true;
+    private void textElementsPerPageModifyListener() {
+        if (!isFormTransformationComplete())
+            return;
+        String data = textElementsPerPage.getText();
+        if (data.isEmpty()) {
+            textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
+            return;
         }
-    };
+        int elementsPerPage;
+        try {
+            elementsPerPage = Integer.parseInt(data);
+        } catch (NumberFormatException e) {
+            textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
+            return;
+        }
+        if (elementsPerPage < 0) {
+            textElementsPerPage.setText(Integer.toString(userConfiguration.get().getElementsPerPage()));
+            return;
+        }
+        userConfiguration.get().setElementsPerPage(elementsPerPage);
+        runnerWhenClosingShouldRun = true;
+    }
 
     @EmbeddedEventListener(component = "chkProxyServerUsesNtlm", event = SWT.Selection)
-    private final HandledListener chkProxyServerUsesNtlmSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
-            proxyConfiguration.setNtlm(chkProxyServerUsesNtlm.getSelection());
-        }
-    };
+    private void chkProxyServerUsesNtlmSelectionListener() {
+        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
+        proxyConfiguration.setNtlm(chkProxyServerUsesNtlm.getSelection());
+    }
 
     @EmbeddedEventListeners({
             @EmbeddedEventListener(component = "chkCheckForNewVersionsOnStartup", event = SWT.Selection),
             @EmbeddedEventListener(component = "textTenrecUsername", event = SWT.Modify),
             @EmbeddedEventListener(component = "textTenrecPassword", event = SWT.Modify)
     })
-    private final HandledListener tenrecSettingsModifyListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (!isFormTransformationComplete())
-                return;
-            UserConfiguration.TenrecConfiguration tenrecConfiguration = userConfiguration.get().getTenrecConfiguration();
-            tenrecConfiguration.setUsername(textTenrecUsername.getText());
-            tenrecConfiguration.setPassword(textTenrecPassword.getText());
-            tenrecConfiguration.setCheckForNewVersionsOnStartup(chkCheckForNewVersionsOnStartup.getSelection());
-        }
-    };
+    private void tenrecSettingsModifyListener() {
+        if (!isFormTransformationComplete())
+            return;
+        UserConfiguration.TenrecConfiguration tenrecConfiguration = userConfiguration.get().getTenrecConfiguration();
+        tenrecConfiguration.setUsername(textTenrecUsername.getText());
+        tenrecConfiguration.setPassword(textTenrecPassword.getText());
+        tenrecConfiguration.setCheckForNewVersionsOnStartup(chkCheckForNewVersionsOnStartup.getSelection());
+    }
 
     @EmbeddedEventListeners({
             @EmbeddedEventListener(component = "textProxyServer", event = SWT.Modify),
@@ -168,119 +153,92 @@ public class SettingsDialogForm extends AbstractTransformedForm {
             @EmbeddedEventListener(component = "textProxyServerUsername", event = SWT.Modify),
             @EmbeddedEventListener(component = "textProxyServerPassword", event = SWT.Modify)
     })
-    private final HandledListener proxySettingsModifyListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (!isFormTransformationComplete())
-                return;
-            UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
-            proxyConfiguration.setServer(textProxyServer.getText());
-            if (!textProxyServerPort.getText().isEmpty())
-                proxyConfiguration.setPort(Integer.parseInt(textProxyServerPort.getText()));
-            proxyConfiguration.setUsername(textProxyServerUsername.getText());
-            proxyConfiguration.setPassword(textProxyServerPassword.getText());
-        }
-    };
+    private void proxySettingsModifyListener() {
+        if (!isFormTransformationComplete())
+            return;
+        UserConfiguration.ProxyConfiguration proxyConfiguration = userConfiguration.get().getProxyConfiguration();
+        proxyConfiguration.setServer(textProxyServer.getText());
+        if (!textProxyServerPort.getText().isEmpty())
+            proxyConfiguration.setPort(Integer.parseInt(textProxyServerPort.getText()));
+        proxyConfiguration.setUsername(textProxyServerUsername.getText());
+        proxyConfiguration.setPassword(textProxyServerPassword.getText());
+    }
 
     @EmbeddedEventListener(component = "btnAddMediumType", event = SWT.Selection)
-    private final HandledListener btnAddMediumTypeSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            TableItem tableItem = new TableItem(listMediumTypes, SWT.NONE);
-            String newMediumTypeName = getNewEntityText(listMediumTypes.getItems(), bundle.getString("settings.newMediumType"));
-            tableItem.setText(newMediumTypeName);
-            tipMedijaRepository.addTipMedija(newMediumTypeName);
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnAddMediumTypeSelectionListener() {
+        TableItem tableItem = new TableItem(listMediumTypes, SWT.NONE);
+        String newMediumTypeName = getNewEntityText(listMediumTypes.getItems(), bundle.getString("settings.newMediumType"));
+        tableItem.setText(newMediumTypeName);
+        tipMedijaRepository.addTipMedija(newMediumTypeName);
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnDeleteMediumType", event = SWT.Selection)
-    private final HandledListener btnDeleteMediumTypeSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (listMediumTypes.getSelectionIndex() < 0)
-                return;
-            tipMedijaRepository.deleteMediumTypeByName(listMediumTypes.getItem(listMediumTypes.getSelectionIndex()).getText());
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnDeleteMediumTypeSelectionListener() throws ApplicationException {
+        if (listMediumTypes.getSelectionIndex() < 0)
+            return;
+        tipMedijaRepository.deleteMediumTypeByName(listMediumTypes.getItem(listMediumTypes.getSelectionIndex()).getText());
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnAddLocation", event = SWT.Selection)
-    private final HandledListener btnAddLocationSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
-            String newLocation = getNewEntityText(listLokacije.getItems(), bundle.getString("settings.newLocation"));
-            tableItem.setText(newLocation);
-            pozicijaRepository.addPozicija(new Pozicija(newLocation, false));
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnAddLocationSelectionListener() {
+        TableItem tableItem = new TableItem(listLokacije, SWT.NONE);
+        String newLocation = getNewEntityText(listLokacije.getItems(), bundle.getString("settings.newLocation"));
+        tableItem.setText(newLocation);
+        pozicijaRepository.addPozicija(new Pozicija(newLocation, false));
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnDeleteLocation", event = SWT.Selection)
-    private final HandledListener btnDeleteLocationSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (listLokacije.getSelectionIndex() < 0)
-                return;
-            pozicijaRepository.deletePozicijaByName(listLokacije.getItem(listLokacije.getSelectionIndex()).getText());
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnDeleteLocationSelectionListener() {
+        if (listLokacije.getSelectionIndex() < 0)
+            return;
+        pozicijaRepository.deletePozicijaByName(listLokacije.getItem(listLokacije.getSelectionIndex()).getText());
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnAddGenre", event = SWT.Selection)
-    private final HandledListener btnAddGenreSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            TableItem tableItem = new TableItem(listZanrovi, SWT.NONE);
-            String newGenre = getNewEntityText(listZanrovi.getItems(), bundle.getString("settings.newGenre"));
-            tableItem.setText(newGenre);
-            zanrRepository.addZanr(newGenre);
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnAddGenreSelectionListener() {
+        TableItem tableItem = new TableItem(listZanrovi, SWT.NONE);
+        String newGenre = getNewEntityText(listZanrovi.getItems(), bundle.getString("settings.newGenre"));
+        tableItem.setText(newGenre);
+        zanrRepository.addZanr(newGenre);
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnDeleteGenre", event = SWT.Selection)
-    private final HandledListener btnDeleteGenreSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (listZanrovi.getSelectionIndex() < 0)
-                return;
-            zanrRepository.deleteZanrByName(listZanrovi.getItem(listZanrovi.getSelectionIndex()).getText());
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnDeleteGenreSelectionListener() {
+        if (listZanrovi.getSelectionIndex() < 0)
+            return;
+        zanrRepository.deleteZanrByName(listZanrovi.getItem(listZanrovi.getSelectionIndex()).getText());
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnAddTag", event = SWT.Selection)
-    private final HandledListener btnAddTagSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            TableItem tableItem = new TableItem(listTagovi, SWT.NONE);
-            String newTag = getNewEntityText(listTagovi.getItems(), bundle.getString("settings.newTag"));
-            tableItem.setText(newTag);
-            tagRepository.addTag(newTag);
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnAddTagSelectionListener() {
+        TableItem tableItem = new TableItem(listTagovi, SWT.NONE);
+        String newTag = getNewEntityText(listTagovi.getItems(), bundle.getString("settings.newTag"));
+        tableItem.setText(newTag);
+        tagRepository.addTag(newTag);
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "btnDeleteTag", event = SWT.Selection)
-    private final HandledListener btnDeleteTagSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (listTagovi.getSelectionIndex() < 0)
-                return;
-            tagRepository.deleteTagByName(listTagovi.getItem(listTagovi.getSelectionIndex()).getText());
-            runnerWhenClosingShouldRun = true;
-            reReadData();
-        }
-    };
+    private void btnDeleteTagSelectionListener() throws ApplicationException {
+        if (listTagovi.getSelectionIndex() < 0)
+            return;
+        tagRepository.deleteTagByName(listTagovi.getItem(listTagovi.getSelectionIndex()).getText());
+        runnerWhenClosingShouldRun = true;
+        reReadData();
+    }
 
     @EmbeddedEventListener(component = "listMediumTypes", event = SWT.Selection)
     private final EditableSingleColumnTableSelectionListener listMediumTypesSelectionListener = new EditableSingleColumnTableSelectionListener(
