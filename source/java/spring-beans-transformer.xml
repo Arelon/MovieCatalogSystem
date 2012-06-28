@@ -22,6 +22,9 @@
     </bean>
 
     <bean id="transformer" class="net.milanaleksic.guitransformer.Transformer">
+        <property name="methodEventListenerExceptionHandler">
+            <bean class="net.milanaleksic.mcs.application.gui.helper.GuiExceptionHandler" />
+        </property>
     </bean>
 
     <bean id="converterFactory" class="net.milanaleksic.guitransformer.ConverterFactory">

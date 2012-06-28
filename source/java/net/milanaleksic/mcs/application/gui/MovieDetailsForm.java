@@ -10,7 +10,6 @@ import net.milanaleksic.mcs.infrastructure.config.*;
 import net.milanaleksic.mcs.infrastructure.util.IMDBUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.*;
 
@@ -41,46 +40,37 @@ public class MovieDetailsForm extends AbstractTransformedForm implements LifeCyc
     };
 
     @EmbeddedEventListener(component = "movieNameValue", event = SWT.MouseEnter)
-    private final Listener movieNameValueMouseEnter = new Listener() {
-        @Override
-        public void handleEvent(Event event) {
-            if (bundle.getString("global.selectAMovie").equals(movieNameValue.getText())) {
-                movieNameValue.setCursor(shell.getDisplay().getSystemCursor(SWT.CURSOR_ARROW));
-                movieNameValue.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
-                return;
-            }
-            movieNameValue.setCursor(shell.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-            movieNameValue.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+    private void movieNameValueMouseEnter() {
+        if (bundle.getString("global.selectAMovie").equals(movieNameValue.getText())) {
+            movieNameValue.setCursor(shell.getDisplay().getSystemCursor(SWT.CURSOR_ARROW));
+            movieNameValue.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
+            return;
         }
-    };
+        movieNameValue.setCursor(shell.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        movieNameValue.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+    }
 
     @EmbeddedEventListener(component = "movieNameValue", event = SWT.MouseExit)
-    private final Listener movieNameValueMouseExit = new Listener() {
-        @Override
-        public void handleEvent(Event event) {
-            movieNameValue.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
-        }
-    };
+    private void movieNameValueMouseExit() {
+        movieNameValue.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
+    }
 
     @EmbeddedEventListener(component = "movieNameValue", event = SWT.MouseDown)
-    private final Listener movieNameValueMouseDown = new Listener() {
-        @Override
-        public void handleEvent(Event event) {
-            if (!film.isPresent())
-                return;
-            if (!IMDBUtil.isValidImdbId(film.get().getImdbId())) {
-                MessageBox box = new MessageBox(getShell(), SWT.ICON_INFORMATION);
-                box.setText(bundle.getString("global.infoDialogTitle"));
-                box.setMessage(bundle.getString("global.movieIsNotLinkedToImdb"));
-                box.open();
-                return;
-            }
-            try {
-                Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(film.get().getImdbId()));
-            } catch (IOException ignored) {
-            }
+    private void movieNameValueMouseDown() {
+        if (!film.isPresent())
+            return;
+        if (!IMDBUtil.isValidImdbId(film.get().getImdbId())) {
+            MessageBox box = new MessageBox(getShell(), SWT.ICON_INFORMATION);
+            box.setText(bundle.getString("global.infoDialogTitle"));
+            box.setMessage(bundle.getString("global.movieIsNotLinkedToImdb"));
+            box.open();
+            return;
         }
-    };
+        try {
+            Desktop.getDesktop().browse(IMDBUtil.createUriBasedOnId(film.get().getImdbId()));
+        } catch (IOException ignored) {
+        }
+    }
 
     @EmbeddedComponent
     private Label movieNameValue;

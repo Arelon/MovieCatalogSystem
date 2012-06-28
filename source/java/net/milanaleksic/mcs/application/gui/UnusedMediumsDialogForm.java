@@ -1,8 +1,6 @@
 package net.milanaleksic.mcs.application.gui;
 
 import net.milanaleksic.guitransformer.*;
-import net.milanaleksic.mcs.application.gui.helper.*;
-import net.milanaleksic.mcs.application.util.ApplicationException;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.MedijService;
 import org.eclipse.swt.SWT;
@@ -22,40 +20,31 @@ public class UnusedMediumsDialogForm extends AbstractTransformedForm {
     private Table unusedMediumTable = null;
 
     @EmbeddedEventListener(component = "btnDeleteUnusedMedium", event = SWT.Selection)
-    private final Listener btnDeleteUnusedMediumSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            if (unusedMediumTable.getSelectionIndex() < 0)
-                return;
-            Medij medij = (Medij) unusedMediumTable.getItem(unusedMediumTable.getSelectionIndex()).getData();
+    private void btnDeleteUnusedMediumSelectionListener() {
+        if (unusedMediumTable.getSelectionIndex() < 0)
+            return;
+        Medij medij = (Medij) unusedMediumTable.getItem(unusedMediumTable.getSelectionIndex()).getData();
+        logger.warn("Deleting medium: " + medij); //NON-NLS
+        medijRepository.deleteMediumType(medij);
+        UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
+        readData();
+    }
+
+    @EmbeddedEventListener(component = "btnDeleteAllUnusedMediums", event = SWT.Selection)
+    private void btnDeleteAllUnusedMediumsSelectionListener() {
+        for (int i = 0; i < unusedMediumTable.getItemCount(); i++) {
+            Medij medij = (Medij) unusedMediumTable.getItem(i).getData();
             logger.warn("Deleting medium: " + medij); //NON-NLS
             medijRepository.deleteMediumType(medij);
             UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
-            readData();
         }
-    };
-
-    @EmbeddedEventListener(component = "btnDeleteAllUnusedMediums", event = SWT.Selection)
-    private final Listener btnDeleteAllUnusedMediumsSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            for (int i = 0; i < unusedMediumTable.getItemCount(); i++) {
-                Medij medij = (Medij) unusedMediumTable.getItem(i).getData();
-                logger.warn("Deleting medium: " + medij); //NON-NLS
-                medijRepository.deleteMediumType(medij);
-                UnusedMediumsDialogForm.super.runnerWhenClosingShouldRun = true;
-            }
-            readData();
-        }
-    };
+        readData();
+    }
 
     @EmbeddedEventListener(component = "btnClose", event = SWT.Selection)
-    private final Listener btnCloseSelectionListener = new HandledListener(this) {
-        @Override
-        public void safeHandleEvent(Event event) throws ApplicationException {
-            shell.close();
-        }
-    };
+    private void btnCloseSelectionListener() {
+        shell.close();
+    }
 
     @Override
     protected void onShellReady() {

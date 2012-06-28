@@ -215,17 +215,12 @@ public class MainForm extends Observable implements Form {
     }
 
     @EmbeddedEventListener(component = "mainTable", event = SWT.MouseWheel)
-    private final Listener mainTableMouseWheel = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            if (e.count < 0)
-                nextPage();
-            else if (e.count > 0)
-                previousPage();
-        }
-
-    };
+    private void mainTableMouseWheel(Event e) {
+        if (e.count < 0)
+            nextPage();
+        else if (e.count > 0)
+            previousPage();
+    }
 
     @EmbeddedEventListener(component = "mainTable", event = SWT.KeyDown)
     private final Listener mainTableKeyPressed = new HandledListener(this) {
@@ -293,26 +288,16 @@ public class MainForm extends Observable implements Form {
     };
 
     @EmbeddedEventListener(component = "btnNextPage", event = SWT.Selection)
-    private final Listener btnNextPageSelectionAdapter = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            nextPage();
-            mainTable.setFocus();
-        }
-
-    };
+    private void btnNextPageSelectionAdapter() {
+        nextPage();
+        mainTable.setFocus();
+    }
 
     @EmbeddedEventListener(component = "btnPrevPage", event = SWT.Selection)
-    private final Listener btnPrevPageSelectionAdapter = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            previousPage();
-            mainTable.setFocus();
-        }
-
-    };
+    private void btnPrevPageSelectionAdapter() {
+        previousPage();
+        mainTable.setFocus();
+    }
 
     private class MainFormShellListener extends ShellAdapter {
 
@@ -351,48 +336,33 @@ public class MainForm extends Observable implements Form {
             @EmbeddedEventListener(component = "comboZanr", event = SWT.Selection),
             @EmbeddedEventListener(component = "comboTag", event = SWT.Selection)
     })
-    private final Listener comboRefreshAdapter = new HandledListener(this) {
+    private void comboRefreshAdapter(Event e) {
+        Combo combo = (Combo) e.widget;
+        if (combo.getSelectionIndex() == 1)
+            combo.select(0);
+        currentViewState.setActivePage(0L);
+        doFillMainTable();
+        mainTable.setFocus();
+    }
 
-        @Override
-        public void safeHandleEvent(Event e) {
-            Combo combo = (Combo) e.widget;
-            if (combo.getSelectionIndex() == 1)
-                combo.select(0);
-            currentViewState.setActivePage(0L);
-            doFillMainTable();
-            mainTable.setFocus();
-        }
-
-    };
-
+    @SuppressWarnings({"unchecked"})
     @EmbeddedEventListener(component = "comboSort", event = SWT.Selection)
-    private Listener sortingComboSelectionListener = new HandledListener(this) {
-
-        @SuppressWarnings({"unchecked"})
-        @Override
-        public void safeHandleEvent(Event e) {
-            Combo combo = (Combo) e.widget;
-            int selectionIndex = combo.getSelectionIndex();
-            SingularAttribute singularAttribute = ((SingularAttribute[]) combo.getData())[selectionIndex];
-            currentViewState.setCurrentSortOn((SingularAttribute<Film, String>) singularAttribute);
-            doFillMainTable();
-            mainTable.setFocus();
-        }
-
-    };
+    private void sortingComboSelectionListener(Event e) {
+        Combo combo = (Combo) e.widget;
+        int selectionIndex = combo.getSelectionIndex();
+        SingularAttribute singularAttribute = ((SingularAttribute[]) combo.getData())[selectionIndex];
+        currentViewState.setCurrentSortOn((SingularAttribute<Film, String>) singularAttribute);
+        doFillMainTable();
+        mainTable.setFocus();
+    }
 
     @EmbeddedEventListener(component = "cbAscending", event = SWT.Selection)
-    private final Listener cbAscendingSelectionListener = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            Button ascending = (Button) e.widget;
-            currentViewState.setAscending(ascending.getSelection());
-            doFillMainTable();
-            mainTable.setFocus();
-        }
-
-    };
+    private void cbAscendingSelectionListener(Event e) {
+        Button ascending = (Button) e.widget;
+        currentViewState.setAscending(ascending.getSelection());
+        doFillMainTable();
+        mainTable.setFocus();
+    }
 
     @EmbeddedEventListener(component = "toolExport", event = SWT.Selection)
     private final Listener toolExportSelectionAdapter = new HandledListener(this) {
@@ -494,155 +464,113 @@ public class MainForm extends Observable implements Form {
     };
 
     @EmbeddedEventListener(component = "toolErase", event = SWT.Selection)
-    private final Listener toolEraseSelectionAdapter = new HandledListener(this) {
+    private void toolEraseSelectionAdapter() {
+        Optional<Film> selectedMovie = mainTable.getSelectedItem();
+        if (!selectedMovie.isPresent())
+            return;
+        deleteMovieDialogDialogForm.open(shell, selectedMovie.get(),
+                new Runnable() {
 
-        @Override
-        public void safeHandleEvent(Event e) {
-            Optional<Film> selectedMovie = mainTable.getSelectedItem();
-            if (!selectedMovie.isPresent())
-                return;
-            deleteMovieDialogDialogForm.open(shell, selectedMovie.get(),
-                    new Runnable() {
+                    @Override
+                    public void run() {
+                        doFillMainTable();
+                    }
 
-                        @Override
-                        public void run() {
-                            doFillMainTable();
-                        }
-
-                    });
-        }
-
-    };
+                });
+    }
 
     @EmbeddedEventListeners({
             @EmbeddedEventListener(component = "settingsMenuItem", event = SWT.Selection),
             @EmbeddedEventListener(component = "toolSettings", event = SWT.Selection)
     })
-    private final Listener toolSettingsSelectionAdapter = new HandledListener(this) {
+    private void toolSettingsSelectionAdapter(Event e) {
+        if (e.detail == SWT.ARROW) {
+            ToolItem toolItem = (ToolItem) e.widget;
+            ToolBar toolBar = toolItem.getParent();
+            Rectangle rect = toolItem.getBounds();
+            Point pt = new Point(rect.x, rect.y + rect.height);
+            pt = toolBar.toDisplay(pt);
+            settingsPopupMenu.setLocation(pt.x, pt.y);
+            settingsPopupMenu.setVisible(true);
+        } else {
+            settingsDialogDialogForm.open(shell, new Runnable() {
+                @Override
+                public void run() {
+                    resetPozicije();
+                    resetZanrovi();
+                    resetMedija();
+                    resetTagova();
+                    doFillMainTable();
+                }
+            });
+        }
+    }
 
-        @Override
-        public void safeHandleEvent(Event e) {
-            if (e.detail == SWT.ARROW) {
-                ToolItem toolItem = (ToolItem) e.widget;
-                ToolBar toolBar = toolItem.getParent();
-                Rectangle rect = toolItem.getBounds();
-                Point pt = new Point(rect.x, rect.y + rect.height);
-                pt = toolBar.toDisplay(pt);
-                settingsPopupMenu.setLocation(pt.x, pt.y);
-                settingsPopupMenu.setVisible(true);
-            } else {
-                settingsDialogDialogForm.open(shell, new Runnable() {
+    @EmbeddedEventListener(component = "toolExit", event = SWT.Selection)
+    private void toolExitSelectionAdapter() {
+        shell.close();
+    }
+
+    @EmbeddedEventListener(component = "toolAbout", event = SWT.Selection)
+    private void toolAboutSelectionAdapter() {
+        aboutDialogDialogForm.open(shell);
+    }
+
+    @EmbeddedEventListener(component = "toolNew", event = SWT.Selection)
+    private void toolNewSelectionAdapter() {
+        newOrEditMovieDialogDialogForm.open(shell, Optional.<Film>absent(), new Runnable() {
+            @Override
+            public void run() {
+                doFillMainTable();
+            }
+        });
+    }
+
+    @EmbeddedEventListener(component = "findUnusedMediums", event = SWT.Selection)
+    private void findUnusedMediumsSelectionListener() {
+        unusedMediumsDialogDialogForm.open(shell, new Runnable() {
+
+            @Override
+            public void run() {
+                doFillMainTable();
+            }
+
+        });
+    }
+
+    @EmbeddedEventListener(component = "findUnmatchedImdbMovies", event = SWT.Selection)
+    private void findUnmatchedImdbMoviesSelectionListener() {
+        unmatchedMoviesDialogDialogForm.open(shell, new Runnable() {
+
+            @Override
+            public void run() {
+                doFillMainTable();
+            }
+
+        });
+    }
+
+    @EmbeddedEventListener(component = "mainTable", event = SWT.MouseHover)
+    private void mainTableMouseEnterListener (Event e) {
+        Optional<Film> film = mainTable.getItemAtLocation(e.x, e.y);
+        if (!film.isPresent())
+            return;
+        movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get())));
+        mainTable.setFocus();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    @EmbeddedEventListener(component = "mainTable", event = CoolMovieComposite.EventMovieDetailsSelected)
+    private void mainTableMovieDetailsSelectedListener(Event e) {
+        Optional<Film> film = (Optional<Film>) e.data;
+        newOrEditMovieDialogDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get())),
+                new Runnable() {
                     @Override
                     public void run() {
-                        resetPozicije();
-                        resetZanrovi();
-                        resetMedija();
-                        resetTagova();
                         doFillMainTable();
                     }
                 });
-            }
-        }
-
-    };
-
-    @EmbeddedEventListener(component = "toolExit", event = SWT.Selection)
-    private final Listener toolExitSelectionAdapter = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            shell.close();
-        }
-
-    };
-
-    @EmbeddedEventListener(component = "toolAbout", event = SWT.Selection)
-    private final Listener toolAboutSelectionAdapter = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            aboutDialogDialogForm.open(shell);
-        }
-
-    };
-
-    @EmbeddedEventListener(component = "toolNew", event = SWT.Selection)
-    private final Listener toolNewSelectionAdapter = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            newOrEditMovieDialogDialogForm.open(shell, Optional.<Film>absent(), new Runnable() {
-                @Override
-                public void run() {
-                    doFillMainTable();
-                }
-            });
-        }
-
-    };
-
-    @EmbeddedEventListener(component = "findUnusedMediums", event = SWT.Selection)
-    private final Listener findUnusedMediumsSelectionListener = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            unusedMediumsDialogDialogForm.open(shell, new Runnable() {
-
-                @Override
-                public void run() {
-                    doFillMainTable();
-                }
-
-            });
-        }
-    };
-
-    @EmbeddedEventListener(component = "findUmatchedImdbMovies", event = SWT.Selection)
-    private final Listener findUmatchedImdbMoviesSelectionListener = new HandledListener(this) {
-
-        @Override
-        public void safeHandleEvent(Event e) {
-            unmatchedMoviesDialogDialogForm.open(shell, new Runnable() {
-
-                @Override
-                public void run() {
-                    doFillMainTable();
-                }
-
-            });
-        }
-    };
-
-    @EmbeddedEventListener(component = "mainTable", event = SWT.MouseHover)
-    private final Listener mainTableMouseEnterListener = new HandledListener(this) {
-
-        @SuppressWarnings({"unchecked"})
-        @Override
-        public void safeHandleEvent(Event e) {
-            Optional<Film> film = mainTable.getItemAtLocation(e.x, e.y);
-            if (!film.isPresent())
-                return;
-            movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get())));
-            mainTable.setFocus();
-        }
-    };
-
-    @EmbeddedEventListener(component = "mainTable", event = CoolMovieComposite.EventMovieDetailsSelected)
-    private final Listener mainTableMovieDetailsSelectedListener = new HandledListener(this) {
-
-        @SuppressWarnings({"unchecked"})
-        @Override
-        public void safeHandleEvent(Event e) {
-            Optional<Film> film = (Optional<Film>) e.data;
-            newOrEditMovieDialogDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get())),
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            doFillMainTable();
-                        }
-                    });
-        }
-    };
+    }
 
 
     // DESIGN

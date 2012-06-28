@@ -213,8 +213,8 @@
                 "menuItem(findUnusedMediums,{push})" : {
                     "text" : "[main.findUnusedMediums]"
                 },
-                "menuItem(findUmatchedImdbMovies,{push})" : {
-                    "text" : "[main.findUmatchedImdbMovies]"
+                "menuItem(findUnmatchedImdbMovies,{push})" : {
+                    "text" : "[main.findUnmatchedImdbMovies]"
                 }
             },
             "defaultItem" : "(settingsMenuItem)"
