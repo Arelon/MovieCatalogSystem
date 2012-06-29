@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
  */
 public class GuiExceptionHandler implements MethodEventListenerExceptionHandler {
 
-    private static final Logger log = Logger.getLogger(HandledListener.class);
+    private static final Logger log = Logger.getLogger(GuiExceptionHandler.class);
 
     @Inject
     protected ResourceBundleSource resourceBundleSource;
