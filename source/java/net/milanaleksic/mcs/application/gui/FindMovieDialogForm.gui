@@ -42,7 +42,7 @@
                 }
             }
         },
-        "tabFolder()" : {
+        "tabFolder(_)" : {
             "layoutData" : {
                 "_type" : "[gridData](fill,fill,true,true)",
                 "widthHint" : 200,
