@@ -15,11 +15,11 @@ public class ObjectProvider implements net.milanaleksic.guitransformer.providers
     private ApplicationContext applicationContext;
 
     @Override
-    public Object provideObjectNamed(String beanName) throws TransformerException {
+    public Object provideObjectNamed(String beanName) {
         try {
             return applicationContext.getBean(beanName);
         } catch (NoSuchBeanDefinitionException e) {
-            throw new TransformerException("Bean could not been found: "+beanName, e);
+            throw new RuntimeException("Bean could not been found: "+beanName, e);
         }
     }
 
