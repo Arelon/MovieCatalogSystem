@@ -12,5 +12,8 @@ included beside compiled Java files for app to be able to run properly).
 
 5. (for running) startup directory must be set as ${project.dir}/startup
 
-6. (TenrecWS) if you wish to run Tenrec Web Service locally, configure your Apache
+6. (for running) spring instrumentation must be set as javaagent
+    -javaagent:"c:\Documents and Settings\Milan\.ivy2\cache\org.springframework\spring-instrument\jars\spring-instrument-3.1.1.RELEASE.jar"
+
+7. (TenrecWS) if you wish to run Tenrec Web Service locally, configure your Apache
 using docs/Tenrec Localhost Apache/howto.txt

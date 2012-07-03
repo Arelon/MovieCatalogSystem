@@ -10,7 +10,7 @@ import java.util.Set;
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings({"HardCodedStringLiteral"})
-public class Pozicija implements java.io.Serializable {
+public class Pozicija extends ModificationsAwareEntity implements java.io.Serializable {
 
     public static final String DEFAULT_POSITION_YES = "Y";
     public static final String DEFAULT_POSITION_NO = "N";
@@ -116,4 +116,8 @@ public class Pozicija implements java.io.Serializable {
         this.defaultPosition = defaultPosition;
     }
 
+    @Override
+    public int getId() {
+        return idpozicija;
+    }
 }

@@ -7,7 +7,7 @@ import java.util.Set;
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class Zanr implements java.io.Serializable {
+public class Zanr extends ModificationsAwareEntity implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,5 +82,10 @@ public class Zanr implements java.io.Serializable {
     public int hashCode() {
         int result = zanr != null ? zanr.hashCode() : 0;
         return result;
+    }
+
+    @Override
+    public int getId() {
+        return idzanr;
     }
 }

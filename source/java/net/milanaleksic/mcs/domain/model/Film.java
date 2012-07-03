@@ -11,7 +11,8 @@ import java.util.Set;
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class Film implements Serializable, Comparable<Film> {
+public class Film extends ModificationsAwareEntity
+        implements Serializable, Comparable<Film> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -263,5 +264,10 @@ public class Film implements Serializable, Comparable<Film> {
         }
         this.setImdbId(movie.getImdbId());
         this.setNazivfilma(movie.getName());
+    }
+
+    @Override
+    public int getId() {
+        return idfilm;
     }
 }

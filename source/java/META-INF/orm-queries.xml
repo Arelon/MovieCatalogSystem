@@ -155,4 +155,16 @@
         <hint name="org.hibernate.cacheable" value="true" />
     </named-query>
 
+    <!-- MODIFICATION -->
+
+    <named-query name="getNextClockForEntity">
+        <query><![CDATA[
+            select mod.clock + 1
+            from Modification mod
+            where mod.entityId = :entityId
+            and mod.entity = :entityName
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
 </entity-mappings>

@@ -7,7 +7,7 @@ import java.util.Set;
 @Cacheable
 @org.hibernate.annotations.Cache(region="mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class TipMedija implements java.io.Serializable {
+public class TipMedija extends ModificationsAwareEntity implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,4 +80,8 @@ public class TipMedija implements java.io.Serializable {
         return result;
     }
 
+    @Override
+    public int getId() {
+        return idtip;
+    }
 }
