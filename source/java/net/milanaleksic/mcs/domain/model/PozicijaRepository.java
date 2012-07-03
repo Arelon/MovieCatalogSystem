@@ -13,7 +13,7 @@ public interface PozicijaRepository {
 
     List<Pozicija> getPozicijas();
 
-    void addPozicija(Pozicija position);
+    Pozicija addPozicija(Pozicija position);
 
     void deletePozicijaByName(String pozicija);
 

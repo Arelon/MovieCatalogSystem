@@ -4,9 +4,10 @@ import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.infrastructure.tenrec.TenrecService;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
@@ -20,10 +21,10 @@ import static org.junit.Assert.*;
 @ContextConfiguration(locations = {"classpath:spring-beans.xml"})
 public class TenrecServiceImplTest {
 
-    @Autowired
+    @Inject
     private TenrecService tenrecService;
 
-    @Autowired
+    @Inject
     private ApplicationManager applicationManager;
 
     @Before

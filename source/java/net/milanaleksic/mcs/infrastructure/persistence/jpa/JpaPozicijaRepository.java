@@ -26,10 +26,11 @@ public class JpaPozicijaRepository extends AbstractRepository implements Pozicij
     }
 
     @Override
-    public void addPozicija(Pozicija position) {
+    public Pozicija addPozicija(Pozicija position) {
         if (position.isDefault())
             entityManager.createNamedQuery("removeDefaultFlagIfOneExists").executeUpdate();
         entityManager.persist(position);
+        return position;
     }
 
     @Override

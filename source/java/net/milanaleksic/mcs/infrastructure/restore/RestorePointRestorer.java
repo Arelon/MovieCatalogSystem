@@ -18,6 +18,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     private String patternForSqlAlters;
     private String patternForCodeAlters;
     private String versionScript;
+    private boolean restoreContent;
 
     public void restoreDatabaseIfNeeded() {
         try (Connection conn = getConnection()) {
@@ -66,6 +67,8 @@ public class RestorePointRestorer extends AbstractRestorePointService {
     }
 
     private int getDatabaseVersionFromRestorePoint() {
+        if (!restoreContent)
+            return 0;
         File restoreFile = new File(SCRIPT_KATALOG_RESTORE_LOCATION);
         if (!restoreFile.exists())
             return 0;
@@ -95,7 +98,7 @@ public class RestorePointRestorer extends AbstractRestorePointService {
             }
             startAlterVersion = ending+1;
 
-            if (dbVersionFromRestorePoint != 0) {
+            if (dbVersionFromRestorePoint != 0 && restoreContent) {
                 if (log.isInfoEnabled())
                     log.info("Restoring content"); //NON-NLS
                 DBUtil.executeScriptOnConnection(SCRIPT_KATALOG_RESTORE_LOCATION, conn);
@@ -148,5 +151,9 @@ public class RestorePointRestorer extends AbstractRestorePointService {
 
     public void setVersionScript(String versionScript) {
         this.versionScript = versionScript;
+    }
+
+    public void setRestoreContent(boolean restoreContent) {
+        this.restoreContent = restoreContent;
     }
 }

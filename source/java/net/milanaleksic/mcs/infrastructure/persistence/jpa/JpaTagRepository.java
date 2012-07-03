@@ -24,10 +24,11 @@ public class JpaTagRepository extends AbstractRepository implements TagRepositor
     }
 
     @Override
-    public void addTag(String tag) {
-        Tag newTag = new Tag();
-        newTag.setNaziv(tag);
-        entityManager.persist(newTag);
+    public Tag addTag(String tag) {
+        Tag ofTheJedi = new Tag();
+        ofTheJedi.setNaziv(tag);
+        entityManager.persist(ofTheJedi);
+        return ofTheJedi;
     }
 
     @Override
