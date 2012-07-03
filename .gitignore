@@ -4,6 +4,7 @@ build/install
 build/ivy
 build/lib
 build/output
+build/testing-db
 db
 ivy
 out
