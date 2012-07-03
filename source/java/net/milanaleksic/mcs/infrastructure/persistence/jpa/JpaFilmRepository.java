@@ -47,6 +47,7 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
             newFilm.addMedij(medij);
         }
         for (Tag tag : selectedTags) {
+            tag = entityManager.find(Tag.class, tag.getIdtag());
             newFilm.addTag(tag);
         }
         entityManager.persist(newFilm);

@@ -65,6 +65,7 @@
         <property name="patternForSqlAlters" value="/net/milanaleksic/mcs/infrastructure/restore/alter/impl/alter_script_%d.sql"/>
         <property name="patternForCodeAlters" value="net.milanaleksic.mcs.infrastructure.restore.alter.impl.AlterScript%d"/>
         <property name="versionScript" value="SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'" />
+        <property name="restoreContent" value="${man.db.restoreContent}" />
     </bean>
 
     <bean id="restoreManager" class="net.milanaleksic.mcs.application.restore.RestoreManager" />

@@ -36,11 +36,11 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
             for (Medij medij : newMediums) {
                 medij = entityManager.merge(medij);
                 if (raniji.contains(medij)) {
+                    raniji.remove(medij);
                     if (!medij.getPozicija().equals(newPozicija)) {
                         medij.getPozicija().removeMedij(medij);
                         newPozicija.addMedij(medij);
                     }
-                    raniji.remove(medij);
                 }
                 else {
                     movieToBeUpdated.addMedij(medij);

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface MedijRepository {
 
-    void saveMedij(int index, TipMedija tipMedija);
+    Medij saveMedij(int index, TipMedija tipMedija);
 
     List<Medij> getMedijs();
 

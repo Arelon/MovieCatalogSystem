@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import com.google.common.collect.Sets;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -29,6 +31,8 @@ public class Tag implements Serializable {
     private Set<Film> films = null;
 
     public Set<Film> getFilms() {
+        if (films == null)
+            films = Sets.newHashSet();
 		return this.films;
 	}
 

@@ -44,10 +44,11 @@ public class JpaTipMedijaRepository extends AbstractRepository implements TipMed
     }
 
     @Override
-    public void addTipMedija(String newMediumType) {
-        TipMedija tipMedija = new TipMedija();
-        tipMedija.setNaziv(newMediumType);
-        entityManager.persist(tipMedija);
+    public TipMedija addTipMedija(String newMediumType) {
+        TipMedija ofTheJedi = new TipMedija();
+        ofTheJedi.setNaziv(newMediumType);
+        entityManager.persist(ofTheJedi);
+        return ofTheJedi;
     }
 
     @Override

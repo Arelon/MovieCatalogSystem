@@ -17,7 +17,7 @@ public interface TipMedijaRepository {
 
     void deleteMediumTypeByName(String mediumTypeName) throws ApplicationException;
 
-    void addTipMedija(String newMediumType);
+    TipMedija addTipMedija(String newMediumType);
 
     void updateTipMedija(TipMedija tipMedija);
 }

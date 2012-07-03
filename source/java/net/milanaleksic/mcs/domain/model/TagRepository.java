@@ -17,7 +17,7 @@ public interface TagRepository {
 
     void deleteTagByName(String name) throws ApplicationException;
 
-    void addTag(String newTag);
+    Tag addTag(String newTag);
 
     void updateTag(Tag tag);
 }

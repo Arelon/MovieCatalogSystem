@@ -25,10 +25,11 @@ public class JpaZanrRepository extends AbstractRepository implements ZanrReposit
     }
 
     @Override
-    public void addZanr(String newZanr) {
-        Zanr zanr = new Zanr();
-        zanr.setZanr(newZanr);
-        entityManager.persist(zanr);
+    public Zanr addZanr(String newZanr) {
+        Zanr ofTheJedi = new Zanr();
+        ofTheJedi.setZanr(newZanr);
+        entityManager.persist(ofTheJedi);
+        return ofTheJedi;
     }
 
     @Override

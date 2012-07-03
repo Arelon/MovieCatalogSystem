@@ -24,7 +24,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
     private PozicijaRepository pozicijaRepository;
 
     @Override
-    public void saveMedij(int index, TipMedija tipMedija) {
+    public Medij saveMedij(int index, TipMedija tipMedija) {
         Medij medij = new Medij();
         medij.setIndeks(index);
 
@@ -36,6 +36,7 @@ public class JpaMedijRepository extends AbstractRepository implements MedijRepos
         tipMedija.addMedij(medij);
 
         entityManager.persist(medij);
+        return medij;
     }
 
     @Override

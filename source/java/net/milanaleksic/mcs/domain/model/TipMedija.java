@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.domain.model;
 
+import com.google.common.collect.Sets;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -58,6 +60,8 @@ public class TipMedija implements java.io.Serializable {
 	}
 	
 	public void addMedij(Medij m) {
+        if (medijs == null)
+            medijs = Sets.newHashSet();
 		medijs.add(m);
 		m.setTipMedija(this);
 	}
