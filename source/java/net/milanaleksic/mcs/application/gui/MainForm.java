@@ -230,6 +230,9 @@ public class MainForm extends Observable implements Form {
             try {
                 String filterText = currentViewState.getFilterText();
                 switch (e.keyCode) {
+                    case SWT.DEL:
+                        deleteMovie();
+                        return;
                     case SWT.HOME:
                         firstPage();
                         return;
@@ -464,7 +467,7 @@ public class MainForm extends Observable implements Form {
     };
 
     @EmbeddedEventListener(component = "toolErase", event = SWT.Selection)
-    private void toolEraseSelectionAdapter() {
+    private void deleteMovie() {
         Optional<Film> selectedMovie = mainTable.getSelectedItem();
         if (!selectedMovie.isPresent())
             return;
