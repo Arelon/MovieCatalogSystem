@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
 import com.google.common.base.*;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.*;
 import com.google.common.io.ByteStreams;
 import net.milanaleksic.mcs.infrastructure.util.*;
 
@@ -19,7 +19,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private static final String SCRIPT_KATALOG_RESTORE_WITH_TIMESTAMP = "KATALOG_RESTORE_%s.sql"; //NON-NLS
 
     private static final String RESTORE_SCRIPT_HEADER =
-            MCS_VERSION_TAG+"%d%n*/%n%nset schema DB2ADMIN;%n%n"; //NON-NLS
+            MCS_VERSION_TAG + "%d%n*/%n%nset schema DB2ADMIN;%n%n"; //NON-NLS
 
     private static final String FILENAME_FORMAT_DATE = "yyyyMMddkkmmss"; //NON-NLS
 
@@ -84,7 +84,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
 
             appendRestartCountersScript(outputStream, conn);
 
-            for(RestoreSource source : restoreSources) {
+            for (RestoreSource source : restoreSources) {
                 printInsertStatementsForRestoreSource(conn, outputStream, source);
             }
             fos = Optional.of(new FileOutputStream(restoreFile));
@@ -97,24 +97,28 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
         try (PreparedStatement preparedStatement = conn.prepareStatement(source.getScript())) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                final List<Integer> columnTypeMappings = Lists.newArrayList();
                 ResultSetMetaData metaData = resultSet.getMetaData();
-                String tableName = metaData.getTableName(1);
+                for (int colIter = 1; colIter <= metaData.getColumnCount(); colIter++) {
+                    columnTypeMappings.add(metaData.getColumnType(colIter));
+                }
+                final String listOfResultSetColumns = getListOfResultSetColumns(metaData);
+                final String tableName = metaData.getTableName(1);
 
                 while (resultSet.next()) {
                     outputStatement(outputStream,
-                            generateInsertSqlForResultSet(resultSet, metaData, tableName,
-                                    getListOfResultSetColumns(metaData)));
+                            generateInsertSqlForResultSet(resultSet, columnTypeMappings, tableName, listOfResultSetColumns));
                 }
             }
         } catch (SQLException e) {
-            log.error("SQL exception occurred while working on restore script "+source.getScript()); //NON-NLS
+            log.error("SQL exception occurred while working on restore script " + source.getScript()); //NON-NLS
             throw e;
         }
     }
 
     private String getListOfResultSetColumns(ResultSetMetaData metaData) throws SQLException {
         StringBuilder colNames = new StringBuilder();
-        for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
+        for (int colIter = 1; colIter <= metaData.getColumnCount(); colIter++) {
             colNames.append(metaData.getColumnName(colIter));
             if (colIter != metaData.getColumnCount())
                 colNames.append(",");
@@ -122,10 +126,11 @@ public class RestorePointCreator extends AbstractRestorePointService {
         return colNames.toString();
     }
 
-    private String generateInsertSqlForResultSet(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String colNames) throws SQLException {
+    private String generateInsertSqlForResultSet(ResultSet resultSet, List<Integer> columnTypeMappings, String tableName, String colNames) throws SQLException {
         StringBuilder currentRowContents = new StringBuilder();
-        for (int colIter=1; colIter<=metaData.getColumnCount(); colIter++) {
-            int columnType = metaData.getColumnType(colIter);
+        final int columnCount = columnTypeMappings.size();
+        for (int colIter = 0; colIter < columnCount; colIter++) {
+            int columnType = columnTypeMappings.get(colIter);
             if (columnType == Types.INTEGER)
                 currentRowContents.append(resultSet.getInt(colIter));
             else if (columnType == Types.VARCHAR || columnType == Types.CHAR)
@@ -133,8 +138,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
             else if (columnType == Types.DECIMAL)
                 currentRowContents.append(resultSet.getDouble(colIter));
             else
-                throw new IllegalArgumentException("SQL type not supported: "+ columnType + " for column "+metaData.getColumnName(colIter));
-            if (colIter != metaData.getColumnCount())
+                throw new IllegalArgumentException("SQL type not supported: " + columnType + " in table " + tableName);
+            if (colIter != columnCount)
                 currentRowContents.append(",");
         }
         return String.format("INSERT INTO %s(%s) VALUES(%s)", tableName, colNames, currentRowContents); //NON-NLS
@@ -181,7 +186,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 log.debug("Creating ZIP file of previous restore: " + renamedOldRestoreFile.getAbsolutePath() + ".zip"); //NON-NLS
             zos = Optional.of(new ZipOutputStream(new FileOutputStream(renamedOldRestoreFile.getAbsolutePath() + ".zip"))); //NON-NLS
 
-            StreamUtil.writeFileToZipStream(zos.get(), "restore\\"+renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE); //NON-NLS
+            StreamUtil.writeFileToZipStream(zos.get(), "restore\\" + renamedOldRestoreFile.getName(), SCRIPT_KATALOG_RESTORE); //NON-NLS
 
         } catch (Throwable t) {
             log.error("Failure while zipping restore script", t); //NON-NLS
