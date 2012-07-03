@@ -1,9 +1,11 @@
-These two files need to be copied and used in Apache server configuration when running 
+The two files besides this readme text file have to be used in Apache server configuration when running dev version of
 (closed-source) Tenrec Web Service locally. These two files "are compatible" with the 
 server.jks file used in the startup directory (for development).
 
 If you do not have access to Tenrec Web Service source code 
-(https://bitbucket.org/milanaleksic/tenrec) forget about thes files.
+(https://bitbucket.org/milanaleksic/tenrec) forget about these files.
+
+------
 
 Configuration you need to set up in virtual host part of Apache conf file is something
 like following:
