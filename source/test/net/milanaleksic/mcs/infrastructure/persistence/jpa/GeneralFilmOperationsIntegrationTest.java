@@ -3,8 +3,8 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.domain.service.FilmService;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
-import org.apache.log4j.BasicConfigurator;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
         "classpath:spring-beans-testing.xml",
         "classpath:spring-beans.xml"
 })
-public class JpaFilmRepositoryIntegrationTest {
+public class GeneralFilmOperationsIntegrationTest {
 
     @Inject
     private PlatformTransactionManager transactionManager;
@@ -59,9 +59,11 @@ public class JpaFilmRepositoryIntegrationTest {
     @Inject
     private MedijRepository medijRepository;
 
+    @Inject
+    private FilmService filmService;
+
     @Before
     public void prepare() {
-        BasicConfigurator.configure();
         final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
         try {
             final Query nativeQuery = entityManager.createNativeQuery("drop schema if exists db2admin");
@@ -86,7 +88,8 @@ public class JpaFilmRepositoryIntegrationTest {
     }
 
     private void addSomeMovies() {
-        final Pozicija atJob = pozicijaRepository.addPozicija(new Pozicija("at job", false));
+        pozicijaRepository.addPozicija(new Pozicija("at home", false));
+        final Pozicija atJob = pozicijaRepository.addPozicija(new Pozicija("at job", true));
         final TipMedija dvdType = tipMedijaRepository.addTipMedija("DVD");
         final List<Medij> medijs = Lists.asList(
                 medijRepository.saveMedij(1, dvdType),
@@ -185,6 +188,17 @@ public class JpaFilmRepositoryIntegrationTest {
             assertThat("Tag is not correct", film.getTags(), hasItem(tag));
         }
         assertThat("Number of odd items is not as expected!", filmsWithCount.films.size(), equalTo(5));
+    }
+
+    @Test
+    public void change_location_for_a_movie() {
+        addSomeMovies();
+        final Pozicija atHome = pozicijaRepository.getByName("at home");
+        FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
+        Film film = filmRepository.getCompleteFilm(filmsWithCount.films.get(0));
+        assertThat("Movie should be at job!", film.getPozicija(), equalTo("at job"));
+        filmService.updateFilmWithChanges(film, film.getZanr(), film.getMedijs(), atHome, film.getTags());
+        assertThat("Movie should be at home!", film.getPozicija(), equalTo(atHome.getPozicija()));
     }
 
 }

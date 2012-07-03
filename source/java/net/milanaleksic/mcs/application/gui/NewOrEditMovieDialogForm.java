@@ -292,8 +292,8 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
 
         filmService.updateFilmWithChanges(film,
                 (Zanr) comboZanr.getData(comboZanr.getItem(comboZanr.getSelectionIndex())),
-                (Pozicija) comboLokacija.getData(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
-                getSelectedMediums(), getSelectedTags());
+                getSelectedMediums(), (Pozicija) comboLokacija.getData(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
+                getSelectedTags());
     }
 
     private Iterable<Tag> getSelectedTags() {
