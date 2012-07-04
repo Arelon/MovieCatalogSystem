@@ -5,7 +5,7 @@ import net.milanaleksic.mcs.infrastructure.tmdb.bean.Movie;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Cacheable
@@ -183,29 +183,47 @@ public class Film implements Serializable, Comparable<Film> {
     }
 
     public void refreshFilmLocation() {
-		// priprema informacija za narednu obradu (polje "prisutan")
-        String defaultPozicija = null;
+        if (medijs.size() == 0)
+            return;
+
+        int numberOfOutOfDefaultPosition = 0;
         for (Medij medij : getMedijs()) {
-			if (medij.getPozicija().isDefault())
-				defaultPozicija = medij.getPozicija().toString();
-		}
-
-		int brojNeprisutnih = 0;
-		for (Medij medij : getMedijs()) {
-			if (!medij.getPozicija().isDefault())
-				brojNeprisutnih++;
-		}
-
-		if (brojNeprisutnih!=0) {
-            StringBuilder builder = new StringBuilder();
-			for (Medij medij : getMedijs()) {
-                builder.append(medij.toString()).append("-").append(medij.getPozicija().toString()).append("; ");
-			}
-			this.pozicija = builder.substring(0, builder.length()-2);
-		} else {
-            this.pozicija = defaultPozicija;
+            if (!medij.getPozicija().isDefault())
+                numberOfOutOfDefaultPosition++;
         }
-	}
+
+        if (numberOfOutOfDefaultPosition != 0) {
+            Multimap<String, Medij> positions = ArrayListMultimap.create(2, 3);
+            for (Medij medij : getMedijs()) {
+                positions.put(medij.getPozicija().getPozicija(), medij);
+            }
+
+            final Set<String> positionsKeySet = positions.keySet();
+            if (positionsKeySet.size() == 1) {
+                // when all mediums are in the same position (although it is NOT a default one) - mark it as film location!
+                this.pozicija = positions.entries().iterator().next().getKey();
+                return;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            for (String position : positionsKeySet) {
+                builder.append(position).append(": ");
+                for (Medij medij : positions.get(position)) {
+                    builder.append(medij.toString());
+                    builder.append(", ");
+                }
+                builder.setCharAt(builder.length() - 1, ';');
+            }
+            this.pozicija = builder.substring(0, builder.length() - 2);
+        } else {
+            String defaultPositionName = null;
+            for (Medij medij : getMedijs()) {
+                if (medij.getPozicija().isDefault())
+                    defaultPositionName = medij.getPozicija().toString();
+            }
+            this.pozicija = defaultPositionName;
+        }
+    }
 
     public String getMedijListAsString() {
         return medijListAsString;

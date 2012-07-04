@@ -9,7 +9,7 @@ public interface FilmService {
 
     void updateFilmWithChanges(Film film);
 
-    void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Pozicija newPozicija, Iterable<Tag> selectedTags);
+    Film updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Pozicija newPozicija, Iterable<Tag> selectedTags);
 
     List<Film> getListOfUnmatchedMovies();
 }

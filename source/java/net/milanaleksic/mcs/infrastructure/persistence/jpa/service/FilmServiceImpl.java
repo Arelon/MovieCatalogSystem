@@ -20,7 +20,7 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
     }
 
     @Override
-    public void updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Pozicija newPozicija, Iterable<Tag> selectedTags) {
+    public Film updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Pozicija newPozicija, Iterable<Tag> selectedTags) {
         movieToBeUpdated = entityManager.merge(movieToBeUpdated);
 
         if (!newZanr.equals(movieToBeUpdated.getZanr())) {
@@ -55,12 +55,16 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
             movieToBeUpdated.removeMedij(medij);
         }
 
+        movieToBeUpdated.refreshFilmLocation();
+
         movieToBeUpdated.setTags(Sets.newHashSet(Iterables.transform(selectedTags, new Function<Tag,Tag>() {
             @Override
             public Tag apply(@Nullable Tag input) {
                 return entityManager.merge(input);
             }
         })));
+
+        return movieToBeUpdated;
     }
 
     @Override
