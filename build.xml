@@ -83,6 +83,7 @@
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
         <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="false">
             <src path="${src.dir}"/>
+            <src path="${resources.dir}"/>
             <src path="${src.metamodel.dir}"/>
             <classpath refid="classpath"/>
             <compilerarg value="-proc:none"/>
