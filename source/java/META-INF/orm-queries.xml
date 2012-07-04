@@ -159,7 +159,7 @@
 
     <named-query name="getNextClockForEntity">
         <query><![CDATA[
-            select mod.clock + 1
+            select max(mod.clock) + 1
             from Modification mod
             where mod.entityId = :entityId
             and mod.entity = :entityName
