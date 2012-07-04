@@ -34,7 +34,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         modification.setEntityId(id);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(getNextClockForEntity(entityName, id) + 1);
+        modification.setClock(getNextClockForEntity(entityName, id));
         modification.setModificationType(modificationType);
         //TODO: find previous value. Don't commit if it's the same!
         entityManager.persist(modification);
@@ -46,7 +46,10 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         $.setParameter("entityName", entityName);
         $.setParameter("entityId", entityId);
         try {
-            return $.getSingleResult();
+            final Long singleResult = $.getSingleResult();
+            if (singleResult != null)
+                return singleResult;
+            return 1;
         } catch (NoResultException e) {
             return 1;
         }
