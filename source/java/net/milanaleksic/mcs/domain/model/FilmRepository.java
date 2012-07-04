@@ -22,7 +22,7 @@ public interface FilmRepository {
         }
     }
 
-    Film getCompleteFilm(Film rawFilm);
+    Film getCompleteFilm(int idFilm);
 
     void deleteFilm(Film film);
 

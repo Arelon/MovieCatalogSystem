@@ -198,23 +198,23 @@ public class Film implements Serializable, Comparable<Film> {
                 positions.put(medij.getPozicija().getPozicija(), medij);
             }
 
-            final Set<String> positionsKeySet = positions.keySet();
-            if (positionsKeySet.size() == 1) {
+            final List<String> positionsKeys = Ordering.natural().sortedCopy(Lists.newArrayList(positions.keySet()));
+            if (positionsKeys.size() == 1) {
                 // when all mediums are in the same position (although it is NOT a default one) - mark it as film location!
                 this.pozicija = positions.entries().iterator().next().getKey();
                 return;
             }
 
             StringBuilder builder = new StringBuilder();
-            for (String position : positionsKeySet) {
+            for (String position : positionsKeys) {
                 builder.append(position).append(": ");
                 for (Medij medij : positions.get(position)) {
                     builder.append(medij.toString());
                     builder.append(", ");
                 }
-                builder.setCharAt(builder.length() - 1, ';');
+                builder.setCharAt(builder.length() - 2, ';');
             }
-            this.pozicija = builder.substring(0, builder.length() - 2);
+            this.pozicija = builder.length() > 2 ? builder.substring(0, builder.length() - 2) : "";
         } else {
             String defaultPositionName = null;
             for (Medij medij : getMedijs()) {

@@ -69,7 +69,7 @@ public class GeneralFilmOperationsIntegrationTest {
             final Query nativeQuery = entityManager.createNativeQuery("drop schema if exists db2admin");
             nativeQuery.executeUpdate();
             transactionManager.commit(transaction);
-        } catch(Exception e) {
+        } catch (Exception e) {
             transactionManager.rollback(transaction);
             e.printStackTrace();
             fail("Unexpected integration test DB failure");
@@ -84,16 +84,27 @@ public class GeneralFilmOperationsIntegrationTest {
         addSomeMovies();
         filmsWithCount = filmRepository.getFilmByCriteria(0, 10, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         assertThat("Films should not be empty", filmsWithCount.films.size(), not(0));
-        assertThat("Size is not as expected!", filmsWithCount.films.size(), equalTo(10));
+        assertThat("Size is not as expected", filmsWithCount.films.size(), equalTo(10));
     }
 
     private void addSomeMovies() {
         pozicijaRepository.addPozicija(new Pozicija("at home", false));
         final Pozicija atJob = pozicijaRepository.addPozicija(new Pozicija("at job", true));
         final TipMedija dvdType = tipMedijaRepository.addTipMedija("DVD");
-        final List<Medij> medijs = Lists.asList(
+        final Medij[] allMedijs = {
                 medijRepository.saveMedij(1, dvdType),
-                new Medij[]{medijRepository.saveMedij(2, dvdType)});
+                medijRepository.saveMedij(2, dvdType),
+                medijRepository.saveMedij(3, dvdType),
+                medijRepository.saveMedij(4, dvdType),
+                medijRepository.saveMedij(5, dvdType),
+                medijRepository.saveMedij(6, dvdType),
+                medijRepository.saveMedij(7, dvdType),
+                medijRepository.saveMedij(8, dvdType),
+                medijRepository.saveMedij(9, dvdType),
+                medijRepository.saveMedij(10, dvdType),
+                medijRepository.saveMedij(11, dvdType),
+                medijRepository.saveMedij(12, dvdType)
+        };
         final Zanr actionGenre = zanrRepository.addZanr("action");
         final Zanr horrorGenre = zanrRepository.addZanr("horror");
         final Tag primeTag = tagRepository.addTag("prime");
@@ -108,12 +119,12 @@ public class GeneralFilmOperationsIntegrationTest {
             final List<Tag> tags = Lists.newLinkedList();
             if (i % 2 == 1)
                 tags.add(oddTag);
-            if (i == 1 || i ==3 || i==5 || i==7)
+            if (i == 1 || i == 3 || i == 5 || i == 7)
                 tags.add(primeTag);
             filmRepository.saveFilm(
                     film,
                     i >= 9 ? horrorGenre : actionGenre,
-                    medijs,
+                    Lists.newArrayList(allMedijs[i], allMedijs[i + 1]),
                     atJob,
                     tags);
         }
@@ -127,11 +138,11 @@ public class GeneralFilmOperationsIntegrationTest {
 
         FilmRepository.FilmsWithCount filmsWithCountFirstPage = filmRepository.getFilmByCriteria(0, 7, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         assertThat("Films are empty", filmsWithCountFirstPage.films.size(), not(0));
-        assertThat("Size is not as expected!", filmsWithCountFirstPage.films.size(), equalTo(7));
+        assertThat("Size is not as expected", filmsWithCountFirstPage.films.size(), equalTo(7));
 
         FilmRepository.FilmsWithCount filmsWithCountSecondPage = filmRepository.getFilmByCriteria(7, 5, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         assertThat("Films are empty", filmsWithCountSecondPage.films.size(), not(0));
-        assertThat("Size is not as expected!", filmsWithCountSecondPage.films.size(), equalTo(4));
+        assertThat("Size is not as expected", filmsWithCountSecondPage.films.size(), equalTo(4));
 
         for (Film filmFromFirstPage : filmsWithCountFirstPage.films) {
             assertFalse("second page has at least one element from first page", filmsWithCountSecondPage.films.contains(filmFromFirstPage));
@@ -154,7 +165,7 @@ public class GeneralFilmOperationsIntegrationTest {
         for (Film film : filmsWithCount.films) {
             assertThat("Zanr is not correct", zanr.getIdzanr(), equalTo(film.getZanr().getIdzanr()));
         }
-        assertThat("Size is not as expected!", filmsWithCount.films.size(), equalTo(9));
+        assertThat("Size is not as expected", filmsWithCount.films.size(), equalTo(9));
     }
 
     @Test
@@ -167,7 +178,7 @@ public class GeneralFilmOperationsIntegrationTest {
             assertThat("Zanr is not correct", zanr.getIdzanr(), equalTo(film.getZanr().getIdzanr()));
             Assert.assertEquals(zanr.getIdzanr(), film.getZanr().getIdzanr());
         }
-        assertThat("Films count is not identical to the collection size!", 0L + filmsWithCount.films.size(), equalTo(filmsWithCount.count));
+        assertThat("Films count is not identical to the collection size", 0L + filmsWithCount.films.size(), equalTo(filmsWithCount.count));
     }
 
     @Test
@@ -176,18 +187,18 @@ public class GeneralFilmOperationsIntegrationTest {
         Tag tag = tagRepository.getTagByName("prime");
         FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.of(tag), Optional.<String>absent(), Film_.medijListAsString, true);
         for (Film film : filmsWithCount.films) {
-            film = filmRepository.getCompleteFilm(film);
+            film = filmRepository.getCompleteFilm(film.getIdfilm());
             assertThat("Tag is not correct", film.getTags(), hasItem(tag));
         }
-        assertThat("Number of prime items is not as expected!", filmsWithCount.films.size(), equalTo(4));
+        assertThat("Number of prime items is not as expected", filmsWithCount.films.size(), equalTo(4));
 
         tag = tagRepository.getTagByName("odd");
         filmsWithCount = filmRepository.getFilmByCriteria(0, 0, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.of(tag), Optional.<String>absent(), Film_.medijListAsString, true);
         for (Film film : filmsWithCount.films) {
-            film = filmRepository.getCompleteFilm(film);
+            film = filmRepository.getCompleteFilm(film.getIdfilm());
             assertThat("Tag is not correct", film.getTags(), hasItem(tag));
         }
-        assertThat("Number of odd items is not as expected!", filmsWithCount.films.size(), equalTo(5));
+        assertThat("Number of odd items is not as expected", filmsWithCount.films.size(), equalTo(5));
     }
 
     @Test
@@ -195,13 +206,16 @@ public class GeneralFilmOperationsIntegrationTest {
         addSomeMovies();
         final Pozicija atHome = pozicijaRepository.getByName("at home");
         FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
-        Film film = filmRepository.getCompleteFilm(filmsWithCount.films.get(0));
-        assertThat("Movie should be at job!", film.getPozicija(), equalTo("at job"));
+        Film film = filmRepository.getCompleteFilm(filmsWithCount.films.get(0).getIdfilm());
+        assertThat("Movie should be at job", film.getPozicija(), equalTo("at job"));
         film = filmService.updateFilmWithChanges(film, film.getZanr(), film.getMedijs(), atHome, film.getTags());
 
-        Film filmFromDb = filmRepository.getCompleteFilm(film);
+        Film filmFromDb = filmRepository.getCompleteFilm(film.getIdfilm());
         assertThat("Movie should have consistent information", film, equalTo(filmFromDb));
-        assertThat("Movie should be at home!", film.getPozicija(), equalTo(atHome.getPozicija()));
+        assertThat("Movie should be at home", film.getPozicija(), equalTo(atHome.getPozicija()));
+
+        Film anotherFilm = filmRepository.getCompleteFilm(filmsWithCount.films.get(1).getIdfilm());
+        assertThat("Movie should be marked as having one DVD at home and one at job", anotherFilm.getPozicija(), equalTo("at home: DVD002; at job: DVD003"));
     }
 
 }

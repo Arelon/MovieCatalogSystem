@@ -23,11 +23,11 @@ import java.util.List;
 public class JpaFilmRepository extends AbstractRepository implements FilmRepository {
 
     @Override
-    public Film getCompleteFilm(Film rawFilm) {
-        rawFilm = entityManager.merge(rawFilm);
-        Hibernate.initialize(rawFilm.getMedijs());
-        Hibernate.initialize(rawFilm.getTags());
-        return rawFilm;
+    public Film getCompleteFilm(int idFilm) {
+        Film ofTheJedi = entityManager.find(Film.class, idFilm);
+        Hibernate.initialize(ofTheJedi.getMedijs());
+        Hibernate.initialize(ofTheJedi.getTags());
+        return ofTheJedi;
     }
 
     @Override

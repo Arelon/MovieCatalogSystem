@@ -7,12 +7,16 @@ import net.milanaleksic.mcs.domain.service.FilmService;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Transactional(readOnly = false)
 @SuppressWarnings({"HardCodedStringLiteral"})
 public class FilmServiceImpl extends AbstractService implements FilmService {
+
+    @Inject
+    private PozicijaRepository pozicijaRepository;
 
     @Override
     public void updateFilmWithChanges(Film movie) {
@@ -48,6 +52,8 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
                 }
             }
         }
+
+        pozicijaRepository.updatePozicija(newPozicija);
 
         for (Medij medij : raniji) {
             if (log.isInfoEnabled())

@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-beans.xml"})
-public class TenrecServiceImplTest {
+public class TenrecServiceImplIntegrationTest {
 
     @Inject
     private TenrecService tenrecService;

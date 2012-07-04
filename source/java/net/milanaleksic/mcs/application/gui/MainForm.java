@@ -555,7 +555,7 @@ public class MainForm extends Observable implements Form {
         Optional<Film> film = mainTable.getItemAtLocation(e.x, e.y);
         if (!film.isPresent())
             return;
-        movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get())));
+        movieDetailsForm.showDataForMovie(shell, Optional.of(filmRepository.getCompleteFilm(film.get().getIdfilm())));
         mainTable.setFocus();
     }
 
@@ -563,7 +563,7 @@ public class MainForm extends Observable implements Form {
     @EmbeddedEventListener(component = "mainTable", event = CoolMovieComposite.EventMovieDetailsSelected)
     private void mainTableMovieDetailsSelectedListener(Event e) {
         Optional<Film> film = (Optional<Film>) e.data;
-        newOrEditMovieDialogDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get())),
+        newOrEditMovieDialogDialogForm.open(shell, Optional.of(filmRepository.getCompleteFilm(film.get().getIdfilm())),
                 new Runnable() {
                     @Override
                     public void run() {
