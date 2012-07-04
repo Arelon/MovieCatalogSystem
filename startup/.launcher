@@ -1,6 +1,6 @@
 # Configuration file for WinLauncher. Please visit www.milanaleksic.net/project/winlauncher for syntax
 executor = java
-mainClass = net.milanaleksic.mcs.Startup
+mainClass = net.milanaleksic.mcs.application.Startup
 showSplash = false
 programArgs = -c
 extraClasspathDir=out\production\MovieCatalogSystem

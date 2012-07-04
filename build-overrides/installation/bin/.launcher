@@ -1,6 +1,6 @@
 # Configuration file for WinLauncher. Please visit www.milanaleksic.net/project/winlauncher for syntax
 executor = javaw
-mainClass = net.milanaleksic.mcs.Startup
+mainClass = net.milanaleksic.mcs.application.Startup
 showSplash = false
 
 extra = -Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true

@@ -1,6 +1,5 @@
-package net.milanaleksic.mcs;
+package net.milanaleksic.mcs.application;
 
-import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.application.config.ProgramArgsService;
 import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import net.milanaleksic.winlauncher.*;
