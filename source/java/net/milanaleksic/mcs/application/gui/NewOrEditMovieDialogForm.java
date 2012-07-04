@@ -55,7 +55,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     private FilmService filmService;
 
     @Inject
-    FindMovieDialogForm findMovieDialogDialogForm;
+    private FindMovieDialogForm findMovieDialogDialogForm;
 
     @EmbeddedComponent
     private Combo comboLokacija = null;
@@ -91,6 +91,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     private DynamicSelectorText diskSelector = null;
 
     private Optional<Film> activeFilm;
+    private boolean flagMovieMediumsAreOnMoreThanOneLocation = false;
 
     @EmbeddedEventListener(event = SWT.Close)
     private void shellCloseListener() {
@@ -131,6 +132,15 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         }
     }
 
+    @EmbeddedEventListener(component = "comboLokacija", event = SWT.Selection)
+    private void comboLokacijaSelectionListener() {
+        int index = comboLokacija.getSelectionIndex();
+        if (index != -1 && flagMovieMediumsAreOnMoreThanOneLocation) {
+            flagMovieMediumsAreOnMoreThanOneLocation = false;
+            comboLokacija.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        }
+    }
+
     @EmbeddedEventListener(component = "btnNovMedij", event = SWT.Selection)
     private void btnNovMedijSelectionListener() {
         newMediumDialogDialogForm.open(shell, new Runnable() {
@@ -143,6 +153,13 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
 
     @EmbeddedEventListener(component = "btnPrihvati", event = SWT.Selection)
     private void btnPrihvatiSelectionListener() {
+        if (flagMovieMediumsAreOnMoreThanOneLocation) {
+            MessageBox messageBox = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+            messageBox.setText(bundle.getString("global.confirmation"));
+            messageBox.setMessage(bundle.getString("newOrEdit.moreThanOneLocationWantToSaveWithoutChangingLocation"));
+            if (messageBox.open() != SWT.YES)
+                return;
+        }
         //TODO: replace with Hibernate Validator (JSR 303 implementation)
         StringBuilder razlogOtkaza = new StringBuilder();
         if (diskSelector.getSelectedItemCount() == 0)
@@ -158,7 +175,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         } catch (Throwable t) {
             razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.yearNotANumber"));
         }
-        if (comboLokacija.getSelectionIndex() == -1)
+        if (comboLokacija.getSelectionIndex() == -1 && !flagMovieMediumsAreOnMoreThanOneLocation)
             razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.locationMustBeSelected"));
         if (!textImdbId.getText().isEmpty() && !IMDBUtil.isValidImdbId(textImdbId.getText()))
             razlogOtkaza.append("\r\n").append(bundle.getString("newOrEdit.imdbFormatNotOk"));
@@ -204,6 +221,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
     }
 
     protected void reReadData() {
+        flagMovieMediumsAreOnMoreThanOneLocation = false;
         refillCombos();
         if (activeFilm.isPresent()) {
             Film film = activeFilm.get();
@@ -224,6 +242,11 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
             int indexOfPozicija = comboLokacija.indexOf(film.getPozicija());
             if (indexOfPozicija >= 0)
                 comboLokacija.select(indexOfPozicija);
+            else {
+                flagMovieMediumsAreOnMoreThanOneLocation = true;
+                comboLokacija.setText(film.getPozicija());
+                comboLokacija.setBackground(new org.eclipse.swt.graphics.Color(shell.getDisplay(), 255, 122, 131));
+            }
             thumbnailManager.setThumbnailForShowImageComposite(posterImage, film.getImdbId());
         } else {
             Optional<Pozicija> defaultPozicija = pozicijaRepository.getDefaultPozicija();
@@ -290,9 +313,11 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         film.setImdbId(textImdbId.getText().trim());
         film.setKomentar(textKomentar.getText());
 
+        final int selectionIndex = comboLokacija.getSelectionIndex();
+        Pozicija pozicija = selectionIndex == -1 ? null : (Pozicija) comboLokacija.getData(comboLokacija.getItem(selectionIndex));
         filmService.updateFilmWithChanges(film,
                 (Zanr) comboZanr.getData(comboZanr.getItem(comboZanr.getSelectionIndex())),
-                getSelectedMediums(), (Pozicija) comboLokacija.getData(comboLokacija.getItem(comboLokacija.getSelectionIndex())),
+                getSelectedMediums(), Optional.fromNullable(pozicija),
                 getSelectedTags());
     }
 

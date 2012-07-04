@@ -60,7 +60,7 @@
             "text" : "[newOrEdit.location]",
             "layoutData" : "[gridData](end,center,true,false)"
         },
-        "combo(comboLokacija, {read_only})" : {
+        "combo(comboLokacija)" : {
             "visibleItemCount" : 10,
             "layoutData" : "[gridData](fill,begin,true,false)"
         },

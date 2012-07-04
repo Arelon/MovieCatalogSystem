@@ -1,5 +1,6 @@
 package net.milanaleksic.mcs.domain.service;
 
+import com.google.common.base.Optional;
 import net.milanaleksic.mcs.domain.model.*;
 
 import java.util.List;
@@ -9,7 +10,7 @@ public interface FilmService {
 
     void updateFilmWithChanges(Film film);
 
-    Film updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Pozicija newPozicija, Iterable<Tag> selectedTags);
+    Film updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Optional<Pozicija> newPozicija, Iterable<Tag> selectedTags);
 
     List<Film> getListOfUnmatchedMovies();
 }

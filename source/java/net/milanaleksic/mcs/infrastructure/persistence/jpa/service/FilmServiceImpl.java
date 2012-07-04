@@ -1,6 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
-import com.google.common.base.Function;
+import com.google.common.base.*;
 import com.google.common.collect.*;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
@@ -24,7 +24,7 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
     }
 
     @Override
-    public Film updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Pozicija newPozicija, Iterable<Tag> selectedTags) {
+    public Film updateFilmWithChanges(Film movieToBeUpdated, Zanr newZanr, Set<Medij> newMediums, Optional<Pozicija> newPozicijaOptional, Iterable<Tag> selectedTags) {
         movieToBeUpdated = entityManager.merge(movieToBeUpdated);
 
         if (!newZanr.equals(movieToBeUpdated.getZanr())) {
@@ -33,35 +33,38 @@ public class FilmServiceImpl extends AbstractService implements FilmService {
             newZanr.addFilm(movieToBeUpdated);
         }
 
-        Set<Medij> raniji = Sets.newHashSet(movieToBeUpdated.getMedijs());
+        if (newPozicijaOptional.isPresent()) {
+            Pozicija newPozicija = newPozicijaOptional.get();
+            Set<Medij> raniji = Sets.newHashSet(movieToBeUpdated.getMedijs());
 
-        if (!newMediums.isEmpty()) {
-            newPozicija = entityManager.merge(newPozicija);
-            for (Medij medij : newMediums) {
-                medij = entityManager.merge(medij);
-                if (raniji.contains(medij)) {
-                    raniji.remove(medij);
-                    if (!medij.getPozicija().equals(newPozicija)) {
-                        medij.getPozicija().removeMedij(medij);
+            if (!newMediums.isEmpty()) {
+                newPozicija = entityManager.merge(newPozicija);
+                for (Medij medij : newMediums) {
+                    medij = entityManager.merge(medij);
+                    if (raniji.contains(medij)) {
+                        raniji.remove(medij);
+                        if (!medij.getPozicija().equals(newPozicija)) {
+                            medij.getPozicija().removeMedij(medij);
+                            newPozicija.addMedij(medij);
+                        }
+                    }
+                    else {
+                        movieToBeUpdated.addMedij(medij);
                         newPozicija.addMedij(medij);
                     }
                 }
-                else {
-                    movieToBeUpdated.addMedij(medij);
-                    newPozicija.addMedij(medij);
-                }
             }
+
+            pozicijaRepository.updatePozicija(newPozicija);
+
+            for (Medij medij : raniji) {
+                if (log.isInfoEnabled())
+                    log.info("Removing medium from the list of mediums: "+medij.toString());
+                movieToBeUpdated.removeMedij(medij);
+            }
+
+            movieToBeUpdated.refreshFilmLocation();
         }
-
-        pozicijaRepository.updatePozicija(newPozicija);
-
-        for (Medij medij : raniji) {
-            if (log.isInfoEnabled())
-                log.info("Removing medium from the list of mediums: "+medij.toString());
-            movieToBeUpdated.removeMedij(medij);
-        }
-
-        movieToBeUpdated.refreshFilmLocation();
 
         movieToBeUpdated.setTags(Sets.newHashSet(Iterables.transform(selectedTags, new Function<Tag,Tag>() {
             @Override

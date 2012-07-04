@@ -208,7 +208,7 @@ public class GeneralFilmOperationsIntegrationTest {
         FilmRepository.FilmsWithCount filmsWithCount = filmRepository.getFilmByCriteria(0, 0, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         Film film = filmRepository.getCompleteFilm(filmsWithCount.films.get(0).getIdfilm());
         assertThat("Movie should be at job", film.getPozicija(), equalTo("at job"));
-        film = filmService.updateFilmWithChanges(film, film.getZanr(), film.getMedijs(), atHome, film.getTags());
+        film = filmService.updateFilmWithChanges(film, film.getZanr(), film.getMedijs(), Optional.of(atHome), film.getTags());
 
         Film filmFromDb = filmRepository.getCompleteFilm(film.getIdfilm());
         assertThat("Movie should have consistent information", film, equalTo(filmFromDb));
