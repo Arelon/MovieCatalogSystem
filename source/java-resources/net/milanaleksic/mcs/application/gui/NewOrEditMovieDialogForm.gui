@@ -26,7 +26,10 @@
                 },
                 "button(btnSearchMovie)" : {
                     "text" : "[global.search]",
-                    "layoutData" : "[gridData](fill,center,true,false)"
+                    "layoutData" : {
+                        "_type" : "[gridData](end,center,false,false)",
+                        "widthHint" : 100
+                    }
                 }
             }
         },

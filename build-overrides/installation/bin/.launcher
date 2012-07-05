@@ -6,3 +6,4 @@ showSplash = false
 extra = -Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true
 extra = -XX:+UseParallelOldGC
 extra = -Xmn64m -Xmx128m -Xms128m -Xverify:none
+extra = -javaagent:"../lib/spring-instrument.jar"

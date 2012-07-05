@@ -15,7 +15,7 @@ import java.util.Set;
 @Cacheable
 @org.hibernate.annotations.Cache(region = "mcs",
         usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class Tag implements Serializable {
+public class Tag extends ModificationsAwareEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,4 +82,8 @@ public class Tag implements Serializable {
         return naziv;
     }
 
+    @Override
+    public int getId() {
+        return idtag;
+    }
 }

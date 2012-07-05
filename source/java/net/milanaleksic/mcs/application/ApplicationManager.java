@@ -114,9 +114,14 @@ public class ApplicationManager implements ApplicationContextAware {
         Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
-                String message = "Runtime exception caught in non-primary thread: " + e.getMessage(); //NON-NLS
+                final String message = "Runtime exception caught in non-primary thread: " + e.getMessage(); //NON-NLS
                 log.error(message, e);
-                showTerribleErrorInGui(message);
+                Display.getDefault().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        showTerribleErrorInGui(message);
+                    }
+                });
             }
         };
         Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
@@ -135,7 +140,7 @@ public class ApplicationManager implements ApplicationContextAware {
 
     private void mainGuiLoop() {
         Display.setAppName("Movie Catalog System - v" + VersionInformation.getVersion()); //NON-NLS
-        Display display = Display.getDefault();
+        final Display display = Display.getDefault();
         try {
             mainForm.open();
 
@@ -149,7 +154,12 @@ public class ApplicationManager implements ApplicationContextAware {
             log.error("Unhandled GUI thread exception - "+t.getMessage(), t); //NON-NLS
         } finally {
             if (!display.isDisposed())
-                display.dispose();
+                display.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        display.dispose();
+                    }
+                });
         }
     }
 

@@ -155,4 +155,18 @@
         <hint name="org.hibernate.cacheable" value="true" />
     </named-query>
 
+    <!-- MODIFICATION -->
+
+    <named-query name="getPreviousFieldValue">
+        <query><![CDATA[
+            select value
+            from Modification
+            where entity = :entity
+            and entityId = :entityId
+            and field = :fieldName
+            order by clock desc
+        ]]></query>
+        <hint name="org.hibernate.cacheable" value="true" />
+    </named-query>
+
 </entity-mappings>
