@@ -9,9 +9,6 @@ import java.io.Serializable;
  * Time: 4:16 PM
  */
 @Entity
-@Cacheable
-@org.hibernate.annotations.Cache(region="mcs",
-        usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Modification implements Serializable {
 
     @Id
