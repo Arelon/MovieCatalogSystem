@@ -48,6 +48,7 @@
                 <ref bean="movieDetailsForm" />
                 <ref bean="tenrecService" />
                 <ref bean="tenrecManager" />
+                <ref bean="modificationLog" />
             </set>
         </property>
 	</bean>

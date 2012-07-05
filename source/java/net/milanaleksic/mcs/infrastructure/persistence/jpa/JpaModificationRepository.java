@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class JpaModificationRepository extends AbstractRepository implements ModificationRepository {
 
     @Override
-    public void addDeleteModificationLog(int id, String entityName, int currentDatabaseVersion) {
+    public void addDeleteModificationLog(String entityName, int id, int currentDatabaseVersion) {
         Modification modification = new Modification();
         modification.setEntityId(id);
         modification.setModificationType(ModificationType.DELETE);
@@ -28,8 +28,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
     }
 
     @Override
-    public void addModificationLog(ModificationType modificationType, int id, int currentDatabaseVersion,
-                                   String entityName, String fieldName, Object fieldValue) {
+    public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
         Modification modification = new Modification();
         modification.setEntityId(id);
         modification.setEntity(entityName);

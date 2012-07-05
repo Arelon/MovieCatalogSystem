@@ -7,7 +7,7 @@ package net.milanaleksic.mcs.domain.model;
  */
 public interface ModificationRepository {
 
-    void addDeleteModificationLog(int id, String entityName, int currentDatabaseVersion);
+    void addDeleteModificationLog(String entityName, int id, int currentDatabaseVersion);
 
-    void addModificationLog(ModificationType modificationType, int id, int currentDatabaseVersion, String entityName, String fieldName, Object fieldValue);
+    void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion);
 }
