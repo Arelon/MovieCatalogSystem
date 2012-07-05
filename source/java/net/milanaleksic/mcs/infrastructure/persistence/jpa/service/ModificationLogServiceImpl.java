@@ -104,12 +104,17 @@ public class ModificationLogServiceImpl extends AbstractService
                         if (!(ModificationsAwareEntity.class.isAssignableFrom(plural.getElementType().getJavaType())))
                             throw new RuntimeException("The entity collection type does not contain ModificationsAwareEntity; entity="+entityType+", field="+fieldName);
 
-                        final Iterable<Integer> childIds = Iterables.transform((Collection) field.get(entity), new Function<Object, Integer>() {
-                            public Integer apply(@Nullable Object o) {
-                                return ((ModificationsAwareEntity) o).getId();
-                            }
-                        });
-                        fieldValue = Joiner.on(',').join(childIds);
+                        final Collection fromIterable = (Collection) field.get(entity);
+                        if(fromIterable == null)
+                            fieldValue = null;
+                        else {
+                            final Iterable<Integer> childIds = Iterables.transform(fromIterable, new Function<Object, Integer>() {
+                                public Integer apply(@Nullable Object o) {
+                                    return ((ModificationsAwareEntity) o).getId();
+                                }
+                            });
+                            fieldValue = Joiner.on(',').join(childIds);
+                        }
                     } else {
                         fieldValue = field.get(entity);
                     }
