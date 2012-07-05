@@ -88,7 +88,6 @@ public class ModificationLogServiceImpl extends AbstractService
     private void forAllActiveFields(WorkItem workItem) {
         final ModificationsAwareEntity entity = workItem.entity;
         final EntityType entityType = metamodel.entity(entity.getClass());
-        final long clock = modificationRepository.getNextClock();
         final String entityName = entityType.getName();
         try {
             final Set<Attribute> attributes = entityType.getAttributes();
@@ -118,7 +117,7 @@ public class ModificationLogServiceImpl extends AbstractService
                         log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", //NON-NLS
                                 entityName, workItem.id, fieldName)); //NON-NLS
                     modificationRepository.addModificationLog(workItem.modificationType, entityName,
-                            workItem.id, fieldName, fieldValue, currentDatabaseVersion, clock);
+                            workItem.id, fieldName, fieldValue, currentDatabaseVersion);
                 } finally {
                     if (!accessible)
                         field.setAccessible(false);

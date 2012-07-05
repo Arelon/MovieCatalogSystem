@@ -9,7 +9,6 @@ public interface ModificationRepository {
 
     void addDeleteModificationLog(String entityName, int id, int currentDatabaseVersion);
 
-    void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion, long clock);
+    void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion);
 
-    int getNextClock();
 }

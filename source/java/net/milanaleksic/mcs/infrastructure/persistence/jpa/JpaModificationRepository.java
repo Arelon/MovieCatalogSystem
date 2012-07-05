@@ -2,7 +2,6 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
 import org.hibernate.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.*;
 
@@ -30,7 +29,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
     }
 
     @Override
-    public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion, long clock) {
+    public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
         final String newValue = fieldValue == null ? null : fieldValue.toString();
         try {
             final String previousValue = getPreviousValue(entityName, id, fieldName);
@@ -42,7 +41,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         modification.setEntityId(id);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(clock);
+        modification.setClock(getNextClock());
         modification.setModificationType(modificationType);
         modification.setField(fieldName);
         modification.setValue(newValue);
@@ -58,9 +57,8 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         return previousFieldValueQuery.getSingleResult();
     }
 
-    @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public int getNextClock() {
+    private int getNextClock() {
         final Session session = (Session) entityManager.getDelegate();
         try {
             final SQLQuery sqlQuery = session.createSQLQuery("select next value for DB2ADMIN.MODIFICATION_CLOCK");
