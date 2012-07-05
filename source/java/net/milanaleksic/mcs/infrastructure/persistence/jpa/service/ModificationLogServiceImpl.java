@@ -43,14 +43,7 @@ public class ModificationLogServiceImpl extends AbstractService
     private volatile boolean shutDown = false;
     private CountDownLatch shutdownProcessed = new CountDownLatch(1);
 
-    @Override
-    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
-    }
-
-    @Override
-    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
-        pumpAllModificationLogItems(false);
-    }
+    private boolean enabled;
 
     private class WorkItem {
 
@@ -65,26 +58,47 @@ public class ModificationLogServiceImpl extends AbstractService
         }
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
+    }
+
+    @Override
+    public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
+        pumpAllModificationLogItems(false);
+    }
+
     @Override
     public void reportDelete(int id, ModificationsAwareEntity entity) {
         checkNotNull(entity);
+        if (!enabled)
+            return;
         queue.offer(new WorkItem(entity, id, ModificationType.DELETE));
     }
 
     @Override
     public void reportInsert(int id, ModificationsAwareEntity entity) {
         checkNotNull(entity);
+        if (!enabled)
+            return;
         queue.offer(new WorkItem(entity, id, ModificationType.INSERT));
     }
 
     @Override
     public void reportUpdate(int id, ModificationsAwareEntity entity) {
         checkNotNull(entity);
+        if (!enabled)
+            return;
         queue.offer(new WorkItem(entity, id, ModificationType.UPDATE));
     }
 
     @Override
     public void pumpAllModificationLogItems(boolean waitForTermination) {
+        if (!enabled)
+            return;
         shutDown = true;
         executor.shutdown();
         if (waitForTermination) {
@@ -154,6 +168,8 @@ public class ModificationLogServiceImpl extends AbstractService
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        if (!enabled)
+            return;
         metamodel = entityManager.getMetamodel();
         executor.execute(new Runnable() {
             @Override

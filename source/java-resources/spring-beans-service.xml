@@ -22,6 +22,7 @@
     </bean>
 
     <bean id="modificationLogService" class="net.milanaleksic.mcs.infrastructure.persistence.jpa.service.ModificationLogServiceImpl">
+        <property name="enabled" value="true" />
     </bean>
 
 </beans>
