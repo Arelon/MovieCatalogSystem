@@ -164,6 +164,17 @@
             where mod.entityId = :entityId
             and mod.entity = :entityName
         ]]></query>
+    </named-query>
+
+    <named-query name="getPreviousFieldValue">
+        <query><![CDATA[
+            select value
+            from Modification
+            where entity = :entity
+            and entityId = :entityId
+            and field = :fieldName
+            order by clock desc
+        ]]></query>
         <hint name="org.hibernate.cacheable" value="true" />
     </named-query>
 

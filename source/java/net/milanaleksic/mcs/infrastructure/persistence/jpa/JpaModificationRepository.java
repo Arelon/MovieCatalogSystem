@@ -29,6 +29,13 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
 
     @Override
     public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion, long clock) {
+        final String newValue = fieldValue == null ? null : fieldValue.toString();
+        try {
+            final String previousValue = getPreviousValue(entityName, id, fieldName);
+            if (previousValue != null && previousValue.equals(newValue))
+                return;
+        } catch(NoResultException ignored) {
+        }
         Modification modification = new Modification();
         modification.setEntityId(id);
         modification.setEntity(entityName);
@@ -36,9 +43,17 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         modification.setClock(clock);
         modification.setModificationType(modificationType);
         modification.setField(fieldName);
-        modification.setValue(fieldValue == null ? null : fieldValue.toString());
-        //TODO: find previous value. Don't commit if it's the same!
+        modification.setValue(newValue);
         entityManager.persist(modification);
+    }
+
+    private String getPreviousValue(String entityName, int id, String fieldName) {
+        final TypedQuery<String> previousFieldValueQuery = entityManager.createNamedQuery("getPreviousFieldValue", String.class);
+        previousFieldValueQuery.setParameter("entity", entityName);
+        previousFieldValueQuery.setParameter("entityId", id);
+        previousFieldValueQuery.setParameter("fieldName", fieldName);
+        previousFieldValueQuery.setMaxResults(1);
+        return previousFieldValueQuery.getSingleResult();
     }
 
     @Override
