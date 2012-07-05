@@ -68,7 +68,6 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
             return 1;
         } finally {
             session.flush();
-            session.close();
         }
     }
 
