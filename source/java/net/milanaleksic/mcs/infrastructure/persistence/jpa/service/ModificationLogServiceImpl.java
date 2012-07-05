@@ -1,5 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
+import com.google.common.base.*;
+import com.google.common.collect.Iterables;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.ModificationLogService;
 import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
@@ -10,9 +12,10 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.persistence.metamodel.*;
 import java.lang.reflect.Field;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -62,8 +65,6 @@ public class ModificationLogServiceImpl extends AbstractService
         }
     }
 
-    //TODO: what with many2many???
-
     @Override
     public void reportDelete(int id, ModificationsAwareEntity entity) {
         checkNotNull(entity);
@@ -88,6 +89,7 @@ public class ModificationLogServiceImpl extends AbstractService
         final ModificationsAwareEntity entity = workItem.entity;
         final EntityType entityType = metamodel.entity(entity.getClass());
         final long clock = modificationRepository.getNextClock();
+        final String entityName = entityType.getName();
         try {
             final Set<Attribute> attributes = entityType.getAttributes();
             for (javax.persistence.metamodel.Attribute attribute : attributes) {
@@ -97,11 +99,25 @@ public class ModificationLogServiceImpl extends AbstractService
                 if (!accessible)
                     field.setAccessible(true);
                 try {
-                    final Object fieldValue = field.get(entity);
+                    final Object fieldValue;
+                    if (attribute instanceof PluralAttribute) {
+                        PluralAttribute plural = (PluralAttribute) attribute;
+                        if (!(ModificationsAwareEntity.class.isAssignableFrom(plural.getElementType().getJavaType())))
+                            throw new RuntimeException("The entity collection type does not contain ModificationsAwareEntity; entity="+entityType+", field="+fieldName);
+
+                        final Iterable<Integer> childIds = Iterables.transform((Collection) field.get(entity), new Function<Object, Integer>() {
+                            public Integer apply(@Nullable Object o) {
+                                return ((ModificationsAwareEntity) o).getId();
+                            }
+                        });
+                        fieldValue = Joiner.on(',').join(childIds);
+                    } else {
+                        fieldValue = field.get(entity);
+                    }
                     if (log.isDebugEnabled())
                         log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", //NON-NLS
-                                entityType.getName(), workItem.id, fieldName)); //NON-NLS
-                    modificationRepository.addModificationLog(workItem.modificationType, entityType.getName(),
+                                entityName, workItem.id, fieldName)); //NON-NLS
+                    modificationRepository.addModificationLog(workItem.modificationType, entityName,
                             workItem.id, fieldName, fieldValue, currentDatabaseVersion, clock);
                 } finally {
                     if (!accessible)
