@@ -1,6 +1,8 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
+import org.hibernate.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.*;
 
@@ -58,15 +60,17 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public long getNextClock() {
-        final TypedQuery<Long> $ = entityManager.createNamedQuery("getNextClock", Long.class);
+    public int getNextClock() {
+        final Session session = (Session) entityManager.getDelegate();
         try {
-            final Long singleResult = $.getSingleResult();
-            if (singleResult != null)
-                return singleResult;
+            final SQLQuery sqlQuery = session.createSQLQuery("select next value for DB2ADMIN.MODIFICATION_CLOCK");
+            final Object $ = sqlQuery.uniqueResult();
+            return Integer.parseInt($.toString());
+        } catch (HibernateException e) {
             return 1;
-        } catch (NoResultException e) {
-            return 1;
+        } finally {
+            session.flush();
+            session.close();
         }
     }
 

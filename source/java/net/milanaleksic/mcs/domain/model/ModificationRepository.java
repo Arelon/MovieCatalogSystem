@@ -11,5 +11,5 @@ public interface ModificationRepository {
 
     void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion, long clock);
 
-    long getNextClock();
+    int getNextClock();
 }

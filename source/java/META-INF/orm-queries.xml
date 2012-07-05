@@ -157,13 +157,6 @@
 
     <!-- MODIFICATION -->
 
-    <named-query name="getNextClock">
-        <query><![CDATA[
-            select max(mod.clock) + 1
-            from Modification mod
-        ]]></query>
-    </named-query>
-
     <named-query name="getPreviousFieldValue">
         <query><![CDATA[
             select value
