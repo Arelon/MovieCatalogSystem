@@ -87,7 +87,7 @@ public class ModificationLogServiceImpl extends AbstractService
     private void forAllActiveFields(WorkItem workItem) {
         final ModificationsAwareEntity entity = workItem.entity;
         final EntityType entityType = metamodel.entity(entity.getClass());
-        final long clock = modificationRepository.getNextClockForEntity(entityType.getName(), workItem.id);
+        final long clock = modificationRepository.getNextClock();
         try {
             final Set<Attribute> attributes = entityType.getAttributes();
             for (javax.persistence.metamodel.Attribute attribute : attributes) {

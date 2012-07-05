@@ -23,7 +23,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         modification.setModificationType(ModificationType.DELETE);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(getNextClockForEntity(entityName, id));
+        modification.setClock(getNextClock());
         entityManager.persist(modification);
     }
 
@@ -58,10 +58,8 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public long getNextClockForEntity(String entityName, int entityId) {
-        final TypedQuery<Long> $ = entityManager.createNamedQuery("getNextClockForEntity", Long.class);
-        $.setParameter("entityName", entityName);
-        $.setParameter("entityId", entityId);
+    public long getNextClock() {
+        final TypedQuery<Long> $ = entityManager.createNamedQuery("getNextClock", Long.class);
         try {
             final Long singleResult = $.getSingleResult();
             if (singleResult != null)
