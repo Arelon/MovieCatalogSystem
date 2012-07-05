@@ -21,7 +21,7 @@
         <property name="initialCapacity" value="200" />
     </bean>
 
-    <bean id="modificationLog" class="net.milanaleksic.mcs.infrastructure.persistence.jpa.service.ModificationLogServiceImpl">
+    <bean id="modificationLogService" class="net.milanaleksic.mcs.infrastructure.persistence.jpa.service.ModificationLogServiceImpl">
     </bean>
 
 </beans>

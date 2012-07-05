@@ -41,6 +41,7 @@ public class ModificationLogServiceImpl extends AbstractService
     private BlockingQueue<WorkItem> queue = new LinkedBlockingQueue<>();
 
     private volatile boolean shutDown = false;
+    private CountDownLatch shutdownProcessed = new CountDownLatch(1);
 
     @Override
     public void applicationStarted(ApplicationConfiguration configuration, UserConfiguration userConfiguration) {
@@ -48,8 +49,7 @@ public class ModificationLogServiceImpl extends AbstractService
 
     @Override
     public void applicationShutdown(ApplicationConfiguration applicationConfiguration, UserConfiguration userConfiguration) {
-        executor.shutdown();
-        shutDown = true;
+        pumpAllModificationLogItems(false);
     }
 
     private class WorkItem {
@@ -81,6 +81,19 @@ public class ModificationLogServiceImpl extends AbstractService
     public void reportUpdate(int id, ModificationsAwareEntity entity) {
         checkNotNull(entity);
         queue.offer(new WorkItem(entity, id, ModificationType.UPDATE));
+    }
+
+    @Override
+    public void pumpAllModificationLogItems(boolean waitForTermination) {
+        shutDown = true;
+        executor.shutdown();
+        if (waitForTermination) {
+            try {
+                shutdownProcessed.await();
+            } catch (InterruptedException e) {
+                log.error("Interrupted while waiting for the shutdown in modification log service", e); //NON-NLS
+            }
+        }
     }
 
     @SuppressWarnings({"unchecked"})
@@ -161,6 +174,8 @@ public class ModificationLogServiceImpl extends AbstractService
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
                     log.error("Unexpected exception in the background modification log writer", e); //NON-NLS
+                } finally {
+                    shutdownProcessed.countDown();
                 }
             }
         });

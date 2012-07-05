@@ -2,8 +2,9 @@ package net.milanaleksic.mcs.domain.model;
 
 import net.milanaleksic.mcs.domain.service.ModificationLogService;
 import org.apache.commons.logging.*;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Configurable;
 
+import javax.inject.Inject;
 import javax.persistence.*;
 
 /**
@@ -19,7 +20,7 @@ public abstract class ModificationsAwareEntity {
     protected final Log log = LogFactory.getLog(this.getClass());
 
     @Transient
-    @Autowired
+    @Inject
     private ModificationLogService modificationLogService;
 
     @Transient

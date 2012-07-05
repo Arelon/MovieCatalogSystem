@@ -3,7 +3,7 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.domain.model.*;
-import net.milanaleksic.mcs.domain.service.FilmService;
+import net.milanaleksic.mcs.domain.service.*;
 import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -62,6 +62,9 @@ public class GeneralFilmOperationsIntegrationTest {
     @Inject
     private FilmService filmService;
 
+    @Inject
+    private ModificationLogService modificationLogService;
+
     @Before
     public void prepare() {
         final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
@@ -75,6 +78,11 @@ public class GeneralFilmOperationsIntegrationTest {
             fail("Unexpected integration test DB failure");
         }
         restorePointRestorer.restoreDatabaseIfNeeded();
+    }
+
+    @After
+    public void clearDB() {
+        modificationLogService.pumpAllModificationLogItems(true);
     }
 
     @Test

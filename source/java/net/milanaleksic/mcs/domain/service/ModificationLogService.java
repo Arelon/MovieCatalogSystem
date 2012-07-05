@@ -14,4 +14,6 @@ public interface ModificationLogService {
     void reportInsert(int id, ModificationsAwareEntity serializable);
 
     void reportUpdate(int id, ModificationsAwareEntity serializable);
+
+    void pumpAllModificationLogItems(boolean waitForTermination);
 }
