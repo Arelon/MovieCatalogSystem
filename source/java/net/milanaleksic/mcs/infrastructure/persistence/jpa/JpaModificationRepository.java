@@ -28,19 +28,22 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
     }
 
     @Override
-    public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
+    public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion, long clock) {
         Modification modification = new Modification();
         modification.setEntityId(id);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(getNextClockForEntity(entityName, id));
+        modification.setClock(clock);
         modification.setModificationType(modificationType);
+        modification.setField(fieldName);
+        modification.setValue(fieldValue == null ? null : fieldValue.toString());
         //TODO: find previous value. Don't commit if it's the same!
         entityManager.persist(modification);
     }
 
+    @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    private long getNextClockForEntity(String entityName, int entityId) {
+    public long getNextClockForEntity(String entityName, int entityId) {
         final TypedQuery<Long> $ = entityManager.createNamedQuery("getNextClockForEntity", Long.class);
         $.setParameter("entityName", entityName);
         $.setParameter("entityId", entityId);
