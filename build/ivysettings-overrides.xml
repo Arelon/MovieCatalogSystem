@@ -1,6 +1,6 @@
 <ivysettings>
     <resolvers>
-        <ibiblio name="spring-milestones" root="http://maven.springframework.org/milestone/" m2compatible="true"/>
+        <ibiblio name="spring-releases" root="http://maven.springframework.org/release/" m2compatible="true"/>
         <!--<filesystem name="local-maven-2" m2compatible="true" force="false" local="true">-->
             <!--<artifact pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[module]-[revision].[ext]"/>-->
             <!--<ivy pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[module]-[revision].pom"/>-->
@@ -11,7 +11,7 @@
             <!--<resolver ref="local-maven-2" />-->
             <resolver ref="local"/>
             <resolver ref="main"/>
-            <resolver ref="spring-milestones"/>
+            <resolver ref="spring-releases"/>
             <resolver ref="milanaleksic-m2" />
         </chain>
     </resolvers>

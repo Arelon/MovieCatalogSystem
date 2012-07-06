@@ -153,15 +153,13 @@
             <artifact name="dom4j" type="jar"/>
             <exclude org="xml-apis" name="xml-apis"/>
         </dependency>
-
-        <!-- Non-GA releases -->
-        <dependency org="org.aspectj" name="aspectjweaver" rev="1.7.0.M1" transitive="false">
+        <dependency org="org.aspectj" name="aspectjweaver" rev="1.7.0.RELEASE" transitive="false">
             <artifact name="aspectjweaver" type="jar"/>
         </dependency>
-        <dependency org="org.aspectj" name="aspectjtools" rev="1.7.0.M1" transitive="false">
+        <dependency org="org.aspectj" name="aspectjtools" rev="1.7.0.RELEASE" transitive="false">
             <artifact name="aspectjtools" type="jar"/>
         </dependency>
-        <dependency org="org.aspectj" name="aspectjrt" rev="1.7.0.M1" transitive="false">
+        <dependency org="org.aspectj" name="aspectjrt" rev="1.7.0.RELEASE" transitive="false">
             <artifact name="aspectjrt" type="jar"/>
         </dependency>
 
