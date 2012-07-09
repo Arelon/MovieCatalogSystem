@@ -2,6 +2,7 @@ package net.milanaleksic.mcs.infrastructure.tenrec.impl;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.infrastructure.tenrec.TenrecService;
+import net.milanaleksic.mcs.infrastructure.tenrec.impl.TenrecServiceImpl;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,8 +19,11 @@ import static org.junit.Assert.*;
  * Time: 9:02 AM
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-beans.xml"})
-public class TenrecServiceImplIntegrationTest {
+@ContextConfiguration(locations = {
+        "classpath:spring-beans-testing.xml",
+        "classpath:spring-beans.xml"
+})
+public class TenrecServiceImplTest {
 
     @Inject
     private TenrecService tenrecService;

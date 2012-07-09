@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
         "classpath:spring-beans-testing.xml",
         "classpath:spring-beans.xml"
 })
-public class GeneralFilmOperationsIntegrationTest {
+public class GeneralFilmOperationsTest {
 
     @Inject
     private PlatformTransactionManager transactionManager;
