@@ -1,20 +1,12 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.domain.model.*;
-import net.milanaleksic.mcs.domain.service.*;
-import net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer;
+import net.milanaleksic.mcs.domain.service.FilmService;
+import net.milanaleksic.mcs.test.AbstractDatabaseIntegrationTest;
 import org.junit.*;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.*;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.inject.Inject;
-import javax.persistence.*;
-import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -25,65 +17,10 @@ import static org.junit.Assert.*;
  * Time: 8:50 PM
  */
 @SuppressWarnings({"HardCodedStringLiteral"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:spring-beans-testing.xml",
-        "classpath:spring-beans.xml"
-})
-public class GeneralFilmOperationsTest {
-
-    @Inject
-    private PlatformTransactionManager transactionManager;
-
-    @PersistenceContext(name = "MovieCatalogSystemDB")
-    private EntityManager entityManager;
-
-    @Inject
-    private FilmRepository filmRepository;
-
-    @Inject
-    private ZanrRepository zanrRepository;
-
-    @Inject
-    private TagRepository tagRepository;
-
-    @Inject
-    private RestorePointRestorer restorePointRestorer;
-
-    @Inject
-    private PozicijaRepository pozicijaRepository;
-
-    @Inject
-    private TipMedijaRepository tipMedijaRepository;
-
-    @Inject
-    private MedijRepository medijRepository;
+public class GeneralFilmOperationsIntegrationTest extends AbstractDatabaseIntegrationTest {
 
     @Inject
     private FilmService filmService;
-
-    @Inject
-    private ModificationLogService modificationLogService;
-
-    @Before
-    public void prepare() {
-        final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
-        try {
-            final Query nativeQuery = entityManager.createNativeQuery("drop schema if exists db2admin");
-            nativeQuery.executeUpdate();
-            transactionManager.commit(transaction);
-        } catch (Exception e) {
-            transactionManager.rollback(transaction);
-            e.printStackTrace();
-            fail("Unexpected integration test DB failure");
-        }
-        restorePointRestorer.restoreDatabaseIfNeeded();
-    }
-
-    @After
-    public void clearDB() {
-        modificationLogService.pumpAllModificationLogItems(true);
-    }
 
     @Test
     public void get_films() {
@@ -93,49 +30,6 @@ public class GeneralFilmOperationsTest {
         filmsWithCount = filmRepository.getFilmByCriteria(0, 10, Optional.<Zanr>absent(), Optional.<TipMedija>absent(), Optional.<Pozicija>absent(), Optional.<Tag>absent(), Optional.<String>absent(), Film_.medijListAsString, true);
         assertThat("Films should not be empty", filmsWithCount.films.size(), not(0));
         assertThat("Size is not as expected", filmsWithCount.films.size(), equalTo(10));
-    }
-
-    private void addSomeMovies() {
-        pozicijaRepository.addPozicija(new Pozicija("at home", false));
-        final Pozicija atJob = pozicijaRepository.addPozicija(new Pozicija("at job", true));
-        final TipMedija dvdType = tipMedijaRepository.addTipMedija("DVD");
-        final Medij[] allMedijs = {
-                medijRepository.saveMedij(1, dvdType),
-                medijRepository.saveMedij(2, dvdType),
-                medijRepository.saveMedij(3, dvdType),
-                medijRepository.saveMedij(4, dvdType),
-                medijRepository.saveMedij(5, dvdType),
-                medijRepository.saveMedij(6, dvdType),
-                medijRepository.saveMedij(7, dvdType),
-                medijRepository.saveMedij(8, dvdType),
-                medijRepository.saveMedij(9, dvdType),
-                medijRepository.saveMedij(10, dvdType),
-                medijRepository.saveMedij(11, dvdType),
-                medijRepository.saveMedij(12, dvdType)
-        };
-        final Zanr actionGenre = zanrRepository.addZanr("action");
-        final Zanr horrorGenre = zanrRepository.addZanr("horror");
-        final Tag primeTag = tagRepository.addTag("prime");
-        final Tag oddTag = tagRepository.addTag("odd");
-        for (int i = 0; i < 11; i++) {
-            final Film film = new Film();
-            film.setNazivfilma("Test movie " + i);
-            film.setPrevodnazivafilma("Translation of test movie");
-            film.setGodina(2000);
-            film.setImdbId("");
-            film.setKomentar("Test komentar");
-            final List<Tag> tags = Lists.newLinkedList();
-            if (i % 2 == 1)
-                tags.add(oddTag);
-            if (i == 1 || i == 3 || i == 5 || i == 7)
-                tags.add(primeTag);
-            filmRepository.saveFilm(
-                    film,
-                    i >= 9 ? horrorGenre : actionGenre,
-                    Lists.newArrayList(allMedijs[i], allMedijs[i + 1]),
-                    atJob,
-                    tags);
-        }
     }
 
     @Test

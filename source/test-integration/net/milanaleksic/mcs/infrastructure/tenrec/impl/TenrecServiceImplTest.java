@@ -2,11 +2,8 @@ package net.milanaleksic.mcs.infrastructure.tenrec.impl;
 
 import net.milanaleksic.mcs.application.ApplicationManager;
 import net.milanaleksic.mcs.infrastructure.tenrec.TenrecService;
-import net.milanaleksic.mcs.infrastructure.tenrec.impl.TenrecServiceImpl;
+import net.milanaleksic.mcs.test.AbstractIntegrationTest;
 import org.junit.*;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 
@@ -18,12 +15,7 @@ import static org.junit.Assert.*;
  * Date: 5/11/12
  * Time: 9:02 AM
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:spring-beans-testing.xml",
-        "classpath:spring-beans.xml"
-})
-public class TenrecServiceImplTest {
+public class TenrecServiceImplTest extends AbstractIntegrationTest {
 
     @Inject
     private TenrecService tenrecService;
