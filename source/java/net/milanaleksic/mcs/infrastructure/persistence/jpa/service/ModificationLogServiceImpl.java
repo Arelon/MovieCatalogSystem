@@ -10,9 +10,12 @@ import net.milanaleksic.mcs.infrastructure.util.MethodTiming;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.*;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.*;
 
+import javax.persistence.*;
+import javax.persistence.Query;
 import javax.persistence.metamodel.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.*;
@@ -24,7 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 7/2/12
  * Time: 2:46 PM
  */
-@Transactional(readOnly = false)
+@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 public class ModificationLogServiceImpl extends AbstractService
         implements ModificationLogService, ApplicationContextAware, LifeCycleListener {
 
@@ -148,7 +151,26 @@ public class ModificationLogServiceImpl extends AbstractService
                 final Field field = entityClass.getDeclaredField(fieldName);
                 if (!field.isAccessible())
                     field.setAccessible(true); // we are NOT going to make field un-accessible again, waste of time!
-                fieldInformationMap.put(fieldName, new FieldInformation(attribute, field));
+
+                boolean shouldAvoid = false;
+                final Annotation[] annotations = field.getAnnotations();
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof OneToMany) {
+                        // we will not record this part of relation
+                        shouldAvoid = true;
+                        break;
+                    }
+                    if (annotation instanceof ManyToMany) {
+                        final ManyToMany m2mAnnotation = (ManyToMany) annotation;
+                        if (!("".equals(m2mAnnotation.mappedBy()))) {
+                            // we will record only "mappedBy" side of the relation
+                            shouldAvoid = true;
+                            break;
+                        }
+                    }
+                }
+                if (!shouldAvoid)
+                    fieldInformationMap.put(fieldName, new FieldInformation(attribute, field));
             }
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("It was unexpected that an entity does not have a field identical to entity's attribute " + entityClass + ", details: ", e);
@@ -157,51 +179,61 @@ public class ModificationLogServiceImpl extends AbstractService
         return entityInformation;
     }
 
-    @SuppressWarnings({"unchecked"})
-    @MethodTiming(name = "modificationLogForAllActiveFields")
     private void forAllActiveFields(WorkItem workItem) {
-        EntityInformation entityInformation = getOrPrepareEntityInformation(workItem.entity.getClass());
-        final String entityName = entityInformation.entityType.getName();
         try {
-            for (Map.Entry<String, FieldInformation> mapEntry : entityInformation.fieldDetailsMap.entrySet()) {
-                final String fieldName = mapEntry.getKey();
-                final Field field = mapEntry.getValue().field;
-                final Attribute attribute = mapEntry.getValue().attribute;
-                final Object fieldValue;
-                if (attribute instanceof PluralAttribute) {
-                    PluralAttribute plural = (PluralAttribute) attribute;
-                    if (!(ModificationsAwareEntity.class.isAssignableFrom(plural.getElementType().getJavaType())))
-                        throw new RuntimeException("The entity collection type does not contain ModificationsAwareEntity; entity=" + entityName + ", field=" + fieldName);
-
-                    final Collection fromIterable = (Collection) field.get(workItem.entity);
-                    if (fromIterable == null)
-                        fieldValue = null;
-                    else {
-                        final Iterable<Integer> childIds = Iterables.transform(fromIterable, new Function<Object, Integer>() {
-                            public Integer apply(Object o) {
-                                return ((ModificationsAwareEntity) o).getId();
-                            }
-                        });
-                        fieldValue = Joiner.on(',').join(childIds);
-                    }
-                } else {
-                    fieldValue = field.get(workItem.entity);
-                }
-                if (log.isDebugEnabled())
-                    log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", //NON-NLS
-                            entityName, workItem.id, fieldName)); //NON-NLS
-                modificationRepository.addModificationLog(workItem.modificationType, entityName,
-                        workItem.id, fieldName, fieldValue, currentDatabaseVersion);
-            }
+            int clock = getNextClock();
+            recordFields(clock, workItem, getOrPrepareEntityInformation(workItem.entity.getClass()));
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Runtime exception while creating modification log item on entity: " + entityName + ", id=" + workItem.id + ", type=" + workItem.modificationType.toString(), e);
+            throw new RuntimeException("Runtime exception while creating modification log item on entity: " + workItem.getClass()
+                    + ", id=" + workItem.id + ", type=" + workItem.modificationType.toString(), e);
+        }
+    }
+
+    @MethodTiming(name = "modificationLogService.recordFields")
+    private void recordFields(int clock, WorkItem workItem, EntityInformation entityInformation) throws IllegalAccessException {
+        for (Map.Entry<String, FieldInformation> mapEntry : entityInformation.fieldDetailsMap.entrySet()) {
+            final String fieldName = mapEntry.getKey();
+            final Field field = mapEntry.getValue().field;
+            final Attribute attribute = mapEntry.getValue().attribute;
+            final Object fieldValue = attribute instanceof PluralAttribute
+                    ? getPluralAttributeValue(workItem, entityInformation, mapEntry.getValue())
+                    : field.get(workItem.entity);
+            if (log.isDebugEnabled())
+                log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", //NON-NLS
+                        entityInformation.entityType.getName(), workItem.id, fieldName)); //NON-NLS
+            modificationRepository.addModificationLog(clock, workItem.modificationType, entityInformation.entityType.getName(),
+                    workItem.id, fieldName, fieldValue, currentDatabaseVersion);
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private Object getPluralAttributeValue(WorkItem workItem, EntityInformation entityInformation, FieldInformation fieldInfo) throws IllegalAccessException {
+        PluralAttribute pluralAttribute = (PluralAttribute) fieldInfo.attribute;
+        if (!(ModificationsAwareEntity.class.isAssignableFrom(pluralAttribute.getElementType().getJavaType())))
+            throw new RuntimeException("The entity collection type does not contain ModificationsAwareEntity; entity=" +
+                    entityInformation.entityType.getName() + ", field=" + fieldInfo.field.getName());
+
+        final Collection targetCollection = (Collection) fieldInfo.field.get(workItem.entity);
+        if (targetCollection == null)
+            return null;
+        else {
+            return Joiner.on(',').join(
+                    Ordering.natural().sortedCopy(
+                            Iterables.transform(targetCollection, new Function<Object, Integer>() {
+                                public Integer apply(Object o) {
+                                    return ((ModificationsAwareEntity) o).getId();
+                                }
+                            })
+                    )
+            );
         }
     }
 
     private void forDeleteAction(WorkItem workItem) {
+        int clock = getNextClock();
         final ModificationsAwareEntity entity = workItem.entity;
         final EntityType entityType = metamodel.entity(entity.getClass());
-        modificationRepository.addDeleteModificationLog(entityType.getName(), workItem.id, currentDatabaseVersion);
+        modificationRepository.addDeleteModificationLog(clock, entityType.getName(), workItem.id, currentDatabaseVersion);
     }
 
     @Override
@@ -213,7 +245,7 @@ public class ModificationLogServiceImpl extends AbstractService
             @Override
             public void run() {
                 try {
-                    for (WorkItem workItem = null; ; workItem = queue.poll(100, TimeUnit.MILLISECONDS)) {
+                    for (WorkItem workItem = null; ; workItem = queue.poll(1000, TimeUnit.MILLISECONDS)) {
                         if (workItem == null) {
                             if (shutDown || Thread.currentThread().isInterrupted())
                                 break;
@@ -233,5 +265,12 @@ public class ModificationLogServiceImpl extends AbstractService
                 }
             }
         });
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    private int getNextClock() {
+        final Query query = entityManager.createNativeQuery("select next value for DB2ADMIN.MODIFICATION_CLOCK"); //NON-NLS
+        final Object $ = query.getSingleResult();
+        return Integer.parseInt($.toString());
     }
 }

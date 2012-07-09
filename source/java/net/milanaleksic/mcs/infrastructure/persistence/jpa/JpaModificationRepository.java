@@ -1,7 +1,6 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
-import org.hibernate.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.*;
 
@@ -18,18 +17,18 @@ import javax.persistence.*;
 public class JpaModificationRepository extends AbstractRepository implements ModificationRepository {
 
     @Override
-    public void addDeleteModificationLog(String entityName, int id, int currentDatabaseVersion) {
+    public void addDeleteModificationLog(int clock, String entityName, int id, int currentDatabaseVersion) {
         Modification modification = new Modification();
         modification.setEntityId(id);
         modification.setModificationType(ModificationType.DELETE);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(getNextClock());
+        modification.setClock(clock);
         entityManager.persist(modification);
     }
 
     @Override
-    public void addModificationLog(ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
+    public void addModificationLog(int clock, ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
         final String newValue = fieldValue == null ? null : fieldValue.toString();
         try {
             final String previousValue = getPreviousValue(entityName, id, fieldName);
@@ -41,7 +40,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         modification.setEntityId(id);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(getNextClock());
+        modification.setClock(clock);
         modification.setModificationType(modificationType);
         modification.setField(fieldName);
         modification.setValue(newValue);
@@ -55,20 +54,6 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         previousFieldValueQuery.setParameter("fieldName", fieldName);
         previousFieldValueQuery.setMaxResults(1);
         return previousFieldValueQuery.getSingleResult();
-    }
-
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    private int getNextClock() {
-        final Session session = (Session) entityManager.getDelegate();
-        try {
-            final SQLQuery sqlQuery = session.createSQLQuery("select next value for DB2ADMIN.MODIFICATION_CLOCK");
-            final Object $ = sqlQuery.uniqueResult();
-            return Integer.parseInt($.toString());
-        } catch (HibernateException e) {
-            return 1;
-        } finally {
-            session.flush();
-        }
     }
 
 }
