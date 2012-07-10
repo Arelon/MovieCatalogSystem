@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -181,8 +182,7 @@ public class ModificationLogServiceImpl extends AbstractService
 
     private void forAllActiveFields(WorkItem workItem) {
         try {
-            int clock = getNextClock();
-            recordFields(clock, workItem, getOrPrepareEntityInformation(workItem.entity.getClass()));
+            recordFields(workItem, getOrPrepareEntityInformation(workItem.entity.getClass()));
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Runtime exception while creating modification log item on entity: " + workItem.getClass()
                     + ", id=" + workItem.id + ", type=" + workItem.modificationType.toString(), e);
@@ -190,7 +190,8 @@ public class ModificationLogServiceImpl extends AbstractService
     }
 
     @MethodTiming(name = "modificationLogService.recordFields")
-    private void recordFields(int clock, WorkItem workItem, EntityInformation entityInformation) throws IllegalAccessException {
+    private void recordFields(WorkItem workItem, EntityInformation entityInformation) throws IllegalAccessException {
+        final AtomicReference<Integer> lazyClock = new AtomicReference<>(null);
         for (Map.Entry<String, FieldInformation> mapEntry : entityInformation.fieldDetailsMap.entrySet()) {
             final String fieldName = mapEntry.getKey();
             final Field field = mapEntry.getValue().field;
@@ -201,7 +202,7 @@ public class ModificationLogServiceImpl extends AbstractService
             if (log.isDebugEnabled())
                 log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", //NON-NLS
                         entityInformation.entityType.getName(), workItem.id, fieldName)); //NON-NLS
-            modificationRepository.addModificationLog(clock, workItem.modificationType, entityInformation.entityType.getName(),
+            modificationRepository.addModificationLogWithLazyClock(lazyClock, workItem.modificationType, entityInformation.entityType.getName(),
                     workItem.id, fieldName, fieldValue, currentDatabaseVersion);
         }
     }
@@ -267,8 +268,9 @@ public class ModificationLogServiceImpl extends AbstractService
         });
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    private int getNextClock() {
+    public int getNextClock() {
         final Query query = entityManager.createNativeQuery("select next value for DB2ADMIN.MODIFICATION_CLOCK"); //NON-NLS
         final Object $ = query.getSingleResult();
         return Integer.parseInt($.toString());

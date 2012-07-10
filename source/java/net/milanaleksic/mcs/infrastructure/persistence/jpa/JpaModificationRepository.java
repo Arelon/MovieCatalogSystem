@@ -1,10 +1,13 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 
 import net.milanaleksic.mcs.domain.model.*;
+import net.milanaleksic.mcs.domain.service.ModificationLogService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.*;
 
+import javax.inject.Inject;
 import javax.persistence.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * User: Milan Aleksic
@@ -15,6 +18,9 @@ import javax.persistence.*;
 @Transactional
 @SuppressWarnings({"HardCodedStringLiteral"})
 public class JpaModificationRepository extends AbstractRepository implements ModificationRepository {
+
+    @Inject
+    private ModificationLogService modificationLogService;
 
     @Override
     public void addDeleteModificationLog(int clock, String entityName, int id, int currentDatabaseVersion) {
@@ -28,7 +34,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
     }
 
     @Override
-    public void addModificationLog(int clock, ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
+    public void addModificationLogWithLazyClock(AtomicReference<Integer> lazyClock, ModificationType modificationType, String entityName, int id, String fieldName, Object fieldValue, int currentDatabaseVersion) {
         final String newValue = fieldValue == null ? null : fieldValue.toString();
         try {
             final String previousValue = getPreviousValue(entityName, id, fieldName);
@@ -40,7 +46,9 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
         modification.setEntityId(id);
         modification.setEntity(entityName);
         modification.setDbVersion(currentDatabaseVersion);
-        modification.setClock(clock);
+        if (lazyClock.get() == null)
+            lazyClock.compareAndSet(null, modificationLogService.getNextClock());
+        modification.setClock(lazyClock.get());
         modification.setModificationType(modificationType);
         modification.setField(fieldName);
         modification.setValue(newValue);

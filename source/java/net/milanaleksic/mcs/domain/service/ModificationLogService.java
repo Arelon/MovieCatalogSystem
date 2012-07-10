@@ -16,4 +16,7 @@ public interface ModificationLogService {
     void reportUpdate(int id, ModificationsAwareEntity serializable);
 
     void pumpAllModificationLogItems(boolean waitForTermination);
+
+    int getNextClock();
+
 }

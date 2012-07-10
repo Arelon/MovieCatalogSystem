@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.persistence.jpa.service;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.*;
+import com.google.common.base.*;
+import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.test.AbstractDatabaseIntegrationTest;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,19 +24,44 @@ public class GeneralModificationLogIntegrationTest extends AbstractDatabaseInteg
     public void saved_properly_for_insertion() {
         assertThat("Log should be empty at start", getCurrentLogSize(), equalTo(0L));
         addSomeMovies();
-        modificationLogService.pumpAllModificationLogItems(true);
+        waitForLogToBeSaved();
         assertThat("Wrong log size after test data creation", getCurrentLogSize(), equalTo(185L));
         assertThat("Wrong maximum value for clock", getMaxClock(), equalTo(30L));
         assertThat("Wrong aggregated 'medijs' content", getMedijsContent(), equalTo("1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12"));
-        checkNumbersOfClockValues( 1,  3); // Pozicija
-        checkNumbersOfClockValues( 3,  2); // TipMedija
-        checkNumbersOfClockValues( 4,  4); // Medij
-        checkNumbersOfClockValues(16,  2); // Zanr
-        checkNumbersOfClockValues(18,  2); // Tag
-        checkNumbersOfClockValues(20, 11); // Film
+        assertNumbersOfClockValues(1, 3); // Pozicija
+        assertNumbersOfClockValues(3, 2); // TipMedija
+        assertNumbersOfClockValues(4, 4); // Medij
+        assertNumbersOfClockValues(16, 2); // Zanr
+        assertNumbersOfClockValues(18, 2); // Tag
+        assertNumbersOfClockValues(20, 11); // Film
     }
 
-    private void checkNumbersOfClockValues(long clockValue, long expectedCount) {
+    @Test
+    public void saved_properly_for_modification() {
+        addSomeMovies();
+
+        final Zanr actionGenre = zanrRepository.getZanrByName("action");
+        actionGenre.setZanr("stupid");
+        zanrRepository.updateZanr(actionGenre); // creates new mod log and clock=31
+
+        actionGenre.setZanr("stupid");
+        zanrRepository.updateZanr(actionGenre); // doesn't create new mod log, doesn't initiate clock increase
+
+        actionGenre.setZanr("action");
+        zanrRepository.updateZanr(actionGenre); // creates new mod log and clock=32
+
+        waitForLogToBeSaved();
+        assertThat("Wrong log size after test data creation", getCurrentLogSize(), equalTo(187L));
+        assertThat("Wrong maximum value for clock", getMaxClock(), equalTo(32L));
+    }
+
+    // Utilities
+
+    private void waitForLogToBeSaved() {
+        modificationLogService.pumpAllModificationLogItems(true);
+    }
+
+    private void assertNumbersOfClockValues(long clockValue, long expectedCount) {
         final TypedQuery<Long> query = entityManager.createQuery("select count(*) from Modification where clock = :clock", Long.class);
         query.setParameter("clock", clockValue);
         final Long actual = query.getSingleResult();
