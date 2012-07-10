@@ -15,7 +15,8 @@ import static org.junit.Assert.*;
  * Date: 5/11/12
  * Time: 9:02 AM
  */
-public class TenrecServiceImplTest extends AbstractIntegrationTest {
+@Ignore
+public class TenrecServiceImplIntegrationTest extends AbstractIntegrationTest {
 
     @Inject
     private TenrecService tenrecService;
