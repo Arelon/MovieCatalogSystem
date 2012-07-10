@@ -5,6 +5,7 @@ import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.FilmService;
 import net.milanaleksic.mcs.test.AbstractDatabaseIntegrationTest;
 import org.junit.*;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.inject.Inject;
 
@@ -17,6 +18,7 @@ import static org.junit.Assert.*;
  * Time: 8:50 PM
  */
 @SuppressWarnings({"HardCodedStringLiteral"})
+@DirtiesContext
 public class GeneralFilmOperationsIntegrationTest extends AbstractDatabaseIntegrationTest {
 
     @Inject
