@@ -17,10 +17,10 @@ import static org.junit.Assert.assertThat;
  * Time: 11:07 AM
  */
 @SuppressWarnings({"HardCodedStringLiteral"})
-@DirtiesContext
 public class GeneralModificationLogIntegrationTest extends AbstractDatabaseIntegrationTest {
 
     @Test
+    @DirtiesContext
     public void saved_properly_for_insertion() {
         assertThat("Log should be empty at start", getCurrentLogSize(), equalTo(0L));
         addSomeMovies();
@@ -37,6 +37,7 @@ public class GeneralModificationLogIntegrationTest extends AbstractDatabaseInteg
     }
 
     @Test
+    @DirtiesContext
     public void saved_properly_for_modification() {
         addSomeMovies();
 
@@ -53,6 +54,18 @@ public class GeneralModificationLogIntegrationTest extends AbstractDatabaseInteg
         waitForLogToBeSaved();
         assertThat("Wrong log size after test data creation", getCurrentLogSize(), equalTo(187L));
         assertThat("Wrong maximum value for clock", getMaxClock(), equalTo(32L));
+    }
+
+    @Test
+    @DirtiesContext
+    public void saved_properly_for_deletion() {
+        addSomeMovies();
+
+        filmRepository.deleteFilm(filmRepository.getCompleteFilm(7));
+
+        waitForLogToBeSaved();
+        assertThat("Wrong log size after test data creation", getCurrentLogSize(), equalTo(186L));
+        assertThat("Wrong maximum value for clock", getMaxClock(), equalTo(31L));
     }
 
     // Utilities

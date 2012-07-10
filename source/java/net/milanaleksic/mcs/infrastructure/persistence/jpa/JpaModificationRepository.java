@@ -42,6 +42,8 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
                 return;
         } catch(NoResultException ignored) {
         }
+        if (log.isDebugEnabled())
+            log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", entityName, id, fieldName));
         Modification modification = new Modification();
         modification.setEntityId(id);
         modification.setEntity(entityName);

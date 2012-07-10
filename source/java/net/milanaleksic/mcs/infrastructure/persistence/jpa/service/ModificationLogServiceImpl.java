@@ -139,42 +139,38 @@ public class ModificationLogServiceImpl extends AbstractService
         }
     }
 
-    private EntityInformation getOrPrepareEntityInformation(Class<? extends ModificationsAwareEntity> entityClass) {
+    private EntityInformation getOrPrepareEntityInformation(Class<? extends ModificationsAwareEntity> entityClass) throws NoSuchFieldException {
         EntityInformation entityInformation = cachedEntityInformation.get(entityClass);
         if (entityInformation != null)
             return entityInformation;
 
         final EntityType<? extends ModificationsAwareEntity> entityType = metamodel.entity(entityClass);
         ImmutableMap.Builder<String, FieldInformation> fieldInformationMap = ImmutableMap.builder();
-        try {
-            for (Attribute<?, ?> attribute : entityType.getAttributes()) {
-                final String fieldName = attribute.getName();
-                final Field field = entityClass.getDeclaredField(fieldName);
-                if (!field.isAccessible())
-                    field.setAccessible(true); // we are NOT going to make field un-accessible again, waste of time!
+        for (Attribute<?, ?> attribute : entityType.getAttributes()) {
+            final String fieldName = attribute.getName();
+            final Field field = entityClass.getDeclaredField(fieldName);
+            if (!field.isAccessible())
+                field.setAccessible(true); // we are NOT going to make field un-accessible again, waste of time!
 
-                boolean shouldAvoid = false;
-                final Annotation[] annotations = field.getAnnotations();
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof OneToMany) {
-                        // we will not record this part of relation
+            boolean shouldAvoid = false;
+            final Annotation[] annotations = field.getAnnotations();
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof OneToMany) {
+                    // we will not record this part of relation
+                    shouldAvoid = true;
+                    break;
+                }
+                if (annotation instanceof ManyToMany) {
+                    final ManyToMany m2mAnnotation = (ManyToMany) annotation;
+                    if (!("".equals(m2mAnnotation.mappedBy()))) {
+                        // we will record only "mappedBy" side of the relation
                         shouldAvoid = true;
                         break;
                     }
-                    if (annotation instanceof ManyToMany) {
-                        final ManyToMany m2mAnnotation = (ManyToMany) annotation;
-                        if (!("".equals(m2mAnnotation.mappedBy()))) {
-                            // we will record only "mappedBy" side of the relation
-                            shouldAvoid = true;
-                            break;
-                        }
-                    }
                 }
-                if (!shouldAvoid)
-                    fieldInformationMap.put(fieldName, new FieldInformation(attribute, field));
             }
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("It was unexpected that an entity does not have a field identical to entity's attribute " + entityClass + ", details: ", e);
+            if (!shouldAvoid)
+                fieldInformationMap.put(fieldName, new FieldInformation(attribute, field));
         }
         cachedEntityInformation.put(entityClass, entityInformation = new EntityInformation(entityType, fieldInformationMap.build()));
         return entityInformation;
@@ -186,6 +182,9 @@ public class ModificationLogServiceImpl extends AbstractService
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Runtime exception while creating modification log item on entity: " + workItem.getClass()
                     + ", id=" + workItem.id + ", type=" + workItem.modificationType.toString(), e);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("It was unexpected that an entity does not have a field identical to entity's attribute "
+                    + workItem.entity.getClass() + ", details: ", e);
         }
     }
 
@@ -199,11 +198,8 @@ public class ModificationLogServiceImpl extends AbstractService
             final Object fieldValue = attribute instanceof PluralAttribute
                     ? getPluralAttributeValue(workItem, entityInformation, mapEntry.getValue())
                     : field.get(workItem.entity);
-            if (log.isDebugEnabled())
-                log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", //NON-NLS
-                        entityInformation.entityType.getName(), workItem.id, fieldName)); //NON-NLS
-            modificationRepository.addModificationLogWithLazyClock(lazyClock, workItem.modificationType, entityInformation.entityType.getName(),
-                    workItem.id, fieldName, fieldValue, currentDatabaseVersion);
+            modificationRepository.addModificationLogWithLazyClock(lazyClock, workItem.modificationType,
+                    entityInformation.entityType.getName(), workItem.id, fieldName, fieldValue, currentDatabaseVersion);
         }
     }
 
