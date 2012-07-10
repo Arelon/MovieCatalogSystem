@@ -32,22 +32,22 @@ public class JpaFilmRepository extends AbstractRepository implements FilmReposit
 
     @Override
     public void deleteFilm(Film film) {
-        film = entityManager.find(Film.class, film.getIdfilm());
+        film = entityManager.getReference(Film.class, film.getIdfilm());
         entityManager.remove(film);
     }
 
     @Override
     public void saveFilm(Film newFilm, Zanr zanr, Iterable<Medij> medijs, Pozicija position, Iterable<Tag> selectedTags) {
-        zanr = entityManager.find(Zanr.class, zanr.getIdzanr());
-        position = entityManager.find(Pozicija.class, position.getIdpozicija());
+        zanr = entityManager.getReference(Zanr.class, zanr.getIdzanr());
+        position = entityManager.getReference(Pozicija.class, position.getIdpozicija());
         zanr.addFilm(newFilm);
         for (Medij medij : medijs) {
-            medij = entityManager.find(Medij.class, medij.getIdmedij());
+            medij = entityManager.getReference(Medij.class, medij.getIdmedij());
             position.addMedij(medij);
             newFilm.addMedij(medij);
         }
         for (Tag tag : selectedTags) {
-            tag = entityManager.find(Tag.class, tag.getIdtag());
+            tag = entityManager.getReference(Tag.class, tag.getIdtag());
             newFilm.addTag(tag);
         }
         entityManager.persist(newFilm);
