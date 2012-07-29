@@ -191,7 +191,12 @@
     </target>
 
     <target name="findbugs" description="FindBugs" depends="compile">
-        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath"/>
+        <path id="classpath-findbugs">
+            <fileset dir="${env.FINDBUGS_HOME}/lib" erroronmissingdir="true">
+                <include name="findbugs-ant.jar"/>
+            </fileset>
+        </path>
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath-findbugs"/>
         <findbugs failonerror="true"
                   home="${env.FINDBUGS_HOME}" output="html" outputFile="${output.dir}/FindBugsAnalysis.html"
                   jvmargs="-Xmx256m"
