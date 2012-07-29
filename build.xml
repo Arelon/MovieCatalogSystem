@@ -53,9 +53,9 @@
         <fileset dir="${ivy.resolved.libs.target.dir}">
             <include name="*.*"/>
         </fileset>
-        <fileset dir="${env.FINDBUGS_HOME}/lib" erroronmissingdir="true">
-            <include name="findbugs-ant.jar"/>
-        </fileset>
+        <!--<fileset dir="${env.FINDBUGS_HOME}/lib" erroronmissingdir="true">-->
+            <!--<include name="findbugs-ant.jar"/>-->
+        <!--</fileset>-->
     </path>
 
     <target name="init" description="Init tasks" depends="resolve">
