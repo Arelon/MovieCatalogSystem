@@ -40,14 +40,35 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
     private ResourceBundle bundle;
 
+    private boolean lazyInitialization = false;
+
+    private LazyItemsProvider lazyItemsProvider;
+
+    public interface LazyItemsProvider {
+
+        List<String> getItems();
+
+    }
+
     public DynamicSelectorText(Composite parent, int style) {
         super(parent, style | SWT.NO_BACKGROUND);
         prepareComponent();
         addListeners();
     }
 
+    public void setLazyInitialization(boolean lazyInitialization) {
+        this.lazyInitialization = lazyInitialization;
+    }
+
     public void setBundle(ResourceBundle bundle) {
         this.bundle = bundle;
+        if (isModifiable()) {
+            final Combo chooser = getComboEditor();
+            if (chooser.getItemCount() == 0) {
+                chooser.add(bundle.getString("global.chooseFromList"));
+                chooser.select(0);
+            }
+        }
     }
 
     private void prepareComponent() {
@@ -77,6 +98,18 @@ public class DynamicSelectorText extends Composite implements PaintListener {
         editor.minimumHeight = 20;
         editor.minimumWidth = 100;
         editor.setEditor(chooser);
+        chooser.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                chooser.removeFocusListener(this);
+                if (!lazyInitialization || lazyItemsProvider == null)
+                    return;
+                setItems(lazyItemsProvider.getItems());
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) { }
+        });
         chooser.addTraverseListener(new TraverseListener() {
             @Override
             public void keyTraversed(TraverseEvent e) {
@@ -325,5 +358,9 @@ public class DynamicSelectorText extends Composite implements PaintListener {
 
     public void setCloserColor(Color closerColor) {
         this.closerColor = closerColor;
+    }
+
+    public void setLazyItemsProvider(LazyItemsProvider lazyItemsProvider) {
+        this.lazyItemsProvider = lazyItemsProvider;
     }
 }

@@ -20,6 +20,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements OfferMovieList.Receiver {
 
@@ -263,7 +264,6 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         String previousLokacija = comboLokacija.getText();
         comboZanr.removeAll();
         comboLokacija.removeAll();
-
         for (Zanr zanr : zanrRepository.getZanrs()) {
             comboZanr.add(zanr.getZanr());
             comboZanr.setData(zanr.getZanr(), zanr);
@@ -272,19 +272,28 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
             comboLokacija.add(pozicija.getPozicija());
             comboLokacija.setData(pozicija.getPozicija(), pozicija);
         }
-        List<String> allMediums = Lists.newArrayList();
-        for (Medij medij : medijRepository.getMedijs()) {
-            allMediums.add(medij.toString());
-            diskSelector.setData(medij.toString(), medij);
-        }
-        diskSelector.setItems(allMediums);
-        List<String> allTags = Lists.newArrayList();
-        for (Tag tag : tagRepository.getTags()) {
-            allTags.add(tag.toString());
-            tagSelector.setData(tag.toString(), tag);
-        }
-        tagSelector.setItems(allTags);
-
+        diskSelector.setLazyItemsProvider(new DynamicSelectorText.LazyItemsProvider() {
+            @Override
+            public List<String> getItems() {
+                List<String> allMediums = Lists.newArrayList();
+                for (Medij medij : medijRepository.getMedijs()) {
+                    allMediums.add(medij.toString());
+                    diskSelector.setData(medij.toString(), medij);
+                }
+                return allMediums;
+            }
+        });
+        tagSelector.setLazyItemsProvider(new DynamicSelectorText.LazyItemsProvider() {
+            @Override
+            public List<String> getItems() {
+                List<String> allTags = Lists.newArrayList();
+                for (Tag tag : tagRepository.getTags()) {
+                    allTags.add(tag.toString());
+                    tagSelector.setData(tag.toString(), tag);
+                }
+                return allTags;
+            }
+        });
         if (!previousZanr.isEmpty() && comboZanr.indexOf(previousZanr) != -1)
             comboZanr.select(comboZanr.indexOf(previousZanr));
         if (!previousLokacija.isEmpty() && comboLokacija.indexOf(previousLokacija) != -1)
@@ -344,7 +353,7 @@ public class NewOrEditMovieDialogForm extends AbstractTransformedForm implements
         offerMovieListForNewOrEditForm.prepareFor(comboNaziv);
         reReadData();
 
-        if (comboZanr.getItemCount() == 0 || diskSelector.getItemCount() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
+        if (comboZanr.getItemCount() == 0 || comboLokacija.getItemCount() == 0 || tipMedijaRepository.getTipMedijas().size() == 0) {
             MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
             box.setMessage(bundle.getString("newOrEdit.someBasicDomainElementsMissing"));
             box.setText(bundle.getString("global.information"));

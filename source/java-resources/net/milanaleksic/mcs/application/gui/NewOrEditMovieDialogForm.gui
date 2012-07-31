@@ -146,7 +146,8 @@
 
                 "dynamicSelectorText(diskSelector, {border}|{v_scroll})" : {
                     "bundle" : "(bundle)",
-                    "layoutData" : "[gridData](fill,fill,true,true)"
+                    "layoutData" : "[gridData](fill,fill,true,true)",
+                    "lazyInitialization" : true
                 }
             }
         },
@@ -164,7 +165,8 @@
             "_children" : {
                 "dynamicSelectorText(tagSelector, {border}|{v_scroll})" : {
                     "bundle" : "(bundle)",
-                    "layoutData" : "[gridData](fill,fill,true,true)"
+                    "layoutData" : "[gridData](fill,fill,true,true)",
+                    "lazyInitialization" : true
                 }
             }
         },
