@@ -13,6 +13,10 @@
         <delete dir="${compile.dir}" failonerror="false"/>
         <delete dir="${install.dir}" failonerror="false"/>
         <delete dir="${ivy.resolved.libs.target.dir}" failonerror="false"/>
+        <delete dir="${test.output.dir}" failonerror="false"/>
+        <delete dir="${test.compile.dir}" failonerror="false"/>
+        <delete dir="${test-integration.output.dir}" failonerror="false"/>
+        <delete dir="${test-integration.compile.dir}" failonerror="false"/>
         <condition property="ivy.should.not.download">
             <or>
                 <resourceexists>
@@ -27,7 +31,7 @@
     <target name="download-ivy" depends="clean" unless="ivy.should.not.download">
         <echo message="Downloading Ivy since ivy.should.not.download=false"/>
         <mkdir dir="${ivy.jar.dir}"/>
-        <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+        <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${version.ivy}/ivy-${version.ivy}.jar"
              dest="${ivy.jar.file}" usetimestamp="true"/>
     </target>
 
@@ -78,7 +82,7 @@
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
-        <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="false">
+        <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
             <src path="${src.dir}"/>
             <src path="${resources.dir}"/>
             <src path="${src.metamodel.dir}"/>
@@ -98,7 +102,36 @@
         </copy>
     </target>
 
-    <target name="jar" description="JARs the MovieCatalogSystem" depends="compile">
+    <target name="test" description="Unit tests" depends="compile">
+        <mkdir dir="${test.output.dir}" />
+        <mkdir dir="${test.compile.dir}" />
+        <javac destDir="${test.compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
+            <classpath>
+                <path refid="classpath" />
+                <path path="${compile.dir}" />
+            </classpath>
+            <src path="${test.dir}"/>
+            <compilerarg value="-proc:none"/>
+        </javac>
+        <junit printsummary="true" failureproperty="unit.tests.failed">
+            <classpath>
+                <path refid="classpath"/>
+                <path path="${compile.dir}" />
+                <path path="${resources.dir}"/>
+                <path path="${test.compile.dir}" />
+            </classpath>
+            <formatter type="plain"/>
+            <batchtest todir="${test.output.dir}">
+                <fileset dir="${test.compile.dir}">
+                    <include name="**/*Test.class"/>
+                    <exclude name="**/Abstract*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <fail if="${unit.tests.failed}" message="There are test failures" />
+    </target>
+
+    <target name="jar" description="JARs the MovieCatalogSystem" depends="test">
         <buildnumber file="${build.properties.file}"/>
         <property file="${build.properties.file}"/>
 
@@ -114,6 +147,37 @@
         <copy todir="${ivy.resolved.libs.target.dir}"
               file="${ivy.resolved.libs.target.dir}/mcs-${src.version}.${build.number}.jar"
               overwrite="true"/>
+    </target>
+
+    <target name="test-integration" description="Unit tests" depends="jar">
+        <mkdir dir="${test-integration.output.dir}" />
+        <mkdir dir="${test-integration.compile.dir}" />
+        <javac destDir="${test-integration.compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
+            <classpath>
+                <path refid="classpath" />
+                <path path="${compile.dir}" />
+            </classpath>
+            <src path="${test-integration.dir}"/>
+            <compilerarg value="-proc:none"/>
+        </javac>
+        <junit printsummary="true" failureproperty="integration.tests.failed" fork="true">
+            <jvmarg value="-javaagent:&quot;${test-integration.spring-instrument.location}&quot;"/>
+            <classpath>
+                <path refid="classpath"/>
+                <path path="${compile.dir}" />
+                <path path="${resources.dir}"/>
+                <path path="${test-integration.compile.dir}" />
+                <path path="${test-integration.resources.dir}" />
+            </classpath>
+            <formatter type="plain"/>
+            <batchtest todir="${test-integration.output.dir}">
+                <fileset dir="${test-integration.compile.dir}">
+                    <include name="**/*Test.class"/>
+                    <exclude name="**/Abstract*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <fail if="${integration.tests.failed}" message="There are integration test failures" />
     </target>
 
     <target name="installation" description="Creates the installation" depends="jar">
