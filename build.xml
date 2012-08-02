@@ -99,6 +99,9 @@
             <fileset dir="${src.dir}">
                 <exclude name="**/*.java"/>
             </fileset>
+            <fileset dir="${resources.dir}">
+                <include name="**/*"/>
+            </fileset>
         </copy>
     </target>
 
@@ -153,23 +156,18 @@
         <mkdir dir="${test-integration.output.dir}" />
         <mkdir dir="${test-integration.compile.dir}" />
         <javac destDir="${test-integration.compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
-            <classpath>
-                <path refid="classpath" />
-                <path path="${compile.dir}" />
-            </classpath>
+            <classpath refid="classpath" />
             <src path="${test-integration.dir}"/>
             <compilerarg value="-proc:none"/>
         </javac>
-        <junit printsummary="true" failureproperty="integration.tests.failed" fork="true">
+        <junit printsummary="true" failureproperty="integration.tests.failed" fork="true" forkmode="perBatch" newenvironment="true">
             <jvmarg value="-javaagent:&quot;${test-integration.spring-instrument.location}&quot;"/>
             <classpath>
                 <path refid="classpath"/>
-                <path path="${compile.dir}" />
-                <path path="${resources.dir}"/>
                 <path path="${test-integration.compile.dir}" />
                 <path path="${test-integration.resources.dir}" />
             </classpath>
-            <formatter type="plain"/>
+            <formatter type="xml"/>
             <batchtest todir="${test-integration.output.dir}">
                 <fileset dir="${test-integration.compile.dir}">
                     <include name="**/*Test.class"/>
