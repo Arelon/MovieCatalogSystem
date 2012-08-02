@@ -160,8 +160,8 @@
             <src path="${test-integration.dir}"/>
             <compilerarg value="-proc:none"/>
         </javac>
-        <junit printsummary="true" failureproperty="integration.tests.failed" fork="true" forkmode="perBatch" newenvironment="true">
-            <jvmarg value="-javaagent:&quot;${test-integration.spring-instrument.location}&quot;"/>
+        <junit printsummary="true" failureproperty="integration.tests.failed" fork="true" forkmode="perBatch" newenvironment="true" dir="${startup.dir}">
+            <jvmarg value="-javaagent:&quot;${test-integration.spring-instrument.path-from-startup}&quot;"/>
             <classpath>
                 <path refid="classpath"/>
                 <path path="${test-integration.compile.dir}" />
