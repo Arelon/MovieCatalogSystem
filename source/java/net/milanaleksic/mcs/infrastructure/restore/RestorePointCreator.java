@@ -61,12 +61,13 @@ public class RestorePointCreator extends AbstractRestorePointService {
             File restoreFile = new File(SCRIPT_KATALOG_RESTORE_LOCATION);
             if (log.isDebugEnabled())
                 log.debug("Renaming old restore script if there is one..."); //NON-NLS
-            if (!restoreFile.exists())
-                return;
 
-            File renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
+            File renamedOldRestoreFile = null;
+            if (restoreFile.exists())
+                renamedOldRestoreFile = renameAndCompressOldRestoreFiles(restoreFile);
             printOutTableContentsToRestoreFile(conn, restoreFile);
-            eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
+            if (renamedOldRestoreFile != null && renamedOldRestoreFile.exists())
+                eraseOldBackupIfIdenticalToCurrent(renamedOldRestoreFile, restoreFile);
             if (log.isInfoEnabled())
                 log.info("Restore point creation process finished successfully!"); //NON-NLS
         } catch (SQLException | IOException e) {
@@ -130,8 +131,8 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private String generateInsertSqlForResultSet(ResultSet resultSet, List<Integer> columnTypeMappings, String tableName, String colNames) throws SQLException {
         StringBuilder currentRowContents = new StringBuilder();
         final int columnCount = columnTypeMappings.size();
-        for (int colIter = 0; colIter < columnCount; colIter++) {
-            int columnType = columnTypeMappings.get(colIter);
+        for (int colIter = 1; colIter <= columnCount; colIter++) {
+            int columnType = columnTypeMappings.get(colIter-1);
             if (columnType == Types.INTEGER)
                 currentRowContents.append(resultSet.getInt(colIter));
             else if (columnType == Types.VARCHAR || columnType == Types.CHAR)
