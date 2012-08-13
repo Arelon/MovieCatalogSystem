@@ -1,7 +1,7 @@
 package net.milanaleksic.mcs.infrastructure.restore;
 
 import com.google.common.base.*;
-import com.google.common.collect.*;
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import net.milanaleksic.mcs.infrastructure.util.*;
 
@@ -24,29 +24,10 @@ public class RestorePointCreator extends AbstractRestorePointService {
     private static final String FILENAME_FORMAT_DATE = "yyyyMMddkkmmss"; //NON-NLS
 
     @SuppressWarnings({"HardCodedStringLiteral"})
-    private static final List<RestoreSource> restoreSources = ImmutableList.of(
-            new TableRestoreSource("DB2ADMIN.TIPMEDIJA"),
-            new TableRestoreSource("DB2ADMIN.POZICIJA"),
-            new TableRestoreSource("DB2ADMIN.ZANR"),
-            new TableRestoreSource("DB2ADMIN.MEDIJ"),
-            new TableRestoreSource("DB2ADMIN.FILM"),
-            new TableRestoreSource("DB2ADMIN.ZAUZIMA"),
-            new TableRestoreSource("DB2ADMIN.TAG"),
-            new TableRestoreSource("DB2ADMIN.HASTAG"),
-            new TableRestoreSource("DB2ADMIN.MODIFICATION"),
-            new ExactSqlRestoreSource("SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION'")
-    );
+    private List<RestoreSource> restoreSources;
 
-    private String createRestartWithForTable(String tableName, String idName, Connection conn) throws SQLException {
-        try (PreparedStatement st = conn.prepareStatement(new Formatter().format("SELECT COALESCE(MAX(%1s)+1,1) FROM DB2ADMIN.%2s", idName, tableName).toString())) { //NON-NLS
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    return String.format("alter table %s alter COLUMN %s RESTART WITH %d %s%n%n", //NON-NLS
-                            tableName, idName, rs.getInt(1), STATEMENT_DELIMITER);
-                } else
-                    throw new IllegalStateException("I could not fetch next ID for table " + tableName);
-            }
-        }
+    public void setRestoreSources(List<RestoreSource> restoreSources) {
+        this.restoreSources = restoreSources;
     }
 
     private String createTimestampString(Date date) {
@@ -97,7 +78,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
     }
 
     private void printInsertStatementsForRestoreSource(Connection conn, PrintStream outputStream, RestoreSource source) throws SQLException {
-        try (PreparedStatement preparedStatement = conn.prepareStatement(source.getScript())) {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(source.getScriptForData())) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 final List<Integer> columnTypeMappings = Lists.newArrayList();
                 ResultSetMetaData metaData = resultSet.getMetaData();
@@ -113,7 +94,7 @@ public class RestorePointCreator extends AbstractRestorePointService {
                 }
             }
         } catch (SQLException e) {
-            log.error("SQL exception occurred while working on restore script " + source.getScript()); //NON-NLS
+            log.error("SQL exception occurred while working on restore script " + source.getScriptForData()); //NON-NLS
             throw e;
         }
     }
@@ -197,14 +178,23 @@ public class RestorePointCreator extends AbstractRestorePointService {
         }
     }
 
-    @SuppressWarnings({"HardCodedStringLiteral"})
     private void appendRestartCountersScript(PrintStream outputStream, Connection conn) throws SQLException {
-        outputStream.print(createRestartWithForTable("Param", "IdParam", conn));
-        outputStream.print(createRestartWithForTable("Film", "IdFilm", conn));
-        outputStream.print(createRestartWithForTable("Medij", "IdMedij", conn));
-        outputStream.print(createRestartWithForTable("Pozicija", "IdPozicija", conn));
-        outputStream.print(createRestartWithForTable("TipMedija", "IdTip", conn));
-        outputStream.print(createRestartWithForTable("Zanr", "IdZanr", conn));
+        for (RestoreSource restoreSource : restoreSources) {
+            outputStream.print(createRestartWithForTable(restoreSource, conn));
+        }
+    }
+
+    private String createRestartWithForTable(RestoreSource restoreSource, Connection conn) throws SQLException {
+        if (!restoreSource.hasTableId())
+            return "";
+        try (PreparedStatement st = conn.prepareStatement(restoreSource.getScriptForMaxId())) {
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return restoreSource.getScriptForMaxIdTableAlter(rs.getInt(1));
+                } else
+                    throw new IllegalStateException("I could not fetch next ID for table " + restoreSource);
+            }
+        }
     }
 
     private String getScriptHeader() {

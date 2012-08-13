@@ -6,5 +6,13 @@ package net.milanaleksic.mcs.infrastructure.restore;
  * Time: 5:09 PM
  */
 public interface RestoreSource {
-    String getScript();
+
+    String getScriptForData();
+
+    String getScriptForMaxId();
+
+    String getScriptForMaxIdTableAlter(int maxIndex);
+
+    boolean hasTableId();
+
 }

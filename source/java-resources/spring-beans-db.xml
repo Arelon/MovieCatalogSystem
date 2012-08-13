@@ -58,7 +58,56 @@
     </bean>
 
     <bean id="restorePointCreator" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator"
-          parent="abstractRestorePointService" />
+          parent="abstractRestorePointService">
+        <property name="restoreSources">
+            <list>
+                <!-- order matters -->
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.TIPMEDIJA" />
+                    <constructor-arg index="1" value="IdTip" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.POZICIJA" />
+                    <constructor-arg index="1" value="IdPozicija" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.ZANR" />
+                    <constructor-arg index="1" value="IdZanr" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.MEDIJ" />
+                    <constructor-arg index="1" value="IdMedij" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.FILM" />
+                    <constructor-arg index="1" value="IdFilm" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.ZAUZIMA" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.TAG" />
+                    <constructor-arg index="1" value="IdTag" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.HASTAG" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
+                    <constructor-arg index="0" value="DB2ADMIN.MODIFICATION" />
+                    <constructor-arg index="1" value="IdModification" />
+                </bean>
+                <bean class="net.milanaleksic.mcs.infrastructure.restore.FreeDataScriptRestoreSource">
+                    <constructor-arg index="0">
+                        <value>
+                            <![CDATA[SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION']]>
+                        </value>
+                    </constructor-arg>
+                    <constructor-arg index="1" value="DB2ADMIN.PARAM" />
+                    <constructor-arg index="2" value="IdParam" />
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean id="restorePointRestorer" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer"
           parent="abstractRestorePointService">
