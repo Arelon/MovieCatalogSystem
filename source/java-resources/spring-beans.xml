@@ -4,54 +4,55 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:load-time-weaver />
+    <context:load-time-weaver/>
 
-    <context:annotation-config />
+    <context:annotation-config/>
 
-    <import resource="spring-beans-gui.xml" />
+    <import resource="spring-beans-gui.xml"/>
 
-    <import resource="spring-beans-db.xml" />
+    <import resource="spring-beans-db.xml"/>
 
-    <import resource="spring-beans-service.xml" />
+    <import resource="spring-beans-service.xml"/>
 
-    <import resource="spring-beans-jmx.xml" />
+    <import resource="spring-beans-jmx.xml"/>
 
-    <import resource="spring-beans-transformer.xml" />
+    <import resource="spring-beans-transformer.xml"/>
 
-    <import resource="spring-beans-tenrec.xml" />
+    <import resource="spring-beans-tenrec.xml"/>
 
-    <bean id="programArgsManager" class="net.milanaleksic.mcs.application.config.ProgramArgsService" />
+    <bean id="programArgsManager" class="net.milanaleksic.mcs.application.config.ProgramArgsService"/>
 
-    <bean id="workerManager" class="net.milanaleksic.mcs.infrastructure.worker.impl.WorkerManagerImpl" />
+    <bean id="workerManager" class="net.milanaleksic.mcs.infrastructure.worker.impl.WorkerManagerImpl"/>
 
-    <bean id="applicationConfigurationManager" class="net.milanaleksic.mcs.application.config.ApplicationConfigurationManager" />
+    <bean id="applicationConfigurationManager"
+          class="net.milanaleksic.mcs.application.config.ApplicationConfigurationManager"/>
 
-    <bean id="userConfigurationManager" class="net.milanaleksic.mcs.application.config.UserConfigurationManager" />
+    <bean id="userConfigurationManager" class="net.milanaleksic.mcs.application.config.UserConfigurationManager"/>
 
-    <bean id="tenrecManager" class="net.milanaleksic.mcs.application.tenrec.TenrecManager" />
+    <bean id="tenrecManager" class="net.milanaleksic.mcs.application.tenrec.TenrecManager"/>
 
-	<bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
+    <bean id="applicationManager" class="net.milanaleksic.mcs.application.ApplicationManager">
         <property name="lifeCycleListeners">
             <set>
                 <!--<ref bean="splashScreenManager" />--><!--Splash Screen has been removed as of 26th April, 2012-->
-                <ref bean="applicationConfigurationManager" />
-                <ref bean="userConfigurationManager" />
-                <ref bean="resourceBundleSource" />
-                <bean class="net.milanaleksic.mcs.application.util.StatisticsManager" />
-                <ref bean="httpClientFactoryService" />
-                <ref bean="thumbnailManager" />
-                <ref bean="restoreManager" />
-                <ref bean="workerManager" />
-                <ref bean="offerMovieListForFindMovieDialogForm" />
-                <ref bean="offerMovieListForNewOrEditForm" />
-                <ref bean="tmdbService" />
-                <ref bean="movieDetailsForm" />
-                <ref bean="tenrecService" />
-                <ref bean="tenrecManager" />
-                <ref bean="modificationLogService" />
+                <ref bean="applicationConfigurationManager"/>
+                <ref bean="userConfigurationManager"/>
+                <ref bean="resourceBundleSource"/>
+                <bean class="net.milanaleksic.mcs.application.util.StatisticsManager"/>
+                <ref bean="httpClientFactoryService"/>
+                <ref bean="thumbnailManager"/>
+                <ref bean="restoreManager"/>
+                <ref bean="workerManager"/>
+                <ref bean="offerMovieListForFindMovieDialogForm"/>
+                <ref bean="offerMovieListForNewOrEditForm"/>
+                <ref bean="tmdbService"/>
+                <ref bean="movieDetailsForm"/>
+                <ref bean="tenrecService"/>
+                <ref bean="tenrecManager"/>
+                <ref bean="modificationLogService"/>
             </set>
         </property>
-	</bean>
+    </bean>
 
     <bean id="resourceBundleSource" class="net.milanaleksic.mcs.infrastructure.messages.ResourceBundleSource">
     </bean>

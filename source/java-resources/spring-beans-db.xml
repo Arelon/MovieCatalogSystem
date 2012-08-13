@@ -8,7 +8,7 @@
 
     <context:component-scan base-package="net.milanaleksic.mcs.infrastructure.persistence.jpa"/>
 
-    <context:property-placeholder location="classpath:datasource.properties" ignore-unresolvable="true" />
+    <context:property-placeholder location="classpath:datasource.properties" ignore-unresolvable="true"/>
 
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
@@ -28,7 +28,7 @@
         <property name="minPoolSize" value="2"/>
         <property name="acquireIncrement" value="1"/>
         <property name="acquireRetryAttempts" value="0"/>
-        <property name="maxStatements" value="50" />
+        <property name="maxStatements" value="50"/>
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -39,7 +39,9 @@
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
                 <prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
                 <prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
-                <prop key="hibernate.cache.provider_configuration_file_resource_path">${hibernate.cache.provider_configuration_file_resource_path}</prop>
+                <prop key="hibernate.cache.provider_configuration_file_resource_path">
+                    ${hibernate.cache.provider_configuration_file_resource_path}
+                </prop>
                 <prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
                 <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
                 <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
@@ -53,8 +55,8 @@
 
     <bean id="abstractRestorePointService" abstract="true"
           class="net.milanaleksic.mcs.infrastructure.restore.AbstractRestorePointService">
-        <property name="useDB2StyleStringInScripts" value="${mcs.connection.isdb2}" />
-        <property name="dbVersion" value="${mcs.db.version}" />
+        <property name="useDB2StyleStringInScripts" value="${mcs.connection.isdb2}"/>
+        <property name="dbVersion" value="${mcs.db.version}"/>
     </bean>
 
     <bean id="restorePointCreator" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointCreator"
@@ -63,47 +65,43 @@
             <list>
                 <!-- order matters -->
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.TIPMEDIJA" />
-                    <constructor-arg index="1" value="IdTip" />
+                    <constructor-arg index="0" value="DB2ADMIN.TIPMEDIJA"/>
+                    <constructor-arg index="1" value="IdTip"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.POZICIJA" />
-                    <constructor-arg index="1" value="IdPozicija" />
+                    <constructor-arg index="0" value="DB2ADMIN.POZICIJA"/>
+                    <constructor-arg index="1" value="IdPozicija"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.ZANR" />
-                    <constructor-arg index="1" value="IdZanr" />
+                    <constructor-arg index="0" value="DB2ADMIN.ZANR"/>
+                    <constructor-arg index="1" value="IdZanr"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.MEDIJ" />
-                    <constructor-arg index="1" value="IdMedij" />
+                    <constructor-arg index="0" value="DB2ADMIN.MEDIJ"/>
+                    <constructor-arg index="1" value="IdMedij"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.FILM" />
-                    <constructor-arg index="1" value="IdFilm" />
+                    <constructor-arg index="0" value="DB2ADMIN.FILM"/>
+                    <constructor-arg index="1" value="IdFilm"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.ZAUZIMA" />
+                    <constructor-arg index="0" value="DB2ADMIN.ZAUZIMA"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.TAG" />
-                    <constructor-arg index="1" value="IdTag" />
+                    <constructor-arg index="0" value="DB2ADMIN.TAG"/>
+                    <constructor-arg index="1" value="IdTag"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.HASTAG" />
+                    <constructor-arg index="0" value="DB2ADMIN.HASTAG"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.SelectAllFromTableRestoreSource">
-                    <constructor-arg index="0" value="DB2ADMIN.MODIFICATION" />
-                    <constructor-arg index="1" value="IdModification" />
+                    <constructor-arg index="0" value="DB2ADMIN.MODIFICATION"/>
+                    <constructor-arg index="1" value="IdModification"/>
                 </bean>
                 <bean class="net.milanaleksic.mcs.infrastructure.restore.FreeDataScriptRestoreSource">
-                    <constructor-arg index="0">
-                        <value>
-                            <![CDATA[SELECT * FROM DB2ADMIN.PARAM WHERE NAME <> 'VERSION']]>
-                        </value>
-                    </constructor-arg>
-                    <constructor-arg index="1" value="DB2ADMIN.PARAM" />
-                    <constructor-arg index="2" value="IdParam" />
+                    <constructor-arg index="0" value="SELECT * FROM DB2ADMIN.PARAM WHERE NAME &lt;&gt; 'VERSION'"/>
+                    <constructor-arg index="1" value="DB2ADMIN.PARAM"/>
+                    <constructor-arg index="2" value="IdParam"/>
                 </bean>
             </list>
         </property>
@@ -111,12 +109,14 @@
 
     <bean id="restorePointRestorer" class="net.milanaleksic.mcs.infrastructure.restore.RestorePointRestorer"
           parent="abstractRestorePointService">
-        <property name="patternForSqlAlters" value="/net/milanaleksic/mcs/infrastructure/restore/alter/impl/alter_script_%d.sql"/>
-        <property name="patternForCodeAlters" value="net.milanaleksic.mcs.infrastructure.restore.alter.impl.AlterScript%d"/>
-        <property name="versionScript" value="SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'" />
-        <property name="restoreContent" value="${man.db.restoreContent}" />
+        <property name="patternForSqlAlters"
+                  value="/net/milanaleksic/mcs/infrastructure/restore/alter/impl/alter_script_%d.sql"/>
+        <property name="patternForCodeAlters"
+                  value="net.milanaleksic.mcs.infrastructure.restore.alter.impl.AlterScript%d"/>
+        <property name="versionScript" value="SELECT Value FROM DB2ADMIN.Param WHERE Name='VERSION'"/>
+        <property name="restoreContent" value="${man.db.restoreContent}"/>
     </bean>
 
-    <bean id="restoreManager" class="net.milanaleksic.mcs.application.restore.RestoreManager" />
+    <bean id="restoreManager" class="net.milanaleksic.mcs.application.restore.RestoreManager"/>
 
 </beans>

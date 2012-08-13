@@ -3,24 +3,26 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <context:property-placeholder location="classpath:net/milanaleksic/mcs/infrastructure/tenrec/tenrec.properties" ignore-unresolvable="true"  />
+    <context:property-placeholder location="classpath:net/milanaleksic/mcs/infrastructure/tenrec/tenrec.properties"
+                                  ignore-unresolvable="true"/>
 
     <bean id="tenrecWS" class="net.milanaleksic.tenrec.client.Tenrec"
-          factory-bean="tenrecServiceFactory" abstract="true" lazy-init="true" />
+          factory-bean="tenrecServiceFactory" abstract="true" lazy-init="true"/>
 
     <bean id="tenrecServiceFactory" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
-        <property name="serviceInterface" value="net.milanaleksic.tenrec.client.Tenrec" />
-        <property name="wsdlDocumentUrl" value="classpath:Tenrec.wsdl" />
-        <property name="namespaceUri" value="tenrec.milanaleksic.net" />
-        <property name="endpointAddress" value="${tenrec.location}" />
-        <property name="lookupServiceOnStartup" value="false" />
-        <property name="serviceName" value="Tenrec" />
+        <property name="serviceInterface" value="net.milanaleksic.tenrec.client.Tenrec"/>
+        <property name="wsdlDocumentUrl" value="classpath:Tenrec.wsdl"/>
+        <property name="namespaceUri" value="tenrec.milanaleksic.net"/>
+        <property name="endpointAddress" value="${tenrec.location}"/>
+        <property name="lookupServiceOnStartup" value="false"/>
+        <property name="serviceName" value="Tenrec"/>
     </bean>
 
     <bean id="tenrecService" class="net.milanaleksic.mcs.infrastructure.tenrec.impl.TenrecServiceImpl">
-        <property name="applicationIdentifier" value="MCS-#{ T(net.milanaleksic.mcs.infrastructure.util.VersionInformation).version }" />
-        <property name="keyStoreFile" value="${tenrec.trustStore.location}" />
-        <property name="keyStorePassword" value="${tenrec.trustStore.password}" />
+        <property name="applicationIdentifier"
+                  value="MCS-#{ T(net.milanaleksic.mcs.infrastructure.util.VersionInformation).version }"/>
+        <property name="keyStoreFile" value="${tenrec.trustStore.location}"/>
+        <property name="keyStorePassword" value="${tenrec.trustStore.password}"/>
     </bean>
 
 </beans>

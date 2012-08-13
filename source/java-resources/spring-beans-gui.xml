@@ -3,47 +3,47 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <context:property-placeholder location="classpath:gui.properties" ignore-unresolvable="true" />
+    <context:property-placeholder location="classpath:gui.properties" ignore-unresolvable="true"/>
 
-    <bean id="mainForm" class="net.milanaleksic.mcs.application.gui.MainForm" />
+    <bean id="mainForm" class="net.milanaleksic.mcs.application.gui.MainForm"/>
 
     <!-- Dialogs -->
 
-    <bean id="aboutDialogForm" class="net.milanaleksic.mcs.application.gui.AboutDialogForm" />
+    <bean id="aboutDialogForm" class="net.milanaleksic.mcs.application.gui.AboutDialogForm"/>
 
-    <bean id="newMediumDialogForm" class="net.milanaleksic.mcs.application.gui.NewMediumDialogForm" />
+    <bean id="newMediumDialogForm" class="net.milanaleksic.mcs.application.gui.NewMediumDialogForm"/>
 
-    <bean id="newOrEditMovieDialogForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieDialogForm" />
+    <bean id="newOrEditMovieDialogForm" class="net.milanaleksic.mcs.application.gui.NewOrEditMovieDialogForm"/>
 
-    <bean id="settingsDialogForm" class="net.milanaleksic.mcs.application.gui.SettingsDialogForm" />
+    <bean id="settingsDialogForm" class="net.milanaleksic.mcs.application.gui.SettingsDialogForm"/>
 
-    <bean id="deleteMovieDialogForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieDialogForm" />
+    <bean id="deleteMovieDialogForm" class="net.milanaleksic.mcs.application.gui.DeleteMovieDialogForm"/>
 
-    <bean id="unusedMediumsDialogForm" class="net.milanaleksic.mcs.application.gui.UnusedMediumsDialogForm" />
+    <bean id="unusedMediumsDialogForm" class="net.milanaleksic.mcs.application.gui.UnusedMediumsDialogForm"/>
 
-    <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesDialogForm" />
+    <bean id="unmatchedMoviesDialogForm" class="net.milanaleksic.mcs.application.gui.UnmatchedMoviesDialogForm"/>
 
-    <bean id="findMovieDialogForm" class="net.milanaleksic.mcs.application.gui.FindMovieDialogForm" />
+    <bean id="findMovieDialogForm" class="net.milanaleksic.mcs.application.gui.FindMovieDialogForm"/>
 
-    <bean id="movieDetailsForm" class="net.milanaleksic.mcs.application.gui.MovieDetailsForm" />
+    <bean id="movieDetailsForm" class="net.milanaleksic.mcs.application.gui.MovieDetailsForm"/>
 
 
     <!-- GUI Helper classes -->
 
-    <bean id="splashScreenManager" class="net.milanaleksic.mcs.application.gui.helper.SplashScreenManager" />
+    <bean id="splashScreenManager" class="net.milanaleksic.mcs.application.gui.helper.SplashScreenManager"/>
 
     <bean id="offerMovieListForNewOrEditForm" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList">
-        <property name="receiver" ref="newOrEditMovieDialogForm" />
+        <property name="receiver" ref="newOrEditMovieDialogForm"/>
     </bean>
 
     <bean id="offerMovieListForFindMovieDialogForm" class="net.milanaleksic.mcs.application.gui.helper.OfferMovieList">
-        <property name="receiver" ref="findMovieDialogForm" />
+        <property name="receiver" ref="findMovieDialogForm"/>
     </bean>
 
     <bean id="thumbnailManager" class="net.milanaleksic.mcs.infrastructure.thumbnail.impl.ThumbnailManagerImpl">
-        <property name="defaultImageResource" value="/net/milanaleksic/mcs/application/res/no_thumb.png" />
-        <property name="thumbnailWidth" value="${thumbnail.width}" />
-        <property name="thumbnailHeight" value="${thumbnail.height}" />
+        <property name="defaultImageResource" value="/net/milanaleksic/mcs/application/res/no_thumb.png"/>
+        <property name="thumbnailWidth" value="${thumbnail.width}"/>
+        <property name="thumbnailHeight" value="${thumbnail.height}"/>
     </bean>
 
 </beans>
