@@ -3,10 +3,10 @@ package net.milanaleksic.mcs.infrastructure.persistence.jpa;
 import net.milanaleksic.mcs.domain.model.*;
 import net.milanaleksic.mcs.domain.service.ModificationLogService;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.persistence.*;
+import javax.persistence.TypedQuery;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -40,7 +40,7 @@ public class JpaModificationRepository extends AbstractRepository implements Mod
             final String previousValue = getPreviousValue(entityName, id, fieldName);
             if (previousValue != null && previousValue.equals(newValue))
                 return;
-        } catch(NoResultException ignored) {
+        } catch(org.springframework.dao.EmptyResultDataAccessException ignored) {
         }
         if (log.isDebugEnabled())
             log.debug(String.format("Writing modification log for entity=%s, id=%d, fieldName=%s", entityName, id, fieldName));
