@@ -82,13 +82,13 @@
     </target>
 
     <target name="compile" description="Copying compiled MCS files" depends="generate-metamodel">
-        <javac destDir="${compile.dir}" source="1.7" encoding="UTF-8" includeantruntime="false" debug="true">
+        <iajc destDir="${compile.dir}" source="1.7" encoding="UTF-8" debug="true">
             <src path="${src.dir}"/>
             <src path="${resources.dir}"/>
             <src path="${src.metamodel.dir}"/>
             <classpath refid="classpath"/>
-            <compilerarg value="-proc:none"/>
-        </javac>
+            <aspectpath refid="classpath"/>
+        </iajc>
 
         <copy todir="${compile.dir}" overwrite="true">
             <fileset dir="${build.overrides.source.dir}">
@@ -193,6 +193,7 @@
             <fileset dir="${ivy.resolved.libs.target.dir}">
                 <exclude name="ant-contrib.jar"/>
                 <exclude name="aspectjtools.jar"/>
+                <exclude name="aspectjweaver.jar"/>
                 <exclude name="hamcrest*.jar"/>
                 <exclude name="hibernate-jpamodelgen.jar"/>
                 <exclude name="junit.jar"/>
