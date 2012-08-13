@@ -1,25 +1,22 @@
 package net.milanaleksic.mcs.application;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import net.milanaleksic.mcs.application.config.*;
 import net.milanaleksic.mcs.application.gui.MainForm;
 import net.milanaleksic.mcs.application.gui.helper.SplashScreenManager;
-import net.milanaleksic.mcs.infrastructure.config.ApplicationConfiguration;
-import net.milanaleksic.mcs.infrastructure.config.UserConfiguration;
-import net.milanaleksic.mcs.infrastructure.util.*;
 import net.milanaleksic.mcs.infrastructure.LifeCycleListener;
+import net.milanaleksic.mcs.infrastructure.config.*;
+import net.milanaleksic.mcs.infrastructure.util.VersionInformation;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.*;
 
 import javax.inject.Inject;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.List;
 
 public class ApplicationManager implements ApplicationContextAware {
 
@@ -43,7 +40,7 @@ public class ApplicationManager implements ApplicationContextAware {
 
     private UserConfiguration userConfiguration;
 
-    private Set<LifeCycleListener> lifeCycleListeners = Sets.newHashSet();
+    private List<LifeCycleListener> lifeCycleListeners = Lists.newLinkedList();
 
     public ApplicationManager() {
         this(false);
@@ -56,7 +53,7 @@ public class ApplicationManager implements ApplicationContextAware {
             readConfigurationsWithoutDI();
     }
 
-    public void setLifeCycleListeners(Set<LifeCycleListener> lifeCycleListeners) {
+    public void setLifeCycleListeners(List<LifeCycleListener> lifeCycleListeners) {
         this.lifeCycleListeners = lifeCycleListeners;
     }
 
@@ -69,14 +66,20 @@ public class ApplicationManager implements ApplicationContextAware {
     }
 
     private void fireApplicationStarted() {
-        for (LifeCycleListener listener : lifeCycleListeners) {
-            safeCallStartedOnListener(listener);
+        final int size = lifeCycleListeners.size();
+        for (int i = 0; i < size; i++) {
+            if (log.isTraceEnabled())
+                log.debug("Executing startup callback on listener " + (i + 1) + " of " + size); //NON-NLS
+            safeCallStartedOnListener(lifeCycleListeners.get(i));
         }
     }
 
     private void fireApplicationShutdown() {
-        for (LifeCycleListener listener : lifeCycleListeners) {
-            safeCallShutdownOnListener(listener);
+        final int size = lifeCycleListeners.size();
+        for (int i = size - 1; i >= 0; i--) {
+            if (log.isTraceEnabled())
+                log.trace("Executing shutdown callback on listener " + (i + 1) + " of " + size); //NON-NLS
+            safeCallShutdownOnListener(lifeCycleListeners.get(i));
         }
     }
 
@@ -151,7 +154,7 @@ public class ApplicationManager implements ApplicationContextAware {
                     display.sleep();
             }
         } catch (Throwable t) {
-            log.error("Unhandled GUI thread exception - "+t.getMessage(), t); //NON-NLS
+            log.error("Unhandled GUI thread exception - " + t.getMessage(), t); //NON-NLS
         } finally {
             if (!display.isDisposed())
                 display.syncExec(new Runnable() {
