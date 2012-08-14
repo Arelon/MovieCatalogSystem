@@ -45,7 +45,9 @@
 
     <target name="resolve" description="Retrieve dependencies with ivy" depends="init-ivy">
         <ivy:settings file="build/ivyconf.xml"/>
-        <ivy:retrieve file="build/ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]"/>
+        <ivy:retrieve file="build/ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[artifact].[ext]" conf="default" />
+        <ivy:retrieve file="build/ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[conf]/[artifact].[ext]" conf="win32"/>
+        <ivy:retrieve file="build/ivy.xml" pattern="${ivy.resolved.libs.target.dir}/[conf]/[artifact].[ext]" conf="linux"/>
         <copy todir="${ivy.resolved.libs.target.dir}" overwrite="true">
             <fileset dir="${explicit.lib.dir}">
                 <include name="**/*.jar"/>
@@ -53,9 +55,23 @@
         </copy>
     </target>
 
+    <condition property="isLinux">
+        <os family="unix" />
+    </condition>
+
+    <condition property="isWin32">
+        <os family="windows" />
+    </condition>
+
     <path id="classpath">
         <fileset dir="${ivy.resolved.libs.target.dir}">
             <include name="*.*"/>
+        </fileset>
+        <fileset dir="${ivy.resolved.libs.target.dir}/win32">
+            <include name="*.*" if="isWin32" />
+        </fileset>
+        <fileset dir="${ivy.resolved.libs.target.dir}/linux">
+            <include name="*.*" if="isLinux" />
         </fileset>
     </path>
 
@@ -161,7 +177,6 @@
             <compilerarg value="-proc:none"/>
         </javac>
         <junit printsummary="true" failureproperty="integration.tests.failed" fork="true" forkmode="perBatch" newenvironment="true" dir="${startup.dir}">
-            <jvmarg value="-javaagent:${test-integration.spring-instrument.path-from-startup}"/>
             <classpath>
                 <path refid="classpath"/>
                 <path path="${test-integration.compile.dir}" />
@@ -178,7 +193,7 @@
         <fail if="${integration.tests.failed}" message="There are integration test failures" />
     </target>
 
-    <target name="installation" description="Creates the installation" depends="jar">
+    <target name="installation-win32" description="Creates the installation" depends="test-integration" if="isWin32">
         <echo message="Building NSIS Installation" level="info"/>
 
         <mkdir dir="${install.dir}"/>
@@ -186,7 +201,7 @@
         <mkdir dir="${install.dir}/lib"/>
 
         <copy todir="${install.dir}" overwrite="false">
-            <fileset dir="${build.overrides.installation.dir}"/>
+            <fileset dir="${build.overrides.win32.dir}"/>
         </copy>
 
         <copy todir="${install.dir}/lib" overwrite="false">
@@ -199,13 +214,15 @@
                 <exclude name="junit.jar"/>
                 <exclude name="nsisant-1.2.jar"/>
                 <exclude name="swt*debug.jar"/>
+                <include name="*.jar" />
+            </fileset>
+            <fileset dir="${ivy.resolved.libs.target.dir}/win32">
+                <include name="*.jar" />
             </fileset>
         </copy>
 
         <copy todir="${install.dir}/bin" overwrite="false">
             <fileset dir="${startup.dir}">
-                <include name=".launcher"/>
-                <include name="MD5.dll"/>
                 <include name="*.dtd"/>
                 <include name="*.properties"/>
                 <include name="*.xml"/>
@@ -225,15 +242,6 @@
                 </nsis>
             </else>
         </if>
-        <if>
-            <equals arg1="${nsis.dont.delete.installation.files}" arg2="true"/>
-            <then>
-                <echo message="DELETION OF INSTALLATION FILES OMITTED"/>
-            </then>
-            <else>
-                <delete dir="${install.dir}" failonerror="false"/>
-            </else>
-        </if>
 
         <delete>
             <fileset dir="${output.dir}">
@@ -246,9 +254,58 @@
                 <include name="mcs-*.exe"/>
             </fileset>
         </move>
-
-        <delete dir="${compile.dir}" failonerror="false"/>
     </target>
+
+    <target name="installation-linux" description="Creates the installation" depends="test-integration">
+        <delete>
+            <fileset dir="${output.dir}">
+                <include name="mcs-*${DSTAMP}.tar"/>
+                <include name="mcs-*${DSTAMP}.tar.gz"/>
+            </fileset>
+        </delete>
+
+        <delete dir="${install.dir}" failonerror="false"/>
+        <mkdir dir="${install.dir}"/>
+        <copy todir="${install.dir}" overwrite="false">
+            <fileset dir="${build.overrides.linux.dir}"/>
+        </copy>
+        <copy todir="${install.dir}/bin" overwrite="false">
+            <fileset dir="${startup.dir}">
+                <include name="*.dtd"/>
+                <include name="*.properties"/>
+                <include name="*.xml"/>
+            </fileset>
+        </copy>
+
+        <tar destfile="${output.dir}/mcs-${src.version}.${build.number}-${DSTAMP}.tar">
+            <tarfileset dir="${ivy.resolved.libs.target.dir}" prefix="lib">
+                <exclude name="ant-contrib.jar"/>
+                <exclude name="aspectjtools.jar"/>
+                <exclude name="aspectjweaver.jar"/>
+                <exclude name="hamcrest*.jar"/>
+                <exclude name="hibernate-jpamodelgen.jar"/>
+                <exclude name="junit.jar"/>
+                <exclude name="nsisant-1.2.jar"/>
+                <exclude name="swt*debug.jar"/>
+                <include name="*.jar" />
+            </tarfileset>
+            <tarfileset dir="${ivy.resolved.libs.target.dir}/linux" prefix="lib">
+                <include name="*.jar" />
+            </tarfileset>
+            <tarfileset dir="${install.dir}" filemode="755">
+                <include name="**/*.sh"/>
+            </tarfileset>
+            <tarfileset dir="${install.dir}">
+                <exclude name="**/*.sh"/>
+                <include name="**/*"/>
+            </tarfileset>
+        </tar>
+        <gzip destfile="${output.dir}/mcs-${src.version}.${build.number}-${DSTAMP}.tar.gz"
+              src="${output.dir}/mcs-${src.version}.${build.number}-${DSTAMP}.tar"
+        />
+    </target>
+
+    <target name="installation" depends="installation-win32,installation-linux" />
 
     <target name="findbugs" description="FindBugs" depends="compile">
         <path id="classpath-findbugs">

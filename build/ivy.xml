@@ -3,6 +3,11 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
     <info organisation="net.milanaleksic" module="mcs"/>
+    <configurations defaultconf="default">
+        <conf name="default" transitive="false" />
+        <conf name="linux" transitive="false" />
+        <conf name="win32" transitive="false" />
+    </configurations>
     <dependencies>
         <dependency org="antlr" name="antlr" rev="2.7.6" transitive="false">
             <artifact name="antlr" type="jar"/>
@@ -40,7 +45,7 @@
         <dependency org="org.hibernate" name="hibernate-entitymanager" rev="4.1.4.Final" transitive="false">
             <artifact name="hibernate-entitymanager" type="jar"/>
         </dependency>
-        <dependency org="org.hibernate.common" name="hibernate-commons-annotations" rev="4.0.1.Final">
+        <dependency org="org.hibernate.common" name="hibernate-commons-annotations" rev="4.0.1.Final" transitive="false">
             <artifact name="hibernate-commons-annotations" type="jar"/>
         </dependency>
         <dependency org="org.hibernate" name="hibernate-jpamodelgen" rev="1.2.0.Final" transitive="false">
@@ -100,9 +105,6 @@
         <dependency org="org.springframework" name="spring-jdbc" rev="3.1.1.RELEASE" transitive="false">
             <artifact name="spring-jdbc" type="jar"/>
         </dependency>
-        <dependency org="org.springframework" name="spring-instrument" rev="3.1.1.RELEASE" transitive="false">
-            <artifact name="spring-instrument" type="jar"/>
-        </dependency>
         <dependency org="org.springframework" name="spring-orm" rev="3.1.1.RELEASE" transitive="false">
             <artifact name="spring-orm" type="jar"/>
         </dependency>
@@ -125,7 +127,7 @@
         <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.0.1" transitive="false">
             <artifact name="httpcore" type="jar"/>
         </dependency>
-        <dependency org="org.samba.jcifs" name="jcifs" rev="1.3.14-kohsuke-1">
+        <dependency org="org.samba.jcifs" name="jcifs" rev="1.3.14-kohsuke-1" transitive="false">
             <artifact name="jcifs" type="jar"/>
         </dependency>
         <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.7" transitive="false">
@@ -146,7 +148,7 @@
         <dependency org="com.google.guava" name="guava" rev="12.0" transitive="false">
             <artifact name="guava" type="jar"/>
         </dependency>
-        <dependency org="commons-codec" name="commons-codec" rev="1.6">
+        <dependency org="commons-codec" name="commons-codec" rev="1.6" transitive="false">
             <artifact name="commons-codec" type="jar"/>
         </dependency>
         <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false">
@@ -162,6 +164,9 @@
         <dependency org="org.aspectj" name="aspectjrt" rev="1.7.0.RELEASE" transitive="false">
             <artifact name="aspectjrt" type="jar"/>
         </dependency>
+        <dependency org="org.jboss.logging" name="jboss-logging" rev="3.1.0.CR2" transitive="false">
+            <artifact name="jboss-logging" type="jar"/>
+        </dependency>
 
         <!-- Maven.MilanAleksic.net -->
         <dependency org="net.milanaleksic" name="swt-gui-transformer-core" rev="0.1.7.2" transitive="false">
@@ -172,6 +177,14 @@
         </dependency>
         <dependency org="net.milanaleksic" name="tenrec-client" rev="0.1" transitive="false">
             <artifact name="tenrec-client" type="jar"/>
+        </dependency>
+
+        <!-- Local Maven repository -->
+        <dependency org="org.eclipse.swt" name="org.eclipse.swt.win32.win32.x86" rev="4.2" transitive="false" conf="win32->default">
+            <artifact name="org.eclipse.swt.win32.win32.x86" type="jar"/>
+        </dependency>
+        <dependency org="org.eclipse.swt" name="org.eclipse.swt.gtk.linux.x86" rev="4.2" transitive="false" conf="linux->default">
+            <artifact name="org.eclipse.swt.gtk.linux.x86" type="jar"/>
         </dependency>
     </dependencies>
 
