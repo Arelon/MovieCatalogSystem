@@ -6,6 +6,7 @@
             <ivy pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[module]-[revision].pom"/>
         </filesystem>
         <ibiblio name="milanaleksic-m2" root="http://maven.milanaleksic.net/release/" m2compatible="true"/>
+        <ibiblio name="cloudbees" root="https://repository-milanaleksic.forge.cloudbees.com/release/" m2compatible="true"/>
 
         <chain name="with-milestones" returnFirst="true" checkmodified="true">
             <resolver ref="local-maven-2" />
@@ -13,6 +14,7 @@
             <resolver ref="main"/>
             <resolver ref="spring-releases"/>
             <resolver ref="milanaleksic-m2" />
+            <resolver ref="cloudbees" />
         </chain>
     </resolvers>
 </ivysettings>
